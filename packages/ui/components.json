@@ -11,11 +11,11 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@repo/ui/components",
-    "utils": "@repo/ui/lib/utils",
-    "ui": "@repo/ui/components/ui",
-    "lib": "@repo/ui/lib",
-    "hooks": "@repo/ui/hooks"
+    "components": "@flex-report/ui/components",
+    "utils": "@flex-report/ui/lib/utils",
+    "ui": "@flex-report/ui/components/ui",
+    "lib": "@flex-report/ui/lib",
+    "hooks": "@flex-report/ui/hooks"
   },
   "iconLibrary": "lucide"
 }
