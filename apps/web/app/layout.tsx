@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import "@flex-report/ui/styles/global.css";
 import "./globals.css";
 
 const geistSans = localFont({

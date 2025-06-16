@@ -1,5 +1,6 @@
 import Image, { type ImageProps } from 'next/image'
-import { Button } from '@flex-report/ui/button'
+import { Button } from '@flex-report/ui/shadcn'
+
 import styles from './page.module.css'
 
 type Props = Omit<ImageProps, 'src'> & {
@@ -63,7 +64,7 @@ export default function Home() {
             Read our docs
           </a>
         </div>
-        <Button appName="web" className={styles.secondary}>
+        <Button variant={"default"}>
           Open alert
         </Button>
       </main>

@@ -1,4 +1,6 @@
-module.exports = {
+import { defineConfig } from "eslint-define-config";
+
+export default defineConfig({
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -17,6 +19,18 @@ module.exports = {
     react: {
       version: 'detect',
     },
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.css']
+      },
+      typescript: {
+        project: [
+          './tsconfig.json',
+          './apps/*/tsconfig.json',
+          './packages/*/tsconfig.json',
+        ]
+      }
+    }
   },
   plugins: ['react', 'react-hooks', '@typescript-eslint', 'import', 'jsx-a11y'],
   extends: [
@@ -31,20 +45,9 @@ module.exports = {
     'prettier',
   ],
   rules: {
-    // 你可以根据需求调整规则，比如：
-    'react/react-in-jsx-scope': 'off', // Next.js 不需要显式引入 React
+    'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     'import/order': ['error', { 'newlines-between': 'always' }],
     '@typescript-eslint/no-explicit-any': 'off',
   },
-  overrides: [
-    {
-      files: ['*.ts', '*.tsx'],
-      rules: {},
-    },
-    {
-      files: ['*.js', '*.jsx'],
-      rules: {},
-    },
-  ],
-}
+});

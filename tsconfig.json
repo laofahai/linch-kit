@@ -1,20 +1,25 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "lib": ["DOM", "ESNext"],
-    "moduleResolution": "Node",
+    "jsx": "preserve",
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "target": "es2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "jsxImportSource": "react",
+    "allowJs": true,
     "baseUrl": ".",
     "paths": {
       "@flex-report/core": ["packages/core/src"],
       "@flex-report/ui": ["packages/ui/src"],
       "@flex-report/embed-react": ["packages/embed-react/src"],
       "@flex-report/embed-vue": ["packages/embed-vue/src"],
-      "@flex-report/auth": ["packages/auth/src"]
+      "@flex-report/auth": ["packages/auth/src"],
+      "@flex-report/ui/shadcn": ["packages/ui/src/components/ui/index.ts"],
+      "@flex-report/ui/shadcn/*": ["packages/ui/src/components/ui/*"]
     }
   },
   "include": [

@@ -1,20 +1,16 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "composite": true,
-    "declaration": true,
+    "moduleResolution": "bundler",
     "paths": {
       "@/*": [
-        "src/*"
+        "./app/*"
       ]
     },
-    "allowJs": true,
     "noEmit": true,
     "incremental": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
     "plugins": [
       {
         "name": "next"

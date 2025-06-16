@@ -9,11 +9,21 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "exports": {
+    "." : "./src/index.ts",
+    "./react": "./react/index.ts"
+  },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.1.6"
   },
   "devDependencies": {
     "@flex-report/types": "workspace:*",
+    "@types/react-router-dom": "^5.3.3",
     "@types/node": "^22.15.3"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^7.6.2"
   }
 }
