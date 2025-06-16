@@ -19,7 +19,7 @@
   "devDependencies": {
     "@flex-report/types": "workspace:*",
     "@types/react-router-dom": "^5.3.3",
-    "@types/node": "^22.15.3"
+    "@types/node": "^24.0.3"
   },
   "peerDependencies": {
     "react": "^18.0.0",

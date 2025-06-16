@@ -11,8 +11,8 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
-    "eslint": "^9.28.0",
-    "eslint-config-prettier": "^10.1.1",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
     "eslint-define-config": "^2.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -21,9 +21,9 @@
     "prettier": "^3.5.3",
     "tsup": "^8.5.0",
     "turbo": "^2.5.4",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@10.12.1",
   "engines": {
     "node": ">=18"
   },

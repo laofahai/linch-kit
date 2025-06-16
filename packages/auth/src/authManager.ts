@@ -9,12 +9,11 @@ export class AuthManager {
     this.strategy = strategy
   }
 
-  static async init(strategyName?: AuthStrategyType): Promise<AuthManager> {
-    const chosen = strategyName || process.env.AUTH_STRATEGY
-    if (!chosen) throw new Error('AUTH_STRATEGY must be defined')
+  static async init(strategyName: AuthStrategyType): Promise<AuthManager> {
+    if (!strategyName) throw new Error('AUTH_STRATEGY must be defined')
 
     if (!AuthManager.instance) {
-      const strategy = await AuthManager.loadStrategy(chosen)
+      const strategy = await AuthManager.loadStrategy(strategyName)
       AuthManager.instance = new AuthManager(strategy)
     }
 

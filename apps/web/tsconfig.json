@@ -2,10 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "moduleResolution": "bundler",
+    "baseUrl": ".",               // ✅ 必须有这个
     "paths": {
-      "@/*": [
-        "./app/*"
-      ]
+      "@/*": ["app/*"]            // ✅ 正确指向实际路径
     },
     "noEmit": true,
     "incremental": true,
