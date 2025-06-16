@@ -1,4 +1,4 @@
-import { getSessionUser } from '../auth'
+import { getSessionUser } from './middleware/auth'
 import { AuthManager } from '@flex-report/auth'
 
 export type Context = {

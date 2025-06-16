@@ -4,7 +4,7 @@ import { createTRPCReact } from '@trpc/react-query'
 import { httpBatchLink } from '@trpc/client'
 import { type inferRouterInputs, type inferRouterOutputs } from '@trpc/server'
 import superjson from 'superjson'
-import type { AppRouter } from './index'
+import type { AppRouter } from '../routers'
 
 // 创建 React Hooks
 export const trpc = createTRPCReact<AppRouter>()

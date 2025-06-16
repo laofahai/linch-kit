@@ -2,9 +2,9 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "moduleResolution": "bundler",
-    "baseUrl": ".",               // ✅ 必须有这个
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["app/*"]            // ✅ 正确指向实际路径
+      "@/*": ["app/*"]
     },
     "noEmit": true,
     "incremental": true,
@@ -22,7 +22,8 @@
     "./.next/types/**/*.ts",
     "./next-env.d.ts",
     "./next.config.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../packages/types/globals.d.ts"
   ],
   "exclude": [
     "node_modules"

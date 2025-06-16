@@ -1,6 +1,6 @@
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
-import { appRouter } from '@/_lib/trpc'
-import { createContext } from '@/_lib/trpc/context'
+import { appRouter } from '@/_lib/trpc/routers'
+import { createContext } from '@/_lib/trpc/server/context'
 
 export const runtime = 'edge' // 使用边缘运行时
 
@@ -10,8 +10,7 @@ const handler = (req: Request) =>
     req,
     router: appRouter,
     createContext: async () => {
-      const context = await createContext()
-      return context
+      return await createContext()
     },
     onError({ error }: any) {
       console.error('tRPC error:', error)

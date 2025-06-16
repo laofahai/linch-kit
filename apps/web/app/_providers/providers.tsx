@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
-import { trpc, createTrpcClient } from '@/_lib/trpc/client'
+import { trpc, createTrpcClient } from '@/_lib/trpc/client/provider'
 import { AuthProvider } from '@/_components/auth/authProvider'
 
 export function Providers({ children }: { children: React.ReactNode }) {

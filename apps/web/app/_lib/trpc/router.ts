@@ -1,6 +1,6 @@
 // lib/trpc/router.ts
 import { initTRPC, TRPCError } from '@trpc/server'
-import type { Context } from './context'
+import type { Context } from './server/context'
 import { z } from 'zod'
 import superjson from 'superjson'
 
@@ -26,7 +26,7 @@ export const createProtectedProcedure = t.procedure.use(
 )
 
 // 创建带权限的过程
-export const createPermissionedProcedure = (permission: string) =>
+export const createProcedureWithPermission = (permission: string) =>
   createProtectedProcedure.use(
     t.middleware(({ next, ctx }) => {
       if (!ctx.authManager.hasPermission(permission)) {
