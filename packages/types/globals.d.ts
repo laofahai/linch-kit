@@ -1,6 +1,9 @@
 declare namespace NodeJS {
   interface ProcessEnv {
     NODE_ENV: 'development' | 'production' | 'test'
+    AUTH_STRATEGY: 'clerk' | 'sso'
+    SSO_AUTH_URL?: string
+    SSO_USERINFO_ENDPOINT?: string
   }
 }
 

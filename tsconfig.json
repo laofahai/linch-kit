@@ -12,17 +12,21 @@
     "paths": {
       "@flex-report/core": ["packages/core/src"],
       "@flex-report/ui": ["packages/ui/src"],
-      "@flex-report/embed-react": ["packages/embed-react/src"]
+      "@flex-report/embed-react": ["packages/embed-react/src"],
+      "@flex-report/embed-vue": ["packages/embed-vue/src"],
+      "@flex-report/auth": ["packages/auth/src"]
     }
   },
   "include": [
-    "./packages/**/*.{ts,tsx}",
-    "./apps/**/*.{ts,tsx}",
+    "./packages/**/*.{ts,tsx,d.ts}",
+    "./apps/**/*.{ts,tsx,d.ts}"
   ],
   "references": [
     { "path": "packages/core" },
     { "path": "packages/ui" },
+    { "path": "packages/types" },
     { "path": "packages/embed-react" },
+    { "path": "packages/auth" },
     { "path": "apps/web" },
     { "path": "apps/docs" }
   ]
