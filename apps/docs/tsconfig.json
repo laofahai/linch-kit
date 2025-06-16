@@ -1,6 +1,20 @@
 {
-  "extends": "@repo/typescript-config/nextjs.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "outDir": "dist",
+    "composite": true,
+    "declaration": true,
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
     "plugins": [
       {
         "name": "next"
@@ -8,10 +22,11 @@
     ]
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "next-env.d.ts",
-    "next.config.js",
+    "./**/*.ts",
+    "./**/*.tsx",
+    "./.next/types/**/*.ts",
+    "./next-env.d.ts",
+    "./next.config.js",
     ".next/types/**/*.ts"
   ],
   "exclude": [

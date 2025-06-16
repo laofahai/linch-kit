@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["DOM", "ESNext"],
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@flex-report/core": ["packages/core/src"],
+      "@flex-report/ui": ["packages/ui/src"],
+      "@flex-report/embed-react": ["packages/embed-react/src"]
+    }
+  },
+  "include": [
+    "./packages/**/*.{ts,tsx}",
+    "./apps/**/*.{ts,tsx}",
+  ],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/ui" },
+    { "path": "packages/embed-react" },
+    { "path": "apps/web" },
+    { "path": "apps/docs" }
+  ]
+}
