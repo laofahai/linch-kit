@@ -1,9 +1,28 @@
 {
   "name": "@linch-kit/schema",
   "version": "0.1.0",
+  "description": "Schema-first development with Zod and automatic Prisma generation",
+  "keywords": ["zod", "prisma", "schema", "validation", "typescript", "orm", "database"],
+  "author": "Linch Kit Team",
+  "license": "MIT",
+  "homepage": "https://github.com/linch-kit/linch-kit/tree/main/packages/schema",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linch-kit/linch-kit.git",
+    "directory": "packages/schema"
+  },
+  "bugs": {
+    "url": "https://github.com/linch-kit/linch-kit/issues"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "README.zh-CN.md",
+    "examples"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
