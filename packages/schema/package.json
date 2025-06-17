@@ -4,7 +4,7 @@
   "description": "Schema-first development with Zod and automatic Prisma generation",
   "keywords": [
     "zod",
-    "prisma",
+    "prisma", 
     "schema",
     "validation",
     "typescript",
@@ -63,11 +63,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    },
-    "./validators": {
-      "types": "./dist/validators/index.d.ts",
-      "import": "./dist/validators/index.mjs",
-      "require": "./dist/validators/index.js"
     },
     "./cli": {
       "types": "./dist/cli/index.d.ts",
