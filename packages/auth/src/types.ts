@@ -1,33 +1,26 @@
-export type AuthStrategyType = NodeJS.ProcessEnv['AUTH_STRATEGY']
+import { DefaultSession, DefaultUser } from 'next-auth'
+import 'next-auth'
 
-export interface SessionUser {
-  id: string
+export interface User extends DefaultUser {
   username: string
-  avatar?: string
-  email?: string
   mobile?: string
   permissions: string[]
+  provider: 'shared-token' | 'clerk'
+  sourceId?: string // 仅对 shared-token
   [key: string]: any
 }
 
-export interface AuthStrategy {
-  /**
-   * 根据传入的 token 或凭证获取当前用户 Session 信息
-   */
-  getSession(token?: string | null): Promise<SessionUser | null>
+export interface Session extends DefaultSession {
+  user: User
+  error?: 'RefreshAccessTokenError' | 'InvalidToken' | 'SourceNotFound'
+}
 
-  /**
-   * 登录，返回认证后的用户信息和 token 等
-   */
-  login?(credentials: any): Promise<{ user: SessionUser; token: string } | null>
-
-  /**
-   * 判断用户是否有权限
-   */
-  hasPermission(user: SessionUser | null, resource: string): boolean
-
-  /**
-   * （可选）刷新 Session 或 Token
-   */
-  refreshSession?(token: string): Promise<SessionUser | null>
+export interface JWT {
+  id: string
+  username: string
+  name?: string | null
+  email?: string | null
+  permissions: string[]
+  provider: 'shared-token' | 'clerk'
+  sourceId?: string // 仅对 shared-token
 }

@@ -10,18 +10,22 @@
   "author": "",
   "license": "ISC",
   "exports": {
-    "." : "./src/index.ts",
+    ".": "./src/index.ts",
     "./react": "./react/index.ts"
   },
   "dependencies": {
-    "@clerk/clerk-sdk-node": "^5.1.6"
+    "@clerk/clerk-sdk-node": "^5.1.6",
+    "minimatch": "^10.0.3"
   },
   "devDependencies": {
     "@flex-report/types": "workspace:*",
-    "@types/react-router-dom": "^5.3.3",
-    "@types/node": "^24.0.3"
+    "@types/node": "^24.0.3",
+    "@types/react": "19.1.8",
+    "@types/react-router-dom": "^5.3.3"
   },
   "peerDependencies": {
+    "next": "^15.3.3",
+    "next-auth": "^4.24.11",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^7.6.2"

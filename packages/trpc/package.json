@@ -1,0 +1,24 @@
+{
+  "name": "@flex-report/trpc",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@flex-report/auth": "workspace:*",
+    "superjson": "^2.2.2"
+  },
+  "devDependencies": {
+    "@flex-report/types": "workspace:*",
+    "@types/node": "^24.0.3",
+    "@types/react-router-dom": "^5.3.3"
+  },
+  "peerDependencies": {
+    "@trpc/client": "^11.3.1",
+    "@trpc/next": "^11.3.1",
+    "@trpc/react-query": "^11.3.1",
+    "@trpc/server": "^11.3.1",
+    "next-auth": "^4.24.11",
+    "next": "^15.3.3"
+  }
+}

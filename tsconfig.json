@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "jsx": "preserve",
+
     "moduleResolution": "bundler",
     "module": "esnext",
     "target": "es2022",
@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "jsx": "preserve",
     "jsxImportSource": "react",
     "allowJs": true,
     "baseUrl": ".",

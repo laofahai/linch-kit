@@ -1,4 +1,4 @@
-import { trpcRouter } from '@/_lib/trpc/router'
+import { publicProcedure, trpcRouter } from '@/_lib/trpc/router'
 
 export const userRouter = trpcRouter({
   // 在这里定义用户相关的路由

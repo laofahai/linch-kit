@@ -1,16 +1,23 @@
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
 import { appRouter } from '@/_lib/trpc/routers'
-import { createContext } from '@/_lib/trpc/server/context'
+import { getSessionUser } from '@flex-report/auth'
+import type { Context } from '@flex-report/trpc'
 
-export const runtime = 'edge' // 使用边缘运行时
+// 标准 Node.js 运行环境
+// export const runtime = 'edge'
 
-const handler = (req: Request) =>
+const handler = async (req: Request) =>
   fetchRequestHandler({
     endpoint: '/api/trpc',
     req,
     router: appRouter,
-    createContext: async () => {
-      return await createContext()
+    createContext: async (): Promise<Context> => {
+      // 使用 getServerSession 直接获取会话
+      const session = await getSessionUser()
+      // 从会话中提取用户信息
+      return {
+        user: session?.user,
+      }
     },
     onError({ error }: any) {
       console.error('tRPC error:', error)

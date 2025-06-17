@@ -1,13 +1,11 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect } from 'react'
-import { AuthManager } from '@flex-report/auth'
-import type { SessionUser } from '@flex-report/auth'
-import { getSessionUser } from '@/_lib/trpc/server/middleware/auth'
-import { trpc } from '@/_lib/trpc/client'
+import { createContext, useContext } from 'react'
+import { signOut as nextAuthSignOut, useSession } from 'next-auth/react'
+import type { User } from '@flex-report/auth'
 
 type AuthContextType = {
-  user: SessionUser | null
+  user: User | null
   isLoading: boolean
   isAuthenticated: boolean
   signOut: () => Promise<void>
@@ -17,43 +15,17 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<SessionUser | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [authManager, setAuthManager] = useState<AuthManager | null>(null)
+  const { data: session, status } = useSession()
 
-  useEffect(() => {
-    const initAuth = async () => {
-      const manager = await AuthManager.init(process.env.NEXT_PUBLIC_AUTH_STRATEGY)
-      setAuthManager(manager)
+  // 从 session 中获取 user
+  const user = session?.user as User | null
+  const isLoading = status === 'loading'
+  const isAuthenticated = status === 'authenticated' && !!user
 
-      // 检查现有会话
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('sessionToken='))
-        ?.split('=')[1]
-
-      if (token) {
-        const sessionUser = await manager.getSession()
-        setUser(sessionUser)
-      }
-
-      setIsLoading(false)
-    }
-
-    initAuth()
-  }, [])
-
-  const signOut = async () => {
-    if (!authManager) return
-
-    // await authManager.getStrategy().signOut();
-    document.cookie = 'sessionToken=; Max-Age=0; path=/'
-    setUser(null)
-  }
-
-  const checkPermission = (resource: string): boolean => {
-    if (!user || !authManager) return false
-    return authManager.hasPermission(resource)
+  // 检查权限的函数
+  const hasPermission = (permission: string) => {
+    if (!user?.permissions?.length) return false
+    return user.permissions.includes(permission)
   }
 
   return (
@@ -61,9 +33,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         isLoading,
-        isAuthenticated: !!user,
-        signOut,
-        checkPermission,
+        isAuthenticated,
+        signOut: nextAuthSignOut,
+        checkPermission: hasPermission,
       }}
     >
       {children}
@@ -71,10 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useAuth() {
+export function useAuthContext() {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useAuthContext 必须在 AuthProvider 内使用')
   }
   return context
 }

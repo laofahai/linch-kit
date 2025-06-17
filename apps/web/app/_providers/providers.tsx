@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
-import { trpc, createTrpcClient } from '@/_lib/trpc/client'
+import { trpc, createTrpcClient } from '@flex-report/trpc'
 import { AuthProvider } from '@/_providers/authProvider'
+import { SessionProvider } from 'next-auth/react'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -23,7 +24,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <AuthProvider>{children}</AuthProvider>
+          <SessionProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </SessionProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </trpc.Provider>
