@@ -69,13 +69,6 @@ export function softDelete<T extends z.ZodSchema>(schema: T): T {
 }
 
 /**
- * 软删除装饰器
- */
-export function softDelete<T extends z.ZodSchema>(schema: T): T {
-  return withFieldMeta(schema, { softDelete: true })
-}
-
-/**
  * 数据库特定类型装饰器
  */
 export function dbType<T extends z.ZodSchema>(
