@@ -1,0 +1,54 @@
+{
+  "name": "@linch-kit/schema",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "generate:prisma": "tsx src/cli/index.ts generate:prisma",
+    "generate:validators": "tsx src/cli/index.ts generate:validators",
+    "generate:mocks": "tsx src/cli/index.ts generate:mocks",
+    "generate:openapi": "tsx src/cli/index.ts generate:openapi",
+    "generate:all": "tsx src/cli/index.ts generate:all",
+    "check-types": "tsc --noEmit"
+  },
+  "bin": {
+    "linch-schema": "dist/cli/index.js"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "dayjs": "^1.11.13",
+    "glob": "^11.0.3",
+    "zod": "^3.25.64"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.3",
+    "tsup": "^8.5.0",
+    "tsx": "^4.19.2",
+    "typescript": "5.8.3"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./entities": {
+      "import": "./dist/entities/index.mjs",
+      "require": "./dist/entities/index.js",
+      "types": "./dist/entities/index.d.ts"
+    },
+    "./validators": {
+      "import": "./dist/validators/index.mjs",
+      "require": "./dist/validators/index.js",
+      "types": "./dist/validators/index.d.ts"
+    },
+    "./cli": {
+      "import": "./dist/cli/index.mjs",
+      "require": "./dist/cli/index.js",
+      "types": "./dist/cli/index.d.ts"
+    }
+  }
+}
