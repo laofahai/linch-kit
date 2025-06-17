@@ -2,7 +2,16 @@
   "name": "@linch-kit/schema",
   "version": "0.1.0",
   "description": "Schema-first development with Zod and automatic Prisma generation",
-  "keywords": ["zod", "prisma", "schema", "validation", "typescript", "orm", "database"],
+  "keywords": [
+    "zod",
+    "prisma",
+    "schema",
+    "validation",
+    "typescript",
+    "orm",
+    "database",
+    "codegen"
+  ],
   "author": "Linch Kit Team",
   "license": "MIT",
   "homepage": "https://github.com/linch-kit/linch-kit/tree/main/packages/schema",
@@ -17,11 +26,15 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "bin": {
+    "linch-schema": "dist/cli/index.js"
+  },
   "files": [
     "dist",
     "README.md",
     "README.zh-CN.md",
-    "examples"
+    "examples",
+    "PUBLISHING.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -33,14 +46,11 @@
     "generate:all": "tsx src/cli/index.ts generate:all",
     "check-types": "tsc --noEmit"
   },
-  "bin": {
-    "linch-schema": "dist/cli/index.js"
-  },
   "dependencies": {
-    "commander": "^12.1.0",
+    "zod": "^3.25.64",
     "dayjs": "^1.11.13",
-    "glob": "^11.0.3",
-    "zod": "^3.25.64"
+    "commander": "^12.1.0",
+    "glob": "^10.3.10"
   },
   "devDependencies": {
     "@types/node": "^24.0.3",
@@ -50,24 +60,25 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./entities": {
-      "import": "./dist/entities/index.mjs",
-      "require": "./dist/entities/index.js",
-      "types": "./dist/entities/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./validators": {
+      "types": "./dist/validators/index.d.ts",
       "import": "./dist/validators/index.mjs",
-      "require": "./dist/validators/index.js",
-      "types": "./dist/validators/index.d.ts"
+      "require": "./dist/validators/index.js"
     },
     "./cli": {
+      "types": "./dist/cli/index.d.ts",
       "import": "./dist/cli/index.mjs",
-      "require": "./dist/cli/index.js",
-      "types": "./dist/cli/index.d.ts"
+      "require": "./dist/cli/index.js"
     }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
