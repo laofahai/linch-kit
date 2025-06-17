@@ -11,11 +11,11 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@flex-report/ui/components",
-    "utils": "@flex-report/ui/lib/utils",
-    "ui": "@flex-report/ui/components/ui",
-    "lib": "@flex-report/ui/lib",
-    "hooks": "@flex-report/ui/hooks"
+    "components": "@linch-kit/ui/components",
+    "utils": "@linch-kit/ui/lib/utils",
+    "ui": "@linch-kit/ui/components/ui",
+    "lib": "@linch-kit/ui/lib",
+    "hooks": "@linch-kit/ui/hooks"
   },
   "iconLibrary": "lucide"
 }

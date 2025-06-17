@@ -1,7 +1,7 @@
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
 import { appRouter } from '@/_lib/trpc/routers'
-import { getSessionUser } from '@flex-report/auth'
-import type { Context } from '@flex-report/trpc'
+import { getSessionUser } from '@linch-kit/auth'
+import type { Context } from '@linch-kit/trpc'
 
 // 标准 Node.js 运行环境
 // export const runtime = 'edge'

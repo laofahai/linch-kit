@@ -5,8 +5,8 @@
  */
 
 // 客户端工具
-export { trpc } from '@flex-report/trpc'
-export type { RouterInputs, RouterOutputs } from '@flex-report/trpc'
+export { trpc } from '@linch-kit/trpc'
+export type { RouterInputs, RouterOutputs } from '@linch-kit/trpc'
 
 // 服务器端工具 (基于我们之前创建的 server.ts)
 export { trpcServer, trpcServerWithUser } from './server'

@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { SignInClientPage } from './sign-in-client'
-import { loadSharedTokenSources, getAuthProviders } from '@flex-report/auth'
+import { loadSharedTokenSources, getAuthProviders } from '@linch-kit/auth'
 
 export default function SignInPage() {
   // 在服务器端获取认证提供者信息

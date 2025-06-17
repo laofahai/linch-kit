@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from 'react'
 import { signOut as nextAuthSignOut, useSession } from 'next-auth/react'
-import type { User } from '@flex-report/auth'
+import type { User } from '@linch-kit/auth'
 
 type AuthContextType = {
   user: User | null

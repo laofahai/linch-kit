@@ -1,5 +1,5 @@
 import { createContext } from './context'
-import { User } from '@flex-report/auth'
+import { User } from '@linch-kit/auth'
 import { type AnyRouter } from '@trpc/server'
 
 /**
@@ -11,7 +11,7 @@ import { type AnyRouter } from '@trpc/server'
  * @example
  * // 在应用中创建
  * import { appRouter } from './routers';
- * import { createTrpcServer } from '@flex-report/trpc';
+ * import { createTrpcServer } from '@linch-kit/trpc';
  *
  * export const { trpcServer, trpcServerWithUser } = createTrpcServer(appRouter);
  */

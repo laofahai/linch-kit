@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
-import { trpc, createTrpcClient } from '@flex-report/trpc'
+import { trpc, createTrpcClient } from '@linch-kit/trpc'
 import { AuthProvider } from '@/_providers/authProvider'
 import { SessionProvider } from 'next-auth/react'
 

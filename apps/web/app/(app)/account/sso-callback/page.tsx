@@ -1,6 +1,6 @@
 'use client'
 
-import { SSOCallbackHandler } from '@flex-report/auth/react'
+import { SSOCallbackHandler } from '@linch-kit/auth/react'
 
 export default function SSOCallbackPage() {
   return (

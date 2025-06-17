@@ -1,5 +1,5 @@
 {
-  "name": "@flex-report/auth",
+  "name": "@linch-kit/auth",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -18,7 +18,7 @@
     "minimatch": "^10.0.3"
   },
   "devDependencies": {
-    "@flex-report/types": "workspace:*",
+    "@linch-kit/types": "workspace:*",
     "@types/node": "^24.0.3",
     "@types/react": "19.1.8",
     "@types/react-router-dom": "^5.3.3"

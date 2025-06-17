@@ -1,5 +1,5 @@
 import { type ImageProps } from 'next/image'
-import { Button } from '@flex-report/ui/shadcn'
+import { Button } from '@linch-kit/ui/shadcn'
 
 type Props = Omit<ImageProps, 'src'> & {
   srcLight: string

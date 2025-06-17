@@ -15,13 +15,13 @@
     "baseUrl": ".",
     "sourceMap": true,
     "paths": {
-      "@flex-report/core": ["packages/core/src"],
-      "@flex-report/ui": ["packages/ui/src"],
-      "@flex-report/embed-react": ["packages/embed-react/src"],
-      "@flex-report/embed-vue": ["packages/embed-vue/src"],
-      "@flex-report/auth": ["packages/auth/src"],
-      "@flex-report/ui/shadcn": ["packages/ui/src/components/ui/index.ts"],
-      "@flex-report/ui/shadcn/*": ["packages/ui/src/components/ui/*"],
+      "@linch-kit/core": ["packages/core/src"],
+      "@linch-kit/ui": ["packages/ui/src"],
+      "@linch-kit/embed-react": ["packages/embed-react/src"],
+      "@linch-kit/embed-vue": ["packages/embed-vue/src"],
+      "@linch-kit/auth": ["packages/auth/src"],
+      "@linch-kit/ui/shadcn": ["packages/ui/src/components/ui/index.ts"],
+      "@linch-kit/ui/shadcn/*": ["packages/ui/src/components/ui/*"],
     }
   },
   "include": [

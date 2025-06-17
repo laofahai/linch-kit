@@ -54,13 +54,13 @@ importers:
 
   apps/web:
     dependencies:
-      '@flex-report/auth':
+      '@linch-kit/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@flex-report/trpc':
+      '@linch-kit/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
-      '@flex-report/ui':
+      '@linch-kit/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@tailwindcss/postcss':
@@ -149,7 +149,7 @@ importers:
         specifier: ^7.6.2
         version: 7.6.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
-      '@flex-report/types':
+      '@linch-kit/types':
         specifier: workspace:*
         version: link:../types
       '@types/node':
@@ -168,7 +168,7 @@ importers:
 
   packages/trpc:
     dependencies:
-      '@flex-report/auth':
+      '@linch-kit/auth':
         specifier: workspace:*
         version: link:../auth
       '@trpc/client':
@@ -193,7 +193,7 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2
     devDependencies:
-      '@flex-report/types':
+      '@linch-kit/types':
         specifier: workspace:*
         version: link:../types
       '@types/node':

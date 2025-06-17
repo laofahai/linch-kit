@@ -11,9 +11,9 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@flex-report/auth": "workspace:*",
-    "@flex-report/trpc": "workspace:*",
-    "@flex-report/ui": "workspace:*",
+    "@linch-kit/auth": "workspace:*",
+    "@linch-kit/trpc": "workspace:*",
+    "@linch-kit/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.1.10",
     "@tanstack/react-query": "^5.80.7",
     "@trpc/client": "^11.3.1",

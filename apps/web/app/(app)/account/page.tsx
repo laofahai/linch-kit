@@ -1,4 +1,4 @@
-import { getSessionUser } from '@flex-report/auth'
+import { getSessionUser } from '@linch-kit/auth'
 import { AccountClient } from './account-client'
 
 // 服务器组件，获取用户会话数据

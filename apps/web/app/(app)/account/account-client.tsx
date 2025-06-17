@@ -1,7 +1,7 @@
 'use client'
 
-import { User } from '@flex-report/auth'
-import { Button } from '@flex-report/ui/shadcn'
+import { User } from '@linch-kit/auth'
+import { Button } from '@linch-kit/ui/shadcn'
 import { signOut } from 'next-auth/react'
 
 export interface AccountClientProps {

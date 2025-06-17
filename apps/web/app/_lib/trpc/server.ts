@@ -4,7 +4,7 @@
  * 用于在服务器组件中直接调用 tRPC 路由
  */
 
-import { createTrpcServer } from '@flex-report/trpc'
+import { createTrpcServer } from '@linch-kit/trpc'
 import { appRouter } from './routers'
 
 /**

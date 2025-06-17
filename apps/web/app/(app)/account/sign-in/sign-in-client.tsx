@@ -1,8 +1,8 @@
 'use client'
 
-import { SignInProvider, useSignIn, type AuthSource } from '@flex-report/auth/react'
-import { Button } from '@flex-report/ui/shadcn'
-import { redirectToSSO } from '@flex-report/auth/react'
+import { SignInProvider, useSignIn, type AuthSource } from '@linch-kit/auth/react'
+import { Button } from '@linch-kit/ui/shadcn'
+import { redirectToSSO } from '@linch-kit/auth/react'
 import { SSO_CALLBACK_URL } from '@/_lib/constants'
 
 interface SignInClientPageProps {

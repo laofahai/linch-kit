@@ -1,8 +1,8 @@
 // lib/trpc/router.ts
 import { initTRPC, TRPCError } from '@trpc/server'
-import type { Context } from '@flex-report/trpc'
+import type { Context } from '@linch-kit/trpc'
 import superjson from 'superjson'
-import { hasPermission } from '@flex-report/auth'
+import { hasPermission } from '@linch-kit/auth'
 
 // 初始化 tRPC
 const t = initTRPC.context<Context>().create({
