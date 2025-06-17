@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-
     "moduleResolution": "bundler",
     "module": "esnext",
     "target": "es2022",
@@ -20,7 +19,7 @@
       "@linch-kit/embed-react": ["packages/embed-react/src"],
       "@linch-kit/embed-vue": ["packages/embed-vue/src"],
       "@linch-kit/auth": ["packages/auth/src"],
-    "@linch-kit/schema": ["packages/schema/src"],
+      "@linch-kit/schema": ["packages/schema/src"],
       "@linch-kit/ui/shadcn": ["packages/ui/src/components/ui/index.ts"],
       "@linch-kit/ui/shadcn/*": ["packages/ui/src/components/ui/*"],
     }
