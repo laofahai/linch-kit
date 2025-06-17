@@ -7,7 +7,7 @@ export type Context = {
 }
 
 export async function createContext(): Promise<Context> {
-  const authManager = await AuthManager.init(process.env.AUTH_STRATEGY)
+  const authManager = await AuthManager.init(process.env.NEXT_PUBLIC_AUTH_STRATEGY)
   const user = await getSessionUser()
 
   return {

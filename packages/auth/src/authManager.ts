@@ -10,7 +10,7 @@ export class AuthManager {
   }
 
   static async init(strategyName: AuthStrategyType): Promise<AuthManager> {
-    if (!strategyName) throw new Error('AUTH_STRATEGY must be defined')
+    if (!strategyName) throw new Error('NEXT_PUBLIC_AUTH_STRATEGY must be defined')
 
     if (!AuthManager.instance) {
       const strategy = await AuthManager.loadStrategy(strategyName)

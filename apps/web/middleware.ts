@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { checkPermission, getSessionUser } from '@/_lib/trpc/server/middleware/auth'
-
-const PUBLIC_ROUTES = ['/', '/login', '/api/trpc']
+import { PUBLIC_ROUTES, SIGN_IN_URL } from '@/_lib/constants'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -16,7 +15,7 @@ export async function middleware(request: NextRequest) {
 
   // 未认证用户重定向到登录页
   if (!user) {
-    const loginUrl = new URL('/login', request.url)
+    const loginUrl = new URL(SIGN_IN_URL, request.url)
     loginUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(loginUrl)
   }

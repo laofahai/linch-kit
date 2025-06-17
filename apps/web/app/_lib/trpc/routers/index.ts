@@ -3,10 +3,11 @@
 // import { userRouter } from './routers/user';
 
 import { trpcRouter } from '@/_lib/trpc/router'
+import { userRouter } from '@/_lib/trpc/routers/user'
 
 export const appRouter = trpcRouter({
   // report: reportRouter,
-  // user: userRouter,
+  user: userRouter,
 })
 
 // 导出类型

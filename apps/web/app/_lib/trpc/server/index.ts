@@ -1,5 +1,5 @@
-import { appRouter } from './routers'
-import { createContext } from './server/context'
+import { appRouter } from '../routers'
+import { createContext } from './context'
 import { AuthManager, SessionUser } from '@flex-report/auth'
 
 /**

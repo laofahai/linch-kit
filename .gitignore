@@ -6,8 +6,8 @@ node_modules
 .pnp.js
 
 # Local env files
-apps/web/.env
-.env.local
+apps/web/.env.local
+apps/web/.env.local
 .env.development.local
 .env.test.local
 .env.production.local

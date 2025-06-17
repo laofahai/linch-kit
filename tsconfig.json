@@ -12,6 +12,7 @@
     "jsxImportSource": "react",
     "allowJs": true,
     "baseUrl": ".",
+    "sourceMap": true,
     "paths": {
       "@flex-report/core": ["packages/core/src"],
       "@flex-report/ui": ["packages/ui/src"],
@@ -19,7 +20,7 @@
       "@flex-report/embed-vue": ["packages/embed-vue/src"],
       "@flex-report/auth": ["packages/auth/src"],
       "@flex-report/ui/shadcn": ["packages/ui/src/components/ui/index.ts"],
-      "@flex-report/ui/shadcn/*": ["packages/ui/src/components/ui/*"]
+      "@flex-report/ui/shadcn/*": ["packages/ui/src/components/ui/*"],
     }
   },
   "include": [
