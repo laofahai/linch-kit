@@ -2,6 +2,8 @@
 
 import { SignInProvider, useSignIn, type AuthSource } from '@flex-report/auth/react'
 import { Button } from '@flex-report/ui/shadcn'
+import { redirectToSSO } from '@flex-report/auth/react'
+import { SSO_CALLBACK_URL } from '@/_lib/constants'
 
 interface SignInClientPageProps {
   ssoSources: AuthSource[]
@@ -10,7 +12,7 @@ interface SignInClientPageProps {
 
 // 登录界面内容组件，使用 useSignIn hook 来访问认证上下文
 function SignInContent() {
-  const { isLoading, providers, ssoSources } = useSignIn()
+  const { isLoading, providers, ssoSources, redirectUrl, callbackParamName } = useSignIn()
 
   if (isLoading) {
     return (
@@ -44,7 +46,7 @@ function SignInContent() {
             key={source.id}
             variant="outline"
             className="w-full"
-            onClick={() => (window.location.href = source.loginUrl)}
+            onClick={() => redirectToSSO(source, redirectUrl, { callbackParamName })}
           >
             使用 {source.name} 登录
           </Button>
@@ -64,7 +66,7 @@ export function SignInClientPage({ ssoSources, availableProviders }: SignInClien
         </div>
 
         <SignInProvider
-          redirectUrl="/account"
+          redirectUrl={SSO_CALLBACK_URL}
           autoRedirectIfSingleProvider={true}
           ssoSources={ssoSources}
           availableProviders={availableProviders}

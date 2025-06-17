@@ -16,6 +16,7 @@ export const sharedTokenProvider = CredentialsProvider({
     }
 
     const source = sharedTokenSources.find(s => s.id === credentials.sourceId)
+
     if (!source) {
       throw new Error('Invalid shared token source')
     }
@@ -27,16 +28,20 @@ export const sharedTokenProvider = CredentialsProvider({
 
       if (!res.ok) {
         if (res.status === 401) {
-          throw new Error('Unauthorized: Invalid token')
+          console.error('Token认证失败：无效的token')
+          // 返回专门的错误对象，而不是抛出异常
+          return null
         }
-        throw new Error(`API request failed with status ${res.status}`)
+        console.error(`API请求失败，状态码: ${res.status}`)
+        return null
       }
 
       const userInfo = await res.json()
 
       // 验证基本用户信息
       if (!userInfo?.id) {
-        throw new Error('Invalid user info response')
+        console.error('无效的用户信息响应：缺少用户ID')
+        return null
       }
 
       return {
@@ -45,7 +50,12 @@ export const sharedTokenProvider = CredentialsProvider({
         sourceId: credentials.sourceId,
       }
     } catch (error) {
-      console.error('Authentication error:', error)
+      // 记录详细的错误信息，便于调试
+      console.error('SSO认证处理错误:', {
+        sourceId: credentials.sourceId,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      })
       return null
     }
   },

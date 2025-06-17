@@ -2,38 +2,8 @@
 
 import { useState, useEffect, createContext, useContext } from 'react'
 import { signIn } from 'next-auth/react'
-
-export interface AuthSource {
-  id: string
-  name: string
-  loginUrl: string
-}
-
-/**
- * 登录组件上下文，提供给子组件使用
- */
-export interface SignInContextType {
-  /**
-   * 是否正在加载
-   */
-  isLoading: boolean
-  /**
-   * 可用的认证提供者列表
-   */
-  providers: string[]
-  /**
-   * 可用的 SSO 源列表
-   */
-  ssoSources: AuthSource[]
-  /**
-   * 处理登录操作
-   */
-  handleSignIn: (providerId: string, options?: any) => Promise<void>
-  /**
-   * 重定向URL
-   */
-  redirectUrl: string
-}
+import { redirectToSSO } from './sso'
+import { AuthSource, SignInContextType } from './types'
 
 // 创建登录组件上下文
 const SignInContext = createContext<SignInContextType | null>(null)
@@ -67,6 +37,10 @@ export interface SignInProviderProps {
    */
   availableProviders?: string[]
   /**
+   * SSO 回调参数的名称，默认为 callbackUrl
+   */
+  callbackParamName?: string
+  /**
    * 子组件
    */
   children: React.ReactNode
@@ -76,10 +50,11 @@ export interface SignInProviderProps {
  * 认证提供者组件 - 提供认证状态和方法，不处理 UI 渲染
  */
 export function SignInProvider({
-  redirectUrl = '/account',
+  redirectUrl = '/account/sso-callback',
   autoRedirectIfSingleProvider = true,
   ssoSources = [],
   availableProviders = [],
+  callbackParamName = 'callbackUrl',
   children,
 }: SignInProviderProps) {
   const [isLoading, setIsLoading] = useState(true)
@@ -112,7 +87,10 @@ export function SignInProvider({
           detectedProviders.length === 1 &&
           ssoSources.length === 1
         ) {
-          window.location.href = ssoSources[0].loginUrl
+          // 直接传入 SSO source 对象，自动获取 providerId
+          redirectToSSO(ssoSources[0], redirectUrl, {
+            callbackParamName,
+          })
           return
         }
       } catch (error) {
@@ -123,7 +101,7 @@ export function SignInProvider({
     }
 
     initializeSignIn()
-  }, [autoRedirectIfSingleProvider, ssoSources, availableProviders])
+  }, [autoRedirectIfSingleProvider, ssoSources, availableProviders, redirectUrl, callbackParamName])
 
   const handleSignIn = async (providerId: string, options?: any) => {
     try {
@@ -143,6 +121,7 @@ export function SignInProvider({
     ssoSources,
     handleSignIn,
     redirectUrl,
+    callbackParamName,
   }
 
   return <SignInContext.Provider value={contextValue}>{children}</SignInContext.Provider>
@@ -160,8 +139,12 @@ export function SSOSignInButton({
   className?: string
   children?: React.ReactNode
 }) {
+  const { redirectUrl, callbackParamName } = useSignIn()
   return (
-    <button className={className} onClick={() => (window.location.href = source.loginUrl)}>
+    <button
+      className={className}
+      onClick={() => redirectToSSO(source, redirectUrl, { callbackParamName })}
+    >
       {children || `Sign in with ${source.name}`}
     </button>
   )

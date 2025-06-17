@@ -33,6 +33,21 @@ export interface SSOCallbackHandlerProps {
    * 自定义类名
    */
   className?: string
+
+  /**
+   * Token 参数名称，默认查找 'token' 或 'sign_in_token'
+   */
+  tokenParamName?: string | string[]
+
+  /**
+   * 提供者 ID 参数名称，默认查找 'sourceId' 或 'providerId'
+   */
+  providerIdParamName?: string | string[]
+
+  /**
+   * 默认提供者 ID，当 URL 中没有提供时使用
+   */
+  defaultProviderId?: string
 }
 
 /**
@@ -62,6 +77,9 @@ export function SSOCallbackHandler({
     </div>
   ),
   className = '',
+  tokenParamName = ['token', 'sign_in_token'],
+  providerIdParamName = ['sourceId', 'providerId'],
+  defaultProviderId = 'sso',
 }: SSOCallbackHandlerProps) {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [errorMessage, setErrorMessage] = useState('')
@@ -71,28 +89,67 @@ export function SSOCallbackHandler({
       if (typeof window !== 'undefined') {
         try {
           const urlParams = new URLSearchParams(window.location.search)
-          const token = urlParams.get('token')
-          const sourceId = urlParams.get('sourceId')
 
-          if (!token || !sourceId) {
+          // 检查可能的 token 参数
+          let token: string | null = null
+          const tokenNames = Array.isArray(tokenParamName) ? tokenParamName : [tokenParamName]
+          for (const name of tokenNames) {
+            const value = urlParams.get(name)
+            if (value) {
+              token = value
+              break
+            }
+          }
+
+          if (!token) {
             setStatus('error')
-            setErrorMessage('Missing token or sourceId')
+            setErrorMessage('未找到有效的认证令牌')
             return
           }
 
-          // 使用token和sourceId进行登录
+          // 检查可能的提供者 ID 参数
+          let providerId: string | null = null
+          const providerIdNames = Array.isArray(providerIdParamName)
+            ? providerIdParamName
+            : [providerIdParamName]
+          for (const name of providerIdNames) {
+            const value = urlParams.get(name)
+            if (value) {
+              providerId = value
+              break
+            }
+          }
+
+          // 如果 URL 中没有提供者 ID，使用默认值
+          const effectiveProviderId = providerId || defaultProviderId
+
+          console.log(`SSO Callback: Using token with providerId: ${effectiveProviderId}`)
+
+          // 使用 token 和 providerId 进行登录
           const result = await signIn('shared-token', {
             token,
-            sourceId,
-            redirect: true,
+            sourceId: effectiveProviderId, // sharedTokenProvider 期望的参数名是 sourceId
+            redirect: false,
             callbackUrl: redirectUrl,
           })
 
+          console.log(result, redirectUrl)
+
           if (result?.error) {
+            console.error(`SSO login error: ${result.error}`)
             setStatus('error')
             setErrorMessage(result.error)
+          } else if (result?.url) {
+            // 登录成功，等待一秒后重定向，以便用户看到成功消息
+            setStatus('success')
+            setTimeout(() => {
+              window.location.href = result.url!
+            }, 1000)
           } else {
             setStatus('success')
+            setTimeout(() => {
+              window.location.href = redirectUrl
+            }, 1000)
           }
         } catch (error) {
           console.error('SSO callback error:', error)
@@ -103,7 +160,7 @@ export function SSOCallbackHandler({
     }
 
     handleCallback()
-  }, [redirectUrl])
+  }, [redirectUrl, tokenParamName, providerIdParamName, defaultProviderId])
 
   const goToSignIn = () => {
     window.location.href = errorRedirectUrl
