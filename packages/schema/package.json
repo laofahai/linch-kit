@@ -14,14 +14,14 @@
   ],
   "author": "Linch Kit Team",
   "license": "MIT",
-  "homepage": "https://github.com/linch-kit/linch-kit/tree/main/packages/schema",
+  "homepage": "https://github.com/laofahai/linch-kit/tree/main/packages/schema",
   "repository": {
     "type": "git",
-    "url": "https://github.com/linch-kit/linch-kit.git",
+    "url": "https://github.com/laofahai/linch-kit.git",
     "directory": "packages/schema"
   },
   "bugs": {
-    "url": "https://github.com/linch-kit/linch-kit/issues"
+    "url": "https://github.com/laofahai/linch-kit/issues"
   },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
