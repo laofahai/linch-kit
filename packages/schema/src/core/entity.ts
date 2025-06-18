@@ -4,7 +4,8 @@ import type {
   RelationAttributes,
   ModelConfig,
   EntitySchema,
-  EntityDefinition
+  EntityDefinition,
+  EntityUIConfig
 } from './types'
 import { getFieldMeta } from './decorators'
 
@@ -115,6 +116,7 @@ export function defineEntity<T extends Record<string, z.ZodSchema>>(
       name?: string
     }>
     compositePrimaryKey?: (keyof T)[]
+    ui?: EntityUIConfig
   }
 ): Entity<z.infer<z.ZodObject<T>>> {
   const baseSchema = z.object(fields)
@@ -143,7 +145,8 @@ export function defineEntity<T extends Record<string, z.ZodSchema>>(
         ...idx,
         fields: idx.fields as string[]
       })),
-      compositePrimaryKey: config?.compositePrimaryKey as string[]
+      compositePrimaryKey: config?.compositePrimaryKey as string[],
+      ui: config?.ui
     },
     fields: fieldsMetadata,
     relations: relationsMetadata

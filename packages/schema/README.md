@@ -1,249 +1,316 @@
 # @linch-kit/schema
 
-A powerful schema-first development package that uses Zod as the single source of truth for data structures and automatically generates Prisma schemas, validators, mock data, and API documentation.
+🎯 **Type-safe schema definition library** built on Zod, providing unified field configuration and i18n support.
 
-English | [简体中文](./README.zh-CN.md)
+## ✨ Features
 
-## Features
+- 🎯 **Unified Field Definition**: `defineField()` function for clean, readable schema definitions
+- 🌍 **i18n Support**: Built-in internationalization without binding to specific libraries
+- 🔧 **Type Safety**: Complete TypeScript support and type inference
+- 🚀 **Progressive Enhancement**: Start with simple `z.string()`, add configuration when needed
+- 🗄️ **JSON Field Support**: Automatic mapping of nested objects to database JSON fields
+- 🔐 **Permission Ready**: Pre-built interfaces for field and entity-level permissions
+- 🔄 **Data Transformation**: Input sanitization and output formatting support
+- 📊 **Virtual Fields**: Computed fields with dependency tracking
+- 🏗️ **Code Generation**: Prisma schema, mock data, and OpenAPI spec generation
+- 📦 **Minimal Dependencies**: Only depends on Zod, commander, and glob
 
-- 🎯 **Zod-First**: Define your data structures once using Zod
-- 🗄️ **Prisma Generation**: Automatically generate Prisma schema from Zod definitions
-- ✅ **Validators**: Auto-generate create, update, and query validators
-- 🎭 **Mock Data**: Generate realistic test data for development and testing
-- 📚 **OpenAPI Docs**: Auto-generate API documentation
-- 🔗 **Relations**: Support for database relationships
-- 🗑️ **Soft Delete**: Built-in soft delete support
-- 🏗️ **Type Safety**: End-to-end TypeScript type safety
-- 🛠️ **CLI Tools**: Command-line tools for code generation
-
-## Installation
-
-```bash
-pnpm add @linch-kit/schema
-```
-
-## Quick Start
-
-### 1. Install and Initialize
+## 📦 安装
 
 ```bash
-npm install @linch-kit/schema
-
-# Initialize configuration
-npx linch-schema init
+npm install @linch-kit/schema zod
+# 或
+yarn add @linch-kit/schema zod
+# 或
+pnpm add @linch-kit/schema zod
 ```
 
-### 2. Define Your Entities
+## 🚀 Quick Start
+
+### Basic Usage
 
 ```typescript
-// src/entities/user.ts
 import { z } from 'zod'
-import { defineEntity, primary, unique, createdAt, updatedAt, defaultValue } from '@linch-kit/schema'
+import { defineEntity, defineField } from '@linch-kit/schema'
 
-export const User = defineEntity('User', {
-  id: primary(z.string().uuid()),
-  email: unique(z.string().email()),
-  username: unique(z.string().min(3).max(20)),
-  password: z.string().min(8),
-  role: defaultValue(z.enum(['USER', 'ADMIN']), 'USER'),
-  isActive: defaultValue(z.boolean(), true),
-  createdAt: createdAt(z.date()),
-  updatedAt: updatedAt(z.date()),
+// 🎯 Unified field definition
+const User = defineEntity('User', {
+  // Primary key
+  id: defineField(z.string().uuid(), {
+    primary: true
+  }),
+
+  // Direct Zod usage (simplest)
+  email: z.string().email(),
+
+  // Field with configuration
+  username: defineField(z.string().min(3), {
+    unique: true,
+    label: 'user.username.label'
+  }),
+
+  // JSON field - nested objects automatically mapped to database JSON
+  address: defineField(z.object({
+    street: z.string(),
+    city: z.string(),
+    country: z.string().default('US')
+  }).optional(), {
+    label: 'user.address.label'
+  }),
+
+  // Timestamps
+  createdAt: defineField(z.date(), { createdAt: true }),
+  updatedAt: defineField(z.date(), { updatedAt: true })
 }, {
-  tableName: 'users',
-  indexes: [
-    { fields: ['email'], unique: true },
-    { fields: ['username'], unique: true },
-  ]
+  tableName: 'users'
 })
 
 // Export types and validators
 export const CreateUserSchema = User.createSchema
 export const UpdateUserSchema = User.updateSchema
-export const UserResponseSchema = User.responseSchema.omit({ password: true })
 
 export type CreateUser = z.infer<typeof CreateUserSchema>
 export type UpdateUser = z.infer<typeof UpdateUserSchema>
-export type UserResponse = z.infer<typeof UserResponseSchema>
 ```
 
-### 3. Generate Artifacts
+## 🗄️ JSON Fields
 
-```bash
-# Generate all artifacts
-npx linch-schema generate:all
-
-# Or generate individually
-npx linch-schema generate:prisma
-npx linch-schema generate:validators
-npx linch-schema generate:mocks
-npx linch-schema generate:openapi
-```
-
-### 4. Use in Your Application
+Nested objects, arrays, and complex data types are automatically mapped to database JSON fields:
 
 ```typescript
-// In your tRPC routes
-import { CreateUserSchema, UpdateUserSchema, UserResponseSchema } from '../entities/user'
+const Product = defineEntity('Product', {
+  id: defineField(z.string().uuid(), { primary: true }),
 
-export const userRouter = router({
-  create: publicProcedure
-    .input(CreateUserSchema)
-    .output(UserResponseSchema)
-    .mutation(async ({ input }) => {
-      // input is fully typed and validated
-      return await createUser(input)
+  // Nested object → JSON field
+  specifications: z.object({
+    weight: z.number(),
+    dimensions: z.object({
+      length: z.number(),
+      width: z.number(),
+      height: z.number()
     }),
+    features: z.array(z.string())
+  }),
 
-  update: protectedProcedure
-    .input(z.object({ id: z.string().uuid() }).merge(UpdateUserSchema))
-    .output(UserResponseSchema)
-    .mutation(async ({ input }) => {
-      return await updateUser(input.id, input)
-    })
+  // Array → JSON field
+  images: z.array(z.string().url()),
+
+  // Record → JSON field
+  metadata: z.record(z.string(), z.any()),
+
+  // Explicit JSON type
+  customData: defineField(z.any(), {
+    db: { type: 'JSON' }
+  })
 })
 ```
 
-### 5. Database Migration
-
-```bash
-# Development
-npx prisma db push
-
-# Production
-npx prisma migrate dev --name init
-npx prisma migrate deploy
+**Generated Prisma Schema:**
+```prisma
+model Product {
+  id             String @id
+  specifications Json
+  images         Json
+  metadata       Json
+  customData     Json   @db.JSON
+}
 ```
 
-## API Reference
+## 🌍 Internationalization
 
-### Decorators
-
-#### Field Decorators
-
-- `primary(schema)` - Mark field as primary key
-- `unique(schema)` - Add unique constraint
-- `defaultValue(schema, value)` - Set default value
-- `createdAt(schema)` - Auto-managed creation timestamp
-- `updatedAt(schema)` - Auto-managed update timestamp
-- `softDelete(schema)` - Soft delete field
-- `dbField(schema, name)` - Map to different database column name
-- `dbType(schema, type, options)` - Specify database-specific type
-
-#### Relationship Decorators
-
-- `relation(schema, targetEntity, type, options)` - Define relationships
+### Setup
 
 ```typescript
-// One-to-many relationship
-author: relation(z.any(), 'User', 'many-to-one', {
-  foreignKey: 'authorId',
-  references: 'id',
-  onDelete: 'CASCADE'
+import { setTranslateFunction } from '@linch-kit/schema'
+
+// Vue.js + vue-i18n
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+setTranslateFunction(t)
+
+// React + react-i18next
+import { useTranslation } from 'react-i18next'
+const { t } = useTranslation()
+setTranslateFunction(t)
+```
+
+### Usage
+
+```typescript
+import { getFieldLabel, getEntityDisplayName } from '@linch-kit/schema'
+
+// Custom translation key
+email: defineField(z.string().email(), {
+  label: 'user.email.label'  // Will be translated
 })
 
-// Many-to-many relationship
-tags: relation(z.array(z.any()), 'Tag', 'many-to-many')
+// Auto-generated key
+name: z.string()  // Will try 'schema.User.fields.name.label'
+
+// Get translated labels
+const emailLabel = getFieldLabel('User', 'email')
+const entityName = getEntityDisplayName('User')
 ```
 
-### Entity Definition
+## 🔐 Permissions (Preview)
+
+Schema package provides interfaces for permission configuration:
 
 ```typescript
-defineEntity(name, fields, config?)
+const User = defineEntity('User', {
+  // Field-level permissions
+  email: defineField(z.string().email(), {
+    permissions: {
+      read: 'users:read-email',
+      write: 'users:write-email'
+    }
+  }),
+
+  // Sensitive field with data transformation
+  ssn: defineField(z.string().optional(), {
+    permissions: {
+      read: ['users:read-pii', 'admin:full-access']
+    },
+    transform: {
+      output: (value) => value ? `***-**-${value.slice(-4)}` : undefined
+    }
+  })
+}, {
+  // Entity-level permissions
+  permissions: {
+    create: 'users:create',
+    read: 'users:read',
+    update: 'users:update',
+    delete: 'users:delete'
+  }
+})
 ```
 
-- `name`: Entity name (used for table name and type generation)
-- `fields`: Object with field definitions using Zod schemas and decorators
-- `config`: Optional configuration
-  - `tableName`: Custom table name
-  - `indexes`: Index definitions
-  - `compositePrimaryKey`: Composite primary key fields
+> **Note**: Permission interfaces are provided by Schema package, but actual permission checking is implemented in CRUD package.
 
-### Generated Schemas
+## 🏗️ Code Generation
 
-Each entity automatically provides:
+Generate Prisma schema, mock data, and more:
 
-- `entity.createSchema` - For create operations (excludes auto-generated fields)
-- `entity.updateSchema` - For update operations (all fields optional, excludes auto-generated)
-- `entity.responseSchema` - For API responses (can be customized with `.omit()`)
-- `entity.querySchema` - For query parameters with filtering and pagination
+```typescript
+import { generatePrismaSchema, generateMockData } from '@linch-kit/schema'
 
-## CLI Commands
+// Generate Prisma schema
+const prismaSchema = generatePrismaSchema([User, Product])
 
-```bash
-# List all registered entities
-linch-schema list
-
-# Show entity details
-linch-schema show User
-
-# Generate Prisma schema
-linch-schema generate:prisma [options]
-
-# Generate Zod validators
-linch-schema generate:validators [options]
-
-# Generate mock data factories
-linch-schema generate:mocks [options]
-
-# Generate OpenAPI specification
-linch-schema generate:openapi [options]
-
-# Generate test data JSON files
-linch-schema generate:test-data [options]
-
-# Generate all artifacts
-linch-schema generate:all [options]
+// Generate mock data
+const mockUser = generateMockData(User)
+const mockUsers = generateMockData(User, { count: 10 })
 ```
 
-## Configuration
+## 📚 API Reference
 
-### Database Providers
+### defineField(schema, config?)
 
-Supports PostgreSQL, MySQL, SQLite, and SQL Server:
+Define a field with complete configuration options:
 
-```bash
-linch-schema generate:prisma --provider postgresql
-linch-schema generate:prisma --provider mysql
-linch-schema generate:prisma --provider sqlite
+```typescript
+defineField(z.string(), {
+  // Database
+  primary?: boolean
+  unique?: boolean
+  default?: any
+  createdAt?: boolean
+  updatedAt?: boolean
+  db?: {
+    type?: 'JSON' | 'TEXT' | 'VARCHAR' | string
+    length?: number
+    precision?: number
+    scale?: number
+  }
+
+  // UI
+  label?: string
+  description?: string
+  placeholder?: string
+  helpText?: string
+  order?: number
+  hidden?: boolean
+  group?: string
+
+  // Permissions (Preview)
+  permissions?: {
+    read?: string | string[]
+    write?: string | string[]
+  }
+
+  // Data transformation (Preview)
+  transform?: {
+    input?: (value: any) => any
+    output?: (value: any) => any
+  }
+})
 ```
 
-### Custom Output Paths
+### defineEntity(name, fields, config?)
 
-```bash
-linch-schema generate:prisma --output ./database/schema.prisma
-linch-schema generate:validators --output ./src/schemas/validators.ts
-linch-schema generate:openapi --output ./docs/api-spec.json
+Define an entity:
+
+```typescript
+defineEntity('EntityName', {
+  field1: z.string(),
+  field2: defineField(z.number(), { label: 'Field 2' })
+}, {
+  tableName?: string
+  permissions?: {
+    create?: string | string[]
+    read?: string | string[]
+    update?: string | string[]
+    delete?: string | string[]
+  }
+})
 ```
 
-## Integration with Prisma
+## 🏗️ Architecture
 
-After generating the Prisma schema:
+Schema package focuses on data definition, while complex UI configurations are handled by CRUD package:
 
-```bash
-# Push schema to database (development)
-npx prisma db push
+```typescript
+// ✅ Schema package: Data structure and basic configuration
+const User = defineEntity('User', {
+  email: defineField(z.string().email(), {
+    unique: true,
+    label: 'user.email.label'
+  })
+})
 
-# Or create and run migrations (production)
-npx prisma migrate dev --name init
-npx prisma migrate deploy
+// 🔄 CRUD package: UI configuration and business logic
+const UserCrud = createCrud(User, {
+  components: {
+    email: {
+      input: 'email-input',
+      display: 'email-display',
+      list: 'email-cell'
+    }
+  },
+  views: {
+    list: { columns: ['email', 'createdAt'] },
+    form: { layout: 'vertical' }
+  }
+})
 ```
 
-## Best Practices
 
-1. **Single Source of Truth**: Define your data structure once in Zod
-2. **Validation Everywhere**: Use generated validators in API routes
-3. **Type Safety**: Leverage TypeScript types generated from schemas
-4. **Testing**: Use generated mock data for consistent testing
-5. **Documentation**: Keep API docs up-to-date with generated OpenAPI specs
 
-## Examples
+## 📖 Examples
 
-See the `examples/` directory for comprehensive examples:
-- `basic-usage.ts` - User and Post entities with soft delete
-- `advanced-features.ts` - Product and Order entities with complex validation
-- Advanced validation patterns and custom schemas
+Check out the [examples](./examples) directory for comprehensive usage examples:
 
-## Contributing
+- [Basic Usage](./examples/01-basic.ts) - Getting started with defineField
+- [JSON Fields](./examples/02-json-fields.ts) - Working with nested objects
+- [Internationalization](./examples/03-i18n.ts) - Setting up i18n
+- [Permissions](./examples/04-permissions.ts) - Permission interfaces (preview)
+- [Database Generation](./examples/05-database.ts) - Prisma schema generation
 
-This package is part of the Linch Kit framework. See the main repository for contribution guidelines.
+## 🤝 Contributing
+
+We welcome Issues and Pull Requests!
+
+## 📄 License
+
+MIT License

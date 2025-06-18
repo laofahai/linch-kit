@@ -8,9 +8,23 @@ import { writeOpenAPISpec } from '../generators/openapi'
 import { getAllEntities, clearEntityRegistry } from '../core/entity'
 import { loadConfig, generateConfigTemplate, type SchemaConfig } from '../config/loader'
 import { pathToFileURL } from 'url'
-import { resolve } from 'path'
+import { resolve, join } from 'path'
 import { glob } from 'glob'
-import { existsSync, writeFileSync } from 'fs'
+import { existsSync, writeFileSync, readFileSync } from 'fs'
+
+/**
+ * 读取 package.json 中的版本号
+ */
+function getVersion(): string {
+  try {
+    const packageJsonPath = join(__dirname, '../../package.json')
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
+    return packageJson.version || '0.1.0'
+  } catch (error) {
+    // 如果读取失败，使用默认版本
+    return '0.1.0'
+  }
+}
 
 /**
  * 动态加载用户的实体文件
@@ -77,7 +91,7 @@ const program = new Command()
 program
   .name('@linch-kit/schema')
   .description('Schema generation tools for linch-kit')
-  .version('0.1.0')
+  .version(getVersion())
 
 // 初始化配置文件
 program

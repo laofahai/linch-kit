@@ -144,7 +144,7 @@ export function generateMockData<T extends Record<string, any> = any>(
 
     Object.entries(shape).forEach(([fieldName, fieldSchema]) => {
       const meta = getFieldMeta(fieldSchema as z.ZodSchema)
-      const relationMeta = entity.meta?.relations?.[fieldName]
+      const relationMeta = meta?.relation || entity.meta?.relations?.[fieldName]
 
       // 跳过关系字段（除非明确要求包含）
       if (relationMeta && !includeRelations) {
@@ -157,8 +157,8 @@ export function generateMockData<T extends Record<string, any> = any>(
         return
       }
 
-      // 处理特殊字段
-      if (meta?.id) {
+      // 处理特殊字段（支持新的 primary 字段）
+      if (meta?.id || meta?.primary) {
         mockItem[fieldName] = defaultGenerators.uuid()
         return
       }
@@ -166,6 +166,20 @@ export function generateMockData<T extends Record<string, any> = any>(
       if (meta?.createdAt || meta?.updatedAt) {
         mockItem[fieldName] = defaultGenerators.date()
         return
+      }
+
+      // 跳过软删除字段
+      if (meta?.softDelete) {
+        return
+      }
+
+      // 处理默认值
+      if (meta?.default !== undefined) {
+        // 80% 概率使用默认值
+        if (Math.random() > 0.2) {
+          mockItem[fieldName] = meta.default
+          return
+        }
       }
 
       // 生成普通字段值

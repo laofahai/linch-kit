@@ -18,10 +18,10 @@ export class ValidatorGenerator {
 
     Object.entries(shape).forEach(([key, fieldSchema]) => {
       const meta = getFieldMeta(fieldSchema as z.ZodSchema)
-      const relationMeta = this.entity.meta?.relations?.[key]
+      const relationMeta = meta?.relation || this.entity.meta?.relations?.[key]
 
-      // 排除主键、时间戳和关系字段
-      if (!meta?.id && !meta?.createdAt && !meta?.updatedAt && !relationMeta) {
+      // 排除主键、时间戳和关系字段（支持新的 primary 字段）
+      if (!meta?.id && !meta?.primary && !meta?.createdAt && !meta?.updatedAt && !relationMeta) {
         filteredShape[key] = fieldSchema as z.ZodSchema
       }
     })
@@ -38,10 +38,10 @@ export class ValidatorGenerator {
 
     Object.entries(shape).forEach(([key, fieldSchema]) => {
       const meta = getFieldMeta(fieldSchema as z.ZodSchema)
-      const relationMeta = this.entity.meta?.relations?.[key]
+      const relationMeta = meta?.relation || this.entity.meta?.relations?.[key]
 
-      // 排除主键、时间戳和关系字段，所有字段变为可选
-      if (!meta?.id && !meta?.createdAt && !meta?.updatedAt && !relationMeta) {
+      // 排除主键、时间戳和关系字段，所有字段变为可选（支持新的 primary 字段）
+      if (!meta?.id && !meta?.primary && !meta?.createdAt && !meta?.updatedAt && !relationMeta) {
         filteredShape[key] = (fieldSchema as z.ZodSchema).optional()
       }
     })
@@ -74,8 +74,9 @@ export class ValidatorGenerator {
 
     // 为每个字段生成查询条件
     Object.entries(shape).forEach(([key, fieldSchema]) => {
-      const relationMeta = this.entity.meta?.relations?.[key]
-      
+      const meta = getFieldMeta(fieldSchema as z.ZodSchema)
+      const relationMeta = meta?.relation || this.entity.meta?.relations?.[key]
+
       if (!relationMeta) {
         // 普通字段支持等值查询
         whereShape[key] = (fieldSchema as z.ZodSchema).optional()

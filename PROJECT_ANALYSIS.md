@@ -17,7 +17,7 @@
 linch-kit/
 ├── apps/                    # 应用程序
 │   ├── docs/               # 文档应用 (Next.js)
-│   └── web/                # 主要 Web 应用 (Next.js)
+│   └── starter/           # 主要 starter 应用 (Next.js)
 ├── packages/               # 共享包
 │   ├── auth/              # 认证系统
 │   ├── core/              # 核心功能

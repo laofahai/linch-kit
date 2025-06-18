@@ -1,11 +1,13 @@
 import { z } from 'zod'
-import type { 
-  PrismaFieldType, 
-  FieldAttributes, 
+import type {
+  PrismaFieldType,
+  FieldAttributes,
   RelationAttributes,
-  EntityDefinition 
+  EntityDefinition,
+  FieldConfig
 } from '../core/types'
 import { getAllEntities } from '../core/entity'
+import { getFieldMeta } from '../core/decorators'
 
 /**
  * Zod 类型到 Prisma 类型的映射
@@ -71,7 +73,7 @@ function isOptionalField(zodSchema: z.ZodSchema): boolean {
  * 获取默认值
  */
 function getDefaultValue(zodSchema: z.ZodSchema, fieldMeta?: FieldAttributes): string | undefined {
-  // 检查元数据中的默认值
+  // 检查元数据中的默认值（支持新的 FieldConfig 格式）
   if (fieldMeta?.default !== undefined) {
     if (typeof fieldMeta.default === 'string') {
       return `"${fieldMeta.default}"`
@@ -113,12 +115,12 @@ function getDefaultValue(zodSchema: z.ZodSchema, fieldMeta?: FieldAttributes): s
  * 生成字段定义
  */
 function generateField(
-  fieldName: string, 
-  zodSchema: z.ZodSchema, 
+  fieldName: string,
+  zodSchema: z.ZodSchema,
   fieldMeta?: FieldAttributes
 ): string {
   const prismaType = zodTypeToPrismaType(zodSchema)
-  const isOptional = isOptionalField(zodSchema) && !fieldMeta?.id
+  const isOptional = isOptionalField(zodSchema) && !fieldMeta?.id && !fieldMeta?.primary
   const defaultValue = getDefaultValue(zodSchema, fieldMeta)
 
   let fieldDef = `  ${fieldName} ${prismaType}`
@@ -131,7 +133,8 @@ function generateField(
   // 添加属性
   const attributes: string[] = []
 
-  if (fieldMeta?.id) {
+  // 支持新的 primary 字段
+  if (fieldMeta?.id || fieldMeta?.primary) {
     attributes.push('@id')
   }
 
@@ -153,8 +156,17 @@ function generateField(
 
   if (fieldMeta?.db?.type) {
     const dbType = fieldMeta.db.type
-    const length = fieldMeta.db.length ? `(${fieldMeta.db.length})` : ''
-    attributes.push(`@db.${dbType}${length}`)
+    let typeSpec = dbType
+
+    if (fieldMeta.db.length) {
+      typeSpec += `(${fieldMeta.db.length})`
+    } else if (fieldMeta.db.precision && fieldMeta.db.scale) {
+      typeSpec += `(${fieldMeta.db.precision}, ${fieldMeta.db.scale})`
+    } else if (fieldMeta.db.precision) {
+      typeSpec += `(${fieldMeta.db.precision})`
+    }
+
+    attributes.push(`@db.${typeSpec}`)
   }
 
   if (attributes.length > 0) {
@@ -214,13 +226,20 @@ function generateRelationField(
 function generateModel(entity: EntityDefinition): string {
   const { name, schema, meta } = entity
   const shape = schema.shape
-  
+
   let modelDef = `model ${name} {\n`
 
   // 生成普通字段
   Object.entries(shape).forEach(([fieldName, fieldSchema]) => {
-    const fieldMeta = meta?.fields?.[fieldName]
-    const relationMeta = meta?.relations?.[fieldName]
+    // 获取字段元数据（支持新的 defineField 方式）
+    let fieldMeta = meta?.fields?.[fieldName]
+
+    // 如果没有在 meta.fields 中找到，尝试从 schema 本身获取
+    if (!fieldMeta) {
+      fieldMeta = getFieldMeta(fieldSchema as z.ZodSchema)
+    }
+
+    const relationMeta = fieldMeta?.relation || meta?.relations?.[fieldName]
 
     if (relationMeta) {
       // 关系字段
@@ -239,7 +258,10 @@ function generateModel(entity: EntityDefinition): string {
       // 检查是否是单字段索引且该字段已经有 @unique 约束
       if (index.unique && index.fields.length === 1) {
         const fieldName = index.fields[0]
-        const fieldMeta = meta?.fields?.[fieldName]
+        let fieldMeta = meta?.fields?.[fieldName]
+        if (!fieldMeta) {
+          fieldMeta = getFieldMeta(shape[fieldName] as z.ZodSchema)
+        }
         if (fieldMeta?.unique) {
           // 跳过，因为字段已经有 @unique 约束
           return

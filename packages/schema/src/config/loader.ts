@@ -14,6 +14,7 @@ export interface SchemaConfig {
     mocks?: string
     openapi?: string
     testData?: string
+    i18n?: string
   }
   /** 数据库配置 */
   database?: {
@@ -25,6 +26,17 @@ export interface SchemaConfig {
     title?: string
     version?: string
     description?: string
+  }
+  /** 国际化配置 */
+  i18n?: {
+    /** 默认语言 */
+    defaultLocale?: string
+    /** 支持的语言列表 */
+    locales?: string[]
+    /** 翻译文件路径模式 */
+    translationFiles?: string[]
+    /** 是否生成翻译文件模板 */
+    generateTemplates?: boolean
   }
 }
 
