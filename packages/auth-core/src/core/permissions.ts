@@ -1,8 +1,7 @@
-import type { AuthUser } from '../types/auth'
 import type {
   PermissionChecker,
   HierarchicalPermissionChecker,
-  HierarchicalPermissionConfig
+  HierarchicalPermissionConfig,
 } from '../types/permissions'
 
 /**
@@ -19,11 +18,7 @@ export class BasePermissionChecker implements PermissionChecker {
     return false
   }
 
-  async hasRole(
-    userId: string,
-    role: string | string[],
-    context?: any
-  ): Promise<boolean> {
+  async hasRole(userId: string, role: string | string[], context?: any): Promise<boolean> {
     // 基础实现，用户可以覆盖
     return false
   }
@@ -45,11 +40,7 @@ export class BasePermissionChecker implements PermissionChecker {
 export class BaseHierarchicalPermissionChecker implements HierarchicalPermissionChecker {
   constructor(private config: HierarchicalPermissionConfig) {}
 
-  async canAccessUser(
-    userId: string,
-    targetUserId: string,
-    action: string
-  ): Promise<boolean> {
+  async canAccessUser(userId: string, targetUserId: string, action: string): Promise<boolean> {
     if (!this.config.enabled) {
       return false
     }
@@ -103,14 +94,17 @@ export function createPermissionChecker(
   customChecker?: Partial<PermissionChecker>
 ): PermissionChecker {
   const baseChecker = new BasePermissionChecker()
-  
+
   if (customChecker) {
     return {
-      ...baseChecker,
-      ...customChecker
+      hasPermission: customChecker.hasPermission || baseChecker.hasPermission.bind(baseChecker),
+      hasRole: customChecker.hasRole || baseChecker.hasRole.bind(baseChecker),
+      getUserPermissions:
+        customChecker.getUserPermissions || baseChecker.getUserPermissions.bind(baseChecker),
+      getUserRoles: customChecker.getUserRoles || baseChecker.getUserRoles.bind(baseChecker),
     }
   }
-  
+
   return baseChecker
 }
 
@@ -122,14 +116,22 @@ export function createHierarchicalPermissionChecker(
   customChecker?: Partial<HierarchicalPermissionChecker>
 ): HierarchicalPermissionChecker {
   const baseChecker = new BaseHierarchicalPermissionChecker(config)
-  
+
   if (customChecker) {
     return {
-      ...baseChecker,
-      ...customChecker
+      canAccessUser: customChecker.canAccessUser || baseChecker.canAccessUser.bind(baseChecker),
+      canAccessDepartment:
+        customChecker.canAccessDepartment || baseChecker.canAccessDepartment.bind(baseChecker),
+      getAccessibleSubordinates:
+        customChecker.getAccessibleSubordinates ||
+        baseChecker.getAccessibleSubordinates.bind(baseChecker),
+      getAccessibleDepartments:
+        customChecker.getAccessibleDepartments ||
+        baseChecker.getAccessibleDepartments.bind(baseChecker),
+      isSuperior: customChecker.isSuperior || baseChecker.isSuperior.bind(baseChecker),
     }
   }
-  
+
   return baseChecker
 }
 
@@ -186,5 +188,5 @@ export const permissionUtils = {
       }
     }
     return false
-  }
+  },
 }

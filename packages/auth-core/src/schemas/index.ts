@@ -4,23 +4,21 @@
  * 提供可选的实体模板，用户可以选择使用或完全自定义
  */
 
-// 用户实体模板
-export {
+// 导入所有模板
+import {
   MinimalUserTemplate,
   BasicUserTemplate,
   EnterpriseUserTemplate,
   MultiTenantUserTemplate
 } from './user'
 
-// 会话实体模板
-export {
+import {
   SessionTemplate,
   ExtendedSessionTemplate,
   AccountTemplate
 } from './session'
 
-// 权限实体模板
-export {
+import {
   RoleTemplate,
   PermissionTemplate,
   UserRoleTemplate,
@@ -28,6 +26,26 @@ export {
   UserDepartmentTemplate,
   TenantTemplate
 } from './permissions'
+
+// 重新导出所有模板
+export {
+  // 用户模板
+  MinimalUserTemplate,
+  BasicUserTemplate,
+  EnterpriseUserTemplate,
+  MultiTenantUserTemplate,
+  // 会话模板
+  SessionTemplate,
+  ExtendedSessionTemplate,
+  AccountTemplate,
+  // 权限模板
+  RoleTemplate,
+  PermissionTemplate,
+  UserRoleTemplate,
+  DepartmentTemplate,
+  UserDepartmentTemplate,
+  TenantTemplate
+}
 
 /**
  * 预设的实体组合

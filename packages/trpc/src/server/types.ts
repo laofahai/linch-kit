@@ -1,26 +1,69 @@
 /**
- * tRPC 类型定义
- *
- * 在此定义 AppRouter 类型，避免跨包引用
+ * tRPC 核心类型定义
  */
 
-import { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
+import type { inferRouterInputs, inferRouterOutputs, AnyRouter } from '@trpc/server'
+import type { Context } from './context'
 
 /**
- * 定义一个更具体的路由结构接口，避免与内置方法冲突
- * 这里只声明我们实际会用到的路由
+ * 基础路由器类型
+ * 使用泛型来支持任意路由结构
  */
-export interface AppRouter {
-  user: any
-  // 添加其他路由占位符，与实际应用路由结构对应
-  report?: any
-  [key: string]: any // 支持其他动态路由
+export type AppRouter = AnyRouter
 
-  // 避免类型错误，确保 createClient 可以正常工作
-  _def: any
-  createCaller: any
+/**
+ * 路由输入输出类型推导
+ */
+export type RouterInputs<T extends AnyRouter = AppRouter> = inferRouterInputs<T>
+export type RouterOutputs<T extends AnyRouter = AppRouter> = inferRouterOutputs<T>
+
+/**
+ * tRPC 上下文类型
+ */
+export type TRPCContext = Context
+
+/**
+ * API 响应标准格式
+ */
+export interface APIResponse<T = any> {
+  data: T
+  success: boolean
+  message?: string
+  timestamp: string
+  traceId?: string
 }
 
-// 输入输出类型辅助
-export type RouterInputs = inferRouterInputs<AppRouter>
-export type RouterOutputs = inferRouterOutputs<AppRouter>
+/**
+ * 错误响应格式
+ */
+export interface APIError {
+  code: string
+  message: string
+  details?: any
+  timestamp: string
+  traceId?: string
+}
+
+/**
+ * 分页查询参数
+ */
+export interface PaginationParams {
+  page?: number
+  limit?: number
+  offset?: number
+}
+
+/**
+ * 分页响应格式
+ */
+export interface PaginatedResponse<T> {
+  data: T[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+}

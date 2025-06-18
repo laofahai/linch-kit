@@ -1,70 +1,151 @@
 /**
- * Auth Core 国际化模块
+ * Auth Core 国际化支持
+ *
+ * 采用类似 @linch-kit/schema 的设计，支持传入外部翻译函数
  */
-
-export {
-  defaultMessages,
-  getMessage,
-  isSupportedLocale,
-  getSupportedLocales
-} from './messages'
 
 /**
  * 翻译函数类型
  */
-export type TranslateFunction = (key: string, params?: Record<string, any>) => string
+export type TranslateFunction = (key: string, params?: Record<string, any>, fallback?: string) => string
 
 /**
- * 全局翻译函数
+ * i18n 配置接口
  */
-let globalTranslateFunction: TranslateFunction | null = null
-
-/**
- * 设置全局翻译函数
- * 
- * @param translateFn 翻译函数，通常来自 vue-i18n 或 react-i18next
- */
-export function setTranslateFunction(translateFn: TranslateFunction): void {
-  globalTranslateFunction = translateFn
+export interface I18nConfig {
+  /** 翻译函数 */
+  t?: TranslateFunction
+  /** 默认语言 */
+  defaultLocale?: string
+  /** 当前语言 */
+  locale?: string
+  /** 是否启用调试 */
+  debug?: boolean
 }
 
 /**
- * 获取翻译文本
- * 
+ * 全局 i18n 配置
+ */
+let globalI18nConfig: I18nConfig = {
+  defaultLocale: 'zh-CN',
+  locale: 'zh-CN',
+  debug: false
+}
+
+/**
+ * 设置 i18n 配置
+ */
+export function setI18nConfig(config: I18nConfig): void {
+  globalI18nConfig = { ...globalI18nConfig, ...config }
+}
+
+/**
+ * 获取当前 i18n 配置
+ */
+export function getI18nConfig(): I18nConfig {
+  return globalI18nConfig
+}
+
+/**
+ * 设置翻译函数（向后兼容）
+ */
+export function setTranslateFunction(translateFn: TranslateFunction): void {
+  setI18nConfig({ t: translateFn })
+}
+
+/**
+ * 获取翻译函数
+ */
+export function getTranslateFunction(): TranslateFunction {
+  return globalI18nConfig.t || defaultTranslateFunction
+}
+
+/**
+ * Auth 翻译函数
+ *
  * @param key 翻译键
  * @param params 参数
- * @param fallbackLocale 回退语言
+ * @param fallback 回退文本
  * @returns 翻译后的文本
  */
-export function t(key: string, params?: Record<string, any>, fallbackLocale: string = 'en'): string {
-  // 如果设置了全局翻译函数，优先使用
-  if (globalTranslateFunction) {
-    try {
-      return globalTranslateFunction(key, params)
-    } catch (error) {
-      // 如果翻译失败，回退到内置消息
-      console.warn(`Translation failed for key: ${key}`, error)
-    }
+export function authT(key: string, params?: Record<string, any>, fallback?: string): string {
+  const translateFn = getTranslateFunction()
+  const result = translateFn(key, params, fallback)
+
+  if (globalI18nConfig.debug && result === key) {
+    console.warn(`[auth-core] Missing translation for key: ${key}`)
   }
 
-  // 使用内置消息作为回退
-  return getMessage(key, fallbackLocale, params)
+  return result
 }
 
 /**
  * 创建带命名空间的翻译函数
- * 
- * @param namespace 命名空间前缀
- * @returns 翻译函数
  */
 export function createNamespacedT(namespace: string) {
-  return (key: string, params?: Record<string, any>, fallbackLocale?: string) => {
-    const namespacedKey = `${namespace}.${key}`
-    return t(namespacedKey, params, fallbackLocale)
+  return (key: string, params?: Record<string, any>, fallback?: string) => {
+    return authT(`${namespace}.${key}`, params, fallback)
   }
 }
 
 /**
- * Auth 专用翻译函数
+ * 默认翻译函数（使用内置消息）
  */
-export const authT = createNamespacedT('auth')
+function defaultTranslateFunction(key: string, params?: Record<string, any>, fallback?: string): string {
+  const locale = globalI18nConfig.locale || 'zh-CN'
+  const localeMessages = defaultMessages[locale as keyof typeof defaultMessages] || defaultMessages['zh-CN']
+  const message = localeMessages[key as keyof typeof localeMessages] || fallback || key
+
+  if (!params) {
+    return message
+  }
+
+  // 统一使用 {param} 格式的参数替换
+  return message.replace(/\{(\w+)\}/g, (match, paramName) => {
+    return params[paramName]?.toString() || match
+  })
+}
+
+// 导入统一的消息定义
+import { defaultMessages } from './messages'
+
+/**
+ * 获取支持的语言列表
+ */
+export function getSupportedLocales(): string[] {
+  return Object.keys(defaultMessages)
+}
+
+/**
+ * 检查是否支持指定语言
+ */
+export function isLocaleSupported(locale: string): boolean {
+  return locale in defaultMessages
+}
+
+/**
+ * 获取指定语言的所有消息
+ */
+export function getMessages(locale?: string): Record<string, string> {
+  const targetLocale = locale || globalI18nConfig.locale || 'zh-CN'
+  return defaultMessages[targetLocale as keyof typeof defaultMessages] || defaultMessages['zh-CN']
+}
+
+// 导出向后兼容的函数
+export { authT as t }
+export { defaultMessages }
+export const getMessage = (key: string, locale?: string, params?: Record<string, any>) => {
+  const targetLocale = locale || globalI18nConfig.locale || 'zh-CN'
+  const localeMessages = defaultMessages[targetLocale as keyof typeof defaultMessages] || defaultMessages['zh-CN']
+  const message = localeMessages[key as keyof typeof localeMessages] || key
+
+  if (!params) {
+    return message
+  }
+
+  // 统一使用 {param} 格式
+  return message.replace(/\{(\w+)\}/g, (match, paramName) => {
+    return params[paramName]?.toString() || match
+  })
+}
+export const isSupportedLocale = isLocaleSupported

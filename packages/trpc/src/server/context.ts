@@ -1,15 +1,32 @@
-import { getSessionUser } from '@linch-kit/auth'
-import type { User } from '@linch-kit/auth'
-
-// 明确定义 Context 类型，不再依赖 getSessionUser 的返回类型
-export type Context = {
-  user: User | null
+// 临时类型定义，等待 auth-core 集成
+type AuthUser = {
+  id: string
+  name?: string | null
+  email?: string | null
+  [key: string]: any
 }
 
-export async function createContext(): Promise<Context> {
-  const user = await getSessionUser()
+// 基础上下文类型
+export type Context = {
+  user: AuthUser | null
+  session?: any | null
+  tenant?: string | null
+}
+
+// 创建上下文的选项
+export interface CreateContextOptions {
+  req?: any
+  res?: any
+}
+
+// 基础上下文创建器
+export async function createContext(opts?: CreateContextOptions): Promise<Context> {
+  // 临时实现，后续会与 auth-core 集成
+  const user = null // await getSessionUser(opts?.req)
 
   return {
     user,
+    session: null,
+    tenant: null
   }
 }

@@ -16,12 +16,11 @@
     "paths": {
       "@linch-kit/core": ["packages/core/src"],
       "@linch-kit/ui": ["packages/ui/src"],
-      "@linch-kit/embed-react": ["packages/embed-react/src"],
-      "@linch-kit/embed-vue": ["packages/embed-vue/src"],
-      "@linch-kit/auth": ["packages/auth/src"],
+      "@linch-kit/auth-core": ["packages/auth-core/src"],
       "@linch-kit/schema": ["packages/schema/src"],
+      "@linch-kit/trpc": ["packages/trpc/src"],
       "@linch-kit/ui/shadcn": ["packages/ui/src/components/ui/index.ts"],
-      "@linch-kit/ui/shadcn/*": ["packages/ui/src/components/ui/*"],
+      "@linch-kit/ui/shadcn/*": ["packages/ui/src/components/ui/*"]
     }
   },
   "include": [
@@ -32,10 +31,8 @@
     { "path": "packages/core" },
     { "path": "packages/ui" },
     { "path": "packages/types" },
-    { "path": "packages/report-embed-react"},
-    { "path": "packages/auth" },
+    { "path": "packages/auth-core" },
     { "path": "packages/schema" },
-    { "path": "apps/web" },
-    { "path": "apps/docs" }
+    { "path": "packages/trpc" }
   ]
 }

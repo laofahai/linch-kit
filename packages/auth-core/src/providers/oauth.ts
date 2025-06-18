@@ -6,7 +6,8 @@
 
 import GoogleProvider from 'next-auth/providers/google'
 import GitHubProvider from 'next-auth/providers/github'
-import MicrosoftProvider from 'next-auth/providers/microsoft'
+// 临时注释掉，等待 next-auth 版本更新
+// import MicrosoftProvider from 'next-auth/providers/microsoft'
 import AppleProvider from 'next-auth/providers/apple'
 import FacebookProvider from 'next-auth/providers/facebook'
 import TwitterProvider from 'next-auth/providers/twitter'
@@ -45,7 +46,10 @@ export const oauthProviders = {
   /**
    * Microsoft OAuth 提供者
    */
-  microsoft: (config: SimpleOAuthConfig) => MicrosoftProvider({
+  microsoft: (config: SimpleOAuthConfig) => ({
+    id: 'microsoft',
+    name: 'Microsoft',
+    type: 'oauth',
     clientId: config.clientId,
     clientSecret: config.clientSecret,
     allowDangerousEmailAccountLinking: config.allowDangerousEmailAccountLinking

@@ -6,8 +6,10 @@
 export {
   createSharedTokenProvider,
   createLegacySharedTokenProvider,
+  createSharedTokenProviderFromEnv,
+  createAdvancedSharedTokenProvider,
   sharedTokenProvider
-} from './shared-token/provider'
+} from './shared-token'
 
 // 凭据认证提供者
 export {
@@ -25,6 +27,6 @@ export {
 } from './oauth'
 
 // 类型导出
-export type { SharedTokenSource, SharedTokenOptions } from './shared-token/provider'
+export type { SharedTokenSource, SharedTokenOptions } from './shared-token'
 export type { CredentialsOptions } from './credentials'
 export type { SimpleOAuthConfig } from './oauth'

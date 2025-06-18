@@ -1,5 +1,5 @@
 import type { NextAuthOptions } from 'next-auth'
-import type { AuthUser, AuthCoreConfig } from '../types/auth'
+import type { AuthUser, AuthCoreConfig, AuthSession } from '../types/auth'
 import { defaultMessages } from '../i18n/messages'
 
 /**
@@ -33,7 +33,7 @@ export function createAuthConfig(config: AuthCoreConfig): NextAuthOptions {
       },
       async session({ session, user, token }) {
         if (callbacks.session) {
-          return await callbacks.session(session, user as AuthUser)
+          return await callbacks.session(session as AuthSession, user as AuthUser)
         }
         return session
       },

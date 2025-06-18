@@ -1,34 +1,37 @@
-import type { NextAuthOptions, Session, User as NextAuthUser } from 'next-auth'
+import type { NextAuthOptions, Session, User as NextAuthUser, AuthOptions } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
+// 使用更通用的类型定义，避免导入问题
+type Provider = any
 
 /**
- * 核心认证用户接口 - 预留基础字段，其他完全由用户自定义
+ * 核心认证用户接口 - 扩展 NextAuth User，保持兼容性
  *
  * 基础字段：
  * - id: 必需，用户唯一标识
  * - name: 可选，用户显示名称
  * - email: 可选，考虑到国内用户习惯，不强制要求
  */
-export interface AuthUser {
+export interface AuthUser extends NextAuthUser {
   id: string
-  name?: string
-  email?: string
+  name?: string | null
+  email?: string | null
+  image?: string | null
   [key: string]: any  // 允许用户完全自定义：phone, username, avatar, roles 等
 }
 
 /**
- * 核心会话接口
+ * 核心会话接口 - 扩展 NextAuth Session，保持兼容性
  */
-export interface AuthSession {
+export interface AuthSession extends Session {
   user: AuthUser
   expires: string
   [key: string]: any  // 允许用户扩展
 }
 
 /**
- * 认证提供者配置
+ * 认证提供者配置 - 兼容 NextAuth Provider
  */
-export interface AuthProvider {
+export interface AuthProvider extends Provider {
   id: string
   name: string
   type: 'oauth' | 'credentials' | 'shared-token' | 'custom'
@@ -127,38 +130,38 @@ export interface SessionConfig {
 }
 
 /**
- * Auth Core 主配置
+ * Auth Core 主配置 - 简化版本，避免复杂继承
  */
 export interface AuthCoreConfig {
   /** 用户实体定义（可选，用户可完全自定义） */
   userEntity?: any
-  
-  /** 认证提供者 */
-  providers: AuthProvider[]
-  
+
+  /** 认证提供者 - 兼容 NextAuth Provider[] */
+  providers: any[]
+
   /** 权限配置 */
   permissions?: PermissionConfig
-  
+
   /** 会话配置 */
   session?: SessionConfig
-  
+
   /** 多租户配置 */
   multiTenant?: MultiTenantConfig
-  
+
   /** 自定义回调 */
   callbacks?: {
     signIn?: (user: AuthUser, account: any, profile: any) => boolean | Promise<boolean>
     session?: (session: AuthSession, user: AuthUser) => AuthSession | Promise<AuthSession>
     jwt?: (token: JWT, user: AuthUser) => JWT | Promise<JWT>
   }
-  
+
   /** 页面配置 */
   pages?: {
     signIn?: string
     signOut?: string
     error?: string
   }
-  
+
   /** 调试模式 */
   debug?: boolean
 }

@@ -2,6 +2,8 @@
  * 权限系统相关类型定义
  */
 
+import type { AuthUser } from './auth'
+
 /**
  * 权限动作
  */
@@ -327,4 +329,157 @@ export interface HierarchicalPermissionChecker {
    * 检查用户是否为另一用户的上级
    */
   isSuperior(userId: string, targetUserId: string): Promise<boolean>
+}
+
+// ============================================================================
+// 模块化权限系统类型定义
+// ============================================================================
+
+/**
+ * 模块权限定义
+ */
+export interface ModulePermissionDefinition {
+  /** 模块名称 */
+  moduleName: string
+  /** 权限资源定义 */
+  resources: ModuleResourceDefinition[]
+  /** 默认角色定义 */
+  defaultRoles?: ModuleRoleDefinition[]
+  /** 权限依赖（依赖其他模块的权限） */
+  dependencies?: string[]
+}
+
+/**
+ * 模块资源定义
+ */
+export interface ModuleResourceDefinition {
+  /** 资源名称 */
+  name: string
+  /** 资源描述 */
+  description?: string
+  /** 支持的操作 */
+  actions: ModuleActionDefinition[]
+  /** 资源属性（用于 ABAC） */
+  attributes?: Record<string, any>
+}
+
+/**
+ * 模块操作定义
+ */
+export interface ModuleActionDefinition {
+  /** 操作名称 */
+  name: string
+  /** 操作描述 */
+  description?: string
+  /** 是否为危险操作 */
+  dangerous?: boolean
+  /** 操作所需的前置条件 */
+  conditions?: PermissionCondition[]
+}
+
+/**
+ * 模块角色定义
+ */
+export interface ModuleRoleDefinition {
+  /** 角色名称 */
+  name: string
+  /** 角色描述 */
+  description?: string
+  /** 角色权限 */
+  permissions: Array<{
+    resource: string
+    actions: string[]
+  }>
+  /** 是否为默认角色 */
+  isDefault?: boolean
+}
+
+/**
+ * 权限注册表
+ */
+export interface PermissionRegistry {
+  /** 注册模块权限 */
+  registerModule(definition: ModulePermissionDefinition): Promise<void>
+
+  /** 注销模块权限 */
+  unregisterModule(moduleName: string): Promise<void>
+
+  /** 获取所有已注册的模块权限 */
+  getRegisteredModules(): Promise<ModulePermissionDefinition[]>
+
+  /** 获取特定模块的权限定义 */
+  getModulePermissions(moduleName: string): Promise<ModulePermissionDefinition | null>
+
+  /** 合并所有模块的权限 */
+  mergePermissions(): Promise<{
+    resources: ModuleResourceDefinition[]
+    roles: ModuleRoleDefinition[]
+  }>
+
+  /** 验证权限依赖关系 */
+  validateDependencies(): Promise<{
+    valid: boolean
+    errors: string[]
+  }>
+}
+
+/**
+ * 模块化权限检查器
+ */
+export interface ModularPermissionChecker extends PermissionChecker {
+  /** 检查模块权限 */
+  hasModulePermission(
+    userId: string,
+    moduleName: string,
+    resource: string,
+    action: string,
+    context?: any
+  ): Promise<boolean>
+
+  /** 获取用户在特定模块的权限 */
+  getUserModulePermissions(
+    userId: string,
+    moduleName: string,
+    tenantId?: string
+  ): Promise<ResourcePermissions>
+
+  /** 获取用户可访问的模块列表 */
+  getUserAccessibleModules(userId: string, tenantId?: string): Promise<string[]>
+}
+
+/**
+ * 权限扩展点
+ */
+export interface PermissionExtensionPoint {
+  /** 扩展点名称 */
+  name: string
+  /** 扩展点描述 */
+  description?: string
+  /** 扩展点处理器 */
+  handler: (context: PermissionExtensionContext) => Promise<boolean>
+}
+
+/**
+ * 权限扩展上下文
+ */
+export interface PermissionExtensionContext {
+  /** 用户信息 */
+  user: {
+    id: string
+    roles: string[]
+    attributes: Record<string, any>
+  }
+  /** 权限检查信息 */
+  permission: {
+    resource: string
+    action: string
+    moduleName?: string
+  }
+  /** 上下文数据 */
+  context?: any
+  /** 租户信息 */
+  tenant?: {
+    id: string
+    attributes: Record<string, any>
+  }
 }

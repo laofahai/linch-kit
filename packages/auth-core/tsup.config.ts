@@ -5,21 +5,13 @@ export default defineConfig({
     index: 'src/index.ts',
     'schemas/index': 'src/schemas/index.ts',
     'config/index': 'src/config/index.ts',
-    'cli/index': 'src/cli/index.ts'
+    'plugins/cli-plugin': 'src/plugins/cli-plugin.ts',
+    'plugins/config-plugin': 'src/plugins/config-plugin.ts'
   },
   format: ['cjs', 'esm'],
   dts: true,
   clean: true,
   sourcemap: true,
   target: 'es2022',
-  external: ['next', 'next-auth', 'react', 'react-dom'],
-  // CLI 需要可执行权限
-  onSuccess: async () => {
-    const { chmodSync } = await import('fs')
-    try {
-      chmodSync('dist/cli/index.js', '755')
-    } catch (error) {
-      // 忽略权限设置错误
-    }
-  }
+  external: ['next', 'next-auth', 'react', 'react-dom', '@linch-kit/core']
 })

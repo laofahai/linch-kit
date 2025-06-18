@@ -1,50 +1,76 @@
 # @linch-kit/auth-core
 
-🔐 **Core authentication and authorization logic for Linch Kit** - UI agnostic, complete, and extensible.
+🔐 **Modular authentication and authorization system for Linch Kit** - Enterprise-grade, plugin-based, and fully extensible.
 
-## ✨ Features
+## 🔄 重构说明 (v0.1.0)
 
-- 🎯 **Complete & Extensible**: Full-featured auth system with customizable components
-- 🌍 **UI Agnostic**: Core logic only, UI packages separate (auth-ui-vue, auth-ui-react)
-- 🔧 **Type Safe**: Complete TypeScript support with Zod validation
-- 🏗️ **Schema Integration**: Works seamlessly with @linch-kit/schema
-- 🔐 **Advanced Permissions**: RBAC, ABAC, hierarchical (department) permissions
-- 🏢 **Multi-tenant Ready**: Built-in multi-tenant support
-- 🌐 **i18n Built-in**: Internationalization messages included
-- 📦 **Minimal User Entity**: Only requires `id` and `name`, fully customizable
-- 🔄 **Backward Compatible**: Preserves existing shared-token functionality
-- ⚡ **CLI Tools**: Code generation and configuration management
+**重大架构更新**：
+- ✅ **统一 CLI 系统**：CLI 命令现在通过 `@linch-kit/core` 的插件系统提供
+- ✅ **统一配置管理**：配置现在通过 `@linch-kit/core` 的配置系统管理
+- ✅ **模块化权限系统**：全新的运行时模块化权限管理
+- ✅ **插件化架构**：支持通过插件扩展功能
+- ✅ **遵循"少重复造轮子"原则**：基于 NextAuth.js、Prisma 等成熟方案
 
-## 🚀 Quick Start
+## ✨ 核心特性
 
-### Installation
+- 🎯 **模块化权限**：支持业务模块独立定义和管理权限
+- 🔧 **类型安全**：完整的 TypeScript 支持和 Zod 验证
+- 🏗️ **无缝集成**：与 @linch-kit/schema、@linch-kit/trpc 深度集成
+- 🔐 **企业级权限**：RBAC、ABAC、层级权限、多租户支持
+- 🌐 **国际化支持**：内置多语言消息
+- 📦 **最小化实体**：只需要 `id` 和 `name`，完全可定制
+- 🔄 **向后兼容**：保留现有功能
+- ⚡ **开发工具**：代码生成和配置管理工具
+
+## 🚀 快速开始
+
+### 安装
 
 ```bash
-npm install @linch-kit/auth-core
+npm install @linch-kit/auth-core @linch-kit/core
 # or
-pnpm add @linch-kit/auth-core
+pnpm add @linch-kit/auth-core @linch-kit/core
 ```
 
-### Initialize Configuration
+### 初始化配置
 
 ```bash
-npx @linch-kit/auth-core init
+# 使用统一的 CLI 系统
+npx linch auth:init
+
+# 或指定配置文件类型
+npx linch auth:init --type ts --force
 ```
 
-This creates an `auth.config.ts` file with basic setup.
+这会创建一个 `auth.config.ts` 文件。
 
-### Basic Usage
+### 基础使用
 
 ```typescript
-import { createAuthConfig, BasicUserTemplate, sharedTokenProvider } from '@linch-kit/auth-core'
+// auth.config.ts
+import type { AuthConfig } from '@linch-kit/auth-core'
 
-const authConfig = createAuthConfig({
-  userEntity: BasicUserTemplate, // Optional: use template or custom
+const authConfig: AuthConfig = {
   providers: [
-    sharedTokenProvider, // Preserves existing functionality
+    {
+      id: 'google',
+      name: 'Google',
+      type: 'oauth',
+      options: {
+        clientId: process.env.AUTH_GOOGLE_ID,
+        clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      }
+    }
   ],
-  session: { strategy: 'jwt' }
-})
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  permissions: {
+    strategy: 'rbac',
+    hierarchical: false,
+  }
+}
 
 export default authConfig
 ```

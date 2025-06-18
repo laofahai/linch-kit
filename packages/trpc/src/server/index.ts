@@ -1,6 +1,13 @@
-import { createContext } from './context'
-import { User } from '@linch-kit/auth'
-import { type AnyRouter } from '@trpc/server'
+import { createContext, type Context } from './context'
+import type { AnyRouter } from '@trpc/server'
+
+// 临时用户类型，等待 auth-core 集成
+type AuthUser = {
+  id: string
+  name?: string | null
+  email?: string | null
+  [key: string]: any
+}
 
 /**
  * 创建服务器端调用的辅助函数
@@ -32,10 +39,12 @@ export function createTrpcServer<T extends AnyRouter>(appRouter: T) {
    * @example
    * const reports = await trpcServerWithUser(user).report.list.query({ limit: 10 });
    */
-  const trpcServerWithUser = (user: User) => {
+  const trpcServerWithUser = (user: AuthUser) => {
     return appRouter.createCaller({
       user,
-    })
+      session: null,
+      tenant: null
+    } as Context)
   }
 
   return { trpcServer, trpcServerWithUser }

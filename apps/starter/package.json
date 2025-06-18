@@ -11,7 +11,6 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@linch-kit/auth-core": "workspace:*",
     "@linch-kit/trpc": "workspace:*",
     "@linch-kit/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.1.10",

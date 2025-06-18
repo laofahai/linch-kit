@@ -18,12 +18,18 @@ export {
   permissionUtils
 } from './permissions'
 
-// 会话管理
+// 模块化权限管理
 export {
-  MemorySessionManager,
-  createSessionManager,
-  sessionUtils
-} from './session'
+  BasePermissionRegistry,
+  createPermissionRegistry,
+  getGlobalPermissionRegistry,
+  setGlobalPermissionRegistry
+} from './permission-registry'
 
-// 类型导出
-export type { SessionManager } from './session'
+export {
+  BaseModularPermissionChecker,
+  createModularPermissionChecker
+} from './modular-permission-checker'
+
+// 注意: 会话管理已移除，请直接使用 NextAuth.js 的会话功能
+// 如需自定义会话逻辑，请在 NextAuth 配置的 callbacks 中实现
