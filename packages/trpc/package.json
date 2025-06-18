@@ -5,7 +5,7 @@
   "types": "src/index.ts",
   "license": "MIT",
   "dependencies": {
-    "@linch-kit/auth": "workspace:*",
+    "@linch-kit/auth-core": "workspace:*",
     "superjson": "^2.2.2"
   },
   "devDependencies": {

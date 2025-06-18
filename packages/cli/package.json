@@ -1,0 +1,51 @@
+{
+  "name": "@linch-kit/cli",
+  "version": "0.1.0",
+  "description": "Unified CLI tools for Linch Kit",
+  "license": "MIT",
+  "keywords": [
+    "cli",
+    "linch-kit",
+    "code-generation",
+    "configuration",
+    "typescript"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "linch": "./dist/index.js",
+    "linch-kit": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@linch-kit/config": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
+    "@linch-kit/auth-core": "workspace:*",
+    "commander": "^12.1.0",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "inquirer": "^8.2.6"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  }
+}
