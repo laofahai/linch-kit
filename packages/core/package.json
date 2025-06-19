@@ -37,7 +37,6 @@
   "scripts": {
     "build": "tsup && npm run build:types",
     "build:types": "tsc --emitDeclarationOnly",
-    "dev": "tsup --watch",
     "check-types": "tsc --noEmit",
     "test": "jest"
   },

@@ -1,0 +1,182 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+jobs:
+  # 依赖图分析
+  analyze:
+    name: Analyze Dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      build-order: ${{ steps.deps.outputs.build-order }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Analyze dependencies
+        id: deps
+        run: |
+          node scripts/deps-graph.js > deps-analysis.txt
+          echo "build-order=$(node -e "
+            const { DependencyGraph } = require('./scripts/deps-graph.js');
+            const graph = new DependencyGraph();
+            graph.analyze().then(result => {
+              console.log(JSON.stringify(result.buildOrder));
+            });
+          ")" >> $GITHUB_OUTPUT
+
+      - name: Upload analysis
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-analysis
+          path: deps-analysis.txt
+
+  # 代码质量检查
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm turbo lint
+
+      - name: Format check
+        run: pnpm turbo format
+
+      - name: Type check
+        run: pnpm turbo check-types
+
+  # 构建和测试
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    needs: [analyze]
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm turbo build:packages
+
+      - name: Test
+        run: pnpm turbo test
+
+      - name: Upload coverage
+        if: matrix.node-version == 18
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./coverage
+
+  # 构建应用
+  build-apps:
+    name: Build Apps
+    runs-on: ubuntu-latest
+    needs: [build-and-test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build apps
+        run: pnpm turbo build --filter='./apps/*'
+
+  # 安全检查
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Security audit
+        run: pnpm audit --audit-level moderate
+
+      - name: Check for vulnerabilities
+        run: |
+          if pnpm audit --audit-level high --json | jq '.vulnerabilities | length' | grep -v '^0$'; then
+            echo "High severity vulnerabilities found"
+            exit 1
+          fi

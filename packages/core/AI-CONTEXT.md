@@ -1,216 +1,474 @@
-# @linch-kit/core AI 上下文文档
+# Core 包 AI 上下文
 
-## 🤖 AI-First 设计原则
+## 概述
 
-这是 Linch Kit 的核心包，整合了 CLI、配置管理和基础工具，专门为 AI 理解和扩展而设计。
+`@linch-kit/core` 是 Linch Kit 的核心包，提供基础工具、配置系统、CLI 工具和插件架构。作为基础包，它被所有其他功能包依赖。
 
-## 📋 AI 元数据
+## 包信息
 
-```json
-{
-  "ai-purpose": "Linch Kit 核心包，提供 CLI、配置管理和基础工具",
-  "ai-architecture": "模块化核心架构，包含 CLI、配置、工具三大模块",
-  "ai-key-concepts": [
-    "统一的 CLI 系统",
-    "动态配置管理",
-    "插件化架构",
-    "项目脚手架",
-    "开发工具代理"
-  ],
-  "ai-integration-points": [
-    "CLI 命令扩展",
-    "配置 Schema 注册",
-    "插件系统",
-    "工具函数库"
-  ]
+```typescript
+interface CorePackageInfo {
+  name: '@linch-kit/core'
+  version: string
+  description: '核心工具和配置系统'
+  type: 'module'
+  main: './dist/index.js'
+  module: './dist/index.mjs'
+  types: './dist/index.d.ts'
+  bin: {
+    'linch-kit': './dist/cli.js'
+  }
 }
 ```
 
-## 🏗️ 架构概览
+## 目录结构
 
 ```
-@linch-kit/core/
+packages/core/
 ├── src/
-│   ├── index.ts              # AI: 统一导出入口
-│   ├── cli.ts                # AI: CLI 可执行入口
-│   ├── cli/                  # AI: CLI 系统模块
-│   │   ├── index.ts          # AI: CLI 核心导出
-│   │   ├── core/             # AI: CLI 核心组件
-│   │   │   ├── command-registry.ts  # AI: 命令注册表
-│   │   │   ├── plugin-loader.ts     # AI: 插件加载器
-│   │   │   └── config-manager.ts    # AI: 配置管理器
-│   │   ├── commands/         # AI: 内置命令
-│   │   │   ├── index.ts      # AI: 命令导出
-│   │   │   ├── init.ts       # AI: 项目初始化
-│   │   │   ├── config.ts     # AI: 配置管理
-│   │   │   ├── plugin.ts     # AI: 插件管理
-│   │   │   └── dev.ts        # AI: 开发工具
-│   │   ├── types/            # AI: CLI 类型定义
-│   │   └── utils/            # AI: CLI 工具函数
-│   ├── config/               # AI: 配置管理模块
-│   │   ├── index.ts          # AI: 配置导出
-│   │   ├── loader.ts         # AI: 配置加载器
-│   │   ├── providers/        # AI: 配置提供者
-│   │   ├── schemas/          # AI: 配置 Schema
-│   │   └── types.ts          # AI: 配置类型
-│   ├── utils/                # AI: 核心工具模块
-│   │   ├── index.ts          # AI: 工具导出
-│   │   ├── logger.ts         # AI: 日志系统
-│   │   ├── fs.ts             # AI: 文件系统工具
-│   │   ├── process.ts        # AI: 进程管理
-│   │   └── validation.ts     # AI: 验证工具
-│   └── types/                # AI: 共享类型定义
-│       ├── index.ts          # AI: 类型导出
-│       ├── cli.ts            # AI: CLI 类型
-│       ├── config.ts         # AI: 配置类型
-│       └── common.ts         # AI: 通用类型
-└── AI-CONTEXT.md             # AI: 本文档
+│   ├── index.ts              # 主入口
+│   ├── cli.ts                # CLI 入口
+│   ├── config/               # 配置系统
+│   │   ├── index.ts         # 配置导出
+│   │   ├── schema.ts        # 配置模式
+│   │   ├── loader.ts        # 配置加载器
+│   │   └── validator.ts     # 配置验证
+│   ├── utils/               # 工具函数
+│   │   ├── index.ts         # 工具导出
+│   │   ├── fs.ts            # 文件系统工具
+│   │   ├── path.ts          # 路径工具
+│   │   ├── string.ts        # 字符串工具
+│   │   └── object.ts        # 对象工具
+│   ├── cli/                 # CLI 工具
+│   │   ├── index.ts         # CLI 导出
+│   │   ├── commands/        # 命令实现
+│   │   ├── utils.ts         # CLI 工具
+│   │   └── types.ts         # CLI 类型
+│   ├── plugins/             # 插件系统
+│   │   ├── index.ts         # 插件导出
+│   │   ├── manager.ts       # 插件管理器
+│   │   ├── registry.ts      # 插件注册表
+│   │   └── types.ts         # 插件类型
+│   └── generators/          # 代码生成器
+│       ├── index.ts         # 生成器导出
+│       ├── package.ts       # 包生成器
+│       └── template.ts      # 模板系统
+├── package.json
+├── tsconfig.json
+├── tsconfig.build.json
+├── tsup.config.ts
+└── README.md
 ```
 
-## 🎯 模块职责
+## 核心模块
 
-### CLI 模块 (`src/cli/`)
-- **命令注册和执行**: 统一的命令系统
-- **插件发现和加载**: 自动发现和加载插件
-- **交互式界面**: 用户友好的命令行界面
-- **开发工具代理**: 代理到现有工具 (npm, Next.js, Turborepo)
+### 1. 配置系统
 
-### 配置模块 (`src/config/`)
-- **多格式支持**: JS/TS/JSON/YAML 配置文件
-- **Schema 验证**: 使用 Zod 进行配置验证
-- **环境变量集成**: 自动加载和合并环境变量
-- **动态注册**: 支持插件动态注册配置 Schema
-
-### 工具模块 (`src/utils/`)
-- **日志系统**: 结构化日志记录
-- **文件系统**: 文件操作工具
-- **进程管理**: 子进程管理和代理
-- **验证工具**: 通用验证函数
-
-## 🔌 扩展机制
-
-### 1. CLI 命令扩展
 ```typescript
-// 插件可以注册新命令
-import { CommandRegistry } from '@linch-kit/core/cli'
+// src/config/index.ts
+export interface ConfigSystem {
+  load: ConfigLoader
+  validate: ConfigValidator
+  merge: ConfigMerger
+  watch: ConfigWatcher
+}
 
-const registry = CommandRegistry.getInstance()
-registry.registerCommand('my-command', {
-  description: 'My custom command',
-  handler: async (context) => {
-    // 命令逻辑
+// 配置加载器
+interface ConfigLoader {
+  loadFromFile(path: string): Promise<Config>
+  loadFromEnv(): Config
+  loadFromCLI(args: string[]): Config
+  loadDefault(): Config
+}
+
+// 配置模式
+interface ConfigSchema {
+  type: 'object'
+  properties: {
+    [key: string]: ConfigProperty
+  }
+  required?: string[]
+  additionalProperties?: boolean
+}
+
+// 使用示例
+const config = await loadConfig({
+  sources: ['file', 'env', 'cli'],
+  schema: configSchema,
+  validate: true
+})
+```
+
+### 2. 工具函数
+
+```typescript
+// src/utils/index.ts
+export interface UtilityFunctions {
+  fs: FileSystemUtils
+  path: PathUtils
+  string: StringUtils
+  object: ObjectUtils
+  async: AsyncUtils
+}
+
+// 文件系统工具
+interface FileSystemUtils {
+  exists(path: string): Promise<boolean>
+  readFile(path: string): Promise<string>
+  writeFile(path: string, content: string): Promise<void>
+  copyFile(src: string, dest: string): Promise<void>
+  ensureDir(path: string): Promise<void>
+  glob(pattern: string): Promise<string[]>
+}
+
+// 使用示例
+import { fs, path } from '@linch-kit/core'
+
+await fs.ensureDir(path.join(process.cwd(), 'dist'))
+const files = await fs.glob('src/**/*.ts')
+```
+
+### 3. CLI 系统
+
+```typescript
+// src/cli/index.ts
+export interface CLISystem {
+  program: CLIProgram
+  commands: CLICommand[]
+  utils: CLIUtils
+}
+
+// CLI 命令
+interface CLICommand {
+  name: string
+  description: string
+  options: CLIOption[]
+  action: CommandAction
+}
+
+// CLI 程序
+interface CLIProgram {
+  name: string
+  version: string
+  description: string
+  commands: CLICommand[]
+  globalOptions: CLIOption[]
+}
+
+// 使用示例
+import { createCLI } from '@linch-kit/core'
+
+const cli = createCLI({
+  name: 'linch-kit',
+  version: '1.0.0',
+  commands: [
+    {
+      name: 'generate',
+      description: 'Generate code',
+      action: async (options) => {
+        // 生成逻辑
+      }
+    }
+  ]
+})
+```
+
+### 4. 插件系统
+
+```typescript
+// src/plugins/index.ts
+export interface PluginSystem {
+  manager: PluginManager
+  registry: PluginRegistry
+  loader: PluginLoader
+  hooks: HookSystem
+}
+
+// 插件接口
+interface Plugin {
+  id: string
+  name: string
+  version: string
+  description?: string
+  dependencies?: string[]
+  hooks: PluginHook[]
+  install(context: PluginContext): void | Promise<void>
+  uninstall?(context: PluginContext): void | Promise<void>
+}
+
+// 插件上下文
+interface PluginContext {
+  config: Config
+  utils: UtilityFunctions
+  hooks: HookSystem
+  logger: Logger
+}
+
+// 使用示例
+import { createPlugin } from '@linch-kit/core'
+
+const myPlugin = createPlugin({
+  id: 'my-plugin',
+  name: 'My Plugin',
+  version: '1.0.0',
+  hooks: [
+    {
+      name: 'config:loaded',
+      handler: (config) => {
+        // 处理配置加载
+      }
+    }
+  ]
+})
+```
+
+### 5. 代码生成器
+
+```typescript
+// src/generators/index.ts
+export interface GeneratorSystem {
+  templates: TemplateEngine
+  generators: CodeGenerator[]
+  utils: GeneratorUtils
+}
+
+// 代码生成器
+interface CodeGenerator {
+  name: string
+  description: string
+  templates: Template[]
+  generate(options: GenerateOptions): Promise<GeneratedFile[]>
+}
+
+// 模板引擎
+interface TemplateEngine {
+  render(template: string, data: any): string
+  registerHelper(name: string, helper: Function): void
+  registerPartial(name: string, partial: string): void
+}
+
+// 使用示例
+import { generatePackage } from '@linch-kit/core'
+
+await generatePackage({
+  name: 'my-package',
+  type: 'library',
+  template: 'default',
+  outputDir: 'packages/my-package'
+})
+```
+
+## API 接口
+
+### 1. 主要导出
+
+```typescript
+// src/index.ts
+export {
+  // 配置系统
+  loadConfig,
+  validateConfig,
+  mergeConfig,
+  type Config,
+  type ConfigSchema,
+  
+  // 工具函数
+  fs,
+  path,
+  string,
+  object,
+  async,
+  
+  // CLI 系统
+  createCLI,
+  type CLICommand,
+  type CLIProgram,
+  
+  // 插件系统
+  createPlugin,
+  PluginManager,
+  type Plugin,
+  type PluginContext,
+  
+  // 代码生成器
+  generatePackage,
+  generateComponent,
+  type Generator,
+  type Template
+} from './modules'
+```
+
+### 2. 类型定义
+
+```typescript
+// 核心类型
+export interface CoreTypes {
+  Config: Config
+  Plugin: Plugin
+  Generator: Generator
+  CLICommand: CLICommand
+  Template: Template
+}
+
+// 配置类型
+export interface Config {
+  [key: string]: any
+}
+
+// 插件类型
+export interface Plugin {
+  id: string
+  name: string
+  version: string
+  install(context: PluginContext): void | Promise<void>
+}
+```
+
+## 依赖关系
+
+### 1. 外部依赖
+
+```json
+{
+  "dependencies": {
+    "commander": "^11.0.0",
+    "cosmiconfig": "^8.0.0",
+    "glob": "^10.0.0",
+    "handlebars": "^4.7.0",
+    "joi": "^17.0.0",
+    "lodash": "^4.17.0"
+  }
+}
+```
+
+### 2. 内部依赖
+
+```typescript
+// 无内部依赖 - 作为基础包
+interface InternalDependencies {
+  // 无依赖
+}
+```
+
+## 使用模式
+
+### 1. 基础使用
+
+```typescript
+import { loadConfig, fs, createCLI } from '@linch-kit/core'
+
+// 加载配置
+const config = await loadConfig()
+
+// 文件操作
+await fs.writeFile('output.txt', 'Hello World')
+
+// 创建 CLI
+const cli = createCLI({
+  name: 'my-cli',
+  commands: [...]
+})
+```
+
+### 2. 插件开发
+
+```typescript
+import { createPlugin } from '@linch-kit/core'
+
+export default createPlugin({
+  id: 'my-plugin',
+  name: 'My Plugin',
+  install(context) {
+    context.hooks.on('config:loaded', (config) => {
+      // 处理配置
+    })
   }
 })
 ```
 
-### 2. 配置 Schema 扩展
-```typescript
-// 插件可以注册配置 Schema
-import { ConfigManager } from '@linch-kit/core/config'
+### 3. 代码生成
 
-const configManager = ConfigManager.getInstance()
-configManager.registerSchema({
-  name: 'my-plugin',
-  schema: z.object({
-    enabled: z.boolean().default(true)
+```typescript
+import { generatePackage } from '@linch-kit/core'
+
+await generatePackage({
+  name: '@my-org/my-package',
+  type: 'library',
+  features: ['typescript', 'testing'],
+  outputDir: './packages/my-package'
+})
+```
+
+## 扩展点
+
+### 1. 配置扩展
+
+```typescript
+// 扩展配置模式
+export const myConfigSchema = {
+  type: 'object',
+  properties: {
+    myFeature: {
+      type: 'object',
+      properties: {
+        enabled: { type: 'boolean' },
+        options: { type: 'object' }
+      }
+    }
+  }
+}
+```
+
+### 2. 工具扩展
+
+```typescript
+// 扩展工具函数
+export const myUtils = {
+  formatDate: (date: Date) => date.toISOString(),
+  parseJSON: (str: string) => JSON.parse(str)
+}
+```
+
+### 3. 命令扩展
+
+```typescript
+// 扩展 CLI 命令
+export const myCommands = [
+  {
+    name: 'my-command',
+    description: 'My custom command',
+    action: async (options) => {
+      // 命令逻辑
+    }
+  }
+]
+```
+
+## 测试策略
+
+### 1. 单元测试
+
+```typescript
+// 测试配置加载
+describe('Config System', () => {
+  test('should load config from file', async () => {
+    const config = await loadConfig({ source: 'file' })
+    expect(config).toBeDefined()
   })
 })
 ```
 
-### 3. 工具函数扩展
+### 2. 集成测试
+
 ```typescript
-// 使用核心工具函数
-import { logger, validateSchema } from '@linch-kit/core/utils'
-
-logger.info('Plugin loaded', { plugin: 'my-plugin' })
-const isValid = validateSchema(data, schema)
+// 测试插件系统
+describe('Plugin System', () => {
+  test('should load and execute plugin', async () => {
+    const manager = new PluginManager()
+    await manager.load(testPlugin)
+    expect(manager.isLoaded(testPlugin.id)).toBe(true)
+  })
+})
 ```
 
-## 🎛️ 使用方式
-
-### 作为 CLI 工具
-```bash
-# 全局安装
-npm install -g @linch-kit/core
-
-# 使用 CLI
-linch init my-app
-linch dev
-linch build
-```
-
-### 作为库使用
-```typescript
-// 导入整个核心包
-import { CLI, Config, Utils } from '@linch-kit/core'
-
-// 或者导入特定模块
-import { CommandRegistry } from '@linch-kit/core/cli'
-import { ConfigManager } from '@linch-kit/core/config'
-import { logger } from '@linch-kit/core/utils'
-```
-
-### 在插件中使用
-```typescript
-// 插件开发
-import type { CommandPlugin } from '@linch-kit/core'
-
-const myPlugin: CommandPlugin = {
-  name: 'my-plugin',
-  version: '1.0.0',
-  async register(registry) {
-    // 注册命令
-  }
-}
-```
-
-## 📊 性能考虑
-
-### 1. 模块化加载
-- **按需导入**: 只加载使用的模块
-- **懒加载**: CLI 命令按需加载
-- **代码分割**: 不同模块独立打包
-
-### 2. 缓存策略
-- **配置缓存**: 避免重复解析配置文件
-- **插件缓存**: 缓存插件发现结果
-- **命令缓存**: 缓存命令注册信息
-
-### 3. 启动优化
-- **快速启动**: CLI 启动时间 < 100ms
-- **并行加载**: 插件并行发现和加载
-- **增量更新**: 仅更新变更的部分
-
-## 🔮 未来扩展
-
-### 短期 (1-2 个月)
-- [ ] 完善工具函数库
-- [ ] 添加更多内置命令
-- [ ] 优化性能和启动时间
-
-### 中期 (3-6 个月)
-- [ ] AI 辅助命令推荐
-- [ ] 智能配置验证
-- [ ] 可视化配置编辑器
-
-### 长期 (6+ 个月)
-- [ ] 云端配置同步
-- [ ] AI 驱动的项目分析
-- [ ] 自动化最佳实践建议
-
-## 🛡️ 质量保证
-
-### 1. 类型安全
-- **完整类型定义**: 所有 API 都有类型定义
-- **运行时验证**: 使用 Zod 进行运行时验证
-- **AI 标注**: 所有代码都有 AI 标注
-
-### 2. 测试覆盖
-- **单元测试**: 核心功能单元测试
-- **集成测试**: 模块间集成测试
-- **E2E 测试**: 端到端功能测试
-
-### 3. 文档完整
-- **API 文档**: 完整的 API 文档
-- **使用示例**: 丰富的使用示例
-- **AI 上下文**: 便于 AI 理解的文档
+这个核心包为整个 Linch Kit 生态系统提供了坚实的基础设施支持。

@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
-import { trpc, createTrpcClient } from '@linch-kit/trpc'
+// import { trpc, createTrpcClient } from '@/_lib/trpc' // 暂时禁用 tRPC
 import { AuthProvider } from '@/_providers/authProvider'
+import { I18nProvider } from '@/_providers/i18nProvider'
 import { SessionProvider } from 'next-auth/react'
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -18,10 +19,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       })
   )
 
-  const [trpcClient] = useState(() => createTrpcClient())
+  // const [trpcClient] = useState(() => createTrpcClient()) // 暂时禁用 tRPC
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+    <I18nProvider>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <SessionProvider>
@@ -29,6 +30,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
           </SessionProvider>
         </ThemeProvider>
       </QueryClientProvider>
-    </trpc.Provider>
+    </I18nProvider>
   )
 }

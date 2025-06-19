@@ -1,13 +1,14 @@
 'use client'
 
 import { createTRPCReact } from '@trpc/react-query'
-import { httpBatchLink } from '@trpc/client'
+import { httpBatchLink, createTRPCProxyClient } from '@trpc/client'
 import superjson from 'superjson'
-import type { AppRouter, RouterInputs, RouterOutputs } from '../server/types'
 import type { AnyRouter } from '@trpc/server'
 
+import type { AppRouter, RouterInputs, RouterOutputs } from '../server/types'
+
 // 创建 React Hooks (使用泛型支持任意路由)
-export function createTRPCReact<T extends AnyRouter = AppRouter>() {
+export function createTRPCClient<T extends AnyRouter = AppRouter>() {
   return createTRPCReact<T>()
 }
 
@@ -52,5 +53,5 @@ export function createTRPCClientConfig(options: TRPCClientOptions = {}) {
 
 // 创建用于 trpc.Provider 的 React Client
 export const createTrpcClient = (options?: TRPCClientOptions) => {
-  return trpc.createClient(createTRPCClientConfig(options))
+  return createTRPCProxyClient<AppRouter>(createTRPCClientConfig(options))
 }

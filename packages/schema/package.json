@@ -39,7 +39,6 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
     "generate:prisma": "tsx src/cli/index.ts generate:prisma",
     "generate:validators": "tsx src/cli/index.ts generate:validators",
     "generate:mocks": "tsx src/cli/index.ts generate:mocks",
@@ -48,9 +47,10 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "zod": "^3.25.64",
     "commander": "^12.1.0",
-    "glob": "^10.3.10"
+    "fs": "0.0.1-security",
+    "glob": "^10.3.10",
+    "zod": "^3.25.64"
   },
   "devDependencies": {
     "@types/node": "^24.0.3",

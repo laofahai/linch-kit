@@ -3,8 +3,8 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
-  dts: true,
   clean: true,
+  dts: true,
   sourcemap: true,
   external: [
     '@trpc/client',
@@ -22,5 +22,6 @@ export default defineConfig({
   ],
   banner: {
     js: '"use client";'
-  }
+  },
+  tsconfig: "./tsconfig.build.json"
 })

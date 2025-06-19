@@ -3,7 +3,52 @@
  */
 
 import type { inferRouterInputs, inferRouterOutputs, AnyRouter } from '@trpc/server'
+
 import type { Context } from './context'
+
+// 临时类型定义，等待 auth-core 正确集成
+// TODO: 当 auth-core 模块解析正确后，替换为真实的导入
+
+/**
+ * 基础用户类型
+ */
+export interface AuthUser {
+  id: string
+  name?: string | null
+  email?: string | null
+  roles?: string[]
+  [key: string]: any
+}
+
+/**
+ * 会话类型
+ */
+export interface AuthSession {
+  id: string
+  userId: string
+  expiresAt: Date
+  [key: string]: any
+}
+
+/**
+ * 权限检查器接口
+ */
+export interface PermissionChecker {
+  hasPermission(userId: string, resource: string, action: string, context?: any): Promise<boolean>
+  hasRole(userId: string, role: string | string[], context?: any): Promise<boolean>
+  getUserPermissions(userId: string, tenantId?: string): Promise<any>
+}
+
+/**
+ * 基础上下文接口
+ */
+export interface BaseContext {
+  user?: AuthUser | null
+  session?: AuthSession | null
+  permissions?: Record<string, boolean> | null // 存储权限检查结果
+  permissionChecker?: PermissionChecker | null // 权限检查器实例
+  tenant?: string | null
+}
 
 /**
  * 基础路由器类型
@@ -66,4 +111,31 @@ export interface PaginatedResponse<T> {
     hasNext: boolean
     hasPrev: boolean
   }
+}
+
+/**
+ * 中间件函数类型
+ */
+export type MiddlewareFunction<TContext = BaseContext, TInput = any, TOutput = any> = (opts: {
+  ctx: TContext
+  input: TInput
+  next: () => Promise<TOutput>
+}) => Promise<TOutput>
+
+/**
+ * 认证中间件选项
+ */
+export interface AuthMiddlewareOptions {
+  required?: boolean
+  roles?: string[]
+  permissions?: string[]
+}
+
+/**
+ * 权限中间件选项
+ */
+export interface PermissionMiddlewareOptions {
+  resource: string
+  action: string
+  checkTenant?: boolean
 }

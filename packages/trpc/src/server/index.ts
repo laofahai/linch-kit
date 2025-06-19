@@ -1,13 +1,11 @@
-import { createContext, type Context } from './context'
+/**
+ * tRPC 服务端入口文件
+ */
+
 import type { AnyRouter } from '@trpc/server'
 
-// 临时用户类型，等待 auth-core 集成
-type AuthUser = {
-  id: string
-  name?: string | null
-  email?: string | null
-  [key: string]: any
-}
+import { createContext, type Context } from './context'
+import type { AuthUser } from './types'
 
 /**
  * 创建服务器端调用的辅助函数
@@ -50,5 +48,25 @@ export function createTrpcServer<T extends AnyRouter>(appRouter: T) {
   return { trpcServer, trpcServerWithUser }
 }
 
+// 核心导出
 export * from './context'
 export * from './types'
+
+// 路由器导出 (避免与中间件冲突)
+export {
+  t,
+  router,
+  procedure,
+  middleware,
+  createTRPCRouter,
+  protectedProcedure,
+  adminProcedure,
+  tenantProcedure,
+  createPermissionProcedure
+} from './router'
+
+// 中间件导出 (使用命名空间避免冲突)
+export * as middlewares from '../middleware'
+
+// Auth Core 集成导出
+export * from '../integrations/auth-core'
