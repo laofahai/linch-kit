@@ -57,9 +57,6 @@ export class CommandRegistry {
   registerCommand(name: string, metadata: CommandMetadata): void {
     // AI: 检查命令是否已注册，如果是则跳过
     if (this.commands.has(name)) {
-      if (!process.env.LINCH_SILENT) {
-        console.log(`AI: Command '${name}' already registered, skipping`)
-      }
       return
     }
 
@@ -97,7 +94,7 @@ export class CommandRegistry {
     command.action(async (...args) => {
       try {
         // AI: 创建执行上下文
-        const context = this.createExecutionContext(name, args)
+        const context = this.createExecutionContext(name, args, command)
 
         // AI: 执行命令处理器
         await metadata.handler(context)
@@ -107,9 +104,7 @@ export class CommandRegistry {
       }
     })
 
-    if (!process.env.LINCH_SILENT) {
-      console.log(`AI: Command '${name}' registered successfully`)
-    }
+    // Command registered silently
   }
 
   /**
@@ -152,7 +147,7 @@ export class CommandRegistry {
       // AI: 存储插件引用
       this.plugins.set(plugin.name, plugin)
 
-      console.log(`AI: Plugin '${plugin.name}' registered successfully`)
+      // Plugin registered silently
     } catch (error) {
       console.error(`AI: Failed to register plugin '${plugin.name}':`, error)
       throw error
@@ -239,16 +234,23 @@ export class CommandRegistry {
    * @ai-purpose 为命令处理器提供统一的执行环境
    * @ai-parameter commandName: string - 命令名称
    * @ai-parameter args: any[] - 命令参数
+   * @ai-parameter command: Command - Commander.js 命令实例
    * @ai-return CLIContext - 执行上下文对象
    */
-  private createExecutionContext(commandName: string, args: any[]): CLIContext {
+  private createExecutionContext(commandName: string, args: any[], command?: Command): CLIContext {
+    // AI: 从根命令获取全局选项
+    const globalOptions = this.rootCommand.opts()
+
+    // AI: 从当前命令获取选项（如果有的话）
+    const commandOptions = command?.opts() || {}
+
     return {
       commandName,
       args,
       registry: this,
-      cwd: process.cwd(),
-      verbose: false,
-      silent: false
+      cwd: globalOptions.cwd || process.cwd(),
+      verbose: globalOptions.verbose || commandOptions.verbose || false,
+      silent: globalOptions.silent || commandOptions.silent || false
     }
   }
 

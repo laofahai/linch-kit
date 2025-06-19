@@ -10,7 +10,8 @@ import { writeValidators } from '../generators/validators'
 import { writeMockFactories, generateTestDataFiles } from '../generators/mock'
 import { writeOpenAPISpec } from '../generators/openapi'
 import { getAllEntities, clearEntityRegistry } from '../core/entity'
-import { loadConfig, type SchemaConfig } from '../config/loader'
+import { loadConfig } from '@linch-kit/core'
+import type { SchemaConfig } from '../core/types'
 import { pathToFileURL } from 'url'
 import { resolve } from 'path'
 import { glob } from 'glob'
@@ -55,11 +56,88 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
       return config.schema || {}
     }
 
-    // 最后回退到原有的 schema 配置加载
-    return await loadConfig()
+    // 最后回退到core包的配置加载
+    const coreConfig = await loadConfig({ required: false })
+    return coreConfig?.schema || {}
   } catch (error) {
     console.warn('⚠️ Failed to load linch config, using default schema config')
-    return await loadConfig()
+    return {}
+  }
+}
+
+/**
+ * 加载单个实体文件，支持 TypeScript 和 JavaScript
+ * 在开发环境支持 .ts/.tsx，在生产环境支持 .js/.mjs
+ */
+async function loadEntityFile(filePath: string): Promise<void> {
+  try {
+    const ext = filePath.split('.').pop()?.toLowerCase()
+
+    if (ext === 'ts' || ext === 'tsx') {
+      // 对于TypeScript文件，使用tsx在同一进程中加载
+      const { execSync } = await import('child_process')
+
+      // 使用tsx直接执行，确保在同一进程中注册实体
+      execSync(
+        `npx tsx -e "import('${filePath}')"`,
+        {
+          encoding: 'utf8',
+          cwd: process.cwd(),
+          stdio: 'inherit'
+        }
+      )
+    } else {
+      // 对于JavaScript文件，直接使用动态导入
+      await import(pathToFileURL(filePath).href)
+    }
+  } catch (error) {
+    console.error(`❌ Failed to load entity file ${filePath}:`, error)
+    throw error
+  }
+}
+
+/**
+ * 加载依赖包中的实体
+ */
+async function loadPackageEntities() {
+  // 已知包含实体的包列表和路径
+  const packagesWithEntities = [
+    {
+      name: '@linch-kit/auth-core',
+      // 在monorepo中使用相对路径
+      path: resolve(process.cwd(), '../../packages/auth-core/dist/index.js')
+    }
+  ]
+
+  for (const packageInfo of packagesWithEntities) {
+    try {
+      let packageModule
+
+      // 首先尝试通过包名导入
+      try {
+        packageModule = await import(packageInfo.name)
+      } catch (npmError) {
+        // 如果包名导入失败，尝试使用相对路径（monorepo环境）
+        if (existsSync(packageInfo.path)) {
+          packageModule = await import(pathToFileURL(packageInfo.path).href)
+        } else {
+          throw npmError
+        }
+      }
+
+      // 检查是否有预设的实体套件
+      if (packageModule.MultiTenantAuthKit) {
+        // 使用多租户认证套件（包含所有实体）
+        const authKit = packageModule.MultiTenantAuthKit
+        console.log(`📦 Loading entities from ${packageInfo.name}...`)
+
+        // 这些实体模板在导入时会自动注册
+        Object.values(authKit)
+      }
+    } catch (error) {
+      // 如果包不存在或加载失败，继续处理其他包
+      console.warn(`⚠️ Could not load entities from ${packageInfo.name}:`, error instanceof Error ? error.message : String(error))
+    }
   }
 }
 
@@ -67,14 +145,14 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
  * 动态加载用户的实体文件
  */
 async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
-  // 清空现有的实体注册
-  clearEntityRegistry()
+  // 首先加载依赖包中的实体
+  await loadPackageEntities()
 
   if (entitiesPath) {
     // 用户指定了实体文件路径
     const resolvedPath = resolve(process.cwd(), entitiesPath)
     if (existsSync(resolvedPath)) {
-      await import(pathToFileURL(resolvedPath).href)
+      await loadEntityFile(resolvedPath)
     } else {
       console.error(`❌ Entities file not found: ${resolvedPath}`)
       process.exit(1)
@@ -83,7 +161,6 @@ async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
     // 使用配置文件中的模式
     const patterns = config.entities || []
 
-    let found = false
     let allFiles: string[] = []
 
     for (const pattern of patterns) {
@@ -91,26 +168,18 @@ async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
         const files = await glob(pattern, { cwd: process.cwd() })
         if (files.length > 0) {
           allFiles.push(...files)
-          found = true
         }
       } catch (error) {
         // 忽略错误，继续尝试下一个模式
       }
     }
 
-    if (!found) {
-      console.error('❌ No entity files found. Please:')
-      console.error('  1. Run `linch schema:init` to create a config file')
-      console.error('  2. Or specify --entities-path')
-      console.error('  3. Or place entity files in default locations:')
-      patterns.forEach(pattern => console.error(`     - ${pattern}`))
-      process.exit(1)
-    }
-
-    console.log(`📁 Found entity files: ${allFiles.join(', ')}`)
-    for (const file of allFiles) {
-      const filePath = resolve(process.cwd(), file)
-      await import(pathToFileURL(filePath).href)
+    if (allFiles.length > 0) {
+      console.log(`📁 Found entity files: ${allFiles.join(', ')}`)
+      for (const file of allFiles) {
+        const filePath = resolve(process.cwd(), file)
+        await loadEntityFile(filePath)
+      }
     }
   }
 

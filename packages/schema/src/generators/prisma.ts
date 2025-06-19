@@ -250,14 +250,33 @@ function generateModel(entity: EntityDefinition): string {
     }
   })
 
+  // 添加软删除字段（如果启用）
+  // TODO: 从配置中读取是否启用软删除
+  const softDeleteEnabled = true // 暂时硬编码，后续从配置读取
+  if (softDeleteEnabled) {
+    modelDef += `  deletedAt     DateTime? @map("deleted_at")\n`
+  }
+
   // 添加索引
   if (meta?.model?.indexes) {
     meta.model.indexes.forEach((index, i) => {
-      const indexFields = index.fields.join(', ')
+      // 过滤出标量字段（非关系字段）
+      const scalarFields = index.fields.filter(fieldName => {
+        const fieldMeta = meta?.fields?.[fieldName] || getFieldMeta(shape[fieldName] as z.ZodSchema)
+        const relationMeta = fieldMeta?.relation || meta?.relations?.[fieldName]
+        return !relationMeta // 只包含非关系字段
+      })
+
+      if (scalarFields.length === 0) {
+        // 如果没有标量字段，跳过这个索引
+        return
+      }
+
+      const indexFields = scalarFields.join(', ')
 
       // 检查是否是单字段索引且该字段已经有 @unique 约束
-      if (index.unique && index.fields.length === 1) {
-        const fieldName = index.fields[0]
+      if (index.unique && scalarFields.length === 1) {
+        const fieldName = scalarFields[0]
         let fieldMeta = meta?.fields?.[fieldName]
         if (!fieldMeta) {
           fieldMeta = getFieldMeta(shape[fieldName] as z.ZodSchema)
@@ -270,8 +289,8 @@ function generateModel(entity: EntityDefinition): string {
 
       // 生成索引名称
       const defaultIndexName = index.unique
-        ? `${meta?.model?.tableName || name.toLowerCase()}_${index.fields.join('_')}_key`
-        : `${meta?.model?.tableName || name.toLowerCase()}_${index.fields.join('_')}_idx`
+        ? `${meta?.model?.tableName || name.toLowerCase()}_${scalarFields.join('_')}_key`
+        : `${meta?.model?.tableName || name.toLowerCase()}_${scalarFields.join('_')}_idx`
 
       const indexName = index.name || defaultIndexName
       const mapClause = `, map: "${indexName}"`
@@ -359,5 +378,5 @@ export async function writePrismaSchema(
   // 写入文件
   await fs.writeFile(outputPath, schema, 'utf-8')
 
-  console.log(`✅ Prisma schema generated at: ${outputPath}`)
+  // 不在这里输出成功消息，由调用者输出
 }

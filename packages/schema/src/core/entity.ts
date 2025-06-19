@@ -10,9 +10,16 @@ import type {
 import { getFieldMeta } from './decorators'
 
 /**
- * 实体注册表
+ * 全局实体注册表单例
+ * 使用 globalThis 确保在不同模块实例间共享同一个注册表
  */
-const entityRegistry = new Map<string, EntityDefinition>()
+function getEntityRegistry(): Map<string, EntityDefinition> {
+  const globalKey = '__LINCH_ENTITY_REGISTRY__'
+  if (!(globalThis as any)[globalKey]) {
+    (globalThis as any)[globalKey] = new Map<string, EntityDefinition>()
+  }
+  return (globalThis as any)[globalKey]
+}
 
 /**
  * 实体类，包含 schema 和元数据
@@ -23,8 +30,9 @@ export class Entity<T extends Record<string, any> = any> {
     public readonly schema: EntitySchema<T>,
     public readonly config?: ModelConfig
   ) {
-    // 注册实体
-    entityRegistry.set(name, {
+    // 注册实体到全局注册表
+    const registry = getEntityRegistry()
+    registry.set(name, {
       name,
       schema: schema as EntitySchema,
       meta: schema._meta
@@ -159,19 +167,22 @@ export function defineEntity<T extends Record<string, z.ZodSchema>>(
  * 获取已注册的实体
  */
 export function getEntity(name: string): EntityDefinition | undefined {
-  return entityRegistry.get(name)
+  const registry = getEntityRegistry()
+  return registry.get(name)
 }
 
 /**
  * 获取所有已注册的实体
  */
 export function getAllEntities(): EntityDefinition[] {
-  return Array.from(entityRegistry.values())
+  const registry = getEntityRegistry()
+  return Array.from(registry.values())
 }
 
 /**
  * 清空实体注册表 (主要用于测试)
  */
 export function clearEntityRegistry(): void {
-  entityRegistry.clear()
+  const registry = getEntityRegistry()
+  registry.clear()
 }

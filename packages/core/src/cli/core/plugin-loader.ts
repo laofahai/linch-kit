@@ -442,7 +442,7 @@ export class PluginLoader {
         await this.registry.registerPlugin(plugin)
         this.loadedPlugins.set(plugin.name, plugin)
         loaded.push(plugin)
-        console.log(`AI: Plugin '${plugin.name}' loaded successfully`)
+        // Plugin loaded silently
       } catch (error) {
         failed.push(plugin.name)
         console.error(`AI: Failed to load plugin '${plugin.name}':`, error)

@@ -219,7 +219,7 @@ function getTemplateFiles(template: string, options: InitOptions): Record<string
   // AI: 基础文件
   files['package.json'] = generatePackageJson(options)
   files['README.md'] = generateReadme(options)
-  files['linch-kit.config.js'] = generateLinchConfig(options)
+  files[options.typescript ? 'linch.config.ts' : 'linch.config.js'] = generateLinchConfig(options)
   files['.gitignore'] = generateGitignore()
 
   if (options.typescript) {
@@ -356,7 +356,84 @@ MIT
  * @ai-return string - 配置文件内容
  */
 function generateLinchConfig(options: InitOptions): string {
-  return `// Linch Kit Configuration
+  if (options.typescript) {
+    return `import type { LinchConfig } from '@linch-kit/core'
+
+const config: LinchConfig = {
+  // 项目基本信息
+  project: {
+    name: '${options.name}',
+    version: '0.1.0',
+    description: 'AI-First application built with Linch Kit',
+    author: '',
+  },
+
+  // 数据库配置
+  database: {
+    type: '${options.database}',
+    url: process.env.DATABASE_URL || '${getDatabaseUrl(options.database, options.name)}',
+  },
+
+  // Schema 配置
+  schema: {
+    entities: ['src/entities/**/*.{ts,tsx,js}'],
+    output: {
+      prisma: './prisma/schema.prisma',
+      validators: './src/validators/generated.ts',
+      mocks: './src/mocks/factories.ts',
+      openapi: './docs/api.json',
+    },
+    database: {
+      provider: '${options.database}',
+      url: process.env.DATABASE_URL || '${getDatabaseUrl(options.database, options.name)}',
+    },
+    // 启用软删除
+    softDelete: true,
+  },
+
+  ${options.auth ? `// Auth 配置
+  auth: {
+    userEntity: 'basic',
+    providers: [
+      {
+        type: 'credentials',
+        id: 'credentials',
+        config: {
+          name: 'credentials',
+          credentials: {
+            email: { label: 'Email', type: 'email' },
+            password: { label: 'Password', type: 'password' },
+          },
+        },
+      },
+    ],
+    permissions: {
+      strategy: 'rbac',
+      hierarchical: false,
+      multiTenant: false,
+    },
+    session: {
+      strategy: 'jwt',
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      updateAge: 24 * 60 * 60, // 24 hours
+    },
+  },
+
+  // tRPC 配置
+  trpc: {
+    endpoint: '/api/trpc',
+    enableSubscriptions: false,
+    enableBatching: true,
+    maxBatchSize: 10,
+  },` : ''}
+
+  // 插件配置
+  plugins: ['@linch-kit/schema'${options.auth ? ", '@linch-kit/auth-core'" : ''}],
+}
+
+export default config`
+  } else {
+    return `// Linch Kit Configuration
 // AI-First rapid development framework
 
 export default {
@@ -369,8 +446,8 @@ export default {
 
   // Database configuration
   database: {
-    provider: '${options.database}',
-    url: process.env.DATABASE_URL
+    type: '${options.database}',
+    url: process.env.DATABASE_URL || '${getDatabaseUrl(options.database, options.name)}'
   },
 
   // Schema configuration
@@ -378,24 +455,40 @@ export default {
     entities: ['src/entities/**/*.{ts,js}'],
     output: {
       prisma: './prisma/schema.prisma',
-      validators: './src/lib/validators.ts'
-    }
+      validators: './src/lib/validators.js'
+    },
+    softDelete: true
   },
 
   ${options.auth ? `// Authentication configuration
   auth: {
-    providers: ['credentials'],
-    session: {
-      strategy: 'jwt'
-    }
+    userEntity: 'basic',
+    providers: [{ type: 'credentials', id: 'credentials', config: {} }],
+    permissions: { strategy: 'rbac', hierarchical: false, multiTenant: false },
+    session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 }
   },` : ''}
 
   // Plugin configuration
-  plugins: {
-    // Add plugin configurations here
-  }
+  plugins: ['@linch-kit/schema'${options.auth ? ", '@linch-kit/auth-core'" : ''}]
 }
 `
+  }
+}
+
+/**
+ * 根据数据库类型生成默认连接URL
+ */
+function getDatabaseUrl(database: string, projectName: string): string {
+  switch (database) {
+    case 'postgresql':
+      return `postgresql://username:password@localhost:5432/${projectName}`
+    case 'mysql':
+      return `mysql://username:password@localhost:3306/${projectName}`
+    case 'sqlite':
+      return `file:./${projectName}.db`
+    default:
+      return `${database}://localhost/${projectName}`
+  }
 }
 
 /**

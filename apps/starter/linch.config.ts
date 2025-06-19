@@ -1,4 +1,6 @@
-const config = {
+import type { LinchConfig } from '@linch-kit/core'
+
+const config: LinchConfig = {
   // 项目基本信息
   project: {
     name: 'Linch Kit Starter',
@@ -10,12 +12,12 @@ const config = {
   // 数据库配置
   database: {
     type: 'postgresql',
-    url: process.env.DATABASE_URL || 'postgresql://localhost:5432/linch_kit_dev',
+    url: process.env.DATABASE_URL || 'postgresql://postgres:tech.linch.flexreport@db.evfjsbldujohgeshcixt.supabase.co:5432/postgres',
   },
 
   // Schema 配置
   schema: {
-    entities: ['src/entities/**/*.{ts,js}', 'entities/**/*.{ts,js}'],
+    entities: ['src/entities/**/*.{ts,tsx,js}'],
     output: {
       prisma: './prisma/schema.prisma',
       validators: './src/validators/generated.ts',
@@ -24,8 +26,10 @@ const config = {
     },
     database: {
       provider: 'postgresql',
-      url: process.env.DATABASE_URL || 'postgresql://localhost:5432/linch_kit_dev',
+      url: process.env.DATABASE_URL || 'postgresql://postgres:tech.linch.flexreport@db.evfjsbldujohgeshcixt.supabase.co:5432/postgres',
     },
+    // 启用软删除
+    softDelete: true,
   },
 
   // Auth 配置

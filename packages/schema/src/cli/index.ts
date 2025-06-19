@@ -6,7 +6,8 @@ import { writeValidators } from '../generators/validators'
 import { writeMockFactories, generateTestDataFiles } from '../generators/mock'
 import { writeOpenAPISpec } from '../generators/openapi'
 import { getAllEntities, clearEntityRegistry } from '../core/entity'
-import { loadConfig, generateConfigTemplate, type SchemaConfig } from '../config/loader'
+import { loadLinchConfig } from '@linch-kit/core'
+import type { SchemaConfig } from '../core/types'
 import { pathToFileURL } from 'url'
 import { resolve, join } from 'path'
 import { glob } from 'glob'
@@ -24,6 +25,30 @@ function getVersion(): string {
     // 如果读取失败，使用默认版本
     return '0.1.0'
   }
+}
+
+/**
+ * 生成schema配置模板
+ */
+function generateSchemaConfigTemplate(): string {
+  return `// Schema Configuration
+// This file is deprecated. Please use linch.config.ts instead.
+
+export default {
+  entities: ['src/entities/**/*.{ts,tsx,js}'],
+  output: {
+    prisma: './prisma/schema.prisma',
+    validators: './src/validators/generated.ts',
+    mocks: './src/mocks/factories.ts',
+    openapi: './docs/api.json',
+  },
+  database: {
+    provider: 'postgresql',
+    url: process.env.DATABASE_URL,
+  },
+  softDelete: true,
+}
+`
 }
 
 /**
@@ -51,7 +76,7 @@ async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
 
     for (const pattern of patterns) {
       try {
-        const files = await glob(pattern, { cwd: process.cwd() })
+        const files = await glob(pattern as string, { cwd: process.cwd() })
         if (files.length > 0) {
           allFiles.push(...files)
           found = true
@@ -108,7 +133,7 @@ program
     }
 
     try {
-      const template = generateConfigTemplate()
+      const template = generateSchemaConfigTemplate()
       writeFileSync(configPath, template, 'utf-8')
       console.log(`✅ Created config file: ${configPath}`)
       console.log('📝 Edit the config file to customize your setup')
@@ -130,7 +155,8 @@ program
   .action(async options => {
     try {
       console.log('🔄 Loading configuration...')
-      const config = await loadConfig(options.config)
+      const linchConfig = await loadLinchConfig()
+      const config = linchConfig.schema || {}
 
       console.log('🔄 Loading entities...')
       await loadEntities(config, options.entitiesPath)

@@ -83,8 +83,11 @@ export interface ProjectConfig {
  */
 export interface DatabaseConfig {
   /** @ai-field 数据库提供商 */
-  provider: DatabaseProvider
-  
+  provider?: DatabaseProvider
+
+  /** @ai-field 数据库类型（兼容性字段） */
+  type?: DatabaseProvider
+
   /** @ai-field 数据库连接 URL */
   url?: string
   
@@ -135,7 +138,7 @@ export interface DatabaseConfig {
 export interface SchemaConfig {
   /** @ai-field 实体文件模式 */
   entities?: string[]
-  
+
   /** @ai-field 输出配置 */
   output?: {
     /** @ai-field Prisma schema 输出路径 */
@@ -147,7 +150,18 @@ export interface SchemaConfig {
     /** @ai-field OpenAPI 文档输出路径 */
     openapi?: string
   }
-  
+
+  /** @ai-field 数据库配置（用于schema生成） */
+  database?: {
+    /** @ai-field 数据库提供商 */
+    provider?: DatabaseProvider
+    /** @ai-field 数据库连接 URL */
+    url?: string
+  }
+
+  /** @ai-field 是否启用软删除 */
+  softDelete?: boolean
+
   /** @ai-field 生成选项 */
   generate?: {
     /** @ai-field 是否生成 Prisma client */
@@ -166,15 +180,31 @@ export interface SchemaConfig {
  * @ai-purpose 定义认证系统配置
  */
 export interface AuthConfig extends OptionalConfig {
+  /** @ai-field 用户实体类型 */
+  userEntity?: string
+
   /** @ai-field 认证提供商 */
-  providers?: string[]
-  
+  providers?: Array<{
+    type: string
+    id: string
+    config: any
+  }> | string[]
+
+  /** @ai-field 权限配置 */
+  permissions?: {
+    strategy?: 'rbac' | 'abac'
+    hierarchical?: boolean
+    multiTenant?: boolean
+  }
+
   /** @ai-field 会话配置 */
   session?: {
     /** @ai-field 会话策略 */
     strategy?: 'jwt' | 'database'
     /** @ai-field 会话过期时间 */
     maxAge?: number
+    /** @ai-field 会话更新时间 */
+    updateAge?: number
     /** @ai-field 会话密钥 */
     secret?: string
   }
@@ -304,9 +334,21 @@ export interface LinchConfig {
   
   /** @ai-field 认证配置 */
   auth?: AuthConfig
-  
+
+  /** @ai-field tRPC 配置 */
+  trpc?: {
+    /** @ai-field API 端点 */
+    endpoint?: string
+    /** @ai-field 是否启用订阅 */
+    enableSubscriptions?: boolean
+    /** @ai-field 是否启用批处理 */
+    enableBatching?: boolean
+    /** @ai-field 最大批处理大小 */
+    maxBatchSize?: number
+  }
+
   /** @ai-field 插件配置 */
-  plugins?: PluginConfig
+  plugins?: PluginConfig | string[]
   
   /** @ai-field 开发配置 */
   dev?: DevConfig

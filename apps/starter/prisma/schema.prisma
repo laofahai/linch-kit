@@ -1,0 +1,186 @@
+// This file is auto-generated. Do not edit manually.
+// Generated from @linch-kit/schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id           String    @id
+  sessionToken String    @unique
+  userId       User?     @relation(fields: [userId], references: [id], onDelete: CASCADE)
+  expires      DateTime
+  userAgent    String?
+  ipAddress    String?
+  deviceType   String?
+  location     Json?     @db.JSON
+  tenantId     String?
+  status       String    @default("active")
+  lastActiveAt DateTime?
+  metadata     Json?     @db.JSON
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+
+  @@index([userId], map: "sessions_userId_idx")
+  @@index([expires], map: "sessions_expires_idx")
+  @@index([status], map: "sessions_status_idx")
+  @@index([tenantId], map: "sessions_tenantId_idx")
+  @@index([lastActiveAt], map: "sessions_lastActiveAt_idx")
+  @@map("sessions")
+}
+
+model Account {
+  id                String   @id
+  userId            User?    @relation(fields: [userId], references: [id], onDelete: CASCADE)
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Float?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now()) @updatedAt
+
+  @@unique([provider, providerAccountId], map: "accounts_provider_providerAccountId_key")
+  @@index([userId], map: "accounts_userId_idx")
+  @@map("accounts")
+}
+
+model Role {
+  id          String   @id
+  name        String   @unique
+  displayName String?
+  description String?
+  permissions Json?    @db.JSON
+  inherits    Json?    @db.JSON
+  tenantId    String?
+  type        String   @default("custom")
+  enabled     Boolean  @default(true)
+  priority    Int      @default(0)
+  metadata    Json?    @db.JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([tenantId], map: "roles_tenantId_idx")
+  @@index([type], map: "roles_type_idx")
+  @@index([enabled], map: "roles_enabled_idx")
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id
+  resource    String
+  action      String
+  identifier  String   @unique
+  displayName String?
+  description String?
+  conditions  Json?    @db.JSON
+  group       String?
+  tenantId    String?
+  enabled     Boolean  @default(true)
+  metadata    Json?    @db.JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([resource], map: "permissions_resource_idx")
+  @@index([action], map: "permissions_action_idx")
+  @@index([resource, action], map: "permissions_resource_action_idx")
+  @@index([group], map: "permissions_group_idx")
+  @@index([tenantId], map: "permissions_tenantId_idx")
+  @@index([enabled], map: "permissions_enabled_idx")
+  @@map("permissions")
+}
+
+model UserRole {
+  id         String    @id
+  userId     User?     @relation(fields: [userId], references: [id], onDelete: CASCADE)
+  roleId     Role?     @relation(fields: [roleId], references: [id], onDelete: CASCADE)
+  tenantId   String?
+  assignedAt DateTime
+  assignedBy String?
+  expiresAt  DateTime?
+  enabled    Boolean   @default(true)
+  metadata   Json?     @db.JSON
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+
+  @@unique([userId, roleId, tenantId], map: "user_roles_userId_roleId_tenantId_key")
+  @@index([userId], map: "user_roles_userId_idx")
+  @@index([roleId], map: "user_roles_roleId_idx")
+  @@index([tenantId], map: "user_roles_tenantId_idx")
+  @@index([enabled], map: "user_roles_enabled_idx")
+  @@index([expiresAt], map: "user_roles_expiresAt_idx")
+  @@map("user_roles")
+}
+
+model Department {
+  id          String      @id
+  name        String
+  parentId    Department? @relation(fields: [parentId], references: [id])
+  path        String
+  level       Int         @default(0)
+  managerId   User?       @relation(fields: [managerId], references: [id])
+  description String?
+  status      String      @default("active")
+  sort        Int         @default(0)
+  metadata    Json?       @db.JSON
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now()) @updatedAt
+
+  @@unique([path], map: "departments_path_key")
+  @@index([parentId], map: "departments_parentId_idx")
+  @@index([level], map: "departments_level_idx")
+  @@index([managerId], map: "departments_managerId_idx")
+  @@index([status], map: "departments_status_idx")
+  @@map("departments")
+}
+
+model UserDepartment {
+  id           String      @id
+  userId       User?       @relation(fields: [userId], references: [id], onDelete: CASCADE)
+  departmentId Department? @relation(fields: [departmentId], references: [id], onDelete: CASCADE)
+  position     String?
+  isManager    Boolean     @default(false)
+  level        Int?
+  reportTo     User?       @relation(fields: [reportTo], references: [id])
+  joinedAt     DateTime
+  leftAt       DateTime?
+  isPrimary    Boolean     @default(false)
+  metadata     Json?       @db.JSON
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @default(now()) @updatedAt
+
+  @@unique([userId, departmentId], map: "user_departments_userId_departmentId_key")
+  @@index([userId], map: "user_departments_userId_idx")
+  @@index([departmentId], map: "user_departments_departmentId_idx")
+  @@index([reportTo], map: "user_departments_reportTo_idx")
+  @@index([isPrimary], map: "user_departments_isPrimary_idx")
+  @@index([leftAt], map: "user_departments_leftAt_idx")
+  @@map("user_departments")
+}
+
+model Tenant {
+  id          String   @id
+  name        String
+  slug        String   @unique
+  domain      String?  @unique
+  description String?
+  settings    Json?    @db.JSON
+  status      String   @default("active")
+  plan        String?
+  metadata    Json?    @db.JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([status], map: "tenants_status_idx")
+  @@map("tenants")
+}

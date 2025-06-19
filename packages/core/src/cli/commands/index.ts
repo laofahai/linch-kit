@@ -22,16 +22,16 @@ export const builtinCommands: Record<string, CommandMetadata> = {
   'init': initCommand,
 
   // AI: 配置管理命令
-  'config-show': configCommands.show,
-  'config-set': configCommands.set,
-  'config-get': configCommands.get,
-  'config-validate': configCommands.validate,
+  'config:show': configCommands.show,
+  'config:set': configCommands.set,
+  'config:get': configCommands.get,
+  'config:validate': configCommands.validate,
 
   // AI: 插件管理命令
-  'plugin-list': pluginCommands.list,
-  'plugin-install': pluginCommands.install,
-  'plugin-uninstall': pluginCommands.uninstall,
-  'plugin-info': pluginCommands.info,
+  'plugin:list': pluginCommands['plugin:list'],
+  'plugin:install': pluginCommands['plugin:install'],
+  'plugin:uninstall': pluginCommands['plugin:uninstall'],
+  'plugin:info': pluginCommands['plugin:info'],
 
   // AI: 开发工具命令
   'dev': devCommands.dev,
