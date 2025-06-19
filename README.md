@@ -1,84 +1,152 @@
-# Turborepo starter
+# Linch Kit
 
-This Turborepo starter is maintained by the Turborepo core team.
+一个现代化的全栈开发工具包，基于 TypeScript + Turborepo + tRPC，提供类型安全、可扩展的开发体验。
 
-## Using this example
+## ✨ 特性
 
-Run the following command:
+- 🚀 **AI-First 设计** - 为 AI 辅助开发优化的架构和文档
+- 🔒 **端到端类型安全** - 从数据库到前端的完整类型安全
+- 📦 **Monorepo 架构** - 基于 Turborepo 的高效包管理
+- 🎯 **插件化系统** - 可扩展的插件架构
+- 🛠️ **开发工具链** - 完整的开发、测试、构建工具链
+- 📚 **完善文档** - 详细的 AI 上下文和开发文档
 
-```sh
-npx create-turbo@latest
+## 📁 项目结构
+
+### 应用 (Apps)
+
+- `starter` - 示例应用，展示 Linch Kit 的使用方式
+- `linch.tech` - 官方网站和文档站点
+
+### 包 (Packages)
+
+- `@linch-kit/core` - 核心工具包，CLI 和配置系统
+- `@linch-kit/types` - TypeScript 类型定义
+- `@linch-kit/auth-core` - 认证核心包
+- `@linch-kit/schema` - 数据模式定义和验证
+- `@linch-kit/trpc` - tRPC 集成包
+- `@linch-kit/crud` - CRUD 操作包
+- `@linch-kit/ui` - React UI 组件库
+
+所有包都使用 [TypeScript](https://www.typescriptlang.org/) 开发，确保类型安全。
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Node.js >= 18
+- pnpm >= 8.0.0
+
+### 安装和设置
+
+```bash
+# 克隆项目
+git clone <repository-url>
+cd linch-kit
+
+# 安装依赖
+pnpm install
+
+# 初始化配置
+pnpm setup
+
+# 验证环境
+pnpm validate
 ```
 
-## What's inside?
+### 开发
 
-This Turborepo includes the following packages/apps:
+```bash
+# 启动完整开发模式（推荐）
+pnpm dev
 
-### Apps and Packages
+# 只启动应用开发服务器
+pnpm dev:apps
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@linch-kit/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
+# 只监听包变化
+pnpm dev:packages
 ```
-cd my-turborepo
+
+### 构建
+
+```bash
+# 构建所有包
+pnpm build:packages
+
+# 构建所有应用
+pnpm build:apps
+
+# 构建全部
 pnpm build
 ```
 
-### Develop
+## 🧪 测试
 
-To develop all apps and packages, run the following command:
+```bash
+# 运行所有测试
+pnpm test
 
-```
-cd my-turborepo
-pnpm dev
-```
+# 监听模式
+pnpm test:watch
 
-### Remote Caching
+# 覆盖率报告
+pnpm test:coverage
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+# 类型检查
+pnpm check-types
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+# 代码检查
+pnpm lint
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
+# 代码格式化
+pnpm format
 ```
 
-## Useful Links
+## 📦 发布
 
-Learn more about the power of Turborepo:
+```bash
+# 添加变更集
+pnpm changeset
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+# 版本更新
+pnpm changeset:version
+
+# 发布到 npm
+pnpm changeset:publish
+
+# 或使用自动化发布脚本
+pnpm release
+```
+
+## 🛠️ 开发工具
+
+项目包含完整的开发工具链：
+
+- **TypeScript** - 静态类型检查
+- **ESLint** - 代码检查
+- **Prettier** - 代码格式化
+- **Vitest** - 单元测试
+- **Turborepo** - 构建编排和缓存
+- **Changesets** - 版本管理
+- **tsup** - 快速 TypeScript 打包
+
+## 📚 文档
+
+- [快速开始](./docs/quick-start.md) - 快速上手指南
+- [项目概览](./docs/project-overview.md) - 项目整体介绍
+- [Monorepo 架构](./docs/monorepo-architecture.md) - 架构设计说明
+- [AI 上下文](./ai-context/README.md) - AI 辅助开发文档
+
+## 🤝 贡献
+
+欢迎贡献代码！请查看我们的[贡献指南](./ai-context/workflows/development.md)了解开发流程。
+
+## 📄 许可证
+
+MIT License - 查看 [LICENSE](./LICENSE) 文件了解详情。
+
+## 🔗 相关链接
+
+- [Turborepo 文档](https://turborepo.com/docs)
+- [tRPC 文档](https://trpc.io/docs)
+- [TypeScript 文档](https://www.typescriptlang.org/docs)

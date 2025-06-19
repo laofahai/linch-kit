@@ -1,21 +1,141 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "globalDependencies": [
+    "configs/**",
+    "scripts/**",
+    "tools/**",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    ".changeset/**"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "CI",
+    "TURBO_TOKEN",
+    "TURBO_TEAM"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*",
+        "tsconfig.json",
+        "tsconfig.build.json",
+        "tsup.config.ts"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ]
     },
-    "lint": {
-      "dependsOn": ["^lint"]
+    "build:packages": {
+      "dependsOn": ["^build:packages"],
+      "inputs": [
+        "src/**",
+        "tsconfig.json",
+        "tsconfig.build.json",
+        "tsup.config.ts",
+        "package.json"
+      ],
+      "outputs": ["dist/**"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^build:packages"],
+      "inputs": [
+        "src/**",
+        "tsconfig.json",
+        "package.json"
+      ],
+      "outputs": []
+    },
+    "lint": {
+      "inputs": [
+        "src/**",
+        ".eslintrc*",
+        "eslint.config.*",
+        "package.json"
+      ],
+      "outputs": []
+    },
+    "lint:fix": {
+      "inputs": [
+        "src/**",
+        ".eslintrc*",
+        "eslint.config.*",
+        "package.json"
+      ],
+      "outputs": [],
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["^build:packages"],
+      "inputs": [
+        "src/**",
+        "test/**",
+        "__tests__/**",
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "jest.config.*",
+        "vitest.config.*",
+        "package.json"
+      ],
+      "outputs": ["coverage/**"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:coverage": {
+      "dependsOn": ["test"],
+      "outputs": ["coverage/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "clean": {
+      "cache": false,
+      "outputs": []
+    },
+    "clean:dist": {
+      "cache": false,
+      "outputs": []
+    },
+    "format": {
+      "inputs": [
+        "src/**",
+        "**/*.{ts,tsx,js,jsx,json,md}",
+        ".prettierrc*",
+        "prettier.config.*"
+      ],
+      "outputs": []
+    },
+    "format:fix": {
+      "inputs": [
+        "src/**",
+        "**/*.{ts,tsx,js,jsx,json,md}",
+        ".prettierrc*",
+        "prettier.config.*"
+      ],
+      "outputs": [],
+      "cache": false
+    },
+    "changeset": {
+      "cache": false,
+      "outputs": []
+    },
+    "version": {
+      "cache": false,
+      "outputs": []
+    },
+    "release": {
+      "dependsOn": ["build", "test", "lint"],
+      "cache": false,
+      "outputs": []
     }
   }
 }

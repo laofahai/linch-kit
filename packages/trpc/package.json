@@ -7,9 +7,9 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     }
   },
   "files": [
@@ -18,10 +18,9 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint src",
     "test": "vitest"
   },
   "keywords": [
@@ -36,9 +35,10 @@
   "author": "Linch Kit Team",
   "license": "MIT",
   "dependencies": {
-    "superjson": "^2.2.2",
     "@linch-kit/core": "workspace:*",
-    "@linch-kit/types": "workspace:*"
+    "@linch-kit/types": "workspace:*",
+    "superjson": "^2.2.2",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
@@ -48,16 +48,16 @@
     "vitest": "^1.0.0"
   },
   "peerDependencies": {
+    "@linch-kit/auth-core": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
+    "@tanstack/react-query": "^5.0.0",
     "@trpc/client": "^11.3.1",
     "@trpc/next": "^11.3.1",
     "@trpc/react-query": "^11.3.1",
     "@trpc/server": "^11.3.1",
-    "@linch-kit/auth-core": "workspace:*",
-    "@linch-kit/schema": "workspace:*",
-    "next-auth": "^4.24.11",
     "next": "^15.3.3",
-    "react": "^18.0.0",
-    "@tanstack/react-query": "^5.0.0"
+    "next-auth": "^4.24.11",
+    "react": "^18.0.0"
   },
   "peerDependenciesMeta": {
     "@linch-kit/auth-core": {

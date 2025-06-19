@@ -2,10 +2,19 @@
 
 import { createContext, useContext } from 'react'
 import { signOut as nextAuthSignOut, useSession } from 'next-auth/react'
-import type { User } from '@linch-kit/auth'
+
+// 临时类型定义，直到 auth-core 包构建完成
+interface AuthUser {
+  id: string
+  name?: string
+  email?: string
+  image?: string
+  role?: string
+  permissions?: string[]
+}
 
 type AuthContextType = {
-  user: User | null
+  user: AuthUser | null
   isLoading: boolean
   isAuthenticated: boolean
   signOut: () => Promise<void>
@@ -18,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
 
   // 从 session 中获取 user
-  const user = session?.user as User | null
+  const user = session?.user as AuthUser | null
   const isLoading = status === 'loading'
   const isAuthenticated = status === 'authenticated' && !!user
 

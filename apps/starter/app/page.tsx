@@ -1,17 +1,6 @@
-import { type ImageProps } from 'next/image'
-import { Button } from '@linch-kit/ui/shadcn'
-
-type Props = Omit<ImageProps, 'src'> & {
-  srcLight: string
-  srcDark: string
-}
+import { redirect } from 'next/navigation'
 
 export default function Home() {
-  return (
-    <div>
-      <div className={'text-red-500'}>hi</div>
-      <Button>hey</Button>
-      <h1 className="text-3xl font-bold underline"> Hello world! </h1>
-    </div>
-  )
+  // 重定向到仪表板
+  redirect('/dashboard')
 }
