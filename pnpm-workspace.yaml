@@ -1,33 +1,33 @@
 packages:
-  - 'packages/*'
-  - 'apps/*'
-  - 'tools/*'
+  - packages/*
+  - apps/*
+  - tools/*
 
-# 排除某些目录
 exclude:
   - '**/node_modules/**'
   - '**/dist/**'
   - '**/build/**'
   - '**/.next/**'
 
-# 共享依赖配置
-shared-workspace-lockfile: true
-link-workspace-packages: true
-prefer-workspace-packages: true
-
-# 安装配置
 hoist-pattern:
   - '@types/*'
-  - 'eslint*'
-  - 'prettier*'
-  - 'typescript'
-  - 'tsup'
-  - 'turbo'
-
-# 公共依赖提升
-public-hoist-pattern:
-  - '*'
+  - eslint*
+  - prettier*
+  - typescript
+  - tsup
+  - turbo
 
 ignoredBuiltDependencies:
   - contentlayer
+  - esbuild
   - protobufjs
+  - sharp
+
+link-workspace-packages: true
+
+prefer-workspace-packages: true
+
+public-hoist-pattern:
+  - '*'
+
+shared-workspace-lockfile: true

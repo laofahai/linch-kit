@@ -23,6 +23,7 @@ export class LinchCLI {
   private registry: CommandRegistry
   private pluginLoader: PluginLoader
   private configManager: ConfigManager
+  private initialized = false
 
   /**
    * @ai-constructor 初始化 CLI 应用
@@ -65,19 +66,29 @@ export class LinchCLI {
    * @ai-lifecycle 在解析命令前调用
    */
   async initialize(): Promise<void> {
+    // AI: 防止重复初始化
+    if (this.initialized) {
+      if (!process.env.LINCH_SILENT) {
+        console.log('AI: CLI system already initialized, skipping')
+      }
+      return
+    }
+
     try {
       // AI: 加载配置
       await this.loadConfiguration()
-      
+
       // AI: 注册内置命令
       this.registerBuiltinCommands()
-      
+
       // AI: 加载和注册插件
       await this.loadPlugins()
-      
+
       // AI: 设置错误处理
       this.setupErrorHandling()
-      
+
+      this.initialized = true
+
       if (!process.env.LINCH_SILENT) {
         console.log('AI: CLI system initialized successfully')
       }
@@ -133,12 +144,8 @@ export class LinchCLI {
    * @ai-purpose 配置全局错误处理和未知命令处理
    */
   private setupErrorHandling(): void {
-    // AI: 处理未知命令
-    this.program.on('command:*', () => {
-      console.error(`❌ Unknown command: ${this.program.args.join(' ')}`)
-      console.log('💡 Use --help to see available commands')
-      process.exit(1)
-    })
+    // AI: 让 Commander.js 自己处理未知命令，不需要自定义处理器
+    // Commander.js 会自动显示错误信息和帮助
 
     // AI: 处理未捕获的异常
     process.on('unhandledRejection', (reason, promise) => {

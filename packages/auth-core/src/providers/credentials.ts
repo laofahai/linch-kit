@@ -1,5 +1,5 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
-import type { CredentialsProvider as CredentialsProviderType } from '../types/auth'
+
 import type { AuthUser } from '../types/auth'
 import { authT } from '../i18n'
 
@@ -10,11 +10,14 @@ export interface CredentialsOptions {
   /** 认证函数 */
   authorize: (credentials: Record<string, string>) => Promise<AuthUser | null>
   /** 凭据字段配置 */
-  credentials?: Record<string, {
-    label: string
-    type: string
-    placeholder?: string
-  }>
+  credentials?: Record<
+    string,
+    {
+      label: string
+      type: string
+      placeholder?: string
+    }
+  >
   /** 提供者名称 */
   name?: string
   /** 提供者 ID */
@@ -32,13 +35,13 @@ export function createCredentialsProvider(options: CredentialsOptions) {
       email: {
         label: authT('signIn.email', {}, 'Email'),
         type: 'email',
-        placeholder: authT('signIn.emailPlaceholder', {}, 'Enter your email')
+        placeholder: authT('signIn.emailPlaceholder', {}, 'Enter your email'),
       },
       password: {
         label: authT('signIn.password', {}, 'Password'),
         type: 'password',
-        placeholder: authT('signIn.passwordPlaceholder', {}, 'Enter your password')
-      }
+        placeholder: authT('signIn.passwordPlaceholder', {}, 'Enter your password'),
+      },
     },
     async authorize(credentials) {
       try {
@@ -47,7 +50,7 @@ export function createCredentialsProvider(options: CredentialsOptions) {
         console.error('Credentials authentication error:', error)
         return null
       }
-    }
+    },
   })
 }
 
@@ -64,21 +67,21 @@ export function createEmailPasswordProvider(
       email: {
         label: authT('signIn.email', {}, 'Email'),
         type: 'email',
-        placeholder: authT('signIn.emailPlaceholder', {}, 'Enter your email')
+        placeholder: authT('signIn.emailPlaceholder', {}, 'Enter your email'),
       },
       password: {
         label: authT('signIn.password', {}, 'Password'),
         type: 'password',
-        placeholder: authT('signIn.passwordPlaceholder', {}, 'Enter your password')
-      }
+        placeholder: authT('signIn.passwordPlaceholder', {}, 'Enter your password'),
+      },
     },
-    authorize: async (credentials) => {
+    authorize: async credentials => {
       const { email, password } = credentials
       if (!email || !password) {
         throw new Error(authT('error.emailPasswordRequired', {}, 'Email and password are required'))
       }
       return await authorize(email, password)
-    }
+    },
   })
 }
 
@@ -95,21 +98,21 @@ export function createPhonePasswordProvider(
       phone: {
         label: authT('signIn.phone', {}, 'Phone'),
         type: 'tel',
-        placeholder: authT('signIn.phonePlaceholder', {}, 'Enter your phone number')
+        placeholder: authT('signIn.phonePlaceholder', {}, 'Enter your phone number'),
       },
       password: {
         label: authT('signIn.password', {}, 'Password'),
         type: 'password',
-        placeholder: authT('signIn.passwordPlaceholder', {}, 'Enter your password')
-      }
+        placeholder: authT('signIn.passwordPlaceholder', {}, 'Enter your password'),
+      },
     },
-    authorize: async (credentials) => {
+    authorize: async credentials => {
       const { phone, password } = credentials
       if (!phone || !password) {
         throw new Error(authT('error.phonePasswordRequired', {}, 'Phone and password are required'))
       }
       return await authorize(phone, password)
-    }
+    },
   })
 }
 
@@ -126,21 +129,23 @@ export function createUsernamePasswordProvider(
       username: {
         label: authT('signIn.username', {}, 'Username'),
         type: 'text',
-        placeholder: authT('signIn.usernamePlaceholder', {}, 'Enter your username')
+        placeholder: authT('signIn.usernamePlaceholder', {}, 'Enter your username'),
       },
       password: {
         label: authT('signIn.password', {}, 'Password'),
         type: 'password',
-        placeholder: authT('signIn.passwordPlaceholder', {}, 'Enter your password')
-      }
+        placeholder: authT('signIn.passwordPlaceholder', {}, 'Enter your password'),
+      },
     },
-    authorize: async (credentials) => {
+    authorize: async credentials => {
       const { username, password } = credentials
       if (!username || !password) {
-        throw new Error(authT('error.usernamePasswordRequired', {}, 'Username and password are required'))
+        throw new Error(
+          authT('error.usernamePasswordRequired', {}, 'Username and password are required')
+        )
       }
       return await authorize(username, password)
-    }
+    },
   })
 }
 
@@ -157,20 +162,22 @@ export function createPhoneCodeProvider(
       phone: {
         label: authT('signIn.phone', {}, 'Phone'),
         type: 'tel',
-        placeholder: authT('signIn.phonePlaceholder', {}, 'Enter your phone number')
+        placeholder: authT('signIn.phonePlaceholder', {}, 'Enter your phone number'),
       },
       code: {
         label: authT('signIn.verificationCode', {}, 'Verification Code'),
         type: 'text',
-        placeholder: authT('signIn.codePlaceholder', {}, 'Enter verification code')
-      }
+        placeholder: authT('signIn.codePlaceholder', {}, 'Enter verification code'),
+      },
     },
-    authorize: async (credentials) => {
+    authorize: async credentials => {
       const { phone, code } = credentials
       if (!phone || !code) {
-        throw new Error(authT('error.phoneCodeRequired', {}, 'Phone and verification code are required'))
+        throw new Error(
+          authT('error.phoneCodeRequired', {}, 'Phone and verification code are required')
+        )
       }
       return await authorize(phone, code)
-    }
+    },
   })
 }

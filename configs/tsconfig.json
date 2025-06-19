@@ -12,26 +12,16 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": false,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "incremental": true,
-    "composite": true,
-    "outDir": "dist",
-    "jsx": "react-jsx",
+    "noEmit": true,
     "allowJs": true
   },
   "include": [
     "*.ts",
-    "*.tsx"
+    "*.tsx",
+    "*.js"
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/*.test.tsx",
-    "**/*.spec.tsx"
+    "dist"
   ]
 }

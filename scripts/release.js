@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process')
-const { readFileSync, writeFileSync } = require('fs')
-const { join } = require('path')
-const { glob } = require('glob')
+import { execSync } from 'child_process'
+import { readFileSync, writeFileSync } from 'fs'
+import { join } from 'path'
+import { glob } from 'glob'
 
 /**
  * 发布脚本
@@ -206,9 +206,9 @@ class ReleaseManager {
 }
 
 // 运行发布
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const releaseManager = new ReleaseManager()
   releaseManager.release()
 }
 
-module.exports = { ReleaseManager }
+export { ReleaseManager }

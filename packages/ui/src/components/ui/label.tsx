@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
-
 import { cn } from "@linch-kit/ui/lib/utils"
 
 function Label({

@@ -20,7 +20,7 @@ export type { RouterInputs, RouterOutputs }
 
 // 获取基础 URL
 export const getBaseUrl = () => {
-  if (typeof window !== 'undefined') return ''
+  if (typeof globalThis !== 'undefined' && 'window' in globalThis) return ''
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   return `http://localhost:${process.env.PORT ?? 3000}`
 }
@@ -42,8 +42,8 @@ export function createTRPCClientConfig(options: TRPCClientOptions = {}) {
         transformer: options.transformer || superjson,
         fetch: options.fetch,
         headers: options.headers || (() => {
-          if (typeof window === 'undefined') return {}
-          const token = localStorage.getItem('sessionToken')
+          if (typeof globalThis === 'undefined' || !('window' in globalThis)) return {}
+          const token = (globalThis as any).localStorage?.getItem('sessionToken')
           return token ? { Authorization: `Bearer ${token}` } : {}
         }),
       }),

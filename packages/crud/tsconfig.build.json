@@ -1,21 +1,7 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../configs/tsconfig.build.json",
   "compilerOptions": {
-    "composite": false,
-    "incremental": false,
-    "tsBuildInfoFile": null,
-    "noEmit": false,
-    "emitDeclarationOnly": false,
-    "skipLibCheck": true
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+    "rootDir": "src"
+  }
 }
+

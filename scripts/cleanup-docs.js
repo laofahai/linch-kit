@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
 
 /**
  * 文档清理和整理脚本
@@ -574,9 +574,9 @@ Linch Kit 采用分层架构：
 }
 
 // 运行清理
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const cleaner = new DocumentationCleaner()
   cleaner.cleanup()
 }
 
-module.exports = { DocumentationCleaner }
+export { DocumentationCleaner }

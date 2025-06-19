@@ -71,7 +71,7 @@ export function extractTenant(req?: any): string | null {
 /**
  * 获取会话用户信息
  */
-export async function getSessionUser(req?: any): Promise<AuthUser | null> {
+export async function getSessionUser(_req?: any): Promise<AuthUser | null> {
   // 临时实现，等待 auth-core 集成
   // const session = await getSession(req)
   // return session?.user || null

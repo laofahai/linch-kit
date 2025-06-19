@@ -14,55 +14,80 @@ import { PluginLoader } from '../core/plugin-loader'
  */
 async function handlePluginList(context: CLIContext): Promise<void> {
   const pluginLoader = PluginLoader.getInstance()
-  
+  const { args = [] } = context
+  const options = args[args.length - 1] || {}
+  const verbose = options.verbose || context.verbose || false
+  const loadedOnly = options.loadedOnly || false
+  const discoveredOnly = options.discoveredOnly || false
+
   try {
     console.log('🔍 Discovering plugins...')
-    
+
     // AI: 发现所有插件
     const discoveryResult = await pluginLoader.discoverPlugins()
-    
-    console.log('\n📦 Discovered Plugins:')
-    console.log('=====================\n')
-    
-    if (discoveryResult.plugins.length === 0) {
-      console.log('   No plugins found')
-    } else {
-      discoveryResult.plugins.forEach(plugin => {
-        console.log(`📋 ${plugin.name}@${plugin.version}`)
-        if (plugin.description) {
-          console.log(`   ${plugin.description}`)
-        }
-        if (plugin.dependencies && plugin.dependencies.length > 0) {
-          console.log(`   Dependencies: ${plugin.dependencies.join(', ')}`)
-        }
-        if (plugin.aiTags && plugin.aiTags.length > 0) {
-          console.log(`   AI Tags: ${plugin.aiTags.join(', ')}`)
-        }
-        console.log()
-      })
+
+    if (!loadedOnly) {
+      console.log('\n📦 Discovered Plugins:')
+      console.log('=====================\n')
+
+      if (discoveryResult.plugins.length === 0) {
+        console.log('   No plugins found')
+      } else {
+        discoveryResult.plugins.forEach(plugin => {
+          console.log(`📋 ${plugin.name}@${plugin.version}`)
+          if (plugin.description) {
+            console.log(`   ${plugin.description}`)
+          }
+          if (verbose) {
+            if (plugin.dependencies && plugin.dependencies.length > 0) {
+              console.log(`   Dependencies: ${plugin.dependencies.join(', ')}`)
+            }
+            if (plugin.cliVersionRange) {
+              console.log(`   CLI Version Range: ${plugin.cliVersionRange}`)
+            }
+          }
+          if (plugin.aiTags && plugin.aiTags.length > 0) {
+            console.log(`   AI Tags: ${plugin.aiTags.join(', ')}`)
+          }
+          console.log()
+        })
+      }
     }
-    
-    // AI: 显示已加载的插件
-    const loadedPlugins = pluginLoader.getLoadedPlugins()
-    console.log('🚀 Loaded Plugins:')
-    console.log('==================\n')
-    
-    if (loadedPlugins.length === 0) {
-      console.log('   No plugins loaded')
-    } else {
-      loadedPlugins.forEach(plugin => {
-        console.log(`✅ ${plugin.name}@${plugin.version}`)
-      })
+
+    if (!discoveredOnly) {
+      // AI: 显示已加载的插件
+      const loadedPlugins = pluginLoader.getLoadedPlugins()
+      console.log('🚀 Loaded Plugins:')
+      console.log('==================\n')
+
+      if (loadedPlugins.length === 0) {
+        console.log('   No plugins loaded')
+      } else {
+        loadedPlugins.forEach(plugin => {
+          console.log(`✅ ${plugin.name}@${plugin.version}`)
+          if (verbose && plugin.description) {
+            console.log(`   ${plugin.description}`)
+          }
+        })
+      }
     }
-    
+
     // AI: 显示发现统计
     console.log('\n📊 Discovery Statistics:')
     console.log(`   - ${discoveryResult.plugins.length} plugins discovered`)
-    console.log(`   - ${loadedPlugins.length} plugins loaded`)
+    console.log(`   - ${pluginLoader.getLoadedPlugins().length} plugins loaded`)
     console.log(`   - ${discoveryResult.errors.length} errors encountered`)
     console.log(`   - ${discoveryResult.discoveryTime}ms discovery time`)
     console.log(`   - ${discoveryResult.scannedPaths.length} paths scanned`)
-    
+
+    // AI: 显示详细信息（仅在 verbose 模式下）
+    if (verbose) {
+      console.log('\n🔍 Scanned Paths:')
+      discoveryResult.scannedPaths.forEach(path => {
+        console.log(`   - ${path}`)
+      })
+    }
+
     // AI: 显示错误信息
     if (discoveryResult.errors.length > 0) {
       console.log('\n❌ Discovery Errors:')
@@ -70,7 +95,7 @@ async function handlePluginList(context: CLIContext): Promise<void> {
         console.log(`   - ${error.pluginPath}: ${error.error}`)
       })
     }
-    
+
   } catch (error) {
     console.error('❌ Failed to list plugins:', error)
     process.exit(1)
@@ -197,10 +222,14 @@ async function handlePluginInfo(context: CLIContext): Promise<void> {
  * @ai-purpose 导出所有插件相关命令
  */
 export const pluginCommands = {
-  list: {
+  'plugin:list': {
     description: 'List all discovered and loaded plugins',
     handler: handlePluginList,
     options: [
+      {
+        flags: '-v, --verbose',
+        description: 'Show detailed plugin information'
+      },
       {
         flags: '--loaded-only',
         description: 'Show only loaded plugins'
@@ -212,13 +241,14 @@ export const pluginCommands = {
     ],
     examples: [
       'linch plugin:list',
+      'linch plugin:list --verbose',
       'linch plugin:list --loaded-only'
     ],
     category: 'plugin',
     aiTags: ['plugin', 'list', 'discovery', 'management']
   } as CommandMetadata,
 
-  install: {
+  'plugin:install': {
     description: 'Install a plugin',
     handler: handlePluginInstall,
     arguments: [
@@ -246,7 +276,7 @@ export const pluginCommands = {
     aiTags: ['plugin', 'install', 'package-management']
   } as CommandMetadata,
 
-  uninstall: {
+  'plugin:uninstall': {
     description: 'Uninstall a plugin',
     handler: handlePluginUninstall,
     arguments: [
@@ -264,7 +294,7 @@ export const pluginCommands = {
     aiTags: ['plugin', 'uninstall', 'package-management']
   } as CommandMetadata,
 
-  info: {
+  'plugin:info': {
     description: 'Show detailed information about a plugin',
     handler: handlePluginInfo,
     arguments: [

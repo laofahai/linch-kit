@@ -198,22 +198,27 @@ export function generateOpenAPISpec(options: {
 
 /**
  * 将 OpenAPI 规范写入文件
+ * 注意：此函数仅在 Node.js 环境中可用
  */
 export async function writeOpenAPISpec(
   outputPath: string = './docs/api.json',
   options?: Parameters<typeof generateOpenAPISpec>[0]
 ): Promise<void> {
+  if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
+    throw new Error('writeOpenAPISpec is only available in Node.js environment')
+  }
+
   const fs = await import('fs/promises')
   const path = await import('path')
-  
+
   const spec = generateOpenAPISpec(options)
-  
+
   // 确保目录存在
   const dir = path.dirname(outputPath)
   await fs.mkdir(dir, { recursive: true })
-  
+
   // 写入文件
   await fs.writeFile(outputPath, JSON.stringify(spec, null, 2), 'utf-8')
-  
+
   console.log(`✅ OpenAPI specification generated at: ${outputPath}`)
 }

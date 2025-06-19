@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process')
-const { readFileSync, writeFileSync, existsSync } = require('fs')
-const { join } = require('path')
+import { execSync } from 'child_process'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { join } from 'path'
 
 /**
  * 测试完整的 monorepo 工作流
@@ -185,12 +185,12 @@ class WorkflowTester {
   /**
    * 10. 测试发布流程（dry run）
    */
-  testRelease() {
+  async testRelease() {
     console.log('\n📋 10. 测试发布流程...')
 
     // 备份当前状态
     console.log('📦 备份当前 package.json 文件...')
-    const { glob } = require('glob')
+    const { glob } = await import('glob')
     const packagePaths = glob.sync('packages/*/package.json')
     const backups = new Map()
 
@@ -215,7 +215,7 @@ class WorkflowTester {
 
       // 测试依赖替换
       console.log('🔄 测试依赖替换...')
-      const { ReleaseManager } = require('./release.js')
+      const { ReleaseManager } = await import('./release.js')
       const releaseManager = new ReleaseManager()
 
       // 只测试依赖替换，不实际发布
@@ -296,7 +296,7 @@ class WorkflowTester {
       this.lint()
       this.runTests()
       this.analyzeDependencies()
-      this.testRelease()
+      await this.testRelease()
 
     } catch (error) {
       console.error('\n💥 测试过程中发生严重错误:', error.message)
@@ -308,9 +308,9 @@ class WorkflowTester {
 }
 
 // 运行测试
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const tester = new WorkflowTester()
   tester.runFullTest()
 }
 
-module.exports = { WorkflowTester }
+export { WorkflowTester }

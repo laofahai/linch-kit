@@ -55,9 +55,12 @@ export class CommandRegistry {
    * @ai-validation 验证命令名格式和元数据完整性
    */
   registerCommand(name: string, metadata: CommandMetadata): void {
-    // AI: 验证命令名唯一性
+    // AI: 检查命令是否已注册，如果是则跳过
     if (this.commands.has(name)) {
-      throw new Error(`AI: Command '${name}' already registered`)
+      if (!process.env.LINCH_SILENT) {
+        console.log(`AI: Command '${name}' already registered, skipping`)
+      }
+      return
     }
 
     // AI: 验证命令元数据
@@ -67,6 +70,7 @@ export class CommandRegistry {
     this.commands.set(name, metadata)
 
     // AI: 创建 Commander.js 命令实例
+    // 支持冒号分隔的命令格式，如 schema:generate:prisma
     const command = this.rootCommand
       .command(name)
       .description(metadata.description)
@@ -94,7 +98,7 @@ export class CommandRegistry {
       try {
         // AI: 创建执行上下文
         const context = this.createExecutionContext(name, args)
-        
+
         // AI: 执行命令处理器
         await metadata.handler(context)
       } catch (error) {
@@ -103,7 +107,9 @@ export class CommandRegistry {
       }
     })
 
-    console.log(`AI: Command '${name}' registered successfully`)
+    if (!process.env.LINCH_SILENT) {
+      console.log(`AI: Command '${name}' registered successfully`)
+    }
   }
 
   /**
@@ -114,20 +120,9 @@ export class CommandRegistry {
    * @ai-error-handling 单个命令失败不影响其他命令注册
    */
   registerCommands(commands: Record<string, CommandMetadata>): void {
-    const errors: string[] = []
-
     Object.entries(commands).forEach(([name, metadata]) => {
-      try {
-        this.registerCommand(name, metadata)
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        errors.push(`AI: Failed to register command '${name}': ${errorMessage}`)
-      }
+      this.registerCommand(name, metadata)
     })
-
-    if (errors.length > 0) {
-      console.warn('AI: Some commands failed to register:', errors)
-    }
   }
 
   /**
@@ -200,9 +195,10 @@ export class CommandRegistry {
       throw new Error(`AI: Command '${name}' missing or invalid handler`)
     }
 
-    // AI: 验证命令名格式 (kebab-case)
-    if (!/^[a-z][a-z0-9-]*$/.test(name)) {
-      throw new Error(`AI: Command name '${name}' must be kebab-case`)
+    // AI: 验证命令名格式 (kebab-case 或 colon-separated)
+    // 支持 kebab-case (如 plugin-list) 和 colon-separated (如 schema:generate:prisma)
+    if (!/^[a-z][a-z0-9:-]*$/.test(name)) {
+      throw new Error(`AI: Command name '${name}' must be kebab-case or colon-separated`)
     }
   }
 

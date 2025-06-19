@@ -10,6 +10,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
+    },
+    "./cli": {
+      "types": "./dist/cli.d.ts",
+      "import": "./dist/cli.mjs",
+      "require": "./dist/cli.js"
     }
   },
   "files": [
@@ -40,7 +45,6 @@
     "@linch-kit/core": "workspace:*",
     "@linch-kit/types": "workspace:*",
     "commander": "^11.1.0",
-    "fs": "0.0.1-security",
     "next-auth": "^4.24.5",
     "zod": "^3.22.4"
   },

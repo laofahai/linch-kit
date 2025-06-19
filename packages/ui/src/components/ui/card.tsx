@@ -1,5 +1,4 @@
 import * as React from "react"
-
 import { cn } from "@linch-kit/ui/lib/utils"
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {

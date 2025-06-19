@@ -167,7 +167,7 @@ export const inputSizeMiddleware = (maxSizeBytes: number = 1024 * 1024) => // �
 /**
  * 请求日志中间件
  */
-export const loggingMiddleware = middleware(async ({ path, type, input, ctx, next }) => {
+export const loggingMiddleware = middleware(async ({ path, type, ctx, next }) => {
   const start = Date.now()
   const userId = ctx.user?.id || 'anonymous'
   

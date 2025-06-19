@@ -6,7 +6,6 @@ import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
 
 import type { Context } from './context'
-import type { AuthMiddlewareOptions } from './types'
 
 /**
  * 创建 tRPC 实例

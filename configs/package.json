@@ -1,0 +1,26 @@
+{
+  "name": "@linch-kit/configs",
+  "version": "0.1.0",
+  "description": "Shared configuration files for Linch Kit monorepo",
+  "private": true,
+  "files": [
+    "*.json",
+    "*.ts",
+    "*.js"
+  ],
+  "scripts": {
+    "build": "echo 'No build needed for config files'",
+    "clean": "echo 'No clean needed for config files'",
+    "type-check": "echo 'No type check needed for config files'",
+    "lint": "echo 'No lint needed for config files'",
+    "test": "echo 'No test needed for config files'"
+  },
+  "keywords": [
+    "config",
+    "typescript",
+    "tsup",
+    "monorepo"
+  ],
+  "author": "Linch Kit Team",
+  "license": "MIT"
+}

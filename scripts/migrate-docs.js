@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
 
 /**
  * 文档迁移脚本
@@ -383,9 +383,9 @@ TODO: 添加文档内容
 }
 
 // 运行迁移
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const migrator = new DocumentationMigrator()
   migrator.migrate()
 }
 
-module.exports = { DocumentationMigrator }
+export { DocumentationMigrator }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
 
 const packagesDir = path.join(__dirname, '../packages')
 const packages = fs.readdirSync(packagesDir).filter(dir => {

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const { readFileSync } = require('fs')
-const { join } = require('path')
-const { glob } = require('glob')
+import { readFileSync } from 'fs'
+import { join } from 'path'
+import { glob } from 'glob'
 
 /**
  * 依赖图分析工具
@@ -299,9 +299,9 @@ class DependencyGraph {
 }
 
 // 运行分析
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const graph = new DependencyGraph()
   graph.analyze().catch(console.error)
 }
 
-module.exports = { DependencyGraph }
+export { DependencyGraph }

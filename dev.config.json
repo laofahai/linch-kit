@@ -1,0 +1,23 @@
+{
+  "devServer": {
+    "port": 3000,
+    "host": "localhost",
+    "hot": true,
+    "open": true
+  },
+  "build": {
+    "watch": true,
+    "sourcemap": true,
+    "minify": false
+  },
+  "proxy": {
+    "/api": {
+      "target": "http://localhost:3001",
+      "changeOrigin": true
+    }
+  },
+  "env": {
+    "NODE_ENV": "development",
+    "DEBUG": "linch-kit:*"
+  }
+}

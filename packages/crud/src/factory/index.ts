@@ -9,7 +9,8 @@ import type {
   DataSource,
   CRUDPermissions,
   ValidationConfig,
-  TRPCRouterOptions
+  TRPCRouterOptions,
+  PaginatedResponse
 } from '../types'
 
 /**
@@ -314,30 +315,30 @@ export function createRESTDataSource<T>(config: {
   }
 
   return {
-    async list(options) {
+    async list(options, _context) {
       const url = new URL(config.baseURL + endpoints.list)
-      
+
       if (options?.pagination) {
         url.searchParams.set('page', String(options.pagination.page))
         url.searchParams.set('limit', String(options.pagination.limit))
       }
 
       const response = await fetch(url.toString(), { headers })
-      return response.json()
+      return response.json() as Promise<PaginatedResponse<T>>
     },
 
-    async get(id) {
+    async get(id, _context) {
       const url = config.baseURL + endpoints.get.replace(':id', id)
       const response = await fetch(url, { headers })
-      return response.json()
+      return response.json() as Promise<T | null>
     },
 
-    async search(options) {
+    async search(options, _context) {
       const url = new URL(config.baseURL + endpoints.search)
       url.searchParams.set('q', options.query)
-      
+
       const response = await fetch(url.toString(), { headers })
-      return response.json()
+      return response.json() as Promise<PaginatedResponse<T>>
     },
 
     async count() {
@@ -345,24 +346,24 @@ export function createRESTDataSource<T>(config: {
       return result.pagination.total
     },
 
-    async create(data) {
+    async create(data, _context) {
       const url = config.baseURL + endpoints.create
       const response = await fetch(url, {
         method: 'POST',
         headers,
         body: JSON.stringify(data)
       })
-      return response.json()
+      return response.json() as Promise<T>
     },
 
-    async update(id, data) {
+    async update(id, data, _context) {
       const url = config.baseURL + endpoints.update.replace(':id', id)
       const response = await fetch(url, {
         method: 'PUT',
         headers,
         body: JSON.stringify(data)
       })
-      return response.json()
+      return response.json() as Promise<T>
     },
 
     async delete(id) {

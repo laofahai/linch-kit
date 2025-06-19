@@ -6,15 +6,14 @@
  * @ai-dependencies glob, path, fs, @linch-kit/config
  */
 
-import { glob } from 'glob'
 import { pathToFileURL } from 'url'
-import { resolve, dirname, join } from 'path'
+import { resolve, join } from 'path'
 import { existsSync, readFileSync } from 'fs'
-import type {
-  CommandPlugin,
-  PluginDiscoveryResult,
-  CLIContext
-} from '../../types/cli'
+
+import { glob } from 'glob'
+
+import type { CommandPlugin, PluginDiscoveryResult } from '../../types'
+
 import type { CommandRegistry } from './command-registry'
 
 /**
@@ -67,7 +66,7 @@ export class PluginLoader {
    */
   async discoverPlugins(searchPaths?: string[]): Promise<PluginDiscoveryResult> {
     const cacheKey = JSON.stringify(searchPaths || 'default')
-    
+
     // AI: 检查缓存
     if (this.discoveryCache.has(cacheKey)) {
       return this.discoveryCache.get(cacheKey)!
@@ -80,23 +79,25 @@ export class PluginLoader {
 
     // AI: 默认搜索路径
     const defaultSearchPaths = [
+      'node_modules/@linch-kit/*',
       'node_modules/@linch-kit/plugin-*',
       'node_modules/@*/linch-kit-plugin-*',
       'plugins/*',
       '../plugins/*',
-      process.env.LINCH_PLUGINS_PATH || ''
+      '../../packages/*',
+      process.env.LINCH_PLUGINS_PATH || '',
     ].filter(Boolean)
 
     const allSearchPaths = searchPaths || defaultSearchPaths
 
     // AI: 并行扫描所有搜索路径
-    const discoveryPromises = allSearchPaths.map(async (searchPath) => {
+    const discoveryPromises = allSearchPaths.map(async searchPath => {
       try {
         return await this.scanPluginPath(searchPath)
       } catch (error) {
         errors.push({
           pluginPath: searchPath,
-          error: error instanceof Error ? error.message : String(error)
+          error: error instanceof Error ? error.message : String(error),
         })
         return { plugins: [], scannedPaths: [searchPath] }
       }
@@ -117,7 +118,7 @@ export class PluginLoader {
       plugins: uniquePlugins,
       errors,
       discoveryTime: Date.now() - startTime,
-      scannedPaths
+      scannedPaths,
     }
 
     // AI: 缓存结果
@@ -143,7 +144,7 @@ export class PluginLoader {
     try {
       // AI: 使用 glob 查找匹配的目录
       const matches = await glob(searchPath, {
-        cwd: process.cwd()
+        cwd: process.cwd(),
       })
 
       for (const match of matches) {
@@ -186,7 +187,7 @@ export class PluginLoader {
     try {
       // AI: 读取和解析 package.json
       const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
-      
+
       // AI: 验证是否为 Linch Kit 插件
       if (!this.isLinchKitPlugin(packageJson)) {
         return null
@@ -200,7 +201,35 @@ export class PluginLoader {
 
       // AI: 动态导入插件模块
       const pluginModule = await import(pathToFileURL(entryPoint).href)
-      const plugin = pluginModule.default || pluginModule
+      let plugin = pluginModule.default || pluginModule
+
+      // AI: 如果模块导出的不是直接的插件对象，尝试查找插件
+      if (!this.validatePluginInterface(plugin)) {
+        // 尝试查找常见的插件导出名称
+        const possiblePluginNames = [
+          `${packageJson.name.replace('@linch-kit/', '')}CliPlugin`,
+          `${packageJson.name.replace('@linch-kit/', '')}Plugin`,
+          'cliPlugin',
+          'plugin'
+        ]
+
+        for (const pluginName of possiblePluginNames) {
+          if (plugin[pluginName] && this.validatePluginInterface(plugin[pluginName])) {
+            plugin = plugin[pluginName]
+            break
+          }
+        }
+
+        // 最后尝试查找任何符合接口的属性
+        if (!this.validatePluginInterface(plugin)) {
+          for (const [key, value] of Object.entries(plugin)) {
+            if (this.validatePluginInterface(value)) {
+              plugin = value
+              break
+            }
+          }
+        }
+      }
 
       // AI: 验证插件接口
       if (!this.validatePluginInterface(plugin)) {
@@ -222,25 +251,40 @@ export class PluginLoader {
    * @ai-validation 检查包名、关键词、依赖等标识
    */
   private isLinchKitPlugin(packageJson: any): boolean {
-    // AI: 检查包名模式
     const name = packageJson.name || ''
-    const isPluginName = name.includes('linch-kit-plugin') || 
-                        name.startsWith('@linch-kit/plugin-') ||
-                        name.startsWith('@*/linch-kit-plugin-')
+
+    // AI: 首先检查是否明确标识为插件
+    const isExplicitPlugin =
+      name.includes('linch-kit-plugin') ||
+      name.startsWith('@linch-kit/plugin-') ||
+      name.startsWith('@*/linch-kit-plugin-')
 
     // AI: 检查关键词
     const keywords = packageJson.keywords || []
-    const hasPluginKeyword = keywords.includes('linch-kit-plugin') ||
-                            keywords.includes('linch-kit') ||
-                            keywords.includes('cli-plugin')
+    const hasPluginKeyword =
+      keywords.includes('linch-kit-plugin') ||
+      keywords.includes('cli-plugin')
 
-    // AI: 检查依赖
-    const dependencies = { ...packageJson.dependencies, ...packageJson.peerDependencies }
-    const hasLinchKitDep = Object.keys(dependencies).some(dep => 
-      dep.startsWith('@linch-kit/') || dep === 'linch-kit'
-    )
+    // AI: 检查是否有 CLI 相关的导出或文件
+    const hasCliExport =
+      packageJson.exports && (packageJson.exports['./cli'] || packageJson.exports.cli)
 
-    return isPluginName || hasPluginKeyword || hasLinchKitDep
+    // AI: 检查是否有 CLI 字段
+    const hasCliField = !!packageJson.cli
+
+    // AI: 对于 @linch-kit/ 包，只有明确有 CLI 插件功能的才被认为是插件
+    if (name.startsWith('@linch-kit/')) {
+      // 已知的有 CLI 插件功能的包
+      const knownCliPluginPackages = [
+        '@linch-kit/auth-core',
+        '@linch-kit/schema'
+      ]
+
+      return knownCliPluginPackages.includes(name) || hasCliField
+    }
+
+    // AI: 对于其他包，使用更严格的检查
+    return isExplicitPlugin || hasPluginKeyword || hasCliExport || hasCliField
   }
 
   /**
@@ -252,7 +296,24 @@ export class PluginLoader {
    * @ai-algorithm 按优先级检查：cli 字段 > main 字段 > 默认文件
    */
   private resolvePluginEntry(pluginPath: string, packageJson: any): string | null {
-    // AI: 优先级1：检查 cli 字段（专门用于 CLI 插件）
+    // AI: 优先级1：检查 exports 中的 cli-plugin 字段（专门用于 CLI 插件）
+    if (packageJson.exports) {
+      const cliPluginExport = packageJson.exports['./cli-plugin']
+      if (cliPluginExport) {
+        const cliPluginPath =
+          typeof cliPluginExport === 'string'
+            ? cliPluginExport
+            : cliPluginExport.require || cliPluginExport.import || cliPluginExport.default
+        if (cliPluginPath) {
+          const fullPath = join(pluginPath, cliPluginPath)
+          if (existsSync(fullPath)) {
+            return fullPath
+          }
+        }
+      }
+    }
+
+    // AI: 优先级2：检查 cli 字段（专门用于 CLI 插件）
     if (packageJson.cli) {
       const cliEntry = join(pluginPath, packageJson.cli)
       if (existsSync(cliEntry)) {
@@ -260,7 +321,7 @@ export class PluginLoader {
       }
     }
 
-    // AI: 优先级2：检查 main 字段
+    // AI: 优先级3：检查 main 字段
     if (packageJson.main) {
       const mainEntry = join(pluginPath, packageJson.main)
       if (existsSync(mainEntry)) {
@@ -268,13 +329,19 @@ export class PluginLoader {
       }
     }
 
-    // AI: 优先级3：检查默认入口文件
+    // AI: 优先级4：检查默认入口文件
     const defaultEntries = [
-      'cli.js', 'cli.ts',
-      'index.js', 'index.ts',
-      'src/cli.js', 'src/cli.ts',
-      'src/index.js', 'src/index.ts',
-      'dist/cli.js', 'dist/index.js'
+      'cli.js',
+      'cli.ts',
+      'index.js',
+      'index.ts',
+      'src/cli.js',
+      'src/cli.ts',
+      'src/index.js',
+      'src/index.ts',
+      'dist/cli.js',
+      'dist/index.js',
+      'dist/plugins/cli-plugin.js',
     ]
 
     for (const entry of defaultEntries) {
@@ -334,15 +401,15 @@ export class PluginLoader {
   private compareVersions(version1: string, version2: string): number {
     const v1Parts = version1.split('.').map(Number)
     const v2Parts = version2.split('.').map(Number)
-    
+
     for (let i = 0; i < Math.max(v1Parts.length, v2Parts.length); i++) {
       const v1Part = v1Parts[i] || 0
       const v2Part = v2Parts[i] || 0
-      
+
       if (v1Part > v2Part) return 1
       if (v1Part < v2Part) return -1
     }
-    
+
     return 0
   }
 
@@ -403,7 +470,7 @@ export class PluginLoader {
       if (visiting.has(pluginName)) {
         throw new Error(`AI: Circular dependency detected involving plugin '${pluginName}'`)
       }
-      
+
       if (visited.has(pluginName)) {
         return
       }

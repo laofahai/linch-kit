@@ -16,17 +16,14 @@ export * from './i18n'
 // Generators exports
 export * from './generators'
 
-// Plugin exports (for core package integration) - 只导出插件实例，不导出类型
-export { authCoreCliPlugin, registerAuthCoreCliPlugin } from './plugins/cli-plugin'
+// Config plugin exports (safe for frontend) - 只导出配置插件，不导出 CLI 插件
 export { authCoreConfigPlugin, registerAuthCoreConfigPlugin } from './plugins/config-plugin'
 
 // Legacy config exports (for backward compatibility)
 // Note: config functionality moved to plugins
 
-// Auto-register plugins when package is imported
-import { registerAuthCoreCliPlugin } from './plugins/cli-plugin'
+// Auto-register config plugin when package is imported (safe for frontend)
 import { registerAuthCoreConfigPlugin } from './plugins/config-plugin'
 
-// Register plugins automatically
-registerAuthCoreCliPlugin()
+// Register config plugin automatically (CLI plugin moved to separate entry)
 registerAuthCoreConfigPlugin()

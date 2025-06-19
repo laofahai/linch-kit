@@ -202,19 +202,24 @@ function schemaToCode(schema: z.ZodSchema): string {
 
 /**
  * 写入验证器文件
+ * 注意：此函数仅在 Node.js 环境中可用
  */
 export async function writeValidators(outputPath: string = './src/validators/index.ts'): Promise<void> {
+  if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
+    throw new Error('writeValidators is only available in Node.js environment')
+  }
+
   const fs = await import('fs/promises')
   const path = await import('path')
-  
+
   const code = generateValidatorCode()
-  
+
   // 确保目录存在
   const dir = path.dirname(outputPath)
   await fs.mkdir(dir, { recursive: true })
-  
+
   // 写入文件
   await fs.writeFile(outputPath, code, 'utf-8')
-  
+
   console.log(`✅ Validators generated at: ${outputPath}`)
 }

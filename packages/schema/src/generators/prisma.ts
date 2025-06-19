@@ -334,6 +334,7 @@ datasource db {
 
 /**
  * 将 Prisma Schema 写入文件
+ * 注意：此函数仅在 Node.js 环境中可用
  */
 export async function writePrismaSchema(
   outputPath: string = './prisma/schema.prisma',
@@ -342,17 +343,21 @@ export async function writePrismaSchema(
     provider?: 'postgresql' | 'mysql' | 'sqlite' | 'sqlserver'
   }
 ): Promise<void> {
+  if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
+    throw new Error('writePrismaSchema is only available in Node.js environment')
+  }
+
   const fs = await import('fs/promises')
   const path = await import('path')
-  
+
   const schema = generatePrismaSchema(options?.databaseUrl, options?.provider)
-  
+
   // 确保目录存在
   const dir = path.dirname(outputPath)
   await fs.mkdir(dir, { recursive: true })
-  
+
   // 写入文件
   await fs.writeFile(outputPath, schema, 'utf-8')
-  
+
   console.log(`✅ Prisma schema generated at: ${outputPath}`)
 }

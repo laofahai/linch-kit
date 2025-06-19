@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const fs = require('fs')
-const path = require('path')
-const { glob } = require('glob')
+import fs from 'fs'
+import path from 'path'
+import { glob } from 'glob'
 
 /**
  * 批量更新所有包的配置文件
@@ -286,9 +286,9 @@ export default createLibraryConfig({
 }
 
 // 运行更新
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const updater = new ConfigUpdater()
   updater.updateAll()
 }
 
-module.exports = { ConfigUpdater }
+export { ConfigUpdater }

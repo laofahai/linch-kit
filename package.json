@@ -1,6 +1,7 @@
 {
   "name": "linch-kit",
   "private": true,
+  "type": "module",
   "description": "AI-First 全栈开发工具包",
   "keywords": ["linch-kit", "ai-first", "typescript", "monorepo", "trpc", "full-stack"],
   "author": "Linch Tech",

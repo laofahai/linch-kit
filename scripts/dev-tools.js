@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const { execSync, spawn } = require('child_process')
-const { readFileSync, writeFileSync, existsSync } = require('fs')
-const { join } = require('path')
-const { glob } = require('glob')
-const chokidar = require('chokidar')
+import { execSync, spawn } from 'child_process'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { join } from 'path'
+import { glob } from 'glob'
+import chokidar from 'chokidar'
 
 /**
  * 开发工具集
@@ -333,7 +333,7 @@ class DevTools {
 }
 
 // 命令行接口
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const devTools = new DevTools()
   const command = process.argv[2]
 
@@ -374,4 +374,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { DevTools }
+export { DevTools }

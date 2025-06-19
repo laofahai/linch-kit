@@ -237,45 +237,55 @@ import { generateMockData } from '@linch-kit/schema'
 
 /**
  * 写入 Mock 工厂文件
+ * 注意：此函数仅在 Node.js 环境中可用
  */
 export async function writeMockFactories(outputPath: string = './src/mocks/index.ts'): Promise<void> {
+  if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
+    throw new Error('writeMockFactories is only available in Node.js environment')
+  }
+
   const fs = await import('fs/promises')
   const path = await import('path')
-  
+
   const code = generateMockFactoryCode()
-  
+
   // 确保目录存在
   const dir = path.dirname(outputPath)
   await fs.mkdir(dir, { recursive: true })
-  
+
   // 写入文件
   await fs.writeFile(outputPath, code, 'utf-8')
-  
+
   console.log(`✅ Mock factories generated at: ${outputPath}`)
 }
 
 /**
  * 生成测试数据 JSON 文件
+ * 注意：此函数仅在 Node.js 环境中可用
  */
 export async function generateTestDataFiles(
   outputDir: string = './test-data',
   config: MockConfig = { count: 10 }
 ): Promise<void> {
+  if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
+    throw new Error('generateTestDataFiles is only available in Node.js environment')
+  }
+
   const fs = await import('fs/promises')
   const path = await import('path')
-  
+
   const allMockData = generateAllMockData(config)
-  
+
   // 确保目录存在
   await fs.mkdir(outputDir, { recursive: true })
-  
+
   // 为每个实体生成单独的 JSON 文件
   for (const [entityName, data] of Object.entries(allMockData)) {
     const filePath = path.join(outputDir, `${entityName.toLowerCase()}.json`)
     await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8')
     console.log(`✅ Test data for ${entityName} generated at: ${filePath}`)
   }
-  
+
   // 生成合并的数据文件
   const allDataPath = path.join(outputDir, 'all.json')
   await fs.writeFile(allDataPath, JSON.stringify(allMockData, null, 2), 'utf-8')

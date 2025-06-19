@@ -53,21 +53,33 @@
     "zod": "^3.25.64"
   },
   "devDependencies": {
+    "@linch-kit/core": "workspace:*",
     "@types/node": "^24.0.3",
     "tsup": "^8.5.0",
     "tsx": "^4.19.2",
     "typescript": "5.8.3"
   },
+
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
+    "./generators": {
+      "types": "./dist/generators.d.ts",
+      "import": "./dist/generators.mjs",
+      "require": "./dist/generators.js"
+    },
     "./cli": {
       "types": "./dist/cli/index.d.ts",
       "import": "./dist/cli/index.mjs",
       "require": "./dist/cli/index.js"
+    },
+    "./cli-plugin": {
+      "types": "./dist/plugins/cli-plugin.d.ts",
+      "import": "./dist/plugins/cli-plugin.mjs",
+      "require": "./dist/plugins/cli-plugin.js"
     }
   },
   "engines": {
