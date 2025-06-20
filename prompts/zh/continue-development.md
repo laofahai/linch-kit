@@ -36,6 +36,39 @@
 **架构**: Turborepo Monorepo
 **语言**: 当前阶段全部使用中文
 
+## 🔒 强制执行的开发规范
+
+**⚠️ 不可违背声明**：必须严格遵循 [`ai-context/zh/standards/development-standards.md`](../ai-context/zh/standards/development-standards.md)
+
+### 开发前必须检查的规范清单：
+- [ ] 已阅读并理解开发标准文档
+- [ ] 已查看文档最佳实践：[`ai-context/zh/management/documentation-best-practices.md`](../ai-context/zh/management/documentation-best-practices.md)
+- [ ] 已了解当前项目状态和优先级
+
+### 强制执行的开发流程：
+
+1. **代码修改流程**：
+   - 使用 `codebase-retrieval` 工具详细了解相关代码
+   - 使用 `str-replace-editor` 进行精确修改，禁止重写整个文件
+   - 每次修改后执行 `pnpm lint --fix`
+
+2. **JSDoc 文档要求**：
+   - 所有新增/修改的方法必须包含完整 JSDoc
+   - 必须包含：@description, @param, @returns, @throws, @example, @since
+
+3. **验证要求**：
+   - 每个修改步骤后立即验证
+   - 使用提供的验证命令确认功能正常
+   - 问题修复后必须测试相关功能
+
+4. **文档同步更新（强制要求）**：
+   - 每次功能更新后必须同步更新 ai-context 中的相关文档
+   - 更新 `current-progress.md` 中的开发进度
+   - 严格按照文档最佳实践标准执行
+   
+5. **继续开发的流程**：
+   - 再次根据此文档 prompt 进行下一轮开发
+
 ## 📋 核心原则
 
 1. **AI-First 开发**: 类型安全优先，清晰命名，丰富注释

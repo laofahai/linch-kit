@@ -2,15 +2,16 @@
 
 import { useState } from 'react'
 
+import { AuthGuard } from '@/components/auth/auth-guard'
 import { trpc } from '@/lib/trpc-provider'
 
 /**
  * Users Management Page
- * 
- * This page demonstrates the complete user management functionality
- * including listing, creating, updating, and deleting users.
+ *
+ * @description 用户管理页面，展示完整的用户管理功能
+ * @since 2025-06-20
  */
-export default function UsersPage() {
+function UsersPageContent() {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [showCreateForm, setShowCreateForm] = useState(false)
@@ -44,24 +45,26 @@ export default function UsersPage() {
   })
 
   const handleCreateUser = (formData: FormData) => {
-    const email = formData.get('email') as string
+    const globalEmail = formData.get('email') as string
     const name = formData.get('name') as string
-    const role = formData.get('role') as 'USER' | 'ADMIN' | 'MODERATOR'
+    const globalUsername = formData.get('username') as string
+    const globalPhone = formData.get('phone') as string
 
-    createUserMutation.mutate({ email, name, role })
+    createUserMutation.mutate({ globalEmail, name, globalUsername, globalPhone })
   }
 
   const handleUpdateUser = (userId: string, formData: FormData) => {
     const name = formData.get('name') as string
-    const role = formData.get('role') as 'USER' | 'ADMIN' | 'MODERATOR'
-    const isActive = formData.get('isActive') === 'on'
+    const globalEmail = formData.get('email') as string
+    const globalUsername = formData.get('username') as string
+    const globalPhone = formData.get('phone') as string
 
-    updateUserMutation.mutate({ id: userId, name, role, isActive })
+    updateUserMutation.mutate({ id: userId, name, globalEmail, globalUsername, globalPhone })
   }
 
   const handleDeleteUser = (userId: string) => {
     if (confirm('Are you sure you want to delete this user?')) {
-      deleteUserMutation.mutate({ id: userId })
+      deleteUserMutation.mutate(userId)
     }
   }
 
@@ -111,7 +114,7 @@ export default function UsersPage() {
                 User
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
+                Username
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
@@ -136,28 +139,20 @@ export default function UsersPage() {
                     </div>
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                      <div className="text-sm text-gray-500">{user.email}</div>
+                      <div className="text-sm text-gray-500">{user.globalEmail}</div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.role === 'ADMIN' 
-                      ? 'bg-red-100 text-red-800'
-                      : user.role === 'MODERATOR'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-green-100 text-green-800'
-                  }`}>
-                    {user.role}
-                  </span>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {user.globalUsername || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.isActive 
+                    user.globalStatus === 'active'
                       ? 'bg-green-100 text-green-800'
                       : 'bg-gray-100 text-gray-800'
                   }`}>
-                    {user.isActive ? 'Active' : 'Inactive'}
+                    {user.globalStatus}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -241,16 +236,23 @@ export default function UsersPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Role
+                    Username
                   </label>
-                  <select
-                    name="role"
+                  <input
+                    type="text"
+                    name="username"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="USER">User</option>
-                    <option value="MODERATOR">Moderator</option>
-                    <option value="ADMIN">Admin</option>
-                  </select>
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
               </div>
               <div className="flex gap-3 mt-6">
@@ -288,18 +290,18 @@ export default function UsersPage() {
 }
 
 // Edit User Modal Component
-function EditUserModal({ 
-  userId, 
-  onClose, 
-  onSubmit, 
-  isLoading 
-}: { 
+function EditUserModal({
+  userId,
+  onClose,
+  onSubmit,
+  isLoading
+}: {
   userId: string
   onClose: () => void
   onSubmit: (userId: string, formData: FormData) => void
   isLoading: boolean
 }) {
-  const { data: user } = trpc.user.getById.useQuery({ id: userId })
+  const { data: user } = trpc.user.getById.useQuery(userId)
 
   if (!user) {
     return (
@@ -323,9 +325,9 @@ function EditUserModal({
               </label>
               <input
                 type="email"
-                value={user.email}
-                disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100"
+                name="email"
+                defaultValue={user.globalEmail || ''}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
@@ -335,35 +337,32 @@ function EditUserModal({
               <input
                 type="text"
                 name="name"
-                defaultValue={user.name}
+                defaultValue={user.name || ''}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Role
+                Username
               </label>
-              <select
-                name="role"
-                defaultValue={user.role}
+              <input
+                type="text"
+                name="username"
+                defaultValue={user.globalUsername || ''}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="USER">User</option>
-                <option value="MODERATOR">Moderator</option>
-                <option value="ADMIN">Admin</option>
-              </select>
+              />
             </div>
             <div>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="isActive"
-                  defaultChecked={user.isActive}
-                  className="mr-2"
-                />
-                <span className="text-sm font-medium text-gray-700">Active</span>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone
               </label>
+              <input
+                type="tel"
+                name="phone"
+                defaultValue={user.globalPhone || ''}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
           <div className="flex gap-3 mt-6">
@@ -385,5 +384,18 @@ function EditUserModal({
         </form>
       </div>
     </div>
+  )
+}
+
+/**
+ * Users Page with Auth Guard
+ * @description 用户管理页面主组件，包含认证保护
+ * @since 2025-06-20
+ */
+export default function UsersPage() {
+  return (
+    <AuthGuard requiredRoles={['admin']}>
+      <UsersPageContent />
+    </AuthGuard>
   )
 }

@@ -1,6 +1,6 @@
-import type { LinchConfig } from '@linch-kit/core'
-
-const config: LinchConfig = {
+// @ts-check
+/** @type {import('@linch-kit/core').LinchConfig} */
+const config = {
   // 项目基本信息
   project: {
     name: 'linch-starter',
@@ -11,8 +11,9 @@ const config: LinchConfig = {
 
   // 数据库配置
   database: {
-    type: 'postgresql',
-    url: process.env.DATABASE_URL || 'postgresql://postgres:tech.linch.flexreport@db.evfjsbldujohgeshcixt.supabase.co:5432/postgres',
+    provider: 'postgresql',
+    url: process.env.DATABASE_URL,
+    name: 'postgres',
   },
 
   // Schema 配置
@@ -24,12 +25,7 @@ const config: LinchConfig = {
       mocks: './src/mocks/factories.ts',
       openapi: './docs/api.json',
     },
-    database: {
-      provider: 'postgresql',
-      url: process.env.DATABASE_URL || 'postgresql://postgres:tech.linch.flexreport@db.evfjsbldujohgeshcixt.supabase.co:5432/postgres',
-    },
-    // 启用软删除
-    softDelete: true,
+    // 移除重复的 database 配置，使用顶级 database 配置
   },
 
   // Auth 配置
@@ -69,7 +65,16 @@ const config: LinchConfig = {
   },
 
   // 插件配置
-  plugins: ['@linch-kit/schema', '@linch-kit/auth-core'],
+  plugins: [
+    '@linch-kit/schema',
+    {
+      name: '@linch-kit/auth-core',
+      config: {
+        // 使用简化的认证套件（JSON 优先架构）
+        entityKit: 'simplified',
+      },
+    },
+  ],
 }
 
-export default config
+module.exports = config

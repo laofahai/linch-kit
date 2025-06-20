@@ -27,6 +27,17 @@ import {
   TenantTemplate
 } from './permissions'
 
+import {
+  SimplifiedUserTemplate,
+  SimplifiedRoleTemplate,
+  SimplifiedDepartmentTemplate
+} from './simplified'
+
+import {
+  ProductTemplate,
+  ProductCategoryTemplate
+} from './product'
+
 // 重新导出所有模板
 export {
   // 用户模板
@@ -44,7 +55,14 @@ export {
   UserRoleTemplate,
   DepartmentTemplate,
   UserDepartmentTemplate,
-  TenantTemplate
+  TenantTemplate,
+  // 简化模板（JSON 优先架构）
+  SimplifiedUserTemplate,
+  SimplifiedRoleTemplate,
+  SimplifiedDepartmentTemplate,
+  // 产品模板
+  ProductTemplate,
+  ProductCategoryTemplate
 }
 
 /**
@@ -86,6 +104,17 @@ export const MultiTenantAuthKit = {
   UserRole: UserRoleTemplate,
   Department: DepartmentTemplate,
   UserDepartment: UserDepartmentTemplate,
+  Tenant: TenantTemplate
+}
+
+// 简化认证套件（JSON 优先，减少关联表）
+export const SimplifiedAuthKit = {
+  User: SimplifiedUserTemplate,
+  Session: ExtendedSessionTemplate,
+  Account: AccountTemplate,
+  Role: SimplifiedRoleTemplate,
+  Permission: PermissionTemplate,
+  Department: SimplifiedDepartmentTemplate,
   Tenant: TenantTemplate
 }
 

@@ -4,8 +4,32 @@
  * 保留现有的 shared token 功能，确保向后兼容
  */
 
-import CredentialsProvider from 'next-auth/providers/credentials'
 import type { AuthUser } from '../../types/auth'
+
+// 动态导入 next-auth，在 CLI 环境中可能不可用
+let CredentialsProvider: any
+
+// 创建 mock 函数
+const createMockCredentialsProvider = (config: any) => ({
+  id: config.id || 'credentials',
+  name: config.name || 'Credentials',
+  type: 'credentials',
+  credentials: config.credentials,
+  authorize: config.authorize
+})
+
+try {
+  const nextAuthModule = require('next-auth/providers/credentials')
+  CredentialsProvider = nextAuthModule.default || nextAuthModule
+
+  // 确保 CredentialsProvider 是一个函数
+  if (typeof CredentialsProvider !== 'function') {
+    CredentialsProvider = createMockCredentialsProvider
+  }
+} catch (error) {
+  // 在 CLI 环境中，next-auth 可能不可用，提供一个 mock
+  CredentialsProvider = createMockCredentialsProvider
+}
 
 /**
  * 共享令牌数据源接口
@@ -51,7 +75,7 @@ export function createSharedTokenProvider(options: SharedTokenOptions) {
         placeholder: 'Enter shared token'
       }
     },
-    async authorize(credentials) {
+    async authorize(credentials: any) {
       try {
         const token = credentials?.token
         
@@ -176,7 +200,7 @@ export function createAdvancedSharedTokenProvider(config: {
         placeholder: 'Enter shared token'
       }
     },
-    async authorize(credentials) {
+    async authorize(credentials: any) {
       try {
         const token = credentials?.token
         

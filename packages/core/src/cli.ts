@@ -103,9 +103,27 @@ export class LinchCLI {
    * @ai-purpose 初始化配置管理器并加载配置
    */
   private async loadConfiguration(): Promise<void> {
-    // AI: 这里可以注册额外的配置提供者
-    // 例如：环境变量、远程配置等
-    
+    // AI: 注册文件配置提供者
+    const { FileConfigProvider } = await import('./config/loader')
+    const fileProvider = new FileConfigProvider()
+
+    // AI: 创建适配器，将旧的 ConfigProvider 接口适配到新的接口
+    const adaptedProvider = {
+      name: 'file',
+      priority: 100, // 高优先级，确保文件配置优先
+      async load() {
+        try {
+          const config = await fileProvider.load()
+          return config
+        } catch (error) {
+          console.warn('AI: Failed to load file config:', error)
+          return {}
+        }
+      }
+    }
+
+    this.configManager.registerProvider(adaptedProvider)
+
     const config = await this.configManager.loadConfig()
     if (!process.env.LINCH_SILENT) {
       console.log('AI: Configuration loaded')
@@ -246,7 +264,8 @@ export async function createCLI(args?: string[]): Promise<LinchCLI> {
 export const cli = createCLI
 
 // AI: 如果直接运行此文件，启动 CLI
-if (typeof require !== 'undefined' && require.main === module) {
+// 兼容 CommonJS 和 ES 模块环境
+if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main === module) {
   createCLI().catch(error => {
     console.error('AI: Failed to start CLI:', error)
     process.exit(1)

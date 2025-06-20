@@ -1,6 +1,13 @@
 import Link from 'next/link'
 
-export default function HomePage() {
+import { PublicRoute } from '@/components/auth/auth-guard'
+
+/**
+ * Home Page Content
+ * @description 首页内容组件
+ * @since 2025-06-20
+ */
+function HomePageContent() {
   return (
     <div className="px-4 py-8">
       <div className="text-center">
@@ -118,5 +125,18 @@ npm run dev`}
         </div>
       </div>
     </div>
+  )
+}
+
+/**
+ * Home Page
+ * @description 应用首页，公开访问
+ * @since 2025-06-20
+ */
+export default function HomePage() {
+  return (
+    <PublicRoute>
+      <HomePageContent />
+    </PublicRoute>
   )
 }

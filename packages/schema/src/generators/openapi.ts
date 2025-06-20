@@ -1,6 +1,8 @@
+/* eslint-disable no-case-declarations */
 import { z } from 'zod'
-import type { EntityDefinition } from '../core/types'
+
 import { getAllEntities } from '../core/entity'
+
 import { ValidatorGenerator } from './validators'
 
 /**
@@ -31,6 +33,7 @@ export interface OpenAPISpec {
 function zodToOpenAPISchema(schema: z.ZodSchema): any {
   const zodType = (schema as any)._def.typeName
 
+   
   switch (zodType) {
     case 'ZodString':
       const stringSchema = schema as z.ZodString

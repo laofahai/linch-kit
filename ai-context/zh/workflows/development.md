@@ -45,6 +45,20 @@ pnpm linch --help
 - 自动生成相关代码
 - 确保类型安全
 
+### 代码质量标准
+- **JSDoc 文档要求**: 所有新增或修改的方法必须包含完整的 JSDoc 注释
+  - `@description` - 方法功能描述
+  - `@param {type} paramName - 参数说明` - 所有参数的类型和说明
+  - `@returns {type} 返回值说明` - 返回值类型和说明
+  - `@throws {ErrorType} 错误说明` - 可能抛出的错误（如适用）
+  - `@example` - 使用示例（对于复杂方法）
+  - `@since` - 版本信息（如适用）
+
+### ES 模块兼容性
+- 避免使用 `module` 作为变量名（ES 模块保留字）
+- 在检查 CommonJS 环境时使用 `typeof module !== 'undefined'`
+- 动态导入时提供适当的错误处理和回退机制
+
 ## 开发流程
 
 ### 基本开发步骤
@@ -64,10 +78,44 @@ git commit -m "feat(auth): add user management system"
 ```
 
 ### 质量检查
-- ESLint 代码检查
+- ESLint 代码检查 (`npx eslint --fix src/`)
 - TypeScript 类型检查
 - 单元测试覆盖
 - 构建验证
+- JSDoc 文档完整性检查
+
+### 常见问题解决方案
+
+#### ES 模块兼容性问题
+```typescript
+// ❌ 错误：在 ES 模块中使用 module 变量
+const module = await import(path)
+
+// ✅ 正确：使用其他变量名
+const configModule = await import(path)
+
+// ✅ 正确：检查 CommonJS 环境
+if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.main === module) {
+  // CommonJS 环境逻辑
+}
+```
+
+#### 动态导入错误处理
+```typescript
+// ✅ 推荐的动态导入模式
+try {
+  const packageModule = await import(packageName)
+  const provider = packageModule.default || packageModule
+
+  if (typeof provider !== 'function') {
+    // 提供回退或 mock 实现
+    provider = createMockProvider
+  }
+} catch (error) {
+  // 提供适当的错误处理和回退
+  console.warn(`Could not load ${packageName}:`, error.message)
+}
+```
 
 ## 包管理
 

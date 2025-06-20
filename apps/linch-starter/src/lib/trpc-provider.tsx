@@ -6,7 +6,7 @@ import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
 import superjson from 'superjson'
 
-import type { AppRouter } from '@/server/trpc/router'
+import type { AppRouter } from '../server/trpc/router'
 
 // Create tRPC React client
 export const trpc = createTRPCReact<AppRouter>()
@@ -29,9 +29,16 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
           transformer: superjson,
           // Add headers for authentication
           headers() {
-            return {
-              // Add any auth headers here if needed
+            // 从 localStorage 获取认证令牌
+            if (typeof window !== 'undefined') {
+              const authToken = localStorage.getItem('authToken')
+              if (authToken) {
+                return {
+                  authorization: `Bearer ${authToken}`,
+                }
+              }
             }
+            return {}
           },
         }),
       ],

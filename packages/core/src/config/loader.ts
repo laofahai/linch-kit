@@ -1,7 +1,25 @@
 import { existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
-import type { LinchConfig, ConfigLoaderOptions, ConfigProvider } from './types'
-import { LinchConfigSchema } from './types'
+import type { LinchConfig } from '../types/config'
+
+/**
+ * 配置提供者接口
+ */
+interface ConfigProvider {
+  load(): Promise<Partial<LinchConfig>>
+  save(config: Partial<LinchConfig>): Promise<void>
+  watch?(callback: (config: Partial<LinchConfig>) => void): void
+}
+
+/**
+ * 配置加载器选项
+ */
+interface ConfigLoaderOptions {
+  required?: boolean
+  configPath?: string
+  cwd?: string
+  loadAppFromDatabase?: boolean
+}
 
 /**
  * 配置文件类型
@@ -77,8 +95,14 @@ export async function loadLinchConfig(options: ConfigLoaderOptions = {}): Promis
         throw new Error(`Unsupported config file type: ${ext}`)
     }
 
-    // 验证配置
-    const config = LinchConfigSchema.parse(rawConfig)
+    // 直接返回配置，不进行 Zod 验证（由新系统处理）
+    const config = rawConfig as LinchConfig
+
+    // 生成 DATABASE_URL 环境变量（如果配置中有数据库信息且环境变量未设置）
+    if (config.database?.url && !process.env.DATABASE_URL) {
+      process.env.DATABASE_URL = config.database.url
+      console.log('AI: Set DATABASE_URL from linch.config:', config.database.url)
+    }
 
     // 如果启用了数据库配置加载，合并数据库中的应用配置
     if (options.loadAppFromDatabase && config.database) {
@@ -107,8 +131,8 @@ function loadJsonConfig(configFile: string): any {
  */
 async function loadJsConfig(configFile: string): Promise<any> {
   const { pathToFileURL } = await import('url')
-  const module = await import(pathToFileURL(configFile).href)
-  return module.default || module
+  const configModule = await import(pathToFileURL(configFile).href)
+  return configModule.default || configModule
 }
 
 /**
@@ -116,12 +140,29 @@ async function loadJsConfig(configFile: string): Promise<any> {
  */
 async function loadTsConfig(configFile: string): Promise<any> {
   try {
-    // 尝试使用动态导入（如果环境支持）
-    const { pathToFileURL } = await import('url')
-    const module = await import(pathToFileURL(configFile).href)
-    return module.default || module
+    // 方法 1: 尝试使用 ts-node
+    try {
+      require('ts-node/register')
+      const configModule = require(configFile)
+      return configModule.default || configModule
+    } catch (tsNodeError) {
+      // 方法 2: 尝试直接动态导入（Node.js 20+ 可能支持）
+      try {
+        const { pathToFileURL } = await import('url')
+        const configModule = await import(pathToFileURL(configFile).href)
+        return configModule.default || configModule
+      } catch (directError) {
+        throw new Error(
+          `TypeScript config loading failed. Please install ts-node:\n` +
+          `  npm install -D ts-node\n` +
+          `Original errors:\n` +
+          `  ts-node: ${tsNodeError}\n` +
+          `  direct: ${directError}`
+        )
+      }
+    }
   } catch (error) {
-    throw new Error(`TypeScript config loading requires ts-node or similar runtime: ${error}`)
+    throw new Error(`Failed to load TypeScript config: ${error}`)
   }
 }
 
@@ -215,8 +256,8 @@ export class ConfigManager {
       mergedConfig = { ...mergedConfig, ...config }
     }
 
-    // 验证最终配置
-    this.cache = LinchConfigSchema.parse(mergedConfig)
+    // 直接缓存配置，验证由新系统处理
+    this.cache = mergedConfig as LinchConfig
     return this.cache
   }
 

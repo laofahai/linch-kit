@@ -4,20 +4,29 @@
  * 将 schema 相关的 CLI 命令注册到 core 包的 CLI 系统中
  */
 
-import type { CLIContext, CommandMetadata, CommandPlugin } from '@linch-kit/core'
 import { existsSync } from 'fs'
-import { glob } from 'glob'
 import { resolve } from 'path'
 import { pathToFileURL } from 'url'
+
+import { glob } from 'glob'
+import type { CLIContext, CommandMetadata, CommandPlugin, SchemaConfig } from '@linch-kit/core'
+
 import { getAllEntities } from '../core/entity'
-import type { SchemaConfig } from '@linch-kit/core'
 import { writePrismaSchema } from '../generators/prisma'
 import { writeValidators } from '../generators/validators'
 
 // 导入 core 包的配置加载函数
 
 /**
- * 从 linch.config.ts 加载 schema 配置
+ * @description 从 linch.config.js/ts 加载 schema 配置
+ * @returns {Promise<SchemaConfig>} Schema 配置对象
+ * @throws {Error} 当配置加载失败时抛出错误
+ * @since 0.2.1
+ * @example
+ * ```typescript
+ * const config = await loadLinchConfig();
+ * console.log(config.entities); // ['src/entities/**\/*.{ts,tsx,js}']
+ * ```
  */
 async function loadLinchConfig(): Promise<SchemaConfig> {
   try {
@@ -25,21 +34,14 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
     const { loadLinchConfig: loadLinchConfigFromCore } = await import('@linch-kit/core')
     const coreConfig = await loadLinchConfigFromCore({ required: false })
 
-    // 如果有配置，尝试转换为我们需要的格式
+    // 将完整配置存储到全局变量，供其他函数使用
+    if (coreConfig) {
+      (globalThis as any).__LINCH_CONFIG__ = coreConfig
+    }
+
+    // 如果有配置，直接返回 schema 部分
     if (coreConfig?.schema) {
-      // 转换 Zod schema 配置到我们的 SchemaConfig 接口
-      return {
-        entities: ['src/entities/**/*.{ts,tsx,js}'],
-        output: {
-          prisma: './prisma/schema.prisma',
-          validators: './src/validators/generated.ts',
-          mocks: './src/mocks/factories.ts',
-          openapi: './docs/api.json'
-        },
-        database: {
-          provider: 'postgresql'
-        }
-      }
+      return coreConfig.schema
     }
 
     // 默认配置
@@ -52,10 +54,10 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
         openapi: './docs/api.json'
       },
       database: {
-        provider: 'postgresql'
+        provider: 'sqlite'
       }
     }
-  } catch (error) {
+  } catch {
     console.warn('⚠️ Failed to load linch config, using default schema config')
     return {
       entities: ['src/entities/**/*.{ts,tsx,js}'],
@@ -66,7 +68,7 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
         openapi: './docs/api.json'
       },
       database: {
-        provider: 'postgresql'
+        provider: 'sqlite'
       }
     }
   }
@@ -104,9 +106,18 @@ async function loadEntityFile(filePath: string): Promise<void> {
 }
 
 /**
- * 加载依赖包中的实体
+ * @description 加载依赖包中的实体，根据配置选择合适的认证套件
+ * @param {SchemaConfig} config - Schema 配置对象
+ * @returns {Promise<void>} 无返回值的 Promise
+ * @throws {Error} 当包加载失败时抛出错误
+ * @since 0.2.1
+ * @example
+ * ```typescript
+ * const config = { auth: { entityKit: 'simplified' } };
+ * await loadPackageEntities(config);
+ * ```
  */
-async function loadPackageEntities() {
+async function loadPackageEntities(config?: SchemaConfig) {
   // 已知包含实体的包列表和路径
   const packagesWithEntities = [
     {
@@ -132,12 +143,12 @@ async function loadPackageEntities() {
         }
       }
 
-      // 检查是否有预设的实体套件
-      if (packageModule.MultiTenantAuthKit) {
-        // 使用多租户认证套件（包含所有实体）
-        const authKit = packageModule.MultiTenantAuthKit
-        console.log(`📦 Loading entities from ${packageInfo.name}...`)
+      // 根据配置选择合适的认证套件
+      const authKitType = getAuthKitType(config)
+      const authKit = getAuthKitFromModule(packageModule, authKitType)
 
+      if (authKit) {
+        console.log(`📦 Loading entities from ${packageInfo.name}...`)
         // 这些实体模板在导入时会自动注册
         Object.values(authKit)
       }
@@ -149,11 +160,76 @@ async function loadPackageEntities() {
 }
 
 /**
- * 动态加载用户的实体文件
+ * @description 根据配置获取认证套件类型
+ * @param {SchemaConfig} config - Schema 配置对象
+ * @returns {string} 认证套件类型
+ * @since 0.2.1
+ */
+function getAuthKitType(_config?: SchemaConfig): string {
+  // 尝试从全局配置中获取 auth 配置
+  const globalConfig = (globalThis as any).__LINCH_CONFIG__
+
+  // 检查顶级插件配置中的 entityKit 设置
+  if (globalConfig?.plugins) {
+    const authCorePlugin = globalConfig.plugins.find((p: any) =>
+      p.name === '@linch-kit/auth-core' || p === '@linch-kit/auth-core'
+    )
+    if (authCorePlugin?.config?.entityKit) {
+      return authCorePlugin.config.entityKit
+    }
+  }
+
+  // 检查 auth 配置中的插件设置
+  const authConfig = globalConfig?.auth
+  if (authConfig?.plugins) {
+    const authCorePlugin = authConfig.plugins.find((p: any) =>
+      p.name === '@linch-kit/auth-core' || p === '@linch-kit/auth-core'
+    )
+    if (authCorePlugin?.config?.entityKit) {
+      return authCorePlugin.config.entityKit
+    }
+  }
+
+  // 默认使用多租户套件
+  return 'multi-tenant'
+}
+
+/**
+ * @description 从模块中获取指定类型的认证套件
+ * @param {any} packageModule - 包模块对象
+ * @param {string} kitType - 套件类型
+ * @returns {any|null} 认证套件对象或 null
+ * @since 0.2.1
+ */
+function getAuthKitFromModule(packageModule: any, kitType: string): any | null {
+  const kitMap: Record<string, string> = {
+    'basic': 'BasicAuthKit',
+    'standard': 'StandardAuthKit',
+    'enterprise': 'EnterpriseAuthKit',
+    'multi-tenant': 'MultiTenantAuthKit',
+    'simplified': 'SimplifiedAuthKit'
+  }
+
+  const kitName = kitMap[kitType]
+  if (kitName && packageModule[kitName]) {
+    return packageModule[kitName]
+  }
+
+  // 回退到多租户套件
+  return packageModule.MultiTenantAuthKit || null
+}
+
+/**
+ * @description 动态加载用户的实体文件
+ * @param {SchemaConfig} config - Schema 配置对象
+ * @param {string} entitiesPath - 可选的实体文件路径
+ * @returns {Promise<void>} 无返回值的 Promise
+ * @throws {Error} 当实体文件加载失败时抛出错误
+ * @since 0.2.1
  */
 async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
   // 首先加载依赖包中的实体
-  await loadPackageEntities()
+  await loadPackageEntities(config)
 
   if (entitiesPath) {
     // 用户指定了实体文件路径
@@ -176,7 +252,7 @@ async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
         if (files.length > 0) {
           allFiles.push(...files)
         }
-      } catch (error) {
+      } catch {
         // 忽略错误，继续尝试下一个模式
       }
     }
@@ -218,7 +294,7 @@ export const schemaCliPlugin: CommandPlugin = {
             description: 'Overwrite existing config file'
           }
         ],
-        async handler(context: CLIContext): Promise<void> {
+        async handler(_context: CLIContext): Promise<void> {
           console.log('✅ Schema configuration is now part of linch.config.ts')
           console.log('📝 Edit linch.config.ts to customize your schema setup')
         }

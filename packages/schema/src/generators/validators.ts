@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import type { EntityDefinition } from '../core/types'
 import { getAllEntities } from '../core/entity'
 import { getFieldMeta } from '../core/decorators'
@@ -195,7 +196,7 @@ import { z } from 'zod'
 /**
  * 将 Zod Schema 转换为代码字符串（简化版本）
  */
-function schemaToCode(schema: z.ZodSchema): string {
+function schemaToCode(_schema: z.ZodSchema): string {
   // 这是一个简化的实现，实际项目中可能需要更复杂的序列化逻辑
   return 'z.object({ /* schema definition */ })'
 }

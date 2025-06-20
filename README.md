@@ -10,6 +10,8 @@
 - 🎯 **插件化系统** - 可扩展的插件架构
 - 🛠️ **开发工具链** - 完整的开发、测试、构建工具链
 - 📚 **完善文档** - 详细的 AI 上下文和开发文档
+- ⚡ **ES 模块兼容** - 完全支持现代 ES 模块和 CommonJS 环境
+- 🔧 **动态配置** - 智能配置加载和认证套件选择
 
 ## 📁 项目结构
 
@@ -132,10 +134,18 @@ pnpm release
 
 ## 📚 文档
 
-- [快速开始](./docs/quick-start.md) - 快速上手指南
-- [项目概览](./docs/project-overview.md) - 项目整体介绍
-- [Monorepo 架构](./docs/monorepo-architecture.md) - 架构设计说明
-- [AI 上下文](./ai-context/README.md) - AI 辅助开发文档
+- [快速开始](./ai-context/zh/overview/quick-start.md) - 快速上手指南
+- [项目概览](./ai-context/zh/overview/project-overview.md) - 项目整体介绍
+- [架构优化记录](./ai-context/zh/reference/architecture-optimization.md) - 最新技术改进
+- [开发工作流程](./ai-context/zh/workflows/development.md) - 开发标准和流程
+- [AI 上下文](./ai-context/zh/README.md) - AI 辅助开发文档
+
+### 🔧 技术文档
+
+- **ES 模块兼容性** - 支持 CommonJS 和 ES 模块混合环境
+- **动态认证套件选择** - 根据配置自动选择合适的认证套件
+- **JSDoc 文档标准** - 完整的代码文档规范
+- **错误处理机制** - 健壮的错误处理和回退策略
 
 ## 🤝 贡献
 

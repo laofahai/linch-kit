@@ -1,40 +1,17 @@
 import { z } from 'zod'
+import { nanoid } from 'nanoid'
 
 import { router, protectedProcedure, adminProcedure } from '../trpc'
+import { db } from '../../../lib/db'
 
 /**
  * User Router
- * 
+ *
  * Handles all user-related operations including:
  * - User registration and authentication
  * - User profile management
  * - User listing and administration
  */
-
-// Mock user data for development
-// TODO: Replace with actual database operations
-const mockUsers = [
-  {
-    id: '1',
-    email: 'admin@example.com',
-    name: 'Admin User',
-    role: 'ADMIN',
-    isActive: true,
-    emailVerified: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '2',
-    email: 'user@example.com',
-    name: 'Regular User',
-    role: 'USER',
-    isActive: true,
-    emailVerified: new Date(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-]
 
 export const userRouter = router({
   /**
@@ -48,28 +25,48 @@ export const userRouter = router({
     }))
     .query(async ({ input }) => {
       const { page, limit, search } = input
-      
-      // Filter users based on search
-      let filteredUsers = mockUsers
-      if (search) {
-        filteredUsers = mockUsers.filter(user => 
-          user.name.toLowerCase().includes(search.toLowerCase()) ||
-          user.email.toLowerCase().includes(search.toLowerCase())
-        )
+      const offset = (page - 1) * limit
+
+      const where = search ? {
+        OR: [
+          { name: { contains: search } },
+          { globalEmail: { contains: search } },
+          { globalUsername: { contains: search } },
+        ],
+        deletedAt: null,
+      } : {
+        deletedAt: null,
       }
-      
-      // Paginate results
-      const startIndex = (page - 1) * limit
-      const endIndex = startIndex + limit
-      const users = filteredUsers.slice(startIndex, endIndex)
-      
+
+      const [users, total] = await Promise.all([
+        db.user.findMany({
+          where,
+          skip: offset,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            name: true,
+            globalEmail: true,
+            globalUsername: true,
+            globalPhone: true,
+            avatar: true,
+            globalStatus: true,
+            lastLoginAt: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        }),
+        db.user.count({ where }),
+      ])
+
       return {
         users,
         pagination: {
           page,
           limit,
-          total: filteredUsers.length,
-          totalPages: Math.ceil(filteredUsers.length / limit),
+          total,
+          totalPages: Math.ceil(total / limit),
         },
       }
     }),
@@ -83,17 +80,35 @@ export const userRouter = router({
     }))
     .query(async ({ input, ctx }) => {
       const { id } = input
-      
+
       // Users can only access their own data unless they're admin
       if (ctx.user.id !== id && ctx.user.role !== 'ADMIN') {
         throw new Error('Forbidden: You can only access your own user data')
       }
-      
-      const user = mockUsers.find(u => u.id === id)
+
+      const user = await db.user.findUnique({
+        where: {
+          id,
+          deletedAt: null,
+        },
+        include: {
+          userRoles: {
+            include: {
+              role: true,
+            },
+          },
+          userDepartments: {
+            include: {
+              department: true,
+            },
+          },
+        },
+      })
+
       if (!user) {
         throw new Error('User not found')
       }
-      
+
       return user
     }),
 
@@ -102,11 +117,29 @@ export const userRouter = router({
    */
   me: protectedProcedure
     .query(async ({ ctx }) => {
-      const user = mockUsers.find(u => u.id === ctx.user.id)
+      const user = await db.user.findUnique({
+        where: {
+          id: ctx.user.id,
+          deletedAt: null,
+        },
+        include: {
+          userRoles: {
+            include: {
+              role: true,
+            },
+          },
+          userDepartments: {
+            include: {
+              department: true,
+            },
+          },
+        },
+      })
+
       if (!user) {
         throw new Error('User not found')
       }
-      
+
       return user
     }),
 
@@ -115,33 +148,41 @@ export const userRouter = router({
    */
   create: adminProcedure
     .input(z.object({
-      email: z.string().email(),
+      globalEmail: z.string().email(),
       name: z.string().min(1).max(100),
-      role: z.enum(['USER', 'ADMIN', 'MODERATOR']).default('USER'),
+      globalUsername: z.string().min(1).max(50).optional(),
+      globalPhone: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
-      const { email, name, role } = input
-      
+      const { globalEmail, name, globalUsername, globalPhone } = input
+
       // Check if user already exists
-      const existingUser = mockUsers.find(u => u.email === email)
+      const existingUser = await db.user.findFirst({
+        where: {
+          OR: [
+            { globalEmail },
+            ...(globalUsername ? [{ globalUsername }] : []),
+          ],
+          deletedAt: null,
+        },
+      })
+
       if (existingUser) {
-        throw new Error('User with this email already exists')
+        throw new Error('User with this email or username already exists')
       }
-      
+
       // Create new user
-      const newUser = {
-        id: (mockUsers.length + 1).toString(),
-        email,
-        name,
-        role,
-        isActive: true,
-        emailVerified: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
-      
-      mockUsers.push(newUser)
-      
+      const newUser = await db.user.create({
+        data: {
+          id: nanoid(),
+          globalEmail,
+          name,
+          globalUsername,
+          globalPhone,
+          globalStatus: 'active',
+        },
+      })
+
       return {
         success: true,
         user: newUser,
@@ -156,32 +197,55 @@ export const userRouter = router({
     .input(z.object({
       id: z.string(),
       name: z.string().min(1).max(100).optional(),
-      role: z.enum(['USER', 'ADMIN', 'MODERATOR']).optional(),
-      isActive: z.boolean().optional(),
+      globalEmail: z.string().email().optional(),
+      globalUsername: z.string().min(1).max(50).optional(),
+      globalPhone: z.string().optional(),
+      avatar: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       const { id, ...updates } = input
-      
+
       // Users can only update their own data unless they're admin
       if (ctx.user.id !== id && ctx.user.role !== 'ADMIN') {
         throw new Error('Forbidden: You can only update your own user data')
       }
-      
-      const userIndex = mockUsers.findIndex(u => u.id === id)
-      if (userIndex === -1) {
+
+      // Check if user exists
+      const existingUser = await db.user.findUnique({
+        where: { id, deletedAt: null },
+      })
+
+      if (!existingUser) {
         throw new Error('User not found')
       }
-      
-      // Update user
-      mockUsers[userIndex] = {
-        ...mockUsers[userIndex],
-        ...updates,
-        updatedAt: new Date(),
+
+      // Check for email/username conflicts
+      if (updates.globalEmail || updates.globalUsername) {
+        const conflictUser = await db.user.findFirst({
+          where: {
+            OR: [
+              ...(updates.globalEmail ? [{ globalEmail: updates.globalEmail }] : []),
+              ...(updates.globalUsername ? [{ globalUsername: updates.globalUsername }] : []),
+            ],
+            NOT: { id },
+            deletedAt: null,
+          },
+        })
+
+        if (conflictUser) {
+          throw new Error('Email or username already exists')
+        }
       }
-      
+
+      // Update user
+      const updatedUser = await db.user.update({
+        where: { id },
+        data: updates,
+      })
+
       return {
         success: true,
-        user: mockUsers[userIndex],
+        user: updatedUser,
         message: 'User updated successfully',
       }
     }),
@@ -195,15 +259,25 @@ export const userRouter = router({
     }))
     .mutation(async ({ input }) => {
       const { id } = input
-      
-      const userIndex = mockUsers.findIndex(u => u.id === id)
-      if (userIndex === -1) {
+
+      // Check if user exists
+      const existingUser = await db.user.findUnique({
+        where: { id, deletedAt: null },
+      })
+
+      if (!existingUser) {
         throw new Error('User not found')
       }
-      
-      // Remove user from array
-      const deletedUser = mockUsers.splice(userIndex, 1)[0]
-      
+
+      // Soft delete user
+      const deletedUser = await db.user.update({
+        where: { id },
+        data: {
+          deletedAt: new Date(),
+          globalStatus: 'deleted',
+        },
+      })
+
       return {
         success: true,
         user: deletedUser,

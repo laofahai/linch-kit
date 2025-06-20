@@ -370,5 +370,5 @@ Schema: [粘贴 Schema 定义]
 
 **相关文档**:
 - [开发流程](../workflows/development.md)
-- [代码生成模板](./code-generation.md)
-- [文档规范](./documentation.md)
+- [代码生成模板](../reference/code-generation-templates.md)
+- [开发标准](./development-standards.md)

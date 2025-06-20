@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import type { FieldAttributes, FieldConfig, I18nText } from './types'
 
 /**

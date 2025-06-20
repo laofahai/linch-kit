@@ -1,19 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-import { trpc } from '@/lib/trpc-provider'
+import { useAuth } from '@/contexts/auth-context'
+import { AuthRedirect } from '@/components/auth/auth-guard'
 
 /**
  * Register Page
- * 
- * Handles user registration with email, name, and password.
- * Integrates with tRPC auth router for secure registration.
+ *
+ * @description 用户注册页面，集成认证上下文进行状态管理
+ * @since 2025-06-20
  */
-export default function RegisterPage() {
-  const router = useRouter()
+function RegisterPageContent() {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -21,20 +20,9 @@ export default function RegisterPage() {
     confirmPassword: '',
   })
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const registerMutation = trpc.auth.register.useMutation({
-    onSuccess: (data) => {
-      // Store session token in localStorage
-      localStorage.setItem('authToken', data.session.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-      
-      // Redirect to dashboard or users page
-      router.push('/users')
-    },
-    onError: (error) => {
-      setError(error.message)
-    },
-  })
+  const { register } = useAuth()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -43,31 +31,44 @@ export default function RegisterPage() {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /**
+   * 处理表单提交
+   * @description 验证表单并调用注册方法
+   * @param e - 表单事件
+   * @since 2025-06-20
+   */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    
+    setIsLoading(true)
+
     // Validation
     if (!formData.email || !formData.name || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all fields')
+      setIsLoading(false)
       return
     }
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match')
+      setIsLoading(false)
       return
     }
 
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long')
+      setIsLoading(false)
       return
     }
 
-    registerMutation.mutate({
-      email: formData.email,
-      name: formData.name,
-      password: formData.password,
-    })
+    try {
+      await register(formData.email, formData.name, formData.password)
+      // 注册成功后会自动重定向，由 AuthContext 处理
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Registration failed')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -165,10 +166,10 @@ export default function RegisterPage() {
           <div>
             <button
               type="submit"
-              disabled={registerMutation.isPending}
+              disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {registerMutation.isPending ? (
+              {isLoading ? (
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                   Creating account...
@@ -200,5 +201,18 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+/**
+ * Register Page with Auth Redirect
+ * @description 注册页面主组件，包含认证重定向逻辑
+ * @since 2025-06-20
+ */
+export default function RegisterPage() {
+  return (
+    <AuthRedirect>
+      <RegisterPageContent />
+    </AuthRedirect>
   )
 }

@@ -269,6 +269,8 @@ export interface SchemaMetadata {
   relations?: Record<string, RelationAttributes>
   /** 模型配置 */
   model?: ModelConfig
+  /** 是否禁用软删除（默认启用） */
+  softDelete?: boolean
 }
 
 /**

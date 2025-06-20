@@ -1,4 +1,6 @@
+/* eslint-disable no-case-declarations */
 import { z } from 'zod'
+
 import type { EntityDefinition } from '../core/types'
 import { getAllEntities } from '../core/entity'
 import { getFieldMeta } from '../core/decorators'
@@ -35,9 +37,10 @@ const defaultGenerators = {
 /**
  * 根据 Zod Schema 生成 Mock 数据
  */
-export function generateMockValue(schema: z.ZodSchema, fieldName?: string): any {
+export function generateMockValue(schema: z.ZodSchema, _fieldName?: string): any {
   const zodType = (schema as any)._def.typeName
 
+   
   switch (zodType) {
     case 'ZodString':
       const stringSchema = schema as z.ZodString

@@ -9,7 +9,11 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "schema:generate": "linch schema:generate"
+    "schema:generate": "linch schema:generate",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@linch-kit/auth-core": "workspace:*",
@@ -24,6 +28,8 @@
     "@trpc/next": "^11.3.1",
     "@trpc/react-query": "^11.3.1",
     "@trpc/server": "^11.3.1",
+    "bcryptjs": "^3.0.2",
+    "nanoid": "^5.1.5",
     "next": "^15.3.4",
     "next-auth": "^4.24.5",
     "prisma": "^5.0.0",
@@ -33,6 +39,7 @@
     "zod": "^3.25.64"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
@@ -41,6 +48,8 @@
     "eslint-config-next": "^15.3.4",
     "postcss": "^8.4.49",
     "tailwindcss": "^4.1.10",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
   "keywords": [

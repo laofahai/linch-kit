@@ -133,13 +133,31 @@ export const EnterpriseUserTemplate = defineEntity('User', {
     label: 'auth.user.jobTitle'
   }),
   
-  // 角色和权限
+  // 角色和权限（JSON 字段存储）
   roles: defineField(z.array(z.string()).optional(), {
-    label: 'auth.user.roles'
+    label: 'auth.user.roles',
+    db: { type: 'JSON' }
   }),
-  
+
   permissions: defineField(z.array(z.string()).optional(), {
-    label: 'auth.user.permissions'
+    label: 'auth.user.permissions',
+    db: { type: 'JSON' }
+  }),
+
+  // 部门信息（JSON 字段存储，替代 UserDepartment 关联表）
+  departments: defineField(z.array(z.object({
+    departmentId: z.string(),
+    position: z.string().optional(),
+    isManager: z.boolean().default(false),
+    level: z.number().int().min(0).optional(),
+    reportTo: z.string().optional(),
+    joinedAt: z.date(),
+    leftAt: z.date().optional(),
+    isPrimary: z.boolean().default(false),
+    metadata: z.record(z.any()).optional()
+  })).optional(), {
+    label: 'auth.user.departments',
+    db: { type: 'JSON' }
   }),
   
   // 多租户支持

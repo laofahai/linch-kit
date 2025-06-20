@@ -1,48 +1,50 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-import { trpc } from '@/lib/trpc-provider'
+import { useAuth } from '@/contexts/auth-context'
+import { AuthRedirect } from '@/components/auth/auth-guard'
 
 /**
  * Login Page
- * 
- * Handles user authentication with email and password.
- * Integrates with tRPC auth router for secure login.
+ *
+ * @description 用户登录页面，集成认证上下文进行状态管理
+ * @since 2025-06-20
  */
-export default function LoginPage() {
-  const router = useRouter()
+function LoginPageContent() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: (data) => {
-      // Store session token in localStorage
-      // In a real app, you might use httpOnly cookies instead
-      localStorage.setItem('authToken', data.session.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-      
-      // Redirect to dashboard or users page
-      router.push('/users')
-    },
-    onError: (error) => {
-      setError(error.message)
-    },
-  })
+  const { login } = useAuth()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  /**
+   * 处理表单提交
+   * @description 验证表单并调用登录方法
+   * @param e - 表单事件
+   * @since 2025-06-20
+   */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    
+    setIsLoading(true)
+
     if (!email || !password) {
       setError('Please fill in all fields')
+      setIsLoading(false)
       return
     }
 
-    loginMutation.mutate({ email, password })
+    try {
+      await login(email, password)
+      // 登录成功后会自动重定向，由 AuthContext 处理
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Login failed')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -105,10 +107,10 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              disabled={loginMutation.isPending}
+              disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loginMutation.isPending ? (
+              {isLoading ? (
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                   Signing in...
@@ -143,5 +145,18 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+/**
+ * Login Page with Auth Redirect
+ * @description 登录页面主组件，包含认证重定向逻辑
+ * @since 2025-06-20
+ */
+export default function LoginPage() {
+  return (
+    <AuthRedirect>
+      <LoginPageContent />
+    </AuthRedirect>
   )
 }

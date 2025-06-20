@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
+import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { join, resolve } from 'path'
+import { pathToFileURL } from 'url'
+
 import type { SchemaConfig } from '@linch-kit/core'
 import { loadLinchConfig as loadLinchConfigFromCore } from '@linch-kit/core'
 import { Command } from 'commander'
-import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { glob } from 'glob'
-import { join, resolve } from 'path'
-import { pathToFileURL } from 'url'
+
+
 import { clearEntityRegistry, getAllEntities } from '../core/entity'
 import { generateTestDataFiles, writeMockFactories } from '../generators/mock'
 import { writeOpenAPISpec } from '../generators/openapi'
@@ -21,7 +24,7 @@ function getVersion(): string {
     const packageJsonPath = join(__dirname, '../../package.json')
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
     return packageJson.version || '0.1.0'
-  } catch (error) {
+  } catch {
     // 如果读取失败，使用默认版本
     return '0.1.0'
   }
@@ -58,23 +61,9 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
   try {
     const linchConfig = await loadLinchConfigFromCore({ required: false })
 
-    // 如果有配置，尝试转换为我们需要的格式
+    // 如果有配置，直接返回 schema 部分
     if (linchConfig?.schema) {
-      const zodSchema = linchConfig.schema
-
-      // 转换 Zod schema 配置到我们的 SchemaConfig 接口
-      return {
-        entities: ['src/entities/**/*.{ts,tsx,js}'],
-        output: {
-          prisma: './prisma/schema.prisma',
-          validators: './src/validators/generated.ts',
-          mocks: './src/mocks/factories.ts',
-          openapi: './docs/api.json'
-        },
-        database: {
-          provider: 'postgresql'
-        }
-      }
+      return linchConfig.schema
     }
 
     // 默认配置
@@ -87,10 +76,10 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
         openapi: './docs/api.json'
       },
       database: {
-        provider: 'postgresql'
+        provider: 'sqlite'
       }
     }
-  } catch (error) {
+  } catch {
     console.warn('⚠️ Failed to load linch config, using default schema config')
     return {
       entities: ['src/entities/**/*.{ts,tsx,js}'],
@@ -101,7 +90,7 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
         openapi: './docs/api.json'
       },
       database: {
-        provider: 'postgresql'
+        provider: 'sqlite'
       }
     }
   }
@@ -137,7 +126,7 @@ async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
           allFiles.push(...files)
           found = true
         }
-      } catch (error) {
+      } catch {
         // 忽略错误，继续尝试下一个模式
       }
     }
@@ -403,7 +392,7 @@ program
 
     if (entity.meta?.model?.indexes) {
       console.log('\nIndexes:')
-      entity.meta.model.indexes.forEach((index, i) => {
+      entity.meta.model.indexes.forEach((index, _i) => {
         const type = index.unique ? 'UNIQUE' : 'INDEX'
         console.log(`  - ${type} (${index.fields.join(', ')})`)
       })
