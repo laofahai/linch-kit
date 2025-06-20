@@ -81,8 +81,8 @@ export class LinchCLI {
       // AI: 注册内置命令
       this.registerBuiltinCommands()
 
-      // AI: 暂时禁用插件加载来调试
-      // await this.loadPlugins()
+      // AI: 加载插件
+      await this.loadPlugins()
 
       // AI: 设置错误处理
       this.setupErrorHandling()

@@ -7,28 +7,19 @@
 ### 📖 项目概览
 - [项目总览](./overview/project-overview.md) - 项目整体介绍和当前状态
 - [快速开始指南](./overview/quick-start.md) - 快速上手指南
-- [核心价值主张](./overview/value-proposition.md) - 项目定位和优势
 
 ### 🏗️ 系统架构
 - [系统架构详解](./architecture/system-architecture.md) - 完整的系统架构设计
-- [技术栈说明](./architecture/tech-stack.md) - 技术选型和集成方案
-- [包依赖关系](./architecture/package-dependencies.md) - 包结构和依赖管理
-- [构建系统](./architecture/build-system.md) - Turborepo + tsup 构建配置
+- [插件系统设计](./architecture/plugin-system-design.md) - 插件系统架构
 
 ### 📦 核心包文档
 - [Core 包](./packages/core.md) - CLI、配置管理和基础工具
 - [Schema 包](./packages/schema.md) - 数据模式定义和验证系统
-- [Auth Core 包](./packages/auth-core.md) - 认证和权限管理
-- [CRUD 包](./packages/crud.md) - 自动化 CRUD 操作
-- [tRPC 包](./packages/trpc.md) - tRPC 集成和类型安全 API
-- [UI 包](./packages/ui.md) - React 组件库
-- [Types 包](./packages/types.md) - 共享类型定义
 
 ### 🔄 工作流程
 - [开发流程](./workflows/development.md) - 完整的开发工作流程
 - [测试策略](./workflows/testing.md) - 多层次测试方法
 - [发布管理](./workflows/release.md) - 自动化发布流程
-- [维护指南](./workflows/maintenance.md) - 日常维护任务
 
 ### 📋 技术决策
 - [架构决策记录](./decisions/architecture-decisions.md) - 重要架构决策汇总
@@ -42,15 +33,13 @@
 - [工作交接](./management/handover-guide.md) - 会话交接指南
 
 ### 📚 参考资料
-- [命令参考](./reference/commands.md) - CLI 命令完整参考
-- [配置参考](./reference/configuration.md) - 配置选项说明
-- [API 参考](./reference/api.md) - 核心 API 文档
+- [快速参考](./reference/quick-reference.md) - 快速查找信息
+- [部署配置](./reference/deployment-configurations.md) - 部署相关配置
 - [故障排除](./reference/troubleshooting.md) - 常见问题解决
 
 ### 📝 开发模板
 - [AI-First 最佳实践](./templates/ai-first-practices.md) - AI 辅助开发指南
-- [代码生成模板](./templates/code-generation.md) - 代码生成提示词
-- [文档模板](./templates/documentation.md) - 文档编写规范
+- [代码生成模板](./templates/code-generation-templates.md) - 代码生成提示词
 
 ## 🎯 使用指南
 

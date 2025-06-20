@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import type { SchemaConfig } from '@linch-kit/core'
-import { loadLinchConfig } from '@linch-kit/core'
+import { loadLinchConfig as loadLinchConfigFromCore } from '@linch-kit/core'
 import { Command } from 'commander'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { glob } from 'glob'
@@ -52,6 +52,62 @@ export default {
 }
 
 /**
+ * 加载 Linch 配置并提取 schema 部分
+ */
+async function loadLinchConfig(): Promise<SchemaConfig> {
+  try {
+    const linchConfig = await loadLinchConfigFromCore({ required: false })
+
+    // 如果有配置，尝试转换为我们需要的格式
+    if (linchConfig?.schema) {
+      const zodSchema = linchConfig.schema
+
+      // 转换 Zod schema 配置到我们的 SchemaConfig 接口
+      return {
+        entities: ['src/entities/**/*.{ts,tsx,js}'],
+        output: {
+          prisma: './prisma/schema.prisma',
+          validators: './src/validators/generated.ts',
+          mocks: './src/mocks/factories.ts',
+          openapi: './docs/api.json'
+        },
+        database: {
+          provider: 'postgresql'
+        }
+      }
+    }
+
+    // 默认配置
+    return {
+      entities: ['src/entities/**/*.{ts,tsx,js}'],
+      output: {
+        prisma: './prisma/schema.prisma',
+        validators: './src/validators/generated.ts',
+        mocks: './src/mocks/factories.ts',
+        openapi: './docs/api.json'
+      },
+      database: {
+        provider: 'postgresql'
+      }
+    }
+  } catch (error) {
+    console.warn('⚠️ Failed to load linch config, using default schema config')
+    return {
+      entities: ['src/entities/**/*.{ts,tsx,js}'],
+      output: {
+        prisma: './prisma/schema.prisma',
+        validators: './src/validators/generated.ts',
+        mocks: './src/mocks/factories.ts',
+        openapi: './docs/api.json'
+      },
+      database: {
+        provider: 'postgresql'
+      }
+    }
+  }
+}
+
+/**
  * 动态加载用户的实体文件
  */
 async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
@@ -91,7 +147,7 @@ async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
       console.error('  1. Run `linch-schema init` to create a config file')
       console.error('  2. Or specify --entities-path')
       console.error('  3. Or place entity files in default locations:')
-      patterns.forEach(pattern => console.error(`     - ${pattern}`))
+      patterns.forEach((pattern: string) => console.error(`     - ${pattern}`))
       process.exit(1)
     }
 
@@ -155,8 +211,7 @@ program
   .action(async options => {
     try {
       console.log('🔄 Loading configuration...')
-      const linchConfig = await loadLinchConfig()
-      const config: SchemaConfig = linchConfig?.schema || {}
+      const config = await loadLinchConfig()
 
       console.log('🔄 Loading entities...')
       await loadEntities(config, options.entitiesPath)
@@ -186,8 +241,7 @@ program
   .action(async options => {
     try {
       console.log('🔄 Loading configuration...')
-      const linchConfig = await loadLinchConfig()
-      const config: SchemaConfig = linchConfig?.schema || {}
+      const config = await loadLinchConfig()
 
       console.log('🔄 Loading entities...')
       await loadEntities(config, options.entitiesPath)

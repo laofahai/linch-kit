@@ -9,22 +9,7 @@ Linch Kit 是一个 AI-First 的企业级快速开发框架，采用 Turborepo m
 ### 主要任务
 通过 Starter 应用实现完整的用户管理功能，验证各个包的集成。
 
-### 立即需要解决的问题
-
-#### 1. CLI 命令格式问题 (最高优先级)
-- **问题**: `linch plugin-list` 命令显示 "Unknown command"
-- **需要**: 调试插件加载和命令注册流程
-- **测试**: `cd apps/starter && pnpm linch plugin-list`
-
-#### 2. 配置文件统一 (高优先级)  
-- **问题**: Schema CLI 插件需要从 `linch.config.ts` 读取配置，而不是独立的配置文件
-- **当前**: `apps/starter/linch.config.ts` 已包含 schema 配置
-- **需要**: 修改 `packages/schema/src/plugins/cli-plugin.ts` 中的配置加载逻辑
-
-#### 3. Schema 命令验证 (高优先级)
-- **问题**: Schema 相关命令可能无法正常工作
-- **需要**: 确保 `linch schema-generate-prisma` 等命令能正确执行
-- **测试**: `cd apps/starter && pnpm linch schema-list`
+**详细任务状态请查看**: [任务优先级](./task-priorities.md) 和 [当前进度](./current-progress.md)
 
 ## 🚀 快速开始步骤
 
@@ -38,22 +23,9 @@ pnpm --version  # 确认 pnpm 可用
 
 ### 2. 项目状态检查
 ```bash
-cd apps/starter
 pnpm linch --help        # 检查 CLI 基础功能
-pnpm linch plugin-list   # 检查插件加载 (当前有问题)
-pnpm linch config-list   # 检查配置系统
-```
-
-### 3. 调试 CLI 问题
-如果 plugin-list 不工作，检查：
-- `packages/core/src/cli/core/plugin-loader.ts` - 插件加载逻辑
-- `packages/schema/src/plugins/cli-plugin.ts` - Schema 插件注册
-- `apps/starter/linch.config.ts` - 配置文件内容
-
-### 4. 验证实体加载
-```bash
-cd apps/starter
-pnpm linch schema-list   # 应该显示用户实体
+pnpm linch plugin:list   # 检查插件加载
+pnpm linch schema:list   # 检查 Schema 系统
 ```
 
 ## 📁 关键文件位置

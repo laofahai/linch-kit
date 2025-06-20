@@ -259,8 +259,7 @@ pwd  # 应该在项目根目录
 
 ### 调试资源
 - [系统架构](../architecture/system-architecture.md) - 理解系统设计
-- [配置参考](./configuration.md) - 配置选项说明
-- [命令参考](./commands.md) - CLI 命令详解
+- [部署配置](./deployment-configurations.md) - 部署相关配置
 
 ### 社区资源
 - GitHub Issues - 报告问题

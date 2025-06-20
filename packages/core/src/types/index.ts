@@ -21,7 +21,10 @@ export type {
 export type {
   // 配置相关类型
   ConfigProvider,
-  ConfigSchema
+  ConfigSchema,
+  SchemaConfig,
+  DatabaseConfig,
+  LinchConfig
 } from './config'
 
 export type {

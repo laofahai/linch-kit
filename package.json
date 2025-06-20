@@ -12,6 +12,7 @@
     "url": "https://github.com/linch-tech/linch-kit.git"
   },
   "scripts": {
+    "linch": "node packages/core/dist/cli.js",
     "build": "turbo run build",
     "build:packages": "turbo run build:packages --filter='./packages/*'",
     "build:apps": "turbo run build --filter='./apps/*'",

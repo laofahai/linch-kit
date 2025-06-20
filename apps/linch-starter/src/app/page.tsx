@@ -64,20 +64,38 @@ export default function HomePage() {
         
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Get Started
+          </h2>
+          <div className="flex justify-center space-x-4 mb-8">
+            <Link
+              href="/auth/login"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/auth/register"
+              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Sign Up
+            </Link>
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Explore the Demo
           </h2>
           <div className="flex justify-center space-x-4">
-            <Link 
-              href="/products" 
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            <Link
+              href="/users"
+              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              User Management
+            </Link>
+            <Link
+              href="/products"
+              className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors"
             >
               View Products
-            </Link>
-            <Link 
-              href="/users" 
-              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Manage Users
             </Link>
           </div>
         </div>

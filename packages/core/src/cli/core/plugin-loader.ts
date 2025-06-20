@@ -84,6 +84,7 @@ export class PluginLoader {
       'node_modules/@*/linch-kit-plugin-*',
       'plugins/*',
       '../plugins/*',
+      'packages/*',  // AI: 支持 monorepo 结构
       '../../packages/*',
       process.env.LINCH_PLUGINS_PATH || '',
     ].filter(Boolean)

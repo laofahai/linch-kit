@@ -59,6 +59,14 @@
     "tsx": "^4.19.2",
     "typescript": "5.8.3"
   },
+  "peerDependencies": {
+    "@linch-kit/auth-core": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@linch-kit/auth-core": {
+      "optional": true
+    }
+  },
 
   "exports": {
     ".": {

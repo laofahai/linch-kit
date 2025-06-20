@@ -10,7 +10,7 @@ import { glob } from 'glob'
 import { resolve } from 'path'
 import { pathToFileURL } from 'url'
 import { getAllEntities } from '../core/entity'
-import type { SchemaConfig } from '../core/types'
+import type { SchemaConfig } from '@linch-kit/core'
 import { writePrismaSchema } from '../generators/prisma'
 import { writeValidators } from '../generators/validators'
 
@@ -21,47 +21,54 @@ import { writeValidators } from '../generators/validators'
  */
 async function loadLinchConfig(): Promise<SchemaConfig> {
   try {
-    // 尝试加载 linch.config.ts 使用 tsx
-    const tsConfigPath = resolve(process.cwd(), 'linch.config.ts')
-    if (existsSync(tsConfigPath)) {
-      try {
-        // 使用 tsx 动态加载 TypeScript 文件
-        const { execSync } = await import('child_process')
-        const configJson = execSync(
-          `npx tsx -e "import config from '${tsConfigPath}'; console.log(JSON.stringify(config.schema || {}))"`,
-          { encoding: 'utf8', cwd: process.cwd() }
-        ).trim()
-
-        const config = JSON.parse(configJson)
-        return config
-      } catch (tsxError) {
-        console.warn('⚠️ Failed to load TypeScript config with tsx:', tsxError instanceof Error ? tsxError.message : String(tsxError))
-      }
-    }
-
-    // 尝试加载 linch.config.js (编译后的版本)
-    const jsConfigPath = resolve(process.cwd(), 'linch.config.js')
-    if (existsSync(jsConfigPath)) {
-      const configModule = await import(pathToFileURL(jsConfigPath).href)
-      const config = configModule.default || configModule
-      return config.schema || {}
-    }
-
-    // 尝试加载 linch.config.mjs
-    const mjsConfigPath = resolve(process.cwd(), 'linch.config.mjs')
-    if (existsSync(mjsConfigPath)) {
-      const configModule = await import(pathToFileURL(mjsConfigPath).href)
-      const config = configModule.default || configModule
-      return config.schema || {}
-    }
-
     // 最后回退到core包的配置加载
     const { loadLinchConfig: loadLinchConfigFromCore } = await import('@linch-kit/core')
     const coreConfig = await loadLinchConfigFromCore({ required: false })
-    return coreConfig?.schema || {}
+
+    // 如果有配置，尝试转换为我们需要的格式
+    if (coreConfig?.schema) {
+      // 转换 Zod schema 配置到我们的 SchemaConfig 接口
+      return {
+        entities: ['src/entities/**/*.{ts,tsx,js}'],
+        output: {
+          prisma: './prisma/schema.prisma',
+          validators: './src/validators/generated.ts',
+          mocks: './src/mocks/factories.ts',
+          openapi: './docs/api.json'
+        },
+        database: {
+          provider: 'postgresql'
+        }
+      }
+    }
+
+    // 默认配置
+    return {
+      entities: ['src/entities/**/*.{ts,tsx,js}'],
+      output: {
+        prisma: './prisma/schema.prisma',
+        validators: './src/validators/generated.ts',
+        mocks: './src/mocks/factories.ts',
+        openapi: './docs/api.json'
+      },
+      database: {
+        provider: 'postgresql'
+      }
+    }
   } catch (error) {
     console.warn('⚠️ Failed to load linch config, using default schema config')
-    return {}
+    return {
+      entities: ['src/entities/**/*.{ts,tsx,js}'],
+      output: {
+        prisma: './prisma/schema.prisma',
+        validators: './src/validators/generated.ts',
+        mocks: './src/mocks/factories.ts',
+        openapi: './docs/api.json'
+      },
+      database: {
+        provider: 'postgresql'
+      }
+    }
   }
 }
 
@@ -104,8 +111,8 @@ async function loadPackageEntities() {
   const packagesWithEntities = [
     {
       name: '@linch-kit/auth-core',
-      // 在monorepo中使用相对路径
-      path: resolve(process.cwd(), '../../packages/auth-core/dist/index.js')
+      // 在monorepo中使用相对路径，从项目根目录开始
+      path: resolve(process.cwd(), 'packages/auth-core/dist/index.js')
     }
   ]
 
