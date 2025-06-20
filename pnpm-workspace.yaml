@@ -18,8 +18,11 @@ hoist-pattern:
   - turbo
 
 ignoredBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
   - contentlayer
   - esbuild
+  - prisma
   - protobufjs
   - sharp
 

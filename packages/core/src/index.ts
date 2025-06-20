@@ -6,10 +6,10 @@
  */
 
 // AI: CLI 系统导出
-export { LinchCLI, createCLI, cli } from './cli'
+export { LinchCLI, cli, createCLI } from './cli'
 export { CommandRegistry } from './cli/core/command-registry'
-export { PluginLoader } from './cli/core/plugin-loader'
 export { ConfigManager } from './cli/core/config-manager'
+export { PluginLoader } from './cli/core/plugin-loader'
 
 // AI: 配置管理导出
 export * from './config'
@@ -19,37 +19,17 @@ export * from './utils'
 
 // AI: 类型定义导出 (仅导出不冲突的类型)
 export type {
-  // CLI 相关类型
-  CLIContext,
-  CommandMetadata,
-  CommandPlugin,
-  CLIConfig,
-
-  // 通用类型
-  LogLevel,
-  AITag,
-  OptionalConfig,
-  Versioned,
-  Named,
-  Timestamped,
-  AsyncResult,
-  PaginationParams,
-  PaginatedResult,
-  KeyValue,
-  Option,
-  Progress,
-  Environment,
-  DatabaseProvider,
-  DeepPartial,
-  DeepRequired,
-  ExtractArgs,
-  ExtractReturn,
-  ExtractPromise,
-  UnionToArray,
-  Serializable,
-  Constructor,
-  AbstractConstructor,
-  Mixin
+    AITag, AbstractConstructor, AsyncResult, AuthConfig, CLIConfig,
+    // CLI 相关类型
+    CLIContext,
+    CommandMetadata,
+    CommandPlugin, Constructor, DatabaseConfig, DatabaseProvider,
+    DeepPartial,
+    DeepRequired, Environment, ExtractArgs, ExtractPromise, ExtractReturn, KeyValue,
+    // 配置相关类型
+    LinchConfig,
+    // 通用类型
+    LogLevel, Mixin, Named, Option, OptionalConfig, PaginatedResult, PaginationParams, Progress, SchemaConfig, Serializable, Timestamped, UnionToArray, Versioned
 } from './types'
 
 // AI: 为了向后兼容，导出 CLIPlugin 别名

@@ -8,10 +8,10 @@
  */
 
 import { Command } from 'commander'
-import { CommandRegistry } from './cli/core/command-registry'
-import { PluginLoader } from './cli/core/plugin-loader'
-import { ConfigManager } from './cli/core/config-manager'
 import { builtinCommands } from './cli/commands'
+import { CommandRegistry } from './cli/core/command-registry'
+import { ConfigManager } from './cli/core/config-manager'
+import { PluginLoader } from './cli/core/plugin-loader'
 
 /**
  * @ai-class Linch Kit CLI 应用
@@ -81,8 +81,8 @@ export class LinchCLI {
       // AI: 注册内置命令
       this.registerBuiltinCommands()
 
-      // AI: 加载和注册插件
-      await this.loadPlugins()
+      // AI: 暂时禁用插件加载来调试
+      // await this.loadPlugins()
 
       // AI: 设置错误处理
       this.setupErrorHandling()
@@ -128,14 +128,21 @@ export class LinchCLI {
    * @ai-purpose 发现、加载和注册所有插件
    */
   private async loadPlugins(): Promise<void> {
-    const result = await this.pluginLoader.loadAndRegisterPlugins()
-    
-    if (result.loaded.length > 0 && !process.env.LINCH_SILENT) {
-      console.log(`AI: Loaded ${result.loaded.length} plugins: ${result.loaded.map(p => p.name).join(', ')}`)
-    }
-    
-    if (result.failed.length > 0) {
-      console.warn(`AI: Failed to load ${result.failed.length} plugins: ${result.failed.join(', ')}`)
+    try {
+      console.log('AI: Starting plugin loading...')
+      const result = await this.pluginLoader.loadAndRegisterPlugins()
+      console.log('AI: Plugin loading completed')
+
+      if (result.loaded.length > 0 && !process.env.LINCH_SILENT) {
+        console.log(`AI: Loaded ${result.loaded.length} plugins: ${result.loaded.map(p => p.name).join(', ')}`)
+      }
+
+      if (result.failed.length > 0) {
+        console.warn(`AI: Failed to load ${result.failed.length} plugins: ${result.failed.join(', ')}`)
+      }
+    } catch (error) {
+      console.error('AI: Plugin loading failed:', error)
+      // 不要退出，继续运行
     }
   }
 
@@ -247,8 +254,9 @@ if (typeof require !== 'undefined' && require.main === module) {
 }
 
 // AI: 导出核心组件，便于高级用法
-export { CommandRegistry } from './cli/core/command-registry'
-export { PluginLoader } from './cli/core/plugin-loader'
-export { ConfigManager } from './cli/core/config-manager'
 export { builtinCommands } from './cli/commands'
+export { CommandRegistry } from './cli/core/command-registry'
+export { ConfigManager } from './cli/core/config-manager'
+export { PluginLoader } from './cli/core/plugin-loader'
 export * from './types'
+

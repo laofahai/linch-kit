@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
+import type { SchemaConfig } from '@linch-kit/core'
+import { loadLinchConfig } from '@linch-kit/core'
 import { Command } from 'commander'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { glob } from 'glob'
+import { join, resolve } from 'path'
+import { pathToFileURL } from 'url'
+import { clearEntityRegistry, getAllEntities } from '../core/entity'
+import { generateTestDataFiles, writeMockFactories } from '../generators/mock'
+import { writeOpenAPISpec } from '../generators/openapi'
 import { writePrismaSchema } from '../generators/prisma'
 import { writeValidators } from '../generators/validators'
-import { writeMockFactories, generateTestDataFiles } from '../generators/mock'
-import { writeOpenAPISpec } from '../generators/openapi'
-import { getAllEntities, clearEntityRegistry } from '../core/entity'
-import { loadLinchConfig } from '@linch-kit/core'
-import type { SchemaConfig } from '../core/types'
-import { pathToFileURL } from 'url'
-import { resolve, join } from 'path'
-import { glob } from 'glob'
-import { existsSync, writeFileSync, readFileSync } from 'fs'
 
 /**
  * 读取 package.json 中的版本号
@@ -76,7 +76,7 @@ async function loadEntities(config: SchemaConfig, entitiesPath?: string) {
 
     for (const pattern of patterns) {
       try {
-        const files = await glob(pattern as string, { cwd: process.cwd() })
+        const files = await glob(pattern, { cwd: process.cwd() })
         if (files.length > 0) {
           allFiles.push(...files)
           found = true
@@ -156,7 +156,7 @@ program
     try {
       console.log('🔄 Loading configuration...')
       const linchConfig = await loadLinchConfig()
-      const config = linchConfig.schema || {}
+      const config: SchemaConfig = linchConfig?.schema || {}
 
       console.log('🔄 Loading entities...')
       await loadEntities(config, options.entitiesPath)
@@ -185,8 +185,12 @@ program
   .option('-e, --entities-path <path>', 'Path to entities file or directory')
   .action(async options => {
     try {
+      console.log('🔄 Loading configuration...')
+      const linchConfig = await loadLinchConfig()
+      const config: SchemaConfig = linchConfig?.schema || {}
+
       console.log('🔄 Loading entities...')
-      await loadEntities(options.entitiesPath)
+      await loadEntities(config, options.entitiesPath)
 
       console.log('🔄 Generating validators...')
       await writeValidators(options.output)

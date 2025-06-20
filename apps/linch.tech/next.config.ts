@@ -2,16 +2,6 @@ import type { NextConfig } from "next";
 import nextra from 'nextra'
 
 const nextConfig: NextConfig = {
-  experimental: {
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
@@ -38,7 +28,10 @@ const nextConfig: NextConfig = {
 
 // Set up Nextra with its configuration
 const withNextra = nextra({
-  // Add Nextra-specific options here
+  search: {
+    codeblocks: true // Enable code block indexing
+  },
+  mdxOptions: {}
 })
 
 // Export the final Next.js config with Nextra included

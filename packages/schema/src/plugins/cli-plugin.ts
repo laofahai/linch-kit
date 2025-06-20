@@ -4,18 +4,17 @@
  * 将 schema 相关的 CLI 命令注册到 core 包的 CLI 系统中
  */
 
-import type { CommandPlugin, CommandMetadata, CLIContext } from '@linch-kit/core'
+import type { CLIContext, CommandMetadata, CommandPlugin } from '@linch-kit/core'
+import { existsSync } from 'fs'
+import { glob } from 'glob'
+import { resolve } from 'path'
+import { pathToFileURL } from 'url'
+import { getAllEntities } from '../core/entity'
+import type { SchemaConfig } from '../core/types'
 import { writePrismaSchema } from '../generators/prisma'
 import { writeValidators } from '../generators/validators'
-import { writeMockFactories, generateTestDataFiles } from '../generators/mock'
-import { writeOpenAPISpec } from '../generators/openapi'
-import { getAllEntities, clearEntityRegistry } from '../core/entity'
-import { loadConfig } from '@linch-kit/core'
-import type { SchemaConfig } from '../core/types'
-import { pathToFileURL } from 'url'
-import { resolve } from 'path'
-import { glob } from 'glob'
-import { existsSync, writeFileSync } from 'fs'
+
+// 导入 core 包的配置加载函数
 
 /**
  * 从 linch.config.ts 加载 schema 配置
@@ -57,7 +56,8 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
     }
 
     // 最后回退到core包的配置加载
-    const coreConfig = await loadConfig({ required: false })
+    const { loadLinchConfig: loadLinchConfigFromCore } = await import('@linch-kit/core')
+    const coreConfig = await loadLinchConfigFromCore({ required: false })
     return coreConfig?.schema || {}
   } catch (error) {
     console.warn('⚠️ Failed to load linch config, using default schema config')

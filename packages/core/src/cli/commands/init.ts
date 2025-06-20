@@ -6,8 +6,8 @@
  */
 
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
-import { resolve, join } from 'path'
-import type { CommandMetadata, CLIContext } from '../../types/cli'
+import { join, resolve } from 'path'
+import type { CLIContext, CommandMetadata } from '../../types/cli'
 
 /**
  * @ai-interface 项目初始化选项
@@ -78,20 +78,90 @@ async function handleInit(context: CLIContext): Promise<void> {
  * @ai-interactive 使用 inquirer 进行交互式配置
  */
 async function getInitOptions(projectName?: string, context?: CLIContext): Promise<InitOptions> {
-  // AI: 模拟交互式输入（实际实现需要 inquirer）
-  const options: InitOptions = {
-    name: projectName || 'my-linch-app',
-    template: 'basic',
-    typescript: true,
-    database: 'postgresql',
-    auth: true,
-    force: false,
-    directory: resolve(process.cwd(), projectName || 'my-linch-app')
+  // AI: 尝试动态导入 inquirer
+  let inquirer: any = null
+  try {
+    inquirer = await import('inquirer')
+  } catch (error) {
+    console.log('📝 Using default configuration (inquirer not available)')
   }
 
-  // AI: 这里应该使用 inquirer 进行交互式配置
-  // 为了简化，暂时使用默认值
-  console.log(`📝 Project configuration:`)
+  let options: InitOptions
+
+  if (inquirer && !projectName) {
+    // AI: 交互式配置
+    const answers = await inquirer.default.prompt([
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Project name:',
+        default: 'my-linch-app',
+        validate: (input: string) => {
+          if (!/^[a-z][a-z0-9-]*$/.test(input)) {
+            return 'Project name must be lowercase and contain only letters, numbers, and hyphens'
+          }
+          return true
+        }
+      },
+      {
+        type: 'list',
+        name: 'template',
+        message: 'Choose a template:',
+        choices: [
+          { name: 'Basic - Simple starter template', value: 'basic' },
+          { name: 'Enterprise - Full-featured with auth and database', value: 'enterprise' },
+          { name: 'Plugin - CLI plugin template', value: 'plugin' }
+        ],
+        default: 'basic'
+      },
+      {
+        type: 'confirm',
+        name: 'typescript',
+        message: 'Use TypeScript?',
+        default: true
+      },
+      {
+        type: 'list',
+        name: 'database',
+        message: 'Choose database provider:',
+        choices: [
+          { name: 'PostgreSQL (recommended)', value: 'postgresql' },
+          { name: 'MySQL', value: 'mysql' },
+          { name: 'SQLite', value: 'sqlite' }
+        ],
+        default: 'postgresql',
+        when: (answers: any) => answers.template !== 'plugin'
+      },
+      {
+        type: 'confirm',
+        name: 'auth',
+        message: 'Include authentication?',
+        default: true,
+        when: (answers: any) => answers.template !== 'plugin'
+      }
+    ])
+
+    options = {
+      ...answers,
+      database: answers.database || 'postgresql',
+      auth: answers.auth !== false,
+      force: false,
+      directory: resolve(process.cwd(), answers.name)
+    }
+  } else {
+    // AI: 使用默认配置或命令行参数
+    options = {
+      name: projectName || 'my-linch-app',
+      template: 'basic',
+      typescript: true,
+      database: 'postgresql',
+      auth: true,
+      force: false,
+      directory: resolve(process.cwd(), projectName || 'my-linch-app')
+    }
+  }
+
+  console.log(`\n📝 Project configuration:`)
   console.log(`   Name: ${options.name}`)
   console.log(`   Template: ${options.template}`)
   console.log(`   TypeScript: ${options.typescript ? 'Yes' : 'No'}`)
@@ -224,6 +294,11 @@ function getTemplateFiles(template: string, options: InitOptions): Record<string
 
   if (options.typescript) {
     files['tsconfig.json'] = generateTsConfig()
+  }
+
+  // AI: 添加示例实体文件
+  if (options.typescript) {
+    files['src/entities/Product.ts'] = generateProductEntity()
   }
 
   // AI: 模板特定文件
@@ -481,7 +556,8 @@ export default {
 function getDatabaseUrl(database: string, projectName: string): string {
   switch (database) {
     case 'postgresql':
-      return `postgresql://username:password@localhost:5432/${projectName}`
+      // AI: 使用项目指定的PostgreSQL连接
+      return `postgresql://postgres:tech.linch.flexreport@db.evfjsbldujohgeshcixt.supabase.co:5432/postgres`
     case 'mysql':
       return `mysql://username:password@localhost:3306/${projectName}`
     case 'sqlite':
@@ -750,25 +826,132 @@ import type { CommandMetadata } from '@linch-kit/cli'
 
 export const exampleCommand: CommandMetadata = {
   description: 'Example command from ${options.name} plugin',
-  
+
   async handler(context) {
     console.log('Hello from ${options.name} plugin!')
     console.log('Context:', context)
   },
-  
+
   options: [
     {
       flags: '-m, --message <message>',
       description: 'Custom message to display'
     }
   ],
-  
+
   examples: [
     'linch example',
     'linch example --message "Hello World"'
   ],
-  
+
   aiTags: ['example', 'plugin', 'demo']
+}
+`
+}
+
+/**
+ * @ai-function 生成Product实体示例
+ * @ai-purpose 创建示例Product实体文件
+ * @ai-return string - Product实体内容
+ */
+function generateProductEntity(): string {
+  return `/**
+ * @ai-context Product Entity
+ * @ai-purpose E-commerce product entity with comprehensive fields
+ * @ai-features Soft delete, validation, indexing
+ */
+
+import { Entity, Field } from '@linch-kit/schema'
+
+@Entity({
+  name: 'Product',
+  description: 'Product entity for e-commerce applications',
+  tableName: 'products',
+  softDelete: true,
+  indexes: [
+    { fields: ['name'], unique: false },
+    { fields: ['category'], unique: false },
+    { fields: ['isActive'], unique: false },
+    { fields: ['createdAt'], unique: false }
+  ]
+})
+export class Product {
+  @Field({
+    type: 'string',
+    required: true,
+    description: 'Product name',
+    validation: {
+      minLength: 1,
+      maxLength: 255
+    }
+  })
+  name: string
+
+  @Field({
+    type: 'string',
+    description: 'Product description',
+    validation: {
+      maxLength: 2000
+    }
+  })
+  description?: string
+
+  @Field({
+    type: 'number',
+    required: true,
+    description: 'Product price in cents',
+    validation: {
+      min: 0
+    }
+  })
+  price: number
+
+  @Field({
+    type: 'string',
+    description: 'Product category',
+    validation: {
+      maxLength: 100
+    }
+  })
+  category?: string
+
+  @Field({
+    type: 'string',
+    description: 'Product SKU',
+    validation: {
+      maxLength: 50
+    }
+  })
+  sku?: string
+
+  @Field({
+    type: 'number',
+    defaultValue: 0,
+    description: 'Stock quantity'
+  })
+  stock: number
+
+  @Field({
+    type: 'boolean',
+    defaultValue: true,
+    description: 'Is product active'
+  })
+  isActive: boolean
+
+  @Field({
+    type: 'string',
+    description: 'Product image URL',
+    validation: {
+      maxLength: 500
+    }
+  })
+  imageUrl?: string
+
+  @Field({
+    type: 'json',
+    description: 'Additional product metadata'
+  })
+  metadata?: Record<string, any>
 }
 `
 }

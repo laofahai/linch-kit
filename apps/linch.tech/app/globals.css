@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* 增加最大宽度类 */
+.max-w-8xl {
+  max-width: 88rem; /* 1408px */
+}
+
+.max-w-9xl {
+  max-width: 96rem; /* 1536px */
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

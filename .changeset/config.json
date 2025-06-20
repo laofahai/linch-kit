@@ -3,7 +3,7 @@
   "changelog": [
     "@changesets/changelog-github",
     {
-      "repo": "your-org/linch-kit"
+      "repo": "laofahai/linch-kit"
     }
   ],
   "commit": false,
