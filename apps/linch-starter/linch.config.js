@@ -70,8 +70,9 @@ const config = {
     {
       name: '@linch-kit/auth-core',
       config: {
-        // 使用简化的认证套件（JSON 优先架构）
-        entityKit: 'simplified',
+        // 使用多租户认证套件（关联表架构）
+        // 决策原因：支持复杂权限系统、数据一致性、查询灵活性
+        entityKit: 'multi-tenant',
       },
     },
   ],

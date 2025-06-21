@@ -42,7 +42,8 @@
 
 ### 开发前必须检查的规范清单：
 - [ ] 已阅读并理解开发标准文档
-- [ ] 已查看文档最佳实践：[`ai-context/zh/management/documentation-best-practices.md`](../ai-context/zh/management/documentation-best-practices.md)
+- [ ] 已查看 UI 组件最佳实践：[`ai-context/zh/standards/ui-component-best-practices.md`](../ai-context/zh/standards/ui-component-best-practices.md)
+- [ ] 已查看技术决策记录：[`ai-context/zh/architecture/technical-decisions.md`](../ai-context/zh/architecture/technical-decisions.md)
 - [ ] 已了解当前项目状态和优先级
 
 ### 强制执行的开发流程：
