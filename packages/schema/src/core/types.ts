@@ -82,6 +82,80 @@ export interface FieldConfig {
   /** 字段分组（简单分组） */
   group?: string
 
+  // === DataTable 相关配置 ===
+  /** DataTable 列配置 */
+  table?: {
+    /** 列宽度 */
+    width?: number | string
+    /** 最小宽度 */
+    minWidth?: number
+    /** 最大宽度 */
+    maxWidth?: number
+    /** 是否可排序 */
+    sortable?: boolean
+    /** 是否可筛选 */
+    filterable?: boolean
+    /** 是否可隐藏 */
+    hideable?: boolean
+    /** 列对齐方式 */
+    align?: 'left' | 'center' | 'right'
+    /** 自定义渲染函数 */
+    render?: string // 函数名或组件名
+    /** 列头自定义渲染 */
+    headerRender?: string
+    /** 是否固定列 */
+    fixed?: 'left' | 'right' | boolean
+    /** 列分组 */
+    group?: string
+  }
+
+  // === FormBuilder 相关配置 ===
+  /** FormBuilder 字段配置 */
+  form?: {
+    /** 表单字段类型 */
+    type?: 'text' | 'email' | 'password' | 'number' | 'textarea' | 'select' | 'checkbox' | 'switch' | 'date' | 'file' | 'custom'
+    /** 字段布局配置 */
+    layout?: {
+      /** 列跨度 (1-12) */
+      colSpan?: number
+      /** 行跨度 */
+      rowSpan?: number
+    }
+    /** 选项配置（用于 select、radio、checkbox 等） */
+    options?: Array<{ label: string; value: string | number; disabled?: boolean }>
+    /** 异步选项加载 */
+    asyncOptions?: {
+      /** API 端点 */
+      url: string
+      /** 值字段名 */
+      valueField?: string
+      /** 标签字段名 */
+      labelField?: string
+      /** 搜索参数名 */
+      searchParam?: string
+    }
+    /** 文件上传配置 */
+    upload?: {
+      /** 接受的文件类型 */
+      accept?: string
+      /** 最大文件大小 (bytes) */
+      maxSize?: number
+      /** 是否支持多文件 */
+      multiple?: boolean
+      /** 上传 API 端点 */
+      uploadUrl?: string
+    }
+    /** 依赖字段配置 */
+    dependencies?: {
+      /** 依赖的字段名 */
+      field: string
+      /** 依赖条件 */
+      condition: any
+      /** 满足条件时的行为 */
+      action: 'show' | 'hide' | 'enable' | 'disable' | 'require'
+    }[]
+  }
+
   // === 验证相关 ===
   /** 是否必填 */
   required?: boolean

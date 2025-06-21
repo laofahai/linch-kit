@@ -41,7 +41,7 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
 
     // 如果有配置，直接返回 schema 部分
     if (coreConfig?.schema) {
-      return coreConfig.schema
+      return coreConfig.schema as SchemaConfig
     }
 
     // 默认配置
@@ -57,8 +57,9 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
         provider: 'sqlite'
       }
     }
-  } catch {
+  } catch (error) {
     console.warn('⚠️ Failed to load linch config, using default schema config')
+    console.warn('⚠️ Error details:', error instanceof Error ? error.message : String(error))
     return {
       entities: ['src/entities/**/*.{ts,tsx,js}'],
       output: {

@@ -17,6 +17,9 @@ export * from './config'
 // AI: 工具函数导出
 export * from './utils'
 
+// AI: 统一国际化系统导出
+export * from './i18n'
+
 // AI: 类型定义导出 (仅导出不冲突的类型)
 export type {
     AITag, AbstractConstructor, AsyncResult, AuthConfig, CLIConfig,

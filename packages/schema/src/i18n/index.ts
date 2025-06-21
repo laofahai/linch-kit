@@ -1,39 +1,75 @@
+/**
+ * Schema 包国际化系统
+ *
+ * 基于 @linch-kit/core 的统一 i18n 架构
+ */
+
+import {
+  createPackageI18n,
+  type TranslationFunction,
+  type I18nProps
+} from '@linch-kit/core'
 import type { I18nText } from '../core/types'
 
 /**
- * 翻译函数类型 - 用户在应用中提供
+ * Schema 包的 i18n 配置
  */
-export type TranslateFunction = (key: string, params?: Record<string, any>) => string
+const schemaPackageI18n = createPackageI18n({
+  packageName: 'schema',
+  defaultLocale: 'en',
+  defaultMessages: {
+    en: {
+      // 默认的 Schema 相关翻译
+      'entity.displayName': '{entityName}',
+      'field.label': '{fieldName}',
+    },
+    'zh-CN': {
+      'entity.displayName': '{entityName}',
+      'field.label': '{fieldName}',
+    }
+  },
+  keyPrefix: 'schema'
+})
 
 /**
- * 全局翻译函数，由应用层设置
+ * 获取 Schema 翻译函数
+ *
+ * @param userT - 用户提供的翻译函数（可选）
+ * @returns Schema 翻译函数
  */
-let globalTranslate: TranslateFunction | undefined
-
-/**
- * 设置全局翻译函数
- */
-export function setTranslateFunction(translateFn: TranslateFunction): void {
-  globalTranslate = translateFn
+export function getSchemaTranslation(userT?: TranslationFunction): TranslationFunction {
+  return schemaPackageI18n.getTranslation(userT)
 }
 
 /**
- * 获取翻译文本
+ * Schema 翻译函数（向后兼容）
  */
-export function t(key: string, params?: Record<string, any>): string {
-  if (globalTranslate) {
-    return globalTranslate(key, params)
-  }
-  // fallback: 返回 key 本身
-  return key
+export const t = getSchemaTranslation()
+
+/**
+ * 向后兼容的翻译函数类型
+ */
+export type TranslateFunction = TranslationFunction
+
+/**
+ * 设置全局翻译函数（向后兼容）
+ */
+export function setTranslateFunction(translateFn: TranslationFunction): void {
+  // 这个函数保留用于向后兼容，但建议使用新的模式
+  console.warn('setTranslateFunction is deprecated. Use the new i18n pattern with component props.')
 }
 
 /**
  * 解析 i18n 文本（key 或普通字符串）
+ *
+ * @param text - 翻译键或普通字符串
+ * @param params - 参数
+ * @param userT - 用户翻译函数（可选）
+ * @returns 翻译后的文本
  */
-export function resolveI18nText(text: string | I18nText, params?: Record<string, any>): string {
-  // 现在 I18nText 就是 string，直接调用翻译函数
-  return t(text, params)
+export function resolveI18nText(text: string | I18nText, params?: Record<string, any>, userT?: TranslationFunction): string {
+  const translate = getSchemaTranslation(userT)
+  return translate(text, params)
 }
 
 /**
@@ -50,14 +86,15 @@ export function generateEntityKey(entityName: string, type: 'displayName' | 'des
 /**
  * Schema 字段 i18n 工具函数
  */
-export function getFieldLabel(entityName: string, fieldName: string, customLabel?: string | I18nText): string {
+export function getFieldLabel(entityName: string, fieldName: string, customLabel?: string | I18nText, userT?: TranslationFunction): string {
   if (customLabel) {
-    return resolveI18nText(customLabel)
+    return resolveI18nText(customLabel, undefined, userT)
   }
 
   // 使用默认 key
   const key = generateDefaultKey(entityName, fieldName, 'label')
-  const translated = t(key)
+  const translate = getSchemaTranslation(userT)
+  const translated = translate(key)
 
   // 如果没有翻译，使用字段名的友好格式
   if (translated === key) {
@@ -67,57 +104,62 @@ export function getFieldLabel(entityName: string, fieldName: string, customLabel
   return translated
 }
 
-export function getFieldDescription(entityName: string, fieldName: string, customDescription?: string | I18nText): string | undefined {
+export function getFieldDescription(entityName: string, fieldName: string, customDescription?: string | I18nText, userT?: TranslationFunction): string | undefined {
   if (customDescription) {
-    return resolveI18nText(customDescription)
+    return resolveI18nText(customDescription, undefined, userT)
   }
 
   const key = generateDefaultKey(entityName, fieldName, 'description')
-  const translated = t(key)
+  const translate = getSchemaTranslation(userT)
+  const translated = translate(key)
 
   return translated === key ? undefined : translated
 }
 
-export function getFieldPlaceholder(entityName: string, fieldName: string, customPlaceholder?: string | I18nText): string | undefined {
+export function getFieldPlaceholder(entityName: string, fieldName: string, customPlaceholder?: string | I18nText, userT?: TranslationFunction): string | undefined {
   if (customPlaceholder) {
-    return resolveI18nText(customPlaceholder)
+    return resolveI18nText(customPlaceholder, undefined, userT)
   }
 
   const key = generateDefaultKey(entityName, fieldName, 'placeholder')
-  const translated = t(key)
+  const translate = getSchemaTranslation(userT)
+  const translated = translate(key)
 
   return translated === key ? undefined : translated
 }
 
-export function getFieldHelpText(entityName: string, fieldName: string, customHelpText?: string | I18nText): string | undefined {
+export function getFieldHelpText(entityName: string, fieldName: string, customHelpText?: string | I18nText, userT?: TranslationFunction): string | undefined {
   if (customHelpText) {
-    return resolveI18nText(customHelpText)
+    return resolveI18nText(customHelpText, undefined, userT)
   }
 
   const key = generateDefaultKey(entityName, fieldName, 'helpText')
-  const translated = t(key)
+  const translate = getSchemaTranslation(userT)
+  const translated = translate(key)
 
   return translated === key ? undefined : translated
 }
 
-export function getEntityDisplayName(entityName: string, customDisplayName?: string | I18nText): string {
+export function getEntityDisplayName(entityName: string, customDisplayName?: string | I18nText, userT?: TranslationFunction): string {
   if (customDisplayName) {
-    return resolveI18nText(customDisplayName)
+    return resolveI18nText(customDisplayName, undefined, userT)
   }
 
   const key = generateEntityKey(entityName, 'displayName')
-  const translated = t(key)
+  const translate = getSchemaTranslation(userT)
+  const translated = translate(key)
 
   return translated === key ? formatEntityName(entityName) : translated
 }
 
-export function getEntityDescription(entityName: string, customDescription?: string | I18nText): string | undefined {
+export function getEntityDescription(entityName: string, customDescription?: string | I18nText, userT?: TranslationFunction): string | undefined {
   if (customDescription) {
-    return resolveI18nText(customDescription)
+    return resolveI18nText(customDescription, undefined, userT)
   }
 
   const key = generateEntityKey(entityName, 'description')
-  const translated = t(key)
+  const translate = getSchemaTranslation(userT)
+  const translated = translate(key)
 
   return translated === key ? undefined : translated
 }

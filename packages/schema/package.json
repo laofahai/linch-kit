@@ -60,7 +60,7 @@
     "typescript": "5.8.3"
   },
   "peerDependencies": {
-    "@linch-kit/auth-core": "workspace:*"
+    "@linch-kit/auth": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@linch-kit/auth-core": {

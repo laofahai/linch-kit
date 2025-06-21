@@ -354,6 +354,190 @@ export default function TestComponentsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* 数据展示组件 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>数据展示组件</CardTitle>
+          <CardDescription>表格、徽章、头像、警告等数据展示组件</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* 表格 */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">数据表格</h3>
+            <Table>
+              <TableCaption>用户列表</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>姓名</TableHead>
+                  <TableHead>邮箱</TableHead>
+                  <TableHead>角色</TableHead>
+                  <TableHead className="text-right">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {tableData.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{user.id}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={`https://avatar.vercel.sh/${user.name}`} />
+                          <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
+                        </Avatar>
+                        {user.name}
+                      </div>
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge variant={user.role === '管理员' ? 'default' : 'secondary'}>
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">打开菜单</span>
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>操作</DropdownMenuLabel>
+                          <DropdownMenuItem>查看详情</DropdownMenuItem>
+                          <DropdownMenuItem>编辑用户</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-red-600">
+                            删除用户
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* 警告组件 */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">警告提示</h3>
+            <div className="space-y-4">
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertTitle>提示</AlertTitle>
+                <AlertDescription>
+                  这是一个信息提示，用于显示一般性信息。
+                </AlertDescription>
+              </Alert>
+
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>错误</AlertTitle>
+                <AlertDescription>
+                  这是一个错误提示，用于显示错误信息和警告。
+                </AlertDescription>
+              </Alert>
+            </div>
+          </div>
+
+          {/* 标签页 */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">标签页</h3>
+            <Tabs defaultValue="account" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="account">账户</TabsTrigger>
+                <TabsTrigger value="password">密码</TabsTrigger>
+              </TabsList>
+              <TabsContent value="account" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>账户信息</CardTitle>
+                    <CardDescription>
+                      在这里修改您的账户信息。
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="current">当前用户名</Label>
+                      <Input id="current" defaultValue="@zhangsan" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="new">新用户名</Label>
+                      <Input id="new" />
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button>保存更改</Button>
+                  </CardFooter>
+                </Card>
+              </TabsContent>
+              <TabsContent value="password" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>密码设置</CardTitle>
+                    <CardDescription>
+                      在这里修改您的密码。
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="current-password">当前密码</Label>
+                      <Input id="current-password" type="password" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="new-password">新密码</Label>
+                      <Input id="new-password" type="password" />
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button>更新密码</Button>
+                  </CardFooter>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 使用说明 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>使用说明</CardTitle>
+          <CardDescription>如何在项目中使用这些组件</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-semibold mb-2">安装</h4>
+              <pre className="bg-gray-100 p-3 rounded-md text-sm">
+                <code>pnpm add @linch-kit/ui</code>
+              </pre>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-2">导入组件</h4>
+              <pre className="bg-gray-100 p-3 rounded-md text-sm">
+                <code>{`import { Button, Card, Toast } from '@linch-kit/ui'`}</code>
+              </pre>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-2">特性</h4>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                <li>基于 shadcn/ui 构建，确保组件质量和一致性</li>
+                <li>完整的 TypeScript 类型支持</li>
+                <li>支持深色/浅色主题切换</li>
+                <li>响应式设计，适配各种屏幕尺寸</li>
+                <li>无障碍访问支持</li>
+                <li>与 React Hook Form + Zod 完美集成</li>
+                <li>基于 Sonner 的现代 Toast 通知系统</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

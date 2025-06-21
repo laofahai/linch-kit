@@ -1,0 +1,90 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "reset": "Reset",
+    "submit": "Submit",
+    "loading": "Loading...",
+    "retry": "Retry",
+    "add": "Add",
+    "remove": "Remove",
+    "close": "Close",
+    "open": "Open",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "select": "Select",
+    "selectAll": "Select All",
+    "confirm": "Confirm",
+    "apply": "Apply"
+  },
+  "status": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "loading": "Loading",
+    "empty": "No data",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Minimum {{min}} characters required",
+    "maxLength": "Maximum {{max}} characters allowed",
+    "min": "Minimum value is {{min}}",
+    "max": "Maximum value is {{max}}",
+    "pattern": "Invalid format",
+    "unique": "This value already exists",
+    "invalid": "Invalid input"
+  },
+  "placeholders": {
+    "search": "Search...",
+    "filter": "Filter...",
+    "select": "Please select",
+    "input": "Please enter",
+    "email": "Enter email",
+    "password": "Enter password",
+    "name": "Enter name",
+    "phone": "Enter phone number"
+  },
+  "labels": {
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "true": "True",
+    "false": "False",
+    "active": "Active",
+    "inactive": "Inactive",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
+  },
+  "time": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This Week",
+    "lastWeek": "Last Week",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "thisYear": "This Year",
+    "lastYear": "Last Year"
+  },
+  "units": {
+    "seconds": "seconds",
+    "minutes": "minutes",
+    "hours": "hours",
+    "days": "days",
+    "weeks": "weeks",
+    "months": "months",
+    "years": "years"
+  }
+}

@@ -1,5 +1,5 @@
 /**
- * @linch-kit/auth-core 与 tRPC 集成工具
+ * @linch-kit/auth 与 tRPC 集成工具
  */
 
 import { TRPCError } from '@trpc/server'
@@ -38,7 +38,7 @@ interface PermissionRegistry {
 async function loadAuthCore() {
   try {
     // 使用动态导入避免编译时依赖
-    const authCore = await import('@linch-kit/auth-core' as any)
+    const authCore = await import('@linch-kit/auth' as any)
     return {
       createPermissionRegistry: authCore.createPermissionRegistry as () => PermissionRegistry,
       createModularPermissionChecker: authCore.createModularPermissionChecker as (registry: PermissionRegistry) => ModularPermissionChecker,

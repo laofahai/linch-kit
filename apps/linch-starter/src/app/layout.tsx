@@ -5,6 +5,7 @@ import './globals.css'
 import { TRPCProvider } from '@/lib/trpc-provider'
 import { AuthProvider } from '@/contexts/auth-context'
 import { Navigation } from '@/components/layout/navigation'
+import { Toaster } from '@linch-kit/ui'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -31,6 +32,7 @@ export default function RootLayout({
             </div>
           </AuthProvider>
         </TRPCProvider>
+        <Toaster />
       </body>
     </html>
   )

@@ -16,7 +16,7 @@
     "paths": {
       "@linch-kit/core": ["packages/core/src"],
       "@linch-kit/ui": ["packages/ui/src"],
-      "@linch-kit/auth-core": ["packages/auth-core/src"],
+      "@linch-kit/auth": ["packages/auth/src"],
       "@linch-kit/schema": ["packages/schema/src"],
       "@linch-kit/trpc": ["packages/trpc/src"],
       "@linch-kit/ui/shadcn": ["packages/ui/src/components/ui/index.ts"],

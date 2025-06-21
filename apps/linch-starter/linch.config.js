@@ -68,7 +68,7 @@ const config = {
   plugins: [
     '@linch-kit/schema',
     {
-      name: '@linch-kit/auth-core',
+      name: '@linch-kit/auth',
       config: {
         // 使用多租户认证套件（关联表架构）
         // 决策原因：支持复杂权限系统、数据一致性、查询灵活性

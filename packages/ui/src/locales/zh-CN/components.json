@@ -1,0 +1,133 @@
+{
+  "filters": {
+    "title": "筛选器",
+    "addFilter": "添加筛选条件",
+    "removeFilter": "移除筛选条件",
+    "clearAll": "清除所有",
+    "applyFilters": "应用筛选",
+    "resetFilters": "重置筛选",
+    "showAdvanced": "显示高级筛选",
+    "hideAdvanced": "隐藏高级筛选",
+    "quickFilter": "快速筛选",
+    "filterCount": "已应用 {{count}} 个筛选条件",
+    "noFilters": "暂无筛选条件",
+    "operators": {
+      "eq": "等于",
+      "ne": "不等于",
+      "gt": "大于",
+      "gte": "大于等于",
+      "lt": "小于",
+      "lte": "小于等于",
+      "contains": "包含",
+      "startsWith": "开始于",
+      "endsWith": "结束于",
+      "in": "在列表中",
+      "notIn": "不在列表中",
+      "between": "在范围内",
+      "isNull": "为空",
+      "isNotNull": "不为空"
+    },
+    "types": {
+      "text": "文本筛选",
+      "number": "数字筛选",
+      "date": "日期筛选",
+      "select": "选择筛选",
+      "boolean": "布尔筛选",
+      "range": "范围筛选"
+    },
+    "placeholders": {
+      "text": "请输入文本",
+      "number": "请输入数字",
+      "minValue": "最小值",
+      "maxValue": "最大值",
+      "selectOption": "请选择选项",
+      "searchOptions": "搜索选项..."
+    },
+    "messages": {
+      "checkEmpty": "检查空值",
+      "checkNotEmpty": "检查非空值",
+      "rangeFormat": "{{min}} - {{max}}",
+      "selectedCount": "已选择 {{count}} 项",
+      "noOptions": "暂无选项",
+      "loadingOptions": "加载选项中...",
+      "searchNoResults": "未找到匹配项"
+    }
+  },
+  "dataTable": {
+    "title": "数据表格",
+    "noData": "暂无数据",
+    "loading": "加载中...",
+    "error": "加载失败",
+    "retry": "重试",
+    "refresh": "刷新",
+    "columns": "列",
+    "rows": "行",
+    "pagination": {
+      "previous": "上一页",
+      "next": "下一页",
+      "first": "首页",
+      "last": "末页",
+      "page": "第 {{current}} 页，共 {{total}} 页",
+      "pageSize": "每页显示",
+      "total": "共 {{total}} 条记录",
+      "showing": "显示第 {{start}} - {{end}} 条，共 {{total}} 条"
+    },
+    "sorting": {
+      "sortBy": "排序",
+      "ascending": "升序",
+      "descending": "降序",
+      "unsorted": "未排序"
+    },
+    "selection": {
+      "selectAll": "全选",
+      "selectRow": "选择行",
+      "selectedCount": "已选择 {{count}} 项",
+      "clearSelection": "清除选择"
+    }
+  },
+  "formBuilder": {
+    "title": "表单构建器",
+    "required": "必填",
+    "optional": "可选",
+    "submit": "提交",
+    "reset": "重置",
+    "cancel": "取消",
+    "save": "保存",
+    "saveAndContinue": "保存并继续",
+    "validation": {
+      "required": "此字段为必填项",
+      "invalid": "输入格式不正确",
+      "tooShort": "输入内容过短",
+      "tooLong": "输入内容过长",
+      "outOfRange": "输入值超出范围"
+    },
+    "fieldTypes": {
+      "text": "文本",
+      "email": "邮箱",
+      "password": "密码",
+      "number": "数字",
+      "date": "日期",
+      "select": "选择",
+      "checkbox": "复选框",
+      "radio": "单选框",
+      "textarea": "多行文本",
+      "file": "文件上传"
+    }
+  },
+  "dialog": {
+    "close": "关闭",
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存",
+    "delete": "删除",
+    "title": "对话框"
+  },
+  "toast": {
+    "success": "操作成功",
+    "error": "操作失败",
+    "warning": "警告",
+    "info": "提示",
+    "loading": "处理中...",
+    "close": "关闭"
+  }
+}

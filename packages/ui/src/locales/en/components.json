@@ -1,0 +1,133 @@
+{
+  "filters": {
+    "title": "Filters",
+    "addFilter": "Add Filter",
+    "removeFilter": "Remove Filter",
+    "clearAll": "Clear All",
+    "applyFilters": "Apply Filters",
+    "resetFilters": "Reset Filters",
+    "showAdvanced": "Show Advanced",
+    "hideAdvanced": "Hide Advanced",
+    "quickFilter": "Quick Filter",
+    "filterCount": "{{count}} filters applied",
+    "noFilters": "No filters applied",
+    "operators": {
+      "eq": "Equals",
+      "ne": "Not equals",
+      "gt": "Greater than",
+      "gte": "Greater than or equal",
+      "lt": "Less than",
+      "lte": "Less than or equal",
+      "contains": "Contains",
+      "startsWith": "Starts with",
+      "endsWith": "Ends with",
+      "in": "In list",
+      "notIn": "Not in list",
+      "between": "Between",
+      "isNull": "Is empty",
+      "isNotNull": "Is not empty"
+    },
+    "types": {
+      "text": "Text Filter",
+      "number": "Number Filter",
+      "date": "Date Filter",
+      "select": "Select Filter",
+      "boolean": "Boolean Filter",
+      "range": "Range Filter"
+    },
+    "placeholders": {
+      "text": "Enter text",
+      "number": "Enter number",
+      "minValue": "Min value",
+      "maxValue": "Max value",
+      "selectOption": "Select option",
+      "searchOptions": "Search options..."
+    },
+    "messages": {
+      "checkEmpty": "Check empty values",
+      "checkNotEmpty": "Check non-empty values",
+      "rangeFormat": "{{min}} - {{max}}",
+      "selectedCount": "{{count}} selected",
+      "noOptions": "No options available",
+      "loadingOptions": "Loading options...",
+      "searchNoResults": "No matching results"
+    }
+  },
+  "dataTable": {
+    "title": "Data Table",
+    "noData": "No data available",
+    "loading": "Loading...",
+    "error": "Failed to load",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "columns": "Columns",
+    "rows": "Rows",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "first": "First",
+      "last": "Last",
+      "page": "Page {{current}} of {{total}}",
+      "pageSize": "Items per page",
+      "total": "{{total}} total items",
+      "showing": "Showing {{start}} - {{end}} of {{total}}"
+    },
+    "sorting": {
+      "sortBy": "Sort by",
+      "ascending": "Ascending",
+      "descending": "Descending",
+      "unsorted": "Unsorted"
+    },
+    "selection": {
+      "selectAll": "Select All",
+      "selectRow": "Select Row",
+      "selectedCount": "{{count}} selected",
+      "clearSelection": "Clear Selection"
+    }
+  },
+  "formBuilder": {
+    "title": "Form Builder",
+    "required": "Required",
+    "optional": "Optional",
+    "submit": "Submit",
+    "reset": "Reset",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saveAndContinue": "Save & Continue",
+    "validation": {
+      "required": "This field is required",
+      "invalid": "Invalid format",
+      "tooShort": "Input too short",
+      "tooLong": "Input too long",
+      "outOfRange": "Value out of range"
+    },
+    "fieldTypes": {
+      "text": "Text",
+      "email": "Email",
+      "password": "Password",
+      "number": "Number",
+      "date": "Date",
+      "select": "Select",
+      "checkbox": "Checkbox",
+      "radio": "Radio",
+      "textarea": "Textarea",
+      "file": "File Upload"
+    }
+  },
+  "dialog": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "title": "Dialog"
+  },
+  "toast": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "loading": "Loading...",
+    "close": "Close"
+  }
+}

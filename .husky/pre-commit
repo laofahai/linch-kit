@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 安全检查：防止敏感信息提交
+echo "🔍 Running security checks..."
+
+# 检查数据库连接字符串
+if git diff --cached --name-only | xargs grep -l "postgresql://.*:.*@.*" 2>/dev/null; then
+  echo "❌ 发现数据库连接字符串，请使用环境变量"
+  echo "   请将敏感信息移动到 .env.local 文件中"
+  exit 1
+fi
+
+# 检查 API 密钥模式
+if git diff --cached --name-only | xargs grep -l -E "(api_key|apikey|secret_key|password).*=.*['\"][^'\"]{20,}" 2>/dev/null; then
+  echo "❌ 发现可能的 API 密钥或密码，请使用环境变量"
+  exit 1
+fi
+
+# 检查 Supabase 或其他云服务凭据
+if git diff --cached --name-only | xargs grep -l -E "(supabase\.co|amazonaws\.com|firebase\.com).*:.*@" 2>/dev/null; then
+  echo "❌ 发现云服务凭据，请使用环境变量"
+  exit 1
+fi
+
+echo "✅ 安全检查通过"
+
+# 运行 lint 和类型检查
+npm run lint
+npm run type-check

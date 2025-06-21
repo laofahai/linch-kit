@@ -2,30 +2,16 @@ import { toast as sonnerToast } from "sonner"
 import type { ExternalToast } from "sonner"
 
 /**
- * @description Toast 选项接口，扩展 Sonner 的 ExternalToast
+ * @description Toast 选项接口，简化版本
  * @since v1.0.0
  */
-export interface ToastOptions extends ExternalToast {
-  /** Toast 标题 */
-  title?: string
+export interface ToastOptions {
   /** Toast 描述 */
   description?: string
   /** 持续时间（毫秒） */
   duration?: number
-  /** 是否可关闭 */
-  dismissible?: boolean
   /** 自定义图标 */
   icon?: React.ReactNode
-  /** 操作按钮 */
-  action?: {
-    label: string
-    onClick: () => void
-  }
-  /** 取消按钮 */
-  cancel?: {
-    label: string
-    onClick?: () => void
-  }
 }
 
 /**
@@ -46,13 +32,7 @@ export const Toast = {
    * @since v1.0.0
    */
   success: (message: string, options?: ToastOptions) => {
-    return sonnerToast.success(message, {
-      description: options?.description,
-      duration: options?.duration,
-      action: options?.action,
-      cancel: options?.cancel,
-      ...options,
-    })
+    return sonnerToast.success(message, options as ExternalToast)
   },
 
   /**
@@ -68,13 +48,7 @@ export const Toast = {
    * @since v1.0.0
    */
   error: (message: string, options?: ToastOptions) => {
-    return sonnerToast.error(message, {
-      description: options?.description,
-      duration: options?.duration,
-      action: options?.action,
-      cancel: options?.cancel,
-      ...options,
-    })
+    return sonnerToast.error(message, options as ExternalToast)
   },
 
   /**
@@ -91,13 +65,9 @@ export const Toast = {
    */
   warning: (message: string, options?: ToastOptions) => {
     return sonnerToast(message, {
-      description: options?.description,
-      duration: options?.duration,
-      action: options?.action,
-      cancel: options?.cancel,
-      icon: "⚠️",
       ...options,
-    })
+      icon: options?.icon || "⚠️",
+    } as ExternalToast)
   },
 
   /**
@@ -114,13 +84,9 @@ export const Toast = {
    */
   info: (message: string, options?: ToastOptions) => {
     return sonnerToast(message, {
-      description: options?.description,
-      duration: options?.duration,
-      action: options?.action,
-      cancel: options?.cancel,
-      icon: "ℹ️",
       ...options,
-    })
+      icon: options?.icon || "ℹ️",
+    } as ExternalToast)
   },
 
   /**
@@ -137,18 +103,13 @@ export const Toast = {
    * @since v1.0.0
    */
   loading: (message: string, options?: ToastOptions) => {
-    return sonnerToast.loading(message, {
-      description: options?.description,
-      duration: options?.duration,
-      ...options,
-    })
+    return sonnerToast.loading(message, options as ExternalToast)
   },
 
   /**
    * @description 显示 Promise Toast，自动处理加载、成功、错误状态
    * @param promise - Promise 对象
    * @param messages - 不同状态的消息
-   * @param options - Toast 选项
    * @returns Promise 结果
    * @example
    * ```tsx
@@ -169,28 +130,9 @@ export const Toast = {
       loading: string
       success: string | ((data: T) => string)
       error: string | ((error: any) => string)
-    },
-    options?: ToastOptions
+    }
   ) => {
-    return sonnerToast.promise(promise, messages, options)
-  },
-
-  /**
-   * @description 显示自定义 Toast
-   * @param content - 自定义内容
-   * @param options - Toast 选项
-   * @returns Toast ID
-   * @example
-   * ```tsx
-   * Toast.custom(
-   *   <div>自定义内容</div>,
-   *   { duration: 5000 }
-   * )
-   * ```
-   * @since v1.0.0
-   */
-  custom: (content: React.ReactNode, options?: ToastOptions) => {
-    return sonnerToast.custom(content, options)
+    return sonnerToast.promise(promise, messages)
   },
 
   /**

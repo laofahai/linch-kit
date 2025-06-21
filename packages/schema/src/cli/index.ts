@@ -63,7 +63,7 @@ async function loadLinchConfig(): Promise<SchemaConfig> {
 
     // 如果有配置，直接返回 schema 部分
     if (linchConfig?.schema) {
-      return linchConfig.schema
+      return linchConfig.schema as SchemaConfig
     }
 
     // 默认配置

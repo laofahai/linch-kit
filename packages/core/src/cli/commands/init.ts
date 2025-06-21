@@ -551,13 +551,12 @@ export default {
 }
 
 /**
- * 根据数据库类型生成默认连接URL
+ * 根据数据库类型生成默认连接URL模板
  */
 function getDatabaseUrl(database: string, projectName: string): string {
   switch (database) {
     case 'postgresql':
-      // AI: 使用项目指定的PostgreSQL连接
-      return `postgresql://postgres:tech.linch.flexreport@db.evfjsbldujohgeshcixt.supabase.co:5432/postgres`
+      return `postgresql://username:password@localhost:5432/${projectName}`
     case 'mysql':
       return `mysql://username:password@localhost:3306/${projectName}`
     case 'sqlite':

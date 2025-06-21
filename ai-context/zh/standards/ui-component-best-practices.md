@@ -5,7 +5,7 @@
 本文档定义了 LinchKit 项目中 UI 组件开发的标准化要求和最佳实践，确保组件的一致性、可维护性和可扩展性。
 
 **最后更新**: 2025-06-21
-**适用范围**: @linch-kit/ui、@linch-kit/crud-ui 等 UI 相关包，以及 starter 应用中的认证 UI 组件
+**适用范围**: @linch-kit/ui 统一 UI 组件库，以及 starter 应用中的认证 UI 组件
 
 ---
 
@@ -14,19 +14,22 @@
 ### 组件分层架构
 
 ```
-@linch-kit/ui (基础组件层)
-├── atoms/          # 原子组件 (Button, Input, Icon)
-├── molecules/      # 分子组件 (SearchBox, FormField)
-├── organisms/      # 有机体组件 (Header, Sidebar, DataTable)
-├── templates/      # 模板组件 (PageLayout, FormLayout)
-├── providers/      # 上下文提供者 (ThemeProvider, ToastProvider)
-├── blocks/         # shadcn/ui blocks 封装 (LoginBlock, DashboardBlock)
-└── utils/          # 简化调用方法 (Dialog.confirm, Toast.success)
+@linch-kit/ui (统一组件层)
+├── components/
+│   ├── ui/             # 基础 shadcn/ui 组件 (Button, Input, Card)
+│   ├── crud/           # CRUD 专用组件 (DataTable, FormBuilder, SearchableSelect)
+│   ├── blocks/         # shadcn/ui blocks 封装 (LoginBlock, DashboardBlock)
+│   └── theme/          # 主题相关组件 (ThemeToggle, ThemeProvider)
+├── providers/          # 上下文提供者 (ThemeProvider, ToastProvider)
+├── hooks/              # 通用 Hooks (useTheme, useToast)
+├── lib/                # 工具函数 (utils, toast helpers)
+└── utils/              # 简化调用方法 (Dialog.confirm, Toast.success)
 
-@linch-kit/crud-ui (业务组件层)
-├── components/     # CRUD 专用组件 (CRUDList, CRUDForm)
-├── hooks/          # CRUD 相关 Hooks (useCRUD, useCRUDList)
-└── templates/      # CRUD 模板 (ListPage, DetailPage)
+导出结构:
+├── "@linch-kit/ui"         # 基础组件 (Button, Input, Card, etc.)
+├── "@linch-kit/ui/crud"    # CRUD 组件 (DataTable, FormBuilder, etc.)
+├── "@linch-kit/ui/blocks"  # Blocks 组件 (LoginBlock, DashboardBlock, etc.)
+└── "@linch-kit/ui/theme"   # 主题组件 (ThemeProvider, ThemeToggle, etc.)
 
 Starter 应用认证组件 (应用层)
 ├── components/auth/    # 认证组件 (LoginForm, RegisterForm)
@@ -37,24 +40,33 @@ Starter 应用认证组件 (应用层)
 ### 组件放置规则
 
 1. **基础组件** → `@linch-kit/ui`
+
    - 无业务逻辑的通用 UI 组件
    - 可在任何上下文中复用
    - 例：Button, Input, Modal, Card
 
-2. **业务组件** → 对应的业务包
-   - 包含特定业务逻辑
-   - 依赖特定的数据结构或 API
-   - 例：UserForm, ProductList, OrderDetail
+2. **CRUD 组件** → `@linch-kit/ui/crud`
 
-3. **认证组件** → Starter 应用中直接实现
+   - 数据操作相关的高级组件
+   - 基于基础组件构建，提供完整的 CRUD 功能
+   - 例：DataTable, FormBuilder, SearchableSelect
+
+3. **Blocks 组件** → `@linch-kit/ui/blocks`
+
+   - 基于 shadcn/ui blocks 的预制组件
+   - 提供完整的页面级功能模块
+   - 例：LoginBlock, DashboardBlock, StatsBlock
+
+4. **认证组件** → Starter 应用中直接实现
+
    - 便于用户根据需求自定义
    - 提供完整的认证流程示例
    - 例：LoginForm, RegisterForm, AuthGuard
 
-4. **复合组件** → 根据主要功能归类
-   - 组合多个基础组件
-   - 提供完整的功能单元
-   - 例：SearchableTable, FormWithValidation
+5. **主题组件** → `@linch-kit/ui/theme`
+   - 主题系统相关组件
+   - 提供主题切换和配置功能
+   - 例：ThemeProvider, ThemeToggle
 
 ---
 
@@ -77,12 +89,12 @@ import { Dialog } from '@linch-kit/ui'
 Dialog.confirm({
   title: '确认删除',
   description: '此操作不可撤销',
-  onConfirm: () => handleDelete()
+  onConfirm: () => handleDelete(),
 })
 
 Dialog.alert({
   title: '操作成功',
-  description: '数据已保存'
+  description: '数据已保存',
 })
 
 // Toast 简化调用
@@ -166,10 +178,10 @@ interface ThemeConfig {
 }
 
 // ThemeProvider 组件
-export function ThemeProvider({ 
-  children, 
+export function ThemeProvider({
+  children,
   defaultTheme = 'system',
-  storageKey = 'linch-kit-theme'
+  storageKey = 'linch-kit-theme',
 }: ThemeProviderProps) {
   // 实现主题状态管理
   // 支持系统主题检测
@@ -188,14 +200,14 @@ export function ThemeProvider({
   --color-secondary: 210 40% 60%;
   --color-background: 0 0% 100%;
   --color-foreground: 0 0% 3.9%;
-  
+
   /* 间距系统 */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
-  
+
   /* 字体系统 */
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
@@ -205,7 +217,7 @@ export function ThemeProvider({
 }
 
 /* 深色主题覆盖 */
-[data-theme="dark"] {
+[data-theme='dark'] {
   --color-background: 0 0% 3.9%;
   --color-foreground: 0 0% 98%;
   /* 其他深色主题变量 */
@@ -223,7 +235,7 @@ export const themes = {
       primary: 'hsl(220, 100%, 50%)',
       background: 'hsl(0, 0%, 100%)',
       // ...
-    }
+    },
   },
   dark: {
     name: 'Dark',
@@ -231,12 +243,12 @@ export const themes = {
       primary: 'hsl(220, 100%, 60%)',
       background: 'hsl(0, 0%, 3.9%)',
       // ...
-    }
+    },
   },
   system: {
     name: 'System',
     // 自动检测系统主题
-  }
+  },
 } as const
 ```
 
@@ -328,10 +340,7 @@ export interface StateProps {
 }
 
 // 组合属性类型
-export interface ComponentProps 
-  extends BaseComponentProps, 
-          VariantProps, 
-          StateProps {
+export interface ComponentProps extends BaseComponentProps, VariantProps, StateProps {
   // 组件特有属性
 }
 ```
@@ -437,19 +446,19 @@ export const Interactive: Story = {
 
 ### 文档注释规范
 
-```typescript
+````typescript
 /**
  * 通用按钮组件
- * 
+ *
  * @description 提供一致的按钮样式和交互行为，支持多种变体和尺寸
- * 
+ *
  * @example
  * ```tsx
  * <Button variant="primary" size="md" onClick={handleClick}>
  *   Click me
  * </Button>
  * ```
- * 
+ *
  * @see {@link https://design-system.example.com/button} 设计规范
  */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -457,26 +466,27 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // 组件实现
   }
 )
-```
+````
 
 ---
 
 ## 🔗 包间集成规范
 
-### @linch-kit/crud-ui 集成
+### CRUD 组件集成
 
 ```typescript
-// CRUD 组件应该依赖 @linch-kit/ui 的基础组件
+// CRUD 组件已集成到 @linch-kit/ui 包中，提供统一的导入方式
 import { Button, Input, Table } from '@linch-kit/ui'
+import { DataTable, FormBuilder } from '@linch-kit/ui/crud'
 import { useCRUD } from '@linch-kit/crud'
 
 export function CRUDList<T>({ schema, ...props }: CRUDListProps<T>) {
   const { data, loading, error } = useCRUD(schema)
-  
+
   return (
     <div className="crud-list">
-      <Table data={data} loading={loading} />
-      {/* 使用基础组件构建 CRUD 功能 */}
+      <DataTable data={data} loading={loading} schema={schema} />
+      {/* 使用统一的 CRUD 组件 */}
     </div>
   )
 }
@@ -526,7 +536,7 @@ import { useTheme } from '@linch-kit/ui'
 
 export function BusinessComponent() {
   const { theme, setTheme } = useTheme()
-  
+
   return (
     <div data-theme={theme}>
       {/* 组件内容 */}
@@ -542,26 +552,31 @@ export function BusinessComponent() {
 ### 组件开发完成标准
 
 - [ ] **功能完整性**
+
   - [ ] 组件功能符合设计要求
   - [ ] 支持所有必要的属性和变体
   - [ ] 错误处理和边界情况处理
 
 - [ ] **代码质量**
+
   - [ ] TypeScript 类型定义完整
   - [ ] 通过 ESLint 和 Prettier 检查
   - [ ] 代码注释和 JSDoc 完整
 
 - [ ] **可访问性**
+
   - [ ] ARIA 标签正确设置
   - [ ] 键盘导航支持
   - [ ] 颜色对比度符合 WCAG 标准
 
 - [ ] **主题支持**
+
   - [ ] 支持深色/浅色主题
   - [ ] CSS 变量正确使用
   - [ ] 主题切换无异常
 
 - [ ] **文档和测试**
+
   - [ ] Storybook 文档完整
   - [ ] 使用示例清晰
   - [ ] 单元测试覆盖率 > 80%

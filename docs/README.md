@@ -43,7 +43,7 @@
 
 ### 🏗️ 架构设计
 1. 了解 [Monorepo 架构](./monorepo-architecture.md)
-2. 查看 [AI 上下文文档](../ai-context/README.md) 了解设计决策
+2. 查看 [AI 上下文文档](../ai-context/zh/README.md) 了解设计决策
 3. 参考 [系统架构](../ai-context/system/architecture.md) 进行扩展
 
 ## 💡 特色功能
@@ -66,4 +66,4 @@
 - [GitHub 仓库](https://github.com/linch-tech/linch-kit)
 - [npm 组织](https://www.npmjs.com/org/linch-kit)
 - [示例项目](../apps/starter)
-- [AI 上下文文档](../ai-context/README.md)
+- [AI 上下文文档](../ai-context/zh/README.md)

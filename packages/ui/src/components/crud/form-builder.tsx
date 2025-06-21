@@ -1,31 +1,31 @@
 "use client"
 
-import * as React from "react"
-import { useForm, UseFormReturn, FieldValues, Path } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import * as React from "react"
+import { FieldValues, Path, useForm, UseFormReturn } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "../ui/button"
+import { Checkbox } from "../ui/checkbox"
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "../ui/form"
 import { Input } from "../ui/input"
-import { Textarea } from "../ui/textarea"
-import { Checkbox } from "../ui/checkbox"
-import { Switch } from "../ui/switch"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "../ui/select"
+import { Switch } from "../ui/switch"
+import { Textarea } from "../ui/textarea"
 
 /**
  * Field type definitions for FormBuilder
@@ -117,6 +117,8 @@ export interface FormBuilderProps<TFormData extends FieldValues> {
   form?: UseFormReturn<TFormData>
   /** Additional form actions */
   actions?: React.ReactNode
+  /** Additional form options for React Hook Form */
+  formProps?: Partial<UseFormProps<TFormData>>
 }
 
 /**
@@ -177,14 +179,18 @@ export function FormBuilder<TFormData extends FieldValues>({
   defaultValues,
   layout = {},
   onSubmit,
-  submitText = "Submit",
+  submitText,
   loading = false,
   form: externalForm,
   actions,
+  formProps = {},
 }: FormBuilderProps<TFormData>) {
+  const { t } = useFormTranslation()
   const internalForm = useForm<TFormData>({
-    resolver: zodResolver(schema),
-    defaultValues,
+    resolver: zodResolver(schema as any),
+    defaultValues: defaultValues as any,
+    // Merge user-provided form options
+    ...formProps,
   })
 
   const form = externalForm || internalForm
@@ -208,16 +214,35 @@ export function FormBuilder<TFormData extends FieldValues>({
     4: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
   }
 
+  const getColSpanClass = (colSpan?: number) => {
+    if (!colSpan) return ""
+    const spanClasses = {
+      1: "col-span-1",
+      2: "col-span-2",
+      3: "col-span-3",
+      4: "col-span-4",
+      5: "col-span-5",
+      6: "col-span-6",
+      7: "col-span-7",
+      8: "col-span-8",
+      9: "col-span-9",
+      10: "col-span-10",
+      11: "col-span-11",
+      12: "col-span-12",
+    }
+    return spanClasses[colSpan as keyof typeof spanClasses] || ""
+  }
+
   const renderField = (fieldConfig: FormFieldConfig) => {
     const { name, type, label, description, placeholder, options } = fieldConfig
 
     return (
       <FormField
         key={name}
-        control={form.control}
+        control={form.control as any}
         name={name as Path<TFormData>}
         render={({ field }) => (
-          <FormItem className={fieldConfig.layout?.colSpan ? `col-span-${fieldConfig.layout.colSpan}` : ""}>
+          <FormItem className={getColSpanClass(fieldConfig.layout?.colSpan)}>
             <FormLabel>{label}</FormLabel>
             <FormControl>
               {(() => {
@@ -239,7 +264,7 @@ export function FormBuilder<TFormData extends FieldValues>({
                         type="number"
                         placeholder={placeholder}
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onChange={(e) => field.onChange(Number((e.target as HTMLInputElement).value))}
                       />
                     )
                   
@@ -263,7 +288,7 @@ export function FormBuilder<TFormData extends FieldValues>({
                     return (
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <SelectTrigger>
-                          <SelectValue placeholder={placeholder || `Select ${label.toLowerCase()}`} />
+                          <SelectValue placeholder={placeholder || t('selectOption')} />
                         </SelectTrigger>
                         <SelectContent>
                           {options?.map((option) => (
@@ -331,8 +356,8 @@ export function FormBuilder<TFormData extends FieldValues>({
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <Form {...(form as any)}>
+      <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
         <div className={getLayoutClasses()}>
           {fields.map(renderField)}
         </div>
@@ -342,7 +367,7 @@ export function FormBuilder<TFormData extends FieldValues>({
             {actions}
           </div>
           <Button type="submit" disabled={loading}>
-            {loading ? "Submitting..." : submitText}
+            {loading ? t('loading') : (submitText || t('submit'))}
           </Button>
         </div>
       </form>

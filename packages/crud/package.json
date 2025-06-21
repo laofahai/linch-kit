@@ -34,7 +34,7 @@
   },
   "peerDependencies": {
     "@linch-kit/schema": "workspace:*",
-    "@linch-kit/auth-core": "workspace:*",
+    "@linch-kit/auth": "workspace:*",
     "typescript": ">=5.0.0"
   },
   "devDependencies": {

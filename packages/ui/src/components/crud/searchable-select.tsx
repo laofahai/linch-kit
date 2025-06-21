@@ -1,25 +1,25 @@
 "use client"
 
+import { Check, ChevronsUpDown, X } from "lucide-react"
 import * as React from "react"
-import { Check, ChevronsUpDown, Search, X } from "lucide-react"
 
+import { useSelectTranslation } from "../../i18n/hooks"
 import { cn } from "../../lib/utils"
+import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
 } from "../ui/command"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "../ui/popover"
-import { Badge } from "../ui/badge"
-import { Input } from "../ui/input"
 
 /**
  * Option type for SearchableSelect
@@ -75,6 +75,8 @@ export interface SearchableSelectProps {
   searchDebounce?: number
   /** Custom filter function */
   filterFunction?: (option: SelectOption, query: string) => boolean
+  /** Additional props for Command component */
+  commandProps?: React.ComponentProps<typeof Command>
 }
 
 /**
@@ -117,9 +119,9 @@ export function SearchableSelect({
   options: initialOptions = [],
   value,
   onValueChange,
-  placeholder = "Select...",
-  searchPlaceholder = "Search...",
-  emptyMessage = "No options found.",
+  placeholder,
+  searchPlaceholder,
+  emptyMessage,
   multiple = false,
   searchable = true,
   clearable = true,
@@ -131,7 +133,9 @@ export function SearchableSelect({
   onSearch,
   searchDebounce = 300,
   filterFunction,
+  commandProps = {},
 }: SearchableSelectProps) {
+  const { t } = useSelectTranslation()
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [options, setOptions] = React.useState<SelectOption[]>(initialOptions)
@@ -225,7 +229,7 @@ export function SearchableSelect({
   // Render selected value(s)
   const renderSelectedValue = () => {
     if (!selectedOptions.length) {
-      return <span className="text-muted-foreground">{placeholder}</span>
+      return <span className="text-muted-foreground">{placeholder || t('placeholder')}</span>
     }
 
     if (!multiple) {
@@ -253,7 +257,7 @@ export function SearchableSelect({
     return (
       <div className="flex items-center gap-1">
         <Badge variant="secondary" className="text-xs">
-          {selectedOptions.length} selected
+          {t('selected', { count: selectedOptions.length })}
         </Badge>
         {clearable && (
           <X
@@ -305,20 +309,20 @@ export function SearchableSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
-        <Command>
+        <Command {...commandProps}>
           {searchable && (
             <CommandInput
-              placeholder={searchPlaceholder}
+              placeholder={searchPlaceholder || t('search')}
               value={searchQuery}
               onValueChange={setSearchQuery}
             />
           )}
           <CommandList>
             {(isSearching || loading) && (
-              <CommandEmpty>Searching...</CommandEmpty>
+              <CommandEmpty>{t('loading')}</CommandEmpty>
             )}
             {!isSearching && !loading && filteredOptions.length === 0 && (
-              <CommandEmpty>{emptyMessage}</CommandEmpty>
+              <CommandEmpty>{emptyMessage || t('noResults')}</CommandEmpty>
             )}
             {Object.entries(groupedOptions).map(([groupName, groupOptions]) => (
               <CommandGroup key={groupName} heading={groupName !== "default" ? groupName : undefined}>

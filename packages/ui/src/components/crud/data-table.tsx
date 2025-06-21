@@ -1,49 +1,50 @@
 "use client"
 
-import * as React from "react"
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+    ColumnDef,
+    ColumnFiltersState,
+    SortingState,
+    VisibilityState,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+    type TableOptions,
+    type Table as TanStackTable
 } from "@tanstack/react-table"
 import { ChevronDown, MoreHorizontal, Search } from "lucide-react"
+import * as React from "react"
 
 import { Button } from "../ui/button"
 import { Checkbox } from "../ui/checkbox"
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 import { Input } from "../ui/input"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious
 } from "../ui/pagination"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "../ui/table"
+import { useTableTranslation } from "../../i18n/hooks"
 
 /**
  * Action configuration for DataTable rows
@@ -67,6 +68,8 @@ export interface DataTableConfig {
   searchable?: boolean
   /** Search placeholder text */
   searchPlaceholder?: string
+  /** Search column key */
+  searchColumn?: string
   /** Enable column visibility toggle */
   columnVisibility?: boolean
   /** Enable row selection */
@@ -102,6 +105,28 @@ export interface DataTableProps<TData, TValue> {
   loading?: boolean
   /** Empty state message */
   emptyMessage?: string
+  /** Additional table options for TanStack Table - provides full access to native API */
+  tableOptions?: Partial<TableOptions<TData>>
+  /** Render prop to access the table instance for advanced usage */
+  renderTable?: (table: TanStackTable<TData>) => React.ReactNode
+  /** Custom table state management */
+  state?: {
+    sorting?: SortingState
+    columnFilters?: ColumnFiltersState
+    columnVisibility?: VisibilityState
+    rowSelection?: Record<string, boolean>
+    pagination?: { pageIndex: number; pageSize: number }
+  }
+  /** State change handlers for controlled state */
+  onStateChange?: {
+    onSortingChange?: (sorting: SortingState) => void
+    onColumnFiltersChange?: (filters: ColumnFiltersState) => void
+    onColumnVisibilityChange?: (visibility: VisibilityState) => void
+    onRowSelectionChange?: (selection: Record<string, boolean>) => void
+    onPaginationChange?: (pagination: { pageIndex: number; pageSize: number }) => void
+  }
+  /** Translation function for i18n support */
+  t?: (key: string, params?: Record<string, any>) => string
 }
 
 /**
@@ -153,17 +178,41 @@ export function DataTable<TData, TValue>({
   onRowClick,
   onSelectionChange,
   loading = false,
-  emptyMessage = "No results found.",
+  emptyMessage,
+  tableOptions = {},
+  renderTable,
+  state: controlledState,
+  onStateChange = {},
+  t: userT,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+  const { t } = useTableTranslation({ t: userT })
+
+  // Internal state (used when not controlled)
+  const [internalSorting, setInternalSorting] = React.useState<SortingState>([])
+  const [internalColumnFilters, setInternalColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [internalColumnVisibility, setInternalColumnVisibility] = React.useState<VisibilityState>({})
+  const [internalRowSelection, setInternalRowSelection] = React.useState({})
+  const [internalPagination, setInternalPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
+
+  // Use controlled state if provided, otherwise use internal state
+  const sorting = controlledState?.sorting ?? internalSorting
+  const columnFilters = controlledState?.columnFilters ?? internalColumnFilters
+  const columnVisibility = controlledState?.columnVisibility ?? internalColumnVisibility
+  const rowSelection = controlledState?.rowSelection ?? internalRowSelection
+  const pagination = controlledState?.pagination ?? internalPagination
+
+  // State change handlers
+  const setSorting = onStateChange.onSortingChange ?? setInternalSorting
+  const setColumnFilters = onStateChange.onColumnFiltersChange ?? setInternalColumnFilters
+  const setColumnVisibility = onStateChange.onColumnVisibilityChange ?? setInternalColumnVisibility
+  const setRowSelection = onStateChange.onRowSelectionChange ?? setInternalRowSelection
+  const setPagination = onStateChange.onPaginationChange ?? setInternalPagination
 
   // Default configuration
   const {
     searchable = true,
-    searchPlaceholder = "Search...",
+    searchPlaceholder = t('search'),
+    searchColumn,
     columnVisibility: showColumnVisibility = true,
     selectable = false,
     pagination = {},
@@ -188,14 +237,14 @@ export function DataTable<TData, TValue>({
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
+          aria-label={t('selectAll')}
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
+          aria-label={t('selectRow')}
         />
       ),
       enableSorting: false,
@@ -224,7 +273,7 @@ export function DataTable<TData, TValue>({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('actions')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {actions.map((action, index) => {
                 const isDisabled = typeof action.disabled === "function" 
@@ -262,17 +311,21 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
     initialState: {
       pagination: {
         pageSize: defaultPageSize,
       },
     },
+    // Merge user-provided table options (provides full access to TanStack Table API)
+    ...tableOptions,
   })
 
   // Handle selection change
@@ -283,17 +336,22 @@ export function DataTable<TData, TValue>({
     }
   }, [rowSelection, selectable, onSelectionChange, table])
 
+  // If renderTable is provided, use it for custom rendering
+  if (renderTable) {
+    return <>{renderTable(table)}</>
+  }
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        {searchable && (
+        {searchable && searchColumn && (
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={searchPlaceholder}
-              value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+              value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""}
               onChange={(event) =>
-                table.getColumn("name")?.setFilterValue(event.target.value)
+                table.getColumn(searchColumn)?.setFilterValue((event.target as HTMLInputElement).value)
               }
               className="pl-8"
             />
@@ -303,7 +361,7 @@ export function DataTable<TData, TValue>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                {t('columns')} <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -352,7 +410,7 @@ export function DataTable<TData, TValue>({
             {loading ? (
               <TableRow>
                 <TableCell colSpan={finalColumns.length} className="h-24 text-center">
-                  Loading...
+                  {t('loading')}
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
@@ -376,7 +434,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={finalColumns.length} className="h-24 text-center">
-                  {emptyMessage}
+                  {emptyMessage || t('noResults')}
                 </TableCell>
               </TableRow>
             )}
@@ -387,19 +445,18 @@ export function DataTable<TData, TValue>({
         <div className="flex-1 text-sm text-muted-foreground">
           {selectable && (
             <>
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
+              {t('selectedRows', { count: table.getFilteredSelectedRowModel().rows.length })}
             </>
           )}
         </div>
         <div className="flex items-center space-x-6 lg:space-x-8">
           {showSizeChanger && (
             <div className="flex items-center space-x-2">
-              <p className="text-sm font-medium">Rows per page</p>
+              <p className="text-sm font-medium">{t('rowsPerPage')}</p>
               <select
                 value={table.getState().pagination.pageSize}
                 onChange={(e) => {
-                  table.setPageSize(Number(e.target.value))
+                  table.setPageSize(Number((e.target as HTMLSelectElement).value))
                 }}
                 className="h-8 w-[70px] rounded border border-input bg-background px-2 text-sm"
               >
@@ -412,8 +469,7 @@ export function DataTable<TData, TValue>({
             </div>
           )}
           <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            {t('page')} {table.getState().pagination.pageIndex + 1} {t('of')} {table.getPageCount()}
           </div>
           <Pagination>
             <PaginationContent>

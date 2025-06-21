@@ -48,7 +48,7 @@
     "vitest": "^1.0.0"
   },
   "peerDependencies": {
-    "@linch-kit/auth-core": "workspace:*",
+    "@linch-kit/auth": "workspace:*",
     "@linch-kit/schema": "workspace:*",
     "@tanstack/react-query": "^5.0.0",
     "@trpc/client": "^11.3.1",
@@ -60,7 +60,7 @@
     "react": "^18.0.0"
   },
   "peerDependenciesMeta": {
-    "@linch-kit/auth-core": {
+    "@linch-kit/auth": {
       "optional": true
     },
     "@linch-kit/schema": {

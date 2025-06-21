@@ -50,7 +50,7 @@ const config: LinchConfig = {
   // 插件配置
   plugins: [
     '@linch-kit/schema',
-    '@linch-kit/auth-core',
+    '@linch-kit/auth',
     '@linch-kit/trpc'
   ],
 

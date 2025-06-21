@@ -140,12 +140,24 @@ async function loadJsConfig(configFile: string): Promise<any> {
  */
 async function loadTsConfig(configFile: string): Promise<any> {
   try {
-    // 方法 1: 尝试使用 ts-node
+    // 方法 1: 尝试使用 tsx (推荐)
     try {
-      require('ts-node/register')
-      const configModule = require(configFile)
-      return configModule.default || configModule
-    } catch (tsNodeError) {
+      const { execSync } = await import('child_process')
+      const { resolve } = await import('path')
+
+      // 使用 tsx 执行 TypeScript 文件并获取导出
+      const tempScript = `
+        import config from '${resolve(configFile)}';
+        console.log(JSON.stringify(config));
+      `
+
+      const result = execSync(`npx tsx -e "${tempScript}"`, {
+        encoding: 'utf8',
+        cwd: process.cwd()
+      })
+
+      return JSON.parse(result.trim())
+    } catch (tsxError) {
       // 方法 2: 尝试直接动态导入（Node.js 20+ 可能支持）
       try {
         const { pathToFileURL } = await import('url')
@@ -153,10 +165,10 @@ async function loadTsConfig(configFile: string): Promise<any> {
         return configModule.default || configModule
       } catch (directError) {
         throw new Error(
-          `TypeScript config loading failed. Please install ts-node:\n` +
-          `  npm install -D ts-node\n` +
+          `TypeScript config loading failed. Please install tsx:\n` +
+          `  npm install -D tsx\n` +
           `Original errors:\n` +
-          `  ts-node: ${tsNodeError}\n` +
+          `  tsx: ${tsxError}\n` +
           `  direct: ${directError}`
         )
       }
