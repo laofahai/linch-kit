@@ -37,16 +37,16 @@ export interface ComponentConfig {
 }
 
 /**
- * 字段配置 - 统一的字段配置接口
+ * 核心字段配置 - 最基础的字段配置，避免复杂类型推导
  */
-export interface FieldConfig {
+export interface CoreFieldConfig {
   // === 数据库相关 ===
   /** 是否为主键 */
   primary?: boolean
   /** 是否唯一 */
   unique?: boolean
   /** 默认值 */
-  default?: any
+  default?: unknown
   /** 数据库字段名 */
   map?: string
   /** 是否自动更新时间戳 */
@@ -55,17 +55,82 @@ export interface FieldConfig {
   createdAt?: boolean
   /** 是否为软删除字段 */
   softDelete?: boolean
-  /** 数据库特定属性 */
-  db?: {
-    type?: 'JSON' | 'TEXT' | 'VARCHAR' | 'CHAR' | 'DECIMAL' | 'INT' | 'BIGINT' | 'BOOLEAN' | 'DATE' | 'DATETIME' | 'TIMESTAMP' | string
-    length?: number
-    precision?: number
-    scale?: number
-    /** 是否存储为 JSON（自动推断嵌套对象） */
-    json?: boolean
-  }
+}
 
-  // === 基础 UI 相关（最小化） ===
+/**
+ * 数据库配置 - 分离出来避免嵌套复杂度
+ */
+export interface DatabaseFieldConfig {
+  type?: 'JSON' | 'TEXT' | 'VARCHAR' | 'CHAR' | 'DECIMAL' | 'INT' | 'BIGINT' | 'BOOLEAN' | 'DATE' | 'DATETIME' | 'TIMESTAMP' | string
+  length?: number
+  precision?: number
+  scale?: number
+  /** 是否存储为 JSON（自动推断嵌套对象） */
+  json?: boolean
+}
+
+/**
+ * 基础 UI 配置 - 简化的 UI 配置
+ */
+export interface BasicUIConfig {
+  /** 字段标签 */
+  label?: string
+  /** 字段描述 */
+  description?: string
+  /** 占位符文本 */
+  placeholder?: string
+  /** 帮助文本 */
+  helpText?: string
+  /** 字段显示顺序 */
+  order?: number
+  /** 是否隐藏字段 */
+  hidden?: boolean
+  /** 字段分组（简单分组） */
+  group?: string
+}
+
+/**
+ * 关系配置 - 分离出来避免嵌套复杂度
+ */
+export interface RelationConfig {
+  type: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many'
+  model: string
+  foreignKey?: string
+  references?: string
+  onDelete?: 'CASCADE' | 'SET_NULL' | 'RESTRICT'
+  onUpdate?: 'CASCADE' | 'SET_NULL' | 'RESTRICT'
+}
+
+/**
+ * 验证配置 - 分离出来避免嵌套复杂度
+ */
+export interface ValidationConfig {
+  /** 是否必填 */
+  required?: boolean
+  /** 是否只读 */
+  readonly?: boolean
+  /** 错误消息（简化版本） */
+  errorMessages?: Record<string, string>
+}
+
+/**
+ * 简化的字段配置接口 - 用于 defineField 函数
+ * 只包含最常用的配置，避免复杂的类型推导
+ */
+export interface SimpleFieldConfig extends CoreFieldConfig, BasicUIConfig, ValidationConfig {
+  /** 数据库配置 */
+  db?: DatabaseFieldConfig
+  /** 关系配置 */
+  relation?: RelationConfig
+}
+
+/**
+ * 完整的字段配置接口 - 包含所有高级功能
+ * 注意：此接口包含复杂的嵌套类型，可能影响 DTS 构建性能
+ * 推荐在大多数情况下使用 SimpleFieldConfig
+ */
+export interface FieldConfig extends Omit<SimpleFieldConfig, 'errorMessages'> {
+  // === 基础 UI 相关（支持国际化） ===
   /** 字段标签 */
   label?: string | I18nText
   /** 字段描述 */
@@ -74,13 +139,6 @@ export interface FieldConfig {
   placeholder?: string | I18nText
   /** 帮助文本 */
   helpText?: string | I18nText
-
-  /** 字段显示顺序 */
-  order?: number
-  /** 是否隐藏字段 */
-  hidden?: boolean
-  /** 字段分组（简单分组） */
-  group?: string
 
   // === DataTable 相关配置 ===
   /** DataTable 列配置 */
@@ -146,22 +204,18 @@ export interface FieldConfig {
       uploadUrl?: string
     }
     /** 依赖字段配置 */
-    dependencies?: {
+    dependencies?: Array<{
       /** 依赖的字段名 */
       field: string
       /** 依赖条件 */
-      condition: any
+      condition: unknown
       /** 满足条件时的行为 */
       action: 'show' | 'hide' | 'enable' | 'disable' | 'require'
-    }[]
+    }>
   }
 
-  // === 验证相关 ===
-  /** 是否必填 */
-  required?: boolean
-  /** 是否只读 */
-  readonly?: boolean
-  /** 错误消息 */
+  // === 扩展验证相关 ===
+  /** 错误消息（支持国际化） */
   errorMessages?: {
     required?: string | I18nText
     invalid?: string | I18nText
@@ -178,17 +232,17 @@ export interface FieldConfig {
     read?: string | string[]
     /** 写入权限 */
     write?: string | string[]
-    /** 自定义权限检查函数 */
-    custom?: (user: any, context?: any) => boolean
+    /** 自定义权限检查函数（注意：函数类型可能影响 DTS 性能） */
+    custom?: (user: unknown, context?: unknown) => boolean
   }
 
   // === 数据转换（预留接口） ===
-  /** 数据转换配置 */
+  /** 数据转换配置（注意：函数类型可能影响 DTS 性能） */
   transform?: {
     /** 输入转换（清理、格式化） */
-    input?: (value: any) => any
+    input?: (value: unknown) => unknown
     /** 输出转换（格式化、脱敏） */
-    output?: (value: any) => any
+    output?: (value: unknown) => unknown
   }
 
   // === 审计日志（预留接口） ===
@@ -201,25 +255,14 @@ export interface FieldConfig {
   }
 
   // === 虚拟字段（预留接口） ===
-  /** 虚拟字段配置 */
+  /** 虚拟字段配置（注意：函数类型可能影响 DTS 性能） */
   virtual?: {
     /** 是否为计算字段 */
     computed?: boolean
     /** 计算函数 */
-    compute?: (entity: any) => any
+    compute?: (entity: unknown) => unknown
     /** 依赖字段 */
     dependencies?: string[]
-  }
-
-  // === 关系相关 ===
-  /** 关系配置 */
-  relation?: {
-    type: 'one-to-one' | 'one-to-many' | 'many-to-one' | 'many-to-many'
-    model: string
-    foreignKey?: string
-    references?: string
-    onDelete?: 'CASCADE' | 'SET_NULL' | 'RESTRICT'
-    onUpdate?: 'CASCADE' | 'SET_NULL' | 'RESTRICT'
   }
 }
 
@@ -349,25 +392,21 @@ export interface SchemaMetadata {
 
 /**
  * 扩展的 Zod Object Schema，包含 Prisma 元数据
+ * 优化版本：完全移除泛型参数，防止无限类型递归
  */
-export type EntitySchema<T extends Record<string, any> = any> = z.ZodObject<
-  z.ZodRawShape,
-  'strip',
-  z.ZodTypeAny,
-  T,
-  T
-> & {
+export type EntitySchema = z.ZodObject<any> & {
   _meta?: SchemaMetadata
 }
 
 /**
  * 实体定义接口
+ * 简化版本：移除泛型参数，避免类型递归
  */
-export interface EntityDefinition<T extends Record<string, any> = any> {
+export interface EntityDefinition {
   /** 实体名称 */
   name: string
   /** Zod Schema */
-  schema: EntitySchema<T>
+  schema: EntitySchema
   /** 元数据 */
   meta?: SchemaMetadata
 }
