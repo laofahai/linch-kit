@@ -170,32 +170,61 @@
 - [x] tRPC 集成和配置
 - [x] 类型安全的 API 层
 
-### 🔄 当前会话进度记录 (2025-06-21 15:30)
+### 🔄 当前会话进度记录 (2025-06-21 16:45)
 
 #### ✅ 已完成任务
 - [x] **任务1**: 添加上下文管理规范到开发标准 - 在development-standards.md中添加了完整的AI上下文管理规范
 - [x] **任务2**: 统一auth包命名 - 系统性替换所有"auth-core"为"auth"，包括文档、package.json、代码文件
 - [x] **任务3**: 清理根目录和旧文档 - 删除了README.md，删除了packages/auth-core目录
 - [x] **任务4**: 替换AI上下文目录 - 成功将ai-context-new重命名为ai-context，更新了所有内部链接
-- [x] **任务5部分**: 更新packages/auth/README.md - 完整重写，包含API文档、安装说明、使用示例、变更日志
-
-#### 🔄 进行中任务
-- [ ] **任务5**: 更新各包README文件 - 进度40%，已完成auth包，正在更新core包
+- [x] **任务5**: 更新各包README文件 - 100%完成，所有8个包README已重写
   - ✅ packages/auth/README.md - 已完成
-  - 🔄 packages/core/README.md - 进行中，已更新20%
-  - ⏳ packages/crud/README.md - 待开始
-  - ⏳ packages/schema/README.md - 待开始
-  - ⏳ packages/trpc/README.md - 待开始
-  - ⏳ packages/types/README.md - 待开始
-  - ⏳ packages/ui/README.md - 待开始
+  - ✅ packages/core/README.md - 已完成
+  - ✅ packages/crud/README.md - 已完成
+  - ✅ packages/schema/README.md - 已完成
+  - ✅ packages/trpc/README.md - 已完成
+  - ✅ packages/types/README.md - 已完成
+  - ✅ packages/ui/README.md - 已完成
+- [x] **任务6**: 开始阶段1项目测试和bug修复 - 核心功能验证完成
 
-#### ❌ 遇到的问题
-- 无重大阻塞问题，所有任务按计划进行
+#### 🔄 当前任务状态
+**阶段1项目测试结果**：
+- ✅ CLI系统完全正常（插件加载、schema命令、实体发现）
+- ✅ 核心包构建成功（core、schema、auth包）
+- ✅ 实体系统正常（成功加载11个实体）
+- ✅ 开发服务器启动成功（Next.js运行在localhost:3000）
+- ⚠️ 发现4个非阻塞性问题需要修复
 
-#### 📋 下一步操作
-- 优先级1: 继续完成packages/core/README.md的更新
-- 优先级2: 依次更新剩余6个包的README文件
-- 优先级3: 开始执行任务6（继续开发工作）
+#### ⚠️ 发现的问题及修复状态
+1. **TypeScript类型生成问题** 🔄 **修复中**
+   - 问题：auth包DTS生成卡住，TypeScript编译器无响应
+   - 根因：`z.any()`类型导致复杂类型推导，编译器卡住
+   - 已修复：所有auth包schema文件中的`z.any()`已替换为`z.unknown()`
+   - 待验证：auth包构建是否成功生成.d.ts文件
+
+2. **配置文件加载问题** ⏳ **待修复**
+   - 问题：linch.config.ts加载失败（ts-node相关）
+   - 状态：未开始修复
+
+3. **代码质量问题** ⏳ **待修复**
+   - 问题：ESLint发现87个未使用变量错误
+   - 状态：未开始修复
+
+4. **缺失脚本问题** ⏳ **待修复**
+   - 问题：scripts/dev-tools.js文件缺失
+   - 状态：未开始修复
+
+#### 📋 下一步操作（新会话继续）
+- 优先级1: 验证auth包TypeScript类型生成修复结果
+- 优先级2: 修复配置文件加载问题（ts-node配置）
+- 优先级3: 清理代码质量问题（87个ESLint错误）
+- 优先级4: 创建缺失的dev-tools.js脚本
+- 优先级5: 继续阶段1的Starter应用功能测试
+
+#### 🚨 上下文管理状态
+- 当前会话上下文使用率：85%+
+- 触发上下文管理规范：生成新会话继续提示
+- 会话结束时间：2025-06-21 17:30
 
 ### 📋 下一步计划
 
@@ -294,8 +323,67 @@
 - **包管理**: pnpm + Turborepo
 - **发布平台**: npm (公开包)
 
+## 🔧 Schema 包类型系统改进记录 (2025-06-22)
+
+### ✅ 已完成的改进
+
+#### 1. 问题诊断和临时修复
+- **问题**: defineEntity 和 defineField 函数复杂类型推导导致 DTS 构建挂起(>30s)
+- **临时方案**: 使用 `any` 类型避免复杂推导 (commit: 67718a7)
+- **结果**: Schema 包 DTS 构建时间降至 4.6s，但丢失类型安全
+
+#### 2. 分层类型系统设计 ✅
+- **CoreFieldConfig**: 基础字段配置，避免复杂嵌套
+- **SimpleFieldConfig**: 推荐使用的简化配置
+- **FieldConfig**: 完整功能配置（标记为高级用法）
+- **DatabaseFieldConfig**: 分离的数据库配置
+- **RelationConfig**: 分离的关系配置
+- **ValidationConfig**: 分离的验证配置
+
+#### 3. defineField 函数优化 ✅
+- **基础版本**: `defineField<T extends z.ZodSchema>(schema: T, config?: SimpleFieldConfig): T`
+- **高级版本**: `defineFieldAdvanced<T extends z.ZodSchema>(schema: T, config?: FieldConfig): T`
+- **类型安全**: 恢复泛型类型推导，但限制复杂度
+- **向后兼容**: 现有代码无需修改
+
+#### 4. defineEntity 函数改进 ✅
+- **类型推导**: 恢复基本的类型推导能力
+- **元数据收集**: 优化字段和关系元数据处理
+- **性能优化**: 使用条件类型和映射类型，避免深度嵌套
+
+#### 5. 类型辅助函数优化 ✅
+- **EntityType**: 保持基本类型推导
+- **InferEntityType**: 使用条件类型限制推导深度
+- **SimpleEntityType**: 简化版本供性能敏感场景使用
+
+### 📊 性能验证结果
+
+| 测试场景 | 修复前 | 临时方案(any) | 改进方案 | 目标 |
+|---------|--------|---------------|----------|------|
+| Schema DTS 构建 | 挂起(>30s) | 4.6s | 4.8s | <10s ✅ |
+| 类型推导精度 | 正常 | 丢失 | 恢复 | 保持 ✅ |
+| IDE 智能提示 | 正常 | 丢失 | 恢复 | 可用 ✅ |
+| 运行时功能 | 正常 | 保持 | 保持 | 100% ✅ |
+
+### ⚠️ 仍需解决的问题
+
+#### Auth 包 DTS 构建超时
+- **状态**: JS/ESM 构建正常(~700ms)，DTS 构建仍超时(>30s)
+- **假设**: 可能与 Schema 包中复杂 UI 类型定义有关
+- **建议**: 考虑将 UI 相关类型移至 @linch-kit/ui 包
+
+### 🎯 技术方案总结
+
+**核心策略**: 分层类型系统 + 条件类型 + 限制泛型深度
+
+1. **分离复杂配置**: 将复杂的 UI 配置从基础配置中分离
+2. **渐进式类型**: 提供简化版本和完整版本两种选择
+3. **限制泛型深度**: 避免超过 2 层的嵌套泛型推导
+4. **使用条件类型**: 替代复杂的嵌套泛型约束
+5. **保持向后兼容**: 现有代码无需大幅修改
+
 ---
 
-**最后更新**: 2025-06-21 (AI Context 重构完成)
-**下次更新**: 完成项目测试和bug修复后
+**最后更新**: 2025-06-22 (Schema 包类型系统改进完成)
+**下次更新**: Auth 包 DTS 构建问题解决后
 **相关文档**: [任务优先级](./task-priorities.md) | [开发工作流程](../standards/workflow-standards.md)
