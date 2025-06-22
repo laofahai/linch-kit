@@ -1,10 +1,9 @@
-# Linch Kit AI 上下文文档 v3.1
+# Linch Kit AI 上下文文档 v3.0
 
-**最后更新**: 2025-06-21
-**文档版本**: v3.1 (架构信息更新和验证完成)
-**重构完成**: AI Context 结构优化，文档数量从 25+ 减少到 8 个核心文件
+**最后更新**: 2025-06-21  
+**文档版本**: v3.0 (重构优化版本)  
+**重构完成**: AI Context 结构优化，文档数量从 25+ 减少到 8 个核心文件  
 **维护责任**: AI Assistant + 开发团队
-**更新内容**: UI 包架构统一、插件系统澄清、国际化要求补充、技术栈版本验证、重复内容优化
 
 ---
 
@@ -19,7 +18,7 @@
 
 ### 新的三层架构
 ```
-ai-context/zh/
+ai-context-new/zh/
 ├── core/                    # 项目核心信息 (3个文件)
 │   ├── project-essentials.md   # 项目概览、目标、技术栈、当前状态
 │   ├── package-architecture.md # 包结构、依赖关系、模块设计
@@ -76,7 +75,7 @@ ai-context/zh/
 | @linch-kit/auth-core | ✅ 完成 | 待发布 | 认证和权限管理 |
 | @linch-kit/crud | ✅ 完成 | 待发布 | CRUD 操作核心 |
 | @linch-kit/trpc | ✅ 完成 | 待发布 | tRPC 集成 |
-| @linch-kit/ui | ✅ 完成 | 待发布 | 完整 UI 组件库 (基础+CRUD+认证) |
+| @linch-kit/ui | ✅ 完成 | 待发布 | 基础 UI 组件 |
 
 ### 当前开发重点
 - ✅ **已完成**: linch-starter 基座应用前端认证集成 (2025-06-20)
@@ -114,9 +113,29 @@ ai-context/zh/
 - [GitHub 仓库](https://github.com/laofahai/linch-kit) - 源代码仓库
 - [npm 包](https://www.npmjs.com/package/@linch-kit/schema) - 已发布的包
 
+## 📝 重构记录
+
+### v3.0 重构 (2025-06-21)
+- **目标**: 优化 AI 上下文加载效率，减少文档冗余
+- **方法**: 三层架构重组，智能合并重复内容
+- **成果**: 文档数量减少 60%+，信息密度提升，维护性增强
+
+### 合并映射表
+| 新文件 | 原始文件来源 |
+|--------|-------------|
+| `core/project-essentials.md` | `overview/project-overview.md`, `overview/quick-start.md`, `architecture/system-architecture.md` (概览部分) |
+| `core/package-architecture.md` | `packages/core.md`, `packages/schema.md`, `architecture/system-architecture.md` (包架构部分), `architecture/technical-decisions.md` |
+| `core/code-locations.md` | 新建文件，整合项目关键代码位置信息 |
+| `standards/development-standards.md` | 保持独立，移动位置 |
+| `standards/ui-standards.md` | `standards/ui-component-best-practices.md`, `architecture/ui-components-architecture.md` |
+| `standards/workflow-standards.md` | `workflows/development.md`, `workflows/testing.md`, `workflows/release.md`, `standards/development-workflow.md` |
+| `tasks/current-progress.md` | 保持独立，移动位置 |
+| `tasks/continue-prompt.md` | 新建文件，AI 工作流入口点 |
+
 ---
 
-**重要提醒**:
-1. 所有开发工作都必须严格遵循 [开发规范](./standards/development-standards.md)
-2. 开始任何任务前请先查看 [AI 工作流入口](./tasks/continue-prompt.md)
-3. 使用 [快速开始 Prompt](./tasks/quick-start-prompt.md) 可以快速开始新的开发任务
+**重要提醒**: 
+1. 本文档结构已优化完成，请使用新的导航方式
+2. 所有开发工作都必须严格遵循 [开发规范](./standards/development-standards.md)
+3. 开始任何任务前请先查看 [AI 工作流入口](./tasks/continue-prompt.md)
+4. 原有 `ai-context/` 目录保留作为备份，新文档在 `ai-context-new/` 目录

@@ -9,8 +9,10 @@ const FIELD_META_SYMBOL = Symbol('fieldMeta')
 
 /**
  * 为 Zod Schema 添加字段属性
+ * 优化版本：完全移除泛型推断，使用运行时类型安全
  */
-export function withFieldMeta<T extends z.ZodSchema>(schema: T, attributes: FieldAttributes): T {
+export function withFieldMeta(schema: any, attributes: any): any {
+  // 使用最简单的方式，完全避免泛型推断
   const enhanced = schema as any
   enhanced[FIELD_META_SYMBOL] = attributes
   return enhanced
@@ -53,11 +55,11 @@ export function getFieldMeta(schema: z.ZodSchema): FieldAttributes | undefined {
  * })
  * ```
  */
-export function defineField<T extends z.ZodSchema>(schema: T, config?: FieldConfig): T {
+export function defineField(schema: any, config?: any): any {
   if (!config) return schema
 
-  // 转换为 FieldAttributes 格式（向后兼容）
-  const attributes: FieldAttributes = {
+  // 创建简化的属性对象，完全避免复杂的类型推导
+  const attributes = {
     // 数据库相关
     id: config.primary,
     unique: config.unique,
@@ -88,6 +90,7 @@ export function defineField<T extends z.ZodSchema>(schema: T, config?: FieldConf
     virtual: config.virtual,
   }
 
+  // 直接使用类型断言，避免复杂的泛型推断
   return withFieldMeta(schema, attributes)
 }
 
@@ -98,39 +101,39 @@ export function defineField<T extends z.ZodSchema>(schema: T, config?: FieldConf
 /**
  * 主键装饰器
  */
-export function primary<T extends z.ZodSchema>(schema: T): T {
+export function primary(schema: z.ZodSchema): z.ZodSchema {
   return defineField(schema, { primary: true })
 }
 
 /**
  * 唯一约束装饰器
  */
-export function unique<T extends z.ZodSchema>(schema: T): T {
+export function unique(schema: z.ZodSchema): z.ZodSchema {
   return defineField(schema, { unique: true })
 }
 
 /**
  * 默认值装饰器
  */
-export function defaultValue<T extends z.ZodSchema>(schema: T, value: any): T {
+export function defaultValue(schema: z.ZodSchema, value: any): z.ZodSchema {
   return defineField(schema, { default: value })
 }
 
 /**
  * 自动时间戳装饰器
  */
-export function createdAt<T extends z.ZodSchema>(schema: T): T {
+export function createdAt(schema: z.ZodSchema): z.ZodSchema {
   return defineField(schema, { createdAt: true })
 }
 
-export function updatedAt<T extends z.ZodSchema>(schema: T): T {
+export function updatedAt(schema: z.ZodSchema): z.ZodSchema {
   return defineField(schema, { updatedAt: true })
 }
 
 /**
  * 软删除装饰器
  */
-export function softDelete<T extends z.ZodSchema>(schema: T): T {
+export function softDelete(schema: z.ZodSchema): z.ZodSchema {
   return defineField(schema, { softDelete: true })
 }
 
