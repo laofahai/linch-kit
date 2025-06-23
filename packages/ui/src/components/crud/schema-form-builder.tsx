@@ -8,8 +8,9 @@ import React from "react"
 import type { EntityDefinition } from "@linch-kit/schema"
 import type { FieldValues, UseFormReturn } from "react-hook-form"
 
-import { FormBuilder, type FormBuilderProps } from "./form-builder"
 import { generateFormFields, type FormFieldConfig } from "../../schema"
+
+import { FormBuilder, type FormBuilderProps } from "./form-builder"
 
 /**
  * Schema FormBuilder 属性
@@ -17,7 +18,7 @@ import { generateFormFields, type FormFieldConfig } from "../../schema"
 export interface SchemaFormBuilderProps<T extends FieldValues>
   extends Omit<FormBuilderProps<T>, 'schema' | 'fields'> {
   /** 实体定义 */
-  entity: EntityDefinition<T>
+  entity: EntityDefinition
   /** 包含的字段 */
   include?: string[]
   /** 排除的字段 */
@@ -106,7 +107,7 @@ export function SchemaFormBuilder<T extends FieldValues>({
               <h3 className="text-lg font-medium">{group.label}</h3>
               <FormBuilder
                 schema={zodSchema}
-                fields={groupFields}
+                fields={groupFields as any}
                 {...props}
               />
             </div>
@@ -120,7 +121,7 @@ export function SchemaFormBuilder<T extends FieldValues>({
   return (
     <FormBuilder
       schema={zodSchema}
-      fields={formFields}
+      fields={formFields as any}
       {...props}
     />
   )
@@ -138,7 +139,7 @@ export function SchemaFormField<T extends FieldValues>({
 }: {
   field: FormFieldConfig
   form: UseFormReturn<T>
-  entity: EntityDefinition<T>
+  entity: EntityDefinition
 }) {
   const [isVisible, setIsVisible] = React.useState(true)
   const [isEnabled, setIsEnabled] = React.useState(!field.readonly)

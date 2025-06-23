@@ -84,7 +84,7 @@ export class PluginLoader {
       'node_modules/@*/linch-kit-plugin-*',
       'plugins/*',
       '../plugins/*',
-      'packages/*',  // AI: 支持 monorepo 结构
+      'packages/*', // AI: 支持 monorepo 结构
       '../../packages/*',
       process.env.LINCH_PLUGINS_PATH || '',
     ].filter(Boolean)
@@ -211,7 +211,7 @@ export class PluginLoader {
           `${packageJson.name.replace('@linch-kit/', '')}CliPlugin`,
           `${packageJson.name.replace('@linch-kit/', '')}Plugin`,
           'cliPlugin',
-          'plugin'
+          'plugin',
         ]
 
         for (const pluginName of possiblePluginNames) {
@@ -263,8 +263,7 @@ export class PluginLoader {
     // AI: 检查关键词
     const keywords = packageJson.keywords || []
     const hasPluginKeyword =
-      keywords.includes('linch-kit-plugin') ||
-      keywords.includes('cli-plugin')
+      keywords.includes('linch-kit-plugin') || keywords.includes('cli-plugin')
 
     // AI: 检查是否有 CLI 相关的导出或文件
     const hasCliExport =
@@ -276,10 +275,7 @@ export class PluginLoader {
     // AI: 对于 @linch-kit/ 包，只有明确有 CLI 插件功能的才被认为是插件
     if (name.startsWith('@linch-kit/')) {
       // 已知的有 CLI 插件功能的包
-      const knownCliPluginPackages = [
-        '@linch-kit/auth-core',
-        '@linch-kit/schema'
-      ]
+      const knownCliPluginPackages = ['@linch-kit/auth', '@linch-kit/schema']
 
       return knownCliPluginPackages.includes(name) || hasCliField
     }

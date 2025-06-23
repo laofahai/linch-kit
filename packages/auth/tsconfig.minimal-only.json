@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist-minimal-only",
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": [
+    "src/test-minimal-only.ts"
+  ]
+}

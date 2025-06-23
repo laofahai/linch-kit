@@ -125,9 +125,11 @@ export interface SimpleFieldConfig extends CoreFieldConfig, BasicUIConfig, Valid
 }
 
 /**
- * 完整的字段配置接口 - 包含所有高级功能
- * 注意：此接口包含复杂的嵌套类型，可能影响 DTS 构建性能
- * 推荐在大多数情况下使用 SimpleFieldConfig
+ * 完整的字段配置接口 - 仅包含核心功能，复杂 UI 类型移至 UI 包
+ *
+ * 注意：复杂的 UI 配置（table、form、permissions、transform、virtual）
+ * 已移动到 @linch-kit/ui 包中，通过模块扩展的方式提供
+ * 这样可以显著提升 DTS 构建性能，同时保持功能完整性
  */
 export interface FieldConfig extends Omit<SimpleFieldConfig, 'errorMessages'> {
   // === 基础 UI 相关（支持国际化） ===
@@ -140,80 +142,6 @@ export interface FieldConfig extends Omit<SimpleFieldConfig, 'errorMessages'> {
   /** 帮助文本 */
   helpText?: string | I18nText
 
-  // === DataTable 相关配置 ===
-  /** DataTable 列配置 */
-  table?: {
-    /** 列宽度 */
-    width?: number | string
-    /** 最小宽度 */
-    minWidth?: number
-    /** 最大宽度 */
-    maxWidth?: number
-    /** 是否可排序 */
-    sortable?: boolean
-    /** 是否可筛选 */
-    filterable?: boolean
-    /** 是否可隐藏 */
-    hideable?: boolean
-    /** 列对齐方式 */
-    align?: 'left' | 'center' | 'right'
-    /** 自定义渲染函数 */
-    render?: string // 函数名或组件名
-    /** 列头自定义渲染 */
-    headerRender?: string
-    /** 是否固定列 */
-    fixed?: 'left' | 'right' | boolean
-    /** 列分组 */
-    group?: string
-  }
-
-  // === FormBuilder 相关配置 ===
-  /** FormBuilder 字段配置 */
-  form?: {
-    /** 表单字段类型 */
-    type?: 'text' | 'email' | 'password' | 'number' | 'textarea' | 'select' | 'checkbox' | 'switch' | 'date' | 'file' | 'custom'
-    /** 字段布局配置 */
-    layout?: {
-      /** 列跨度 (1-12) */
-      colSpan?: number
-      /** 行跨度 */
-      rowSpan?: number
-    }
-    /** 选项配置（用于 select、radio、checkbox 等） */
-    options?: Array<{ label: string; value: string | number; disabled?: boolean }>
-    /** 异步选项加载 */
-    asyncOptions?: {
-      /** API 端点 */
-      url: string
-      /** 值字段名 */
-      valueField?: string
-      /** 标签字段名 */
-      labelField?: string
-      /** 搜索参数名 */
-      searchParam?: string
-    }
-    /** 文件上传配置 */
-    upload?: {
-      /** 接受的文件类型 */
-      accept?: string
-      /** 最大文件大小 (bytes) */
-      maxSize?: number
-      /** 是否支持多文件 */
-      multiple?: boolean
-      /** 上传 API 端点 */
-      uploadUrl?: string
-    }
-    /** 依赖字段配置 */
-    dependencies?: Array<{
-      /** 依赖的字段名 */
-      field: string
-      /** 依赖条件 */
-      condition: unknown
-      /** 满足条件时的行为 */
-      action: 'show' | 'hide' | 'enable' | 'disable' | 'require'
-    }>
-  }
-
   // === 扩展验证相关 ===
   /** 错误消息（支持国际化） */
   errorMessages?: {
@@ -225,44 +153,13 @@ export interface FieldConfig extends Omit<SimpleFieldConfig, 'errorMessages'> {
     custom?: Record<string, string | I18nText>
   }
 
-  // === 权限相关（预留接口） ===
-  /** 字段级别权限 */
-  permissions?: {
-    /** 读取权限 */
-    read?: string | string[]
-    /** 写入权限 */
-    write?: string | string[]
-    /** 自定义权限检查函数（注意：函数类型可能影响 DTS 性能） */
-    custom?: (user: unknown, context?: unknown) => boolean
-  }
-
-  // === 数据转换（预留接口） ===
-  /** 数据转换配置（注意：函数类型可能影响 DTS 性能） */
-  transform?: {
-    /** 输入转换（清理、格式化） */
-    input?: (value: unknown) => unknown
-    /** 输出转换（格式化、脱敏） */
-    output?: (value: unknown) => unknown
-  }
-
-  // === 审计日志（预留接口） ===
+  // === 审计日志（简化版本） ===
   /** 是否启用变更追踪 */
   audit?: boolean | {
     /** 是否记录变更 */
     enabled: boolean
     /** 敏感字段（不记录具体值） */
     sensitive?: boolean
-  }
-
-  // === 虚拟字段（预留接口） ===
-  /** 虚拟字段配置（注意：函数类型可能影响 DTS 性能） */
-  virtual?: {
-    /** 是否为计算字段 */
-    computed?: boolean
-    /** 计算函数 */
-    compute?: (entity: unknown) => unknown
-    /** 依赖字段 */
-    dependencies?: string[]
   }
 }
 

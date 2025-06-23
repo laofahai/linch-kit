@@ -7,6 +7,7 @@
 
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join, resolve } from 'path'
+
 import type { CLIContext, CommandMetadata } from '../../types/cli'
 
 /**
@@ -16,22 +17,22 @@ import type { CLIContext, CommandMetadata } from '../../types/cli'
 interface InitOptions {
   /** @ai-field 项目名称 */
   name: string
-  
+
   /** @ai-field 项目模板类型 */
   template: 'basic' | 'enterprise' | 'plugin'
-  
+
   /** @ai-field 是否使用 TypeScript */
   typescript: boolean
-  
+
   /** @ai-field 数据库提供商 */
   database: 'postgresql' | 'mysql' | 'sqlite'
-  
+
   /** @ai-field 是否包含认证功能 */
   auth: boolean
-  
+
   /** @ai-field 是否强制覆盖现有文件 */
   force: boolean
-  
+
   /** @ai-field 目标目录 */
   directory: string
 }
@@ -46,25 +47,25 @@ interface InitOptions {
 async function handleInit(context: CLIContext): Promise<void> {
   const { args } = context
   const projectName = args?.[0] as string
-  
+
   console.log('🚀 Welcome to Linch Kit!')
   console.log('AI-First rapid development framework\n')
 
   // AI: 获取项目配置
   const options = await getInitOptions(projectName, context)
-  
+
   // AI: 验证项目设置
   await validateProjectSetup(options)
-  
+
   // AI: 创建项目结构
   await createProjectStructure(options)
-  
+
   // AI: 配置文件已在 createProjectStructure 中生成
   console.log('✅ Configuration files generated')
-  
+
   // AI: 安装依赖（可选）
   await installDependencies(options)
-  
+
   // AI: 显示完成信息
   showCompletionMessage(options)
 }
@@ -101,7 +102,7 @@ async function getInitOptions(projectName?: string, context?: CLIContext): Promi
             return 'Project name must be lowercase and contain only letters, numbers, and hyphens'
           }
           return true
-        }
+        },
       },
       {
         type: 'list',
@@ -110,15 +111,15 @@ async function getInitOptions(projectName?: string, context?: CLIContext): Promi
         choices: [
           { name: 'Basic - Simple starter template', value: 'basic' },
           { name: 'Enterprise - Full-featured with auth and database', value: 'enterprise' },
-          { name: 'Plugin - CLI plugin template', value: 'plugin' }
+          { name: 'Plugin - CLI plugin template', value: 'plugin' },
         ],
-        default: 'basic'
+        default: 'basic',
       },
       {
         type: 'confirm',
         name: 'typescript',
         message: 'Use TypeScript?',
-        default: true
+        default: true,
       },
       {
         type: 'list',
@@ -127,18 +128,18 @@ async function getInitOptions(projectName?: string, context?: CLIContext): Promi
         choices: [
           { name: 'PostgreSQL (recommended)', value: 'postgresql' },
           { name: 'MySQL', value: 'mysql' },
-          { name: 'SQLite', value: 'sqlite' }
+          { name: 'SQLite', value: 'sqlite' },
         ],
         default: 'postgresql',
-        when: (answers: any) => answers.template !== 'plugin'
+        when: (answers: any) => answers.template !== 'plugin',
       },
       {
         type: 'confirm',
         name: 'auth',
         message: 'Include authentication?',
         default: true,
-        when: (answers: any) => answers.template !== 'plugin'
-      }
+        when: (answers: any) => answers.template !== 'plugin',
+      },
     ])
 
     options = {
@@ -146,7 +147,7 @@ async function getInitOptions(projectName?: string, context?: CLIContext): Promi
       database: answers.database || 'postgresql',
       auth: answers.auth !== false,
       force: false,
-      directory: resolve(process.cwd(), answers.name)
+      directory: resolve(process.cwd(), answers.name),
     }
   } else {
     // AI: 使用默认配置或命令行参数
@@ -157,7 +158,7 @@ async function getInitOptions(projectName?: string, context?: CLIContext): Promi
       database: 'postgresql',
       auth: true,
       force: false,
-      directory: resolve(process.cwd(), projectName || 'my-linch-app')
+      directory: resolve(process.cwd(), projectName || 'my-linch-app'),
     }
   }
 
@@ -182,13 +183,17 @@ async function getInitOptions(projectName?: string, context?: CLIContext): Promi
 async function validateProjectSetup(options: InitOptions): Promise<void> {
   // AI: 验证项目名称
   if (!/^[a-z][a-z0-9-]*$/.test(options.name)) {
-    throw new Error('AI: Project name must be lowercase and contain only letters, numbers, and hyphens')
+    throw new Error(
+      'AI: Project name must be lowercase and contain only letters, numbers, and hyphens'
+    )
   }
 
   // AI: 检查目录是否存在
   if (existsSync(options.directory)) {
     if (!options.force) {
-      throw new Error(`AI: Directory '${options.directory}' already exists. Use --force to overwrite.`)
+      throw new Error(
+        `AI: Directory '${options.directory}' already exists. Use --force to overwrite.`
+      )
     }
     console.log(`⚠️  Directory exists, will overwrite due to --force flag`)
   }
@@ -237,21 +242,10 @@ async function createProjectStructure(options: InitOptions): Promise<void> {
  * @ai-return string[] - 目录路径列表
  */
 function getTemplateDirectories(template: string): string[] {
-  const baseDirectories = [
-    'src',
-    'src/entities',
-    'src/lib',
-    'src/utils',
-    'docs',
-    'tests'
-  ]
+  const baseDirectories = ['src', 'src/entities', 'src/lib', 'src/utils', 'docs', 'tests']
 
   const templateDirectories: Record<string, string[]> = {
-    basic: [
-      ...baseDirectories,
-      'src/pages',
-      'src/components'
-    ],
+    basic: [...baseDirectories, 'src/pages', 'src/components'],
     enterprise: [
       ...baseDirectories,
       'src/pages',
@@ -260,17 +254,9 @@ function getTemplateDirectories(template: string): string[] {
       'src/services',
       'src/workflows',
       'prisma',
-      'public'
+      'public',
     ],
-    plugin: [
-      'src',
-      'src/commands',
-      'src/types',
-      'src/utils',
-      'docs',
-      'tests',
-      'examples'
-    ]
+    plugin: ['src', 'src/commands', 'src/types', 'src/utils', 'docs', 'tests', 'examples'],
   }
 
   return templateDirectories[template] || baseDirectories
@@ -332,32 +318,32 @@ function generatePackageJson(options: InitOptions): string {
       build: 'linch build',
       start: 'node dist/index.js',
       test: 'linch test',
-      'schema:generate': 'linch schema:generate'
+      'schema:generate': 'linch schema:generate',
     },
     dependencies: {
       '@linch-kit/core': '^0.1.0',
-      '@linch-kit/schema': '^0.1.0'
+      '@linch-kit/schema': '^0.1.0',
     },
     devDependencies: {
-      '@linch-kit/cli': '^0.1.0'
+      '@linch-kit/cli': '^0.1.0',
     },
     keywords: ['linch-kit', 'ai-first', 'rapid-development'],
     author: '',
-    license: 'MIT'
+    license: 'MIT',
   }
 
   if (options.typescript) {
     packageJson.devDependencies = {
       ...packageJson.devDependencies,
       typescript: '^5.0.0',
-      '@types/node': '^20.0.0'
+      '@types/node': '^20.0.0',
     }
   }
 
   if (options.auth) {
     packageJson.dependencies = {
       ...packageJson.dependencies,
-      '@linch-kit/auth-core': '^0.1.0'
+      '@linch-kit/auth': '^0.1.0',
     }
   }
 
@@ -466,7 +452,9 @@ const config: LinchConfig = {
     softDelete: true,
   },
 
-  ${options.auth ? `// Auth 配置
+  ${
+    options.auth
+      ? `// Auth 配置
   auth: {
     userEntity: 'basic',
     providers: [
@@ -500,10 +488,12 @@ const config: LinchConfig = {
     enableSubscriptions: false,
     enableBatching: true,
     maxBatchSize: 10,
-  },` : ''}
+  },`
+      : ''
+  }
 
   // 插件配置
-  plugins: ['@linch-kit/schema'${options.auth ? ", '@linch-kit/auth-core'" : ''}],
+  plugins: ['@linch-kit/schema'${options.auth ? ", '@linch-kit/auth'" : ''}],
 }
 
 export default config`
@@ -535,16 +525,20 @@ export default {
     softDelete: true
   },
 
-  ${options.auth ? `// Authentication configuration
+  ${
+    options.auth
+      ? `// Authentication configuration
   auth: {
     userEntity: 'basic',
     providers: [{ type: 'credentials', id: 'credentials', config: {} }],
     permissions: { strategy: 'rbac', hierarchical: false, multiTenant: false },
     session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 }
-  },` : ''}
+  },`
+      : ''
+  }
 
   // Plugin configuration
-  plugins: ['@linch-kit/schema'${options.auth ? ", '@linch-kit/auth-core'" : ''}]
+  plugins: ['@linch-kit/schema'${options.auth ? ", '@linch-kit/auth'" : ''}]
 }
 `
   }
@@ -686,35 +680,39 @@ temp/
  * @ai-return string - tsconfig.json 内容
  */
 function generateTsConfig(): string {
-  return JSON.stringify({
-    compilerOptions: {
-      target: 'ES2022',
-      lib: ['ES2022'],
-      allowJs: true,
-      skipLibCheck: true,
-      strict: true,
-      forceConsistentCasingInFileNames: true,
-      noEmit: true,
-      esModuleInterop: true,
-      module: 'ESNext',
-      moduleResolution: 'bundler',
-      resolveJsonModule: true,
-      isolatedModules: true,
-      jsx: 'preserve',
-      incremental: true,
-      plugins: [
-        {
-          name: 'next'
-        }
-      ],
-      baseUrl: '.',
-      paths: {
-        '@/*': ['./src/*']
-      }
+  return JSON.stringify(
+    {
+      compilerOptions: {
+        target: 'ES2022',
+        lib: ['ES2022'],
+        allowJs: true,
+        skipLibCheck: true,
+        strict: true,
+        forceConsistentCasingInFileNames: true,
+        noEmit: true,
+        esModuleInterop: true,
+        module: 'ESNext',
+        moduleResolution: 'bundler',
+        resolveJsonModule: true,
+        isolatedModules: true,
+        jsx: 'preserve',
+        incremental: true,
+        plugins: [
+          {
+            name: 'next',
+          },
+        ],
+        baseUrl: '.',
+        paths: {
+          '@/*': ['./src/*'],
+        },
+      },
+      include: ['next-env.d.ts', '**/*.ts', '**/*.tsx', '.next/types/**/*.ts'],
+      exclude: ['node_modules'],
     },
-    include: ['next-env.d.ts', '**/*.ts', '**/*.tsx', '.next/types/**/*.ts'],
-    exclude: ['node_modules']
-  }, null, 2)
+    null,
+    2
+  )
 }
 
 /**
@@ -992,47 +990,47 @@ function showCompletionMessage(options: InitOptions): void {
 export const initCommand: CommandMetadata = {
   description: 'Initialize a new Linch Kit project',
   handler: handleInit,
-  
+
   arguments: [
     {
       name: 'project-name',
       description: 'Name of the project to create',
-      required: false
-    }
+      required: false,
+    },
   ],
-  
+
   options: [
     {
       flags: '-t, --template <template>',
       description: 'Project template (basic, enterprise, plugin)',
-      defaultValue: 'basic'
+      defaultValue: 'basic',
     },
     {
       flags: '--no-typescript',
-      description: 'Use JavaScript instead of TypeScript'
+      description: 'Use JavaScript instead of TypeScript',
     },
     {
       flags: '-d, --database <database>',
       description: 'Database provider (postgresql, mysql, sqlite)',
-      defaultValue: 'postgresql'
+      defaultValue: 'postgresql',
     },
     {
       flags: '--no-auth',
-      description: 'Skip authentication setup'
+      description: 'Skip authentication setup',
     },
     {
       flags: '-f, --force',
-      description: 'Overwrite existing files'
-    }
+      description: 'Overwrite existing files',
+    },
   ],
-  
+
   examples: [
     'linch init my-app',
     'linch init my-app --template enterprise',
     'linch init my-plugin --template plugin',
-    'linch init my-app --database mysql --no-auth'
+    'linch init my-app --database mysql --no-auth',
   ],
-  
+
   category: 'project',
-  aiTags: ['initialization', 'project-setup', 'scaffolding', 'templates']
+  aiTags: ['initialization', 'project-setup', 'scaffolding', 'templates'],
 }

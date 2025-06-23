@@ -3,15 +3,16 @@
  */
 
 import React from "react"
+import { X } from "lucide-react"
+
 import { Input } from "../ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Label } from "../ui/label"
-import { X } from "lucide-react"
 import { Button } from "../ui/button"
 import { useTranslation } from "../../locales"
+import type { FilterOperator } from "../../schema/filter-generator"
 
 import type { FilterComponentProps } from "./types"
-import type { FilterOperator } from "../../schema/filter-generator"
 
 /**
  * 数字筛选器属性

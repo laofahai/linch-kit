@@ -10,7 +10,7 @@ const createMockCredentialsProvider = (config: any) => ({
   name: config.name || 'Credentials',
   type: 'credentials',
   credentials: config.credentials,
-  authorize: config.authorize
+  authorize: config.authorize,
 })
 
 try {
@@ -21,7 +21,7 @@ try {
   if (typeof CredentialsProvider !== 'function') {
     CredentialsProvider = createMockCredentialsProvider
   }
-} catch (error) {
+} catch {
   // 在 CLI 环境中，next-auth 可能不可用，提供一个 mock
   CredentialsProvider = createMockCredentialsProvider
 }

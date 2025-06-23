@@ -20,11 +20,15 @@ hoist-pattern:
 ignoredBuiltDependencies:
   - '@prisma/client'
   - '@prisma/engines'
+  - '@tailwindcss/oxide'
   - contentlayer
+  - core-js-pure
   - esbuild
+  - node
   - prisma
   - protobufjs
   - sharp
+  - unrs-resolver
 
 link-workspace-packages: true
 

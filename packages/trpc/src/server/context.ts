@@ -29,7 +29,7 @@ export interface CreateContextOptions {
  * 这是一个工厂函数，用于创建 tRPC 上下文
  */
 export async function createContext(opts?: CreateContextOptions): Promise<Context> {
-  // 临时实现，后续会与 auth-core 集成
+  // 临时实现，后续会与 auth 集成
   const user = null // await getSessionUser(opts?.req)
   const session = null // await getSession(opts?.req)
   const tenant = null // await extractTenant(opts?.req)
@@ -72,7 +72,7 @@ export function extractTenant(req?: any): string | null {
  * 获取会话用户信息
  */
 export async function getSessionUser(_req?: any): Promise<AuthUser | null> {
-  // 临时实现，等待 auth-core 集成
+  // 临时实现，等待 auth 集成
   // const session = await getSession(req)
   // return session?.user || null
   return null

@@ -122,9 +122,9 @@ async function loadPackageEntities(config?: SchemaConfig) {
   // 已知包含实体的包列表和路径
   const packagesWithEntities = [
     {
-      name: '@linch-kit/auth-core',
+      name: '@linch-kit/auth',
       // 在monorepo中使用相对路径，从项目根目录开始
-      path: resolve(process.cwd(), 'packages/auth-core/dist/index.js')
+      path: resolve(process.cwd(), 'packages/auth/dist/index.js')
     }
   ]
 
@@ -172,22 +172,22 @@ function getAuthKitType(_config?: SchemaConfig): string {
 
   // 检查顶级插件配置中的 entityKit 设置
   if (globalConfig?.plugins) {
-    const authCorePlugin = globalConfig.plugins.find((p: any) =>
-      p.name === '@linch-kit/auth-core' || p === '@linch-kit/auth-core'
+    const authPlugin = globalConfig.plugins.find((p: any) =>
+      p.name === '@linch-kit/auth' || p === '@linch-kit/auth'
     )
-    if (authCorePlugin?.config?.entityKit) {
-      return authCorePlugin.config.entityKit
+    if (authPlugin?.config?.entityKit) {
+      return authPlugin.config.entityKit
     }
   }
 
   // 检查 auth 配置中的插件设置
   const authConfig = globalConfig?.auth
   if (authConfig?.plugins) {
-    const authCorePlugin = authConfig.plugins.find((p: any) =>
-      p.name === '@linch-kit/auth-core' || p === '@linch-kit/auth-core'
+    const authPlugin = authConfig.plugins.find((p: any) =>
+      p.name === '@linch-kit/auth' || p === '@linch-kit/auth'
     )
-    if (authCorePlugin?.config?.entityKit) {
-      return authCorePlugin.config.entityKit
+    if (authPlugin?.config?.entityKit) {
+      return authPlugin.config.entityKit
     }
   }
 

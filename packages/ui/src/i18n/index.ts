@@ -10,6 +10,7 @@ import {
   type TranslationFunction,
   type I18nProps
 } from '@linch-kit/core'
+
 import { defaultMessages } from './messages'
 
 /**

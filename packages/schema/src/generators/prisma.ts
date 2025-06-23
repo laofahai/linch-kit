@@ -192,7 +192,7 @@ function generateField(
 function generateRelationField(
   fieldName: string,
   relation: RelationAttributes,
-  provider: 'postgresql' | 'mysql' | 'sqlite' | 'sqlserver' = 'postgresql'
+  _provider: 'postgresql' | 'mysql' | 'sqlite' | 'sqlserver' = 'postgresql'
 ): { relationField: string; foreignKeyField?: string } {
   // 如果关系字段名与外键字段名相同，则为关系字段生成不同的名称
   // 例如：userId -> user, roleId -> role, departmentId -> department

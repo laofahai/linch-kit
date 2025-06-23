@@ -26,7 +26,7 @@
     "tsBuildInfoFile": null,
     "emitDeclarationOnly": false,
     "maxNodeModuleJsDepth": 0,
-    "disableSizeLimit": true
+    "disableSizeLimit": false
   },
   "include": [
     "src/**/*"
@@ -37,6 +37,8 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "**/*.test.tsx",
-    "**/*.spec.tsx"
+    "**/*.spec.tsx",
+    "src/schemas-disabled/**/*",
+    "src/test-*.ts"
   ]
 }

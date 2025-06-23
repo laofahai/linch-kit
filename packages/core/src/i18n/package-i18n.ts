@@ -4,16 +4,32 @@
  * 为各个包提供统一的 i18n 实现模式
  */
 
-import type { 
-  TranslationFunction, 
-  PackageI18nConfig, 
-  I18nProps 
+import type {
+  TranslationFunction,
+  PackageI18nConfig,
+  I18nProps
 } from './types'
-import { 
-  createNamespacedTranslation, 
-  createTranslationWithFallback,
-  getGlobalTranslation 
-} from './index'
+import {
+  createNamespacedTranslation,
+  createTranslationWithFallback
+} from './types'
+
+/**
+ * 全局 i18n 上下文引用
+ * 避免循环导入，直接在这里声明
+ */
+declare global {
+  var __LINCH_I18N_CONTEXT__: any
+}
+
+/**
+ * 获取全局翻译函数
+ *
+ * @returns 全局翻译函数，如果未设置则返回 undefined
+ */
+function getGlobalTranslation(): TranslationFunction | undefined {
+  return globalThis.__LINCH_I18N_CONTEXT__?.t
+}
 
 /**
  * 包 i18n 管理器

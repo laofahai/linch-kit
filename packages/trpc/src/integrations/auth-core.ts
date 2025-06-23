@@ -8,8 +8,8 @@ import { middleware } from '../server'
 import type { Context } from '../server'
 
 /**
- * Auth Core 集成类型定义
- * 这些类型定义与 @linch-kit/auth-core 保持一致，避免循环依赖
+ * Auth 集成类型定义
+ * 这些类型定义与 @linch-kit/auth 保持一致，避免循环依赖
  */
 interface ModularPermissionChecker {
   hasPermission(userId: string, resource: string, action: string, context?: any): Promise<boolean>
@@ -33,19 +33,19 @@ interface PermissionRegistry {
 }
 
 /**
- * 动态导入 auth-core 模块
+ * 动态导入 auth 模块
  */
-async function loadAuthCore() {
+async function loadAuth() {
   try {
     // 使用动态导入避免编译时依赖
-    const authCore = await import('@linch-kit/auth' as any)
+    const auth = await import('@linch-kit/auth' as any)
     return {
-      createPermissionRegistry: authCore.createPermissionRegistry as () => PermissionRegistry,
-      createModularPermissionChecker: authCore.createModularPermissionChecker as (registry: PermissionRegistry) => ModularPermissionChecker,
+      createPermissionRegistry: auth.createPermissionRegistry as () => PermissionRegistry,
+      createModularPermissionChecker: auth.createModularPermissionChecker as (registry: PermissionRegistry) => ModularPermissionChecker,
       available: true,
     }
   } catch {
-    console.warn('Auth Core not available, using fallback implementation')
+    console.warn('Auth not available, using fallback implementation')
     return {
       createPermissionRegistry: createFallbackPermissionRegistry,
       createModularPermissionChecker: createFallbackPermissionChecker,
@@ -55,7 +55,7 @@ async function loadAuthCore() {
 }
 
 /**
- * 回退实现 - 当 auth-core 不可用时使用
+ * 回退实现 - 当 auth 不可用时使用
  */
 function createFallbackPermissionRegistry(): PermissionRegistry {
   return {
@@ -136,18 +136,18 @@ export interface PermissionRequirement {
 }
 
 /**
- * 创建 Auth Core 集成
+ * 创建 Auth 集成
  */
-export async function createAuthCoreIntegration(config: AuthCoreIntegrationConfig = {}) {
-  // 动态加载 auth-core 模块
-  const authCore = await loadAuthCore()
+export async function createAuthIntegration(config: AuthCoreIntegrationConfig = {}) {
+  // 动态加载 auth 模块
+  const auth = await loadAuth()
 
   // 使用提供的或创建默认的权限注册表
-  const registry = config.permissionRegistry || authCore.createPermissionRegistry()
+  const registry = config.permissionRegistry || auth.createPermissionRegistry()
 
   // 使用提供的或创建默认的权限检查器
   const permissionChecker =
-    config.permissionChecker || authCore.createModularPermissionChecker(registry)
+    config.permissionChecker || auth.createModularPermissionChecker(registry)
 
   // 默认的用户ID获取函数
   const getUserId = config.getUserId || ((ctx: Context) => ctx.user?.id || null)

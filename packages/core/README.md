@@ -1,49 +1,55 @@
 # @linch-kit/core
 
-AI-First 核心包，提供 CLI 工具、配置管理和基础工具函数。
+🚀 **Linch Kit 核心包** - AI-First 设计的统一 CLI 系统、配置管理和基础工具库。
+
+## ✨ 核心特性
+
+- 🛠️ **统一 CLI 系统** - 可扩展的命令行工具，支持插件化命令注册
+- ⚙️ **配置管理** - 多层次配置系统，支持文件、环境变量、CLI 参数
+- 🔧 **工具函数库** - 文件系统、网络、进程、字符串等常用工具
+- 🔌 **插件系统** - 动态插件发现、加载和生命周期管理
+- 🌐 **国际化支持** - 统一的 i18n 系统
+- 🤖 **AI-First 设计** - 为 AI 辅助开发优化的接口和元数据
 
 ## 📦 安装
 
 ```bash
-npm install @linch-kit/core
-# 或
 pnpm add @linch-kit/core
 # 或
-yarn add @linch-kit/core
+npm install @linch-kit/core
 ```
 
-## 🚀 特性
+## 🚀 快速开始
 
-- 🛠️ **统一 CLI 系统** - 可扩展的命令行工具
-- ⚙️ **配置管理** - 多层次配置系统
-- 🔧 **工具函数** - 常用开发工具函数
-- 🔌 **插件系统** - 可扩展的插件架构
-- 🤖 **AI-First 设计** - 为 AI 辅助开发优化
-
-## 📖 使用方式
-
-### CLI 工具
+### CLI 工具使用
 
 ```bash
-# 全局安装
-npm install -g @linch-kit/core
+# 查看所有可用命令
+npx linch --help
 
-# 使用 CLI
-linch-kit --help
-linch-kit generate package my-package
-linch-kit config validate
+# 查看插件状态
+npx linch plugin:list
+
+# 查看配置信息
+npx linch config:info
+
+# 生成配置文件
+npx linch config:init --type ts
 ```
 
 ### 作为库使用
 
 ```typescript
-import { loadConfig, fs, createCLI } from '@linch-kit/core'
+import { LinchCLI, ConfigManager, fs, logger } from '@linch-kit/core'
+
+// 创建 CLI 应用
+const cli = new LinchCLI()
+await cli.initialize()
+await cli.run()
 
 // 配置管理
-const config = await loadConfig({
-  sources: ['file', 'env', 'cli'],
-  validate: true
-})
+const configManager = ConfigManager.getInstance()
+const config = await configManager.loadConfig()
 
 // 文件系统工具
 await fs.ensureDir('./dist')

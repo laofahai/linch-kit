@@ -1,4 +1,4 @@
-import type { NextAuthOptions, Session, User as NextAuthUser, AuthOptions } from 'next-auth'
+import type { NextAuthOptions, Session, User as NextAuthUser } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
 // 使用更通用的类型定义，避免导入问题
 type Provider = any

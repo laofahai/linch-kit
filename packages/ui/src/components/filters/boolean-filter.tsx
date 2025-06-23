@@ -3,13 +3,14 @@
  */
 
 import React from "react"
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Label } from "../ui/label"
 import { Switch } from "../ui/switch"
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
+import type { FilterOperator } from "../../schema/filter-generator"
 
 import type { FilterComponentProps } from "./types"
-import type { FilterOperator } from "../../schema/filter-generator"
 
 /**
  * 布尔筛选器组件

@@ -7,6 +7,7 @@
  */
 
 import { Command } from 'commander'
+
 import type { CommandPlugin, CLIContext, CommandMetadata } from '../../types/cli'
 
 /**

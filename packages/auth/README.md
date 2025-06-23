@@ -1,15 +1,6 @@
 # @linch-kit/auth
 
-🔐 **Modular authentication and authorization system for Linch Kit** - Enterprise-grade, plugin-based, and fully extensible.
-
-## 🔄 重构说明 (v0.1.0)
-
-**重大架构更新**：
-- ✅ **统一 CLI 系统**：CLI 命令现在通过 `@linch-kit/core` 的插件系统提供
-- ✅ **统一配置管理**：配置现在通过 `@linch-kit/core` 的配置系统管理
-- ✅ **模块化权限系统**：全新的运行时模块化权限管理
-- ✅ **插件化架构**：支持通过插件扩展功能
-- ✅ **遵循"少重复造轮子"原则**：基于 NextAuth.js、Prisma 等成熟方案
+🔐 **企业级认证和权限管理系统** - 模块化、类型安全、完全可扩展的认证解决方案。
 
 ## ✨ 核心特性
 
@@ -19,18 +10,18 @@
 - 🔐 **企业级权限**：RBAC、ABAC、层级权限、多租户支持
 - 🌐 **国际化支持**：内置多语言消息
 - 📦 **最小化实体**：只需要 `id` 和 `name`，完全可定制
-- 🔄 **向后兼容**：保留现有功能
 - ⚡ **开发工具**：代码生成和配置管理工具
+- 🔌 **插件化架构**：通过 @linch-kit/core 的插件系统扩展功能
 
-## 🚀 快速开始
-
-### 安装
+## 📦 安装
 
 ```bash
-npm install @linch-kit/auth @linch-kit/core
-# or
 pnpm add @linch-kit/auth @linch-kit/core
+# 或
+npm install @linch-kit/auth @linch-kit/core
 ```
+
+## 🚀 快速开始
 
 ### 初始化配置
 
@@ -42,35 +33,34 @@ npx linch auth:init
 npx linch auth:init --type ts --force
 ```
 
-这会创建一个 `auth.config.ts` 文件。
-
 ### 基础使用
 
 ```typescript
-// auth.config.ts
-import type { AuthConfig } from '@linch-kit/auth'
+import { createAuthConfig } from '@linch-kit/auth'
+import type { AuthCoreConfig } from '@linch-kit/auth'
 
-const authConfig: AuthConfig = {
+// 创建认证配置
+const authConfig = createAuthConfig({
   providers: [
     {
-      id: 'google',
-      name: 'Google',
-      type: 'oauth',
-      options: {
-        clientId: process.env.AUTH_GOOGLE_ID,
-        clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      id: 'credentials',
+      name: 'Credentials',
+      type: 'credentials',
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        // 实现您的认证逻辑
+        return { id: '1', email: credentials?.email }
       }
     }
   ],
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
-  permissions: {
-    strategy: 'rbac',
-    hierarchical: false,
   }
-}
+})
 
 export default authConfig
 ```
@@ -126,7 +116,7 @@ import {
   BasicUserTemplate,      // + email, phone, username
   EnterpriseUserTemplate, // + roles, department, permissions
   MultiTenantUserTemplate // + tenant support
-} from '@linch-kit/auth-core'
+} from '@linch-kit/auth'
 
 // Or create completely custom
 const MyUser = defineEntity('User', {
@@ -197,40 +187,119 @@ npx @linch-kit/auth generate:auth --kit=enterprise --departments
 npx @linch-kit/auth generate:auth --preset=saas
 ```
 
-### Generate Permission System
+### 权限系统生成
 
 ```bash
 # RBAC with hierarchical permissions
-npx @linch-kit/auth generate:permissions --strategy=rbac --hierarchical
+npx linch auth:generate:permissions --strategy=rbac --hierarchical
 
 # Multi-tenant ABAC
-npx @linch-kit/auth-core generate:permissions --strategy=abac --multi-tenant
+npx linch auth:generate:permissions --strategy=abac --multi-tenant
 ```
 
-### Validate Configuration
+### 配置验证
 
 ```bash
-npx @linch-kit/auth-core validate
-npx @linch-kit/auth-core info
+npx linch auth:validate
+npx linch auth:info
 ```
 
-## 📚 Examples
+## 📚 使用示例
 
-- [Complete Setup](./examples/complete-setup.ts) - Full enterprise configuration
-
-## 🔄 Migration from @linch-kit/auth
-
-The package preserves all existing functionality:
+### 完整企业级配置
 
 ```typescript
-// ✅ Still works exactly the same
-import { sharedTokenProvider } from '@linch-kit/auth-core'
+import { createAuthConfig } from '@linch-kit/auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
 
-// ✅ Enhanced with new features
 const authConfig = createAuthConfig({
-  providers: [sharedTokenProvider],
-  // + new features: permissions, multi-tenant, etc.
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    CredentialsProvider({
+      name: 'credentials',
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        // 实现您的认证逻辑
+        const user = await validateUser(credentials)
+        return user ? { id: user.id, email: user.email } : null
+      }
+    })
+  ],
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  callbacks: {
+    async signIn(user, account, profile) {
+      // 自定义登录逻辑
+      return true
+    },
+    async session(session, user) {
+      // 自定义会话逻辑
+      return session
+    }
+  }
 })
+```
+
+## 🔄 变更日志
+
+### v0.1.0 (2025-06-21)
+- ✅ 重构为统一的认证系统
+- ✅ 集成@linch-kit/core插件系统
+- ✅ 添加模块化权限管理
+- ✅ 支持企业级权限控制
+- ✅ 完整的TypeScript支持
+- ✅ 统一CLI命令系统
+
+## 📚 API 文档
+
+### 核心函数
+
+#### `createAuthConfig(config: AuthCoreConfig): NextAuthOptions`
+创建完整的认证配置，返回NextAuth.js兼容的配置对象。
+
+#### `createSimpleAuthConfig(providers: any[]): NextAuthOptions`
+创建简单的认证配置，用于快速开始。
+
+#### `createPermissionRegistry(): PermissionRegistry`
+创建权限注册表，用于模块化权限管理。
+
+#### `createModularPermissionChecker(registry: PermissionRegistry): ModularPermissionChecker`
+创建模块化权限检查器。
+
+### 权限管理
+
+```typescript
+import { createPermissionRegistry, createModularPermissionChecker } from '@linch-kit/auth'
+
+// 创建权限注册表
+const registry = createPermissionRegistry()
+
+// 注册模块权限
+registry.registerModule('user', {
+  permissions: ['read', 'write', 'delete'],
+  resources: ['profile', 'settings']
+})
+
+// 创建权限检查器
+const checker = createModularPermissionChecker(registry)
+
+// 检查权限
+const hasPermission = await checker.hasModulePermission(
+  'user123',
+  'user',
+  'profile',
+  'read'
+)
+```
 ```
 
 ## 🏢 Enterprise Features

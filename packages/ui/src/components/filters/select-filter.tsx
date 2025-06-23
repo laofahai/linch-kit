@@ -3,16 +3,17 @@
  */
 
 import React from "react"
+import { X, Check } from "lucide-react"
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Label } from "../ui/label"
-import { X, Check } from "lucide-react"
 import { Button } from "../ui/button"
 import { Badge } from "../ui/badge"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../ui/command"
+import type { FilterOperator } from "../../schema/filter-generator"
 
 import type { SelectFilterProps } from "./types"
-import type { FilterOperator } from "../../schema/filter-generator"
 
 /**
  * 选择筛选器组件

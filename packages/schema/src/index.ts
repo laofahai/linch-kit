@@ -1,7 +1,33 @@
 // Core exports
 export * from './core/types'
-export * from './core/decorators'
-export * from './core/entity'
+export * from './core/decorators'  // 这里导出 defineField
+export * from './core/entity'      // 这里导出 defineEntity
+export * from './core/ui-types'
+
+// 显式导出主要函数，确保它们可用
+export { defineField } from './core/decorators'
+export { defineEntity } from './core/entity'
+
+// Core types and utilities (避免重复导出)
+export {
+  type MinimalFieldConfig,
+  type BasicFieldConfig,
+  type DatabaseConfig,
+  type DatabaseFieldType,
+  type RelationType,
+  type FieldMetadata,
+  type EntityMetadata,
+  type CoreSchema,
+  type CoreEntityDefinition,
+  FIELD_META_SYMBOL,
+  ENTITY_META_SYMBOL,
+  validateFieldConfig,
+  validateEntityConfig,
+  getFieldMeta,
+  setFieldMeta,
+  getEntityMeta,
+  setEntityMeta,
+} from './core/core-types'
 
 // I18n exports
 export * from './i18n'

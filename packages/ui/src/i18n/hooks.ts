@@ -6,6 +6,7 @@
 
 import { useCallback } from 'react'
 import { type TranslationFunction, type I18nProps } from '@linch-kit/core'
+
 import { getUITranslation, createNamespacedT } from './index'
 
 /**

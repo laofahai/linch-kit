@@ -8,8 +8,9 @@ import React from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { EntityDefinition } from "@linch-kit/schema"
 
-import { DataTable, type DataTableProps } from "./data-table"
 import { generateTableColumns } from "../../schema"
+
+import { DataTable, type DataTableProps } from "./data-table"
 
 /**
  * Schema DataTable 属性
@@ -17,7 +18,7 @@ import { generateTableColumns } from "../../schema"
 export interface SchemaDataTableProps<T extends Record<string, any>>
   extends Omit<DataTableProps<T, any>, 'columns'> {
   /** 实体定义 */
-  entity: EntityDefinition<T>
+  entity: EntityDefinition
   /** 包含的字段 */
   include?: string[]
   /** 排除的字段 */

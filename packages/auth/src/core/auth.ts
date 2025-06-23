@@ -1,11 +1,11 @@
 import type { NextAuthOptions } from 'next-auth'
+
 import type { AuthUser, AuthCoreConfig, AuthSession } from '../types/auth'
-import { defaultMessages } from '../i18n/messages'
 
 /**
- * 创建 Auth Core 配置
- * 
- * 这是 auth-core 的主要入口函数，用于创建完整的认证配置
+ * 创建 Auth 配置
+ *
+ * 这是 auth 的主要入口函数，用于创建完整的认证配置
  */
 export function createAuthConfig(config: AuthCoreConfig): NextAuthOptions {
   const {
@@ -31,13 +31,13 @@ export function createAuthConfig(config: AuthCoreConfig): NextAuthOptions {
         }
         return true
       },
-      async session({ session, user, token }) {
+      async session({ session, user, token: _token }) {
         if (callbacks.session) {
           return await callbacks.session(session as AuthSession, user as AuthUser)
         }
         return session
       },
-      async jwt({ token, user, account, profile }) {
+      async jwt({ token, user, account: _account, profile: _profile }) {
         if (callbacks.jwt) {
           return await callbacks.jwt(token, user as AuthUser)
         }

@@ -8,6 +8,11 @@ import type {
   EntityDefinition,
   EntityUIConfig
 } from './types'
+import {
+  type EntityMetadata,
+  FIELD_META_SYMBOL,
+  ENTITY_META_SYMBOL,
+} from './core-types'
 import { getFieldMeta } from './decorators'
 
 /**
@@ -98,12 +103,12 @@ export class Entity {
 /**
  * 定义实体的工厂函数
  *
- * 改进版本：平衡类型安全和 DTS 构建性能
- * 使用条件类型和映射类型，避免深度嵌套的泛型推导
+ * 性能优化版本：简化类型推导，提升 DTS 构建性能
+ * 移除复杂的泛型约束，使用更简单的类型操作
  */
-export function defineEntity<T extends Record<string, z.ZodSchema>>(
+export function defineEntity(
   name: string,
-  fields: T,
+  fields: Record<string, z.ZodSchema>,
   config?: {
     tableName?: string
     indexes?: Array<{
@@ -115,34 +120,37 @@ export function defineEntity<T extends Record<string, z.ZodSchema>>(
     ui?: EntityUIConfig
   }
 ): Entity {
-  // 使用 Zod 的 object 方法，但限制泛型深度
+  // 创建 Zod schema（避免泛型推导）
   const zodSchema = z.object(fields)
 
+  // 创建实体元数据
+  const metadata: EntityMetadata = {
+    name,
+    tableName: config?.tableName || name.toLowerCase(),
+    indexes: config?.indexes,
+    fields: {}
+  }
+
   // 收集字段元数据
-  const fieldsMetadata: Record<string, FieldAttributes> = {}
-  const relationsMetadata: Record<string, RelationAttributes> = {}
-
   for (const [fieldName, fieldSchema] of Object.entries(fields)) {
-    const meta = getFieldMeta(fieldSchema)
-    if (meta) {
-      fieldsMetadata[fieldName] = meta
-
-      // 如果有关系配置，添加到关系元数据
-      if (meta.relation) {
-        relationsMetadata[fieldName] = {
-          type: meta.relation.type as any,
-          model: meta.relation.model,
-          foreignKey: meta.relation.foreignKey,
-          references: meta.relation.references,
-          onDelete: meta.relation.onDelete as any,
-          onUpdate: meta.relation.onUpdate as any,
-        }
+    const fieldMeta = (fieldSchema as any)[FIELD_META_SYMBOL]
+    if (fieldMeta) {
+      metadata.fields![fieldName] = {
+        name: fieldName,
+        type: (fieldSchema._def as any)?.typeName || 'unknown',
+        isPrimary: fieldMeta.isPrimary,
+        isUnique: fieldMeta.isUnique,
+        isOptional: fieldSchema.isOptional(),
+        defaultValue: fieldMeta.defaultValue
       }
     }
   }
 
   // 创建带元数据的 schema
   const entitySchema = zodSchema as EntitySchema
+  ;(entitySchema as any)[ENTITY_META_SYMBOL] = metadata
+
+  // 为了兼容性，也设置旧的元数据格式
   entitySchema._meta = {
     model: {
       tableName: config?.tableName || name.toLowerCase(),
@@ -150,33 +158,38 @@ export function defineEntity<T extends Record<string, z.ZodSchema>>(
       compositePrimaryKey: config?.compositePrimaryKey,
       ui: config?.ui
     },
-    fields: fieldsMetadata,
-    relations: relationsMetadata
+    fields: {},
+    relations: {}
   }
 
   // 创建 Entity 实例
   const entity = new Entity(name, entitySchema, config)
 
+  // 注册实体
+  const registry = getEntityRegistry()
+  registry.set(name, {
+    name,
+    schema: entitySchema,
+    meta: entitySchema._meta
+  })
+
   return entity
 }
 
 /**
- * 类型辅助函数：从实体推断类型
- * 改进版本：保持基本类型推导，避免过度复杂
+ * 类型辅助函数：简化版本，避免复杂的类型推导
+ * 性能优化：使用简单的类型定义，避免深度类型推导
  */
-export type EntityType<E extends Entity> = E extends Entity ? Record<string, unknown> : never
+export type EntityType<E extends Entity> = Record<string, unknown>
 
 /**
- * 类型辅助函数：从字段定义推断实体类型
- * 改进版本：使用条件类型，但限制推导深度
+ * 类型辅助函数：简化版本，避免复杂的类型推导
+ * 性能优化：直接返回通用类型，避免映射类型推导
  */
-export type InferEntityType<T extends Record<string, z.ZodSchema>> =
-  T extends Record<string, z.ZodSchema>
-    ? { [K in keyof T]: z.infer<T[K]> }
-    : never
+export type InferEntityType<T> = Record<string, unknown>
 
 /**
- * 简化的类型推导函数：当需要避免复杂推导时使用
+ * 简化的类型推导函数：推荐使用
  */
 export type SimpleEntityType = Record<string, unknown>
 

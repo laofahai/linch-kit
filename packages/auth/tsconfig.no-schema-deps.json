@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist-no-schema-deps",
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": [
+    "src/test-no-schema-deps.ts"
+  ]
+}

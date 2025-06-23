@@ -7,12 +7,9 @@ export default defineConfig({
   sourcemap: true,
   dts: true,
   target: 'es2022',
-  external: [
-    '@linch-kit/schema',
-    '@linch-kit/auth-core'
-  ],
+  external: ['@linch-kit/schema', '@linch-kit/auth'],
   treeshake: true,
   splitting: false,
   minify: false,
-  tsconfig: "./tsconfig.build.json"
+  tsconfig: './tsconfig.build.json',
 })

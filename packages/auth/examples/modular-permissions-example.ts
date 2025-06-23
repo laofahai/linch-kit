@@ -5,8 +5,8 @@
 import {
   createPermissionRegistry,
   createModularPermissionChecker,
-  type ModulePermissionDefinition
-} from '@linch-kit/auth-core'
+  type ModulePermissionDefinition,
+} from '@linch-kit/auth'
 
 // 示例：WMS 模块权限定义
 const wmsModulePermissions: ModulePermissionDefinition = {
@@ -19,8 +19,8 @@ const wmsModulePermissions: ModulePermissionDefinition = {
         { name: 'create', description: '创建仓库' },
         { name: 'read', description: '查看仓库' },
         { name: 'update', description: '更新仓库' },
-        { name: 'delete', description: '删除仓库', dangerous: true }
-      ]
+        { name: 'delete', description: '删除仓库', dangerous: true },
+      ],
     },
     {
       name: 'inventory',
@@ -30,9 +30,9 @@ const wmsModulePermissions: ModulePermissionDefinition = {
         { name: 'read', description: '查看库存' },
         { name: 'update', description: '更新库存' },
         { name: 'transfer', description: '库存转移' },
-        { name: 'adjust', description: '库存调整', dangerous: true }
-      ]
-    }
+        { name: 'adjust', description: '库存调整', dangerous: true },
+      ],
+    },
   ],
   defaultRoles: [
     {
@@ -40,18 +40,18 @@ const wmsModulePermissions: ModulePermissionDefinition = {
       description: '仓库管理员',
       permissions: [
         { resource: 'warehouse', actions: ['create', 'read', 'update', 'delete'] },
-        { resource: 'inventory', actions: ['create', 'read', 'update', 'transfer', 'adjust'] }
-      ]
+        { resource: 'inventory', actions: ['create', 'read', 'update', 'transfer', 'adjust'] },
+      ],
     },
     {
       name: 'warehouse-operator',
       description: '仓库操作员',
       permissions: [
         { resource: 'warehouse', actions: ['read'] },
-        { resource: 'inventory', actions: ['read', 'update', 'transfer'] }
-      ]
-    }
-  ]
+        { resource: 'inventory', actions: ['read', 'update', 'transfer'] },
+      ],
+    },
+  ],
 }
 
 // 示例：CRM 模块权限定义
@@ -65,8 +65,8 @@ const crmModulePermissions: ModulePermissionDefinition = {
         { name: 'create', description: '创建客户' },
         { name: 'read', description: '查看客户' },
         { name: 'update', description: '更新客户' },
-        { name: 'delete', description: '删除客户', dangerous: true }
-      ]
+        { name: 'delete', description: '删除客户', dangerous: true },
+      ],
     },
     {
       name: 'order',
@@ -75,9 +75,9 @@ const crmModulePermissions: ModulePermissionDefinition = {
         { name: 'create', description: '创建订单' },
         { name: 'read', description: '查看订单' },
         { name: 'update', description: '更新订单' },
-        { name: 'cancel', description: '取消订单' }
-      ]
-    }
+        { name: 'cancel', description: '取消订单' },
+      ],
+    },
   ],
   defaultRoles: [
     {
@@ -85,18 +85,18 @@ const crmModulePermissions: ModulePermissionDefinition = {
       description: '销售经理',
       permissions: [
         { resource: 'customer', actions: ['create', 'read', 'update', 'delete'] },
-        { resource: 'order', actions: ['create', 'read', 'update', 'cancel'] }
-      ]
+        { resource: 'order', actions: ['create', 'read', 'update', 'cancel'] },
+      ],
     },
     {
       name: 'sales-rep',
       description: '销售代表',
       permissions: [
         { resource: 'customer', actions: ['create', 'read', 'update'] },
-        { resource: 'order', actions: ['create', 'read', 'update'] }
-      ]
-    }
-  ]
+        { resource: 'order', actions: ['create', 'read', 'update'] },
+      ],
+    },
+  ],
 }
 
 async function demonstrateModularPermissions() {
@@ -104,7 +104,7 @@ async function demonstrateModularPermissions() {
 
   // 1. 创建权限注册表
   const registry = createPermissionRegistry()
-  
+
   // 2. 注册模块权限
   console.log('📋 注册模块权限...')
   await registry.registerModule(wmsModulePermissions)
@@ -131,30 +131,39 @@ async function demonstrateModularPermissions() {
 
   // 6. 模拟权限检查
   console.log('🔍 权限检查示例:')
-  
+
   // 模拟用户权限检查
   const userId = 'user-123'
-  
+
   // 检查 WMS 模块权限
   const hasWarehouseRead = await permissionChecker.hasModulePermission(
-    userId, 'wms', 'warehouse', 'read'
+    userId,
+    'wms',
+    'warehouse',
+    'read'
   )
   console.log(`  - WMS仓库读取权限: ${hasWarehouseRead ? '✅' : '❌'}`)
 
   const hasInventoryAdjust = await permissionChecker.hasModulePermission(
-    userId, 'wms', 'inventory', 'adjust'
+    userId,
+    'wms',
+    'inventory',
+    'adjust'
   )
   console.log(`  - WMS库存调整权限: ${hasInventoryAdjust ? '✅' : '❌'}`)
 
   // 检查 CRM 模块权限
   const hasCustomerCreate = await permissionChecker.hasModulePermission(
-    userId, 'crm', 'customer', 'create'
+    userId,
+    'crm',
+    'customer',
+    'create'
   )
   console.log(`  - CRM客户创建权限: ${hasCustomerCreate ? '✅' : '❌'}`)
 
   // 7. 获取用户模块权限
   console.log('\n📋 用户模块权限摘要:')
-  
+
   const wmsPermissions = await permissionChecker.getUserModulePermissions(userId, 'wms')
   console.log('  WMS模块权限:', JSON.stringify(wmsPermissions, null, 2))
 

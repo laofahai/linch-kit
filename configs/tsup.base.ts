@@ -30,7 +30,7 @@ function getPackageInfo() {
       name: packageJson.name,
       version: packageJson.version,
       dependencies: Object.keys(packageJson.dependencies || {}),
-      peerDependencies: Object.keys(packageJson.peerDependencies || {})
+      peerDependencies: Object.keys(packageJson.peerDependencies || {}),
     }
   } catch {
     return { name: '', version: '', dependencies: [], peerDependencies: [] }
@@ -48,7 +48,7 @@ export function createTsupConfig(options: TsupBaseOptions = {}): Options {
     external = [],
     splitting = false,
     treeshake = true,
-    override = {}
+    override = {},
   } = options
 
   const packageInfo = getPackageInfo()
@@ -69,10 +69,10 @@ export function createTsupConfig(options: TsupBaseOptions = {}): Options {
     '@linch-kit/core',
     '@linch-kit/types',
     '@linch-kit/ui',
-    '@linch-kit/auth-core',
+    '@linch-kit/auth',
     '@linch-kit/schema',
     '@linch-kit/trpc',
-    ...external
+    ...external,
   ]
 
   const baseConfig: Options = {
@@ -81,9 +81,11 @@ export function createTsupConfig(options: TsupBaseOptions = {}): Options {
     dts: {
       resolve: true,
       // 为 React 组件库生成更好的类型
-      compilerOptions: isReact ? {
-        jsx: 'react-jsx'
-      } : undefined
+      compilerOptions: isReact
+        ? {
+            jsx: 'react-jsx',
+          }
+        : undefined,
     },
     clean: true,
     sourcemap: true,
@@ -100,16 +102,16 @@ export function createTsupConfig(options: TsupBaseOptions = {}): Options {
  * ${packageInfo.name} v${packageInfo.version}
  * (c) ${new Date().getFullYear()} Linch Kit
  * @license MIT
- */`
+ */`,
     },
     // esbuild 选项
-    esbuildOptions: (options) => {
+    esbuildOptions: options => {
       options.conditions = ['module']
       if (isReact) {
         options.jsx = 'automatic'
         options.jsxImportSource = 'react'
       }
-    }
+    },
   }
 
   // CLI 特殊配置
@@ -136,17 +138,12 @@ export function createTsupConfig(options: TsupBaseOptions = {}): Options {
   // React 组件库特殊配置
   if (isReact) {
     baseConfig.format = ['esm', 'cjs']
-    baseConfig.external = [
-      ...baseExternal,
-      'react',
-      'react-dom',
-      'react/jsx-runtime'
-    ]
+    baseConfig.external = [...baseExternal, 'react', 'react-dom', 'react/jsx-runtime']
   }
 
   return {
     ...baseConfig,
-    ...override
+    ...override,
   }
 }
 
@@ -174,10 +171,15 @@ export function createReactConfig(options: Omit<TsupBaseOptions, 'isReact'> = {}
 /**
  * 多入口配置
  */
-export function createMultiEntryConfig(entries: Record<string, string>, options: TsupBaseOptions = {}) {
-  return defineConfig(createTsupConfig({
-    ...options,
-    entry: entries,
-    splitting: true
-  }))
+export function createMultiEntryConfig(
+  entries: Record<string, string>,
+  options: TsupBaseOptions = {}
+) {
+  return defineConfig(
+    createTsupConfig({
+      ...options,
+      entry: entries,
+      splitting: true,
+    })
+  )
 }

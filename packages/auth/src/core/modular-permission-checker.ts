@@ -5,6 +5,7 @@ import type {
   PermissionExtensionPoint,
   PermissionExtensionContext
 } from '../types/permissions'
+
 import { BasePermissionChecker } from './permissions'
 import { getGlobalPermissionRegistry } from './permission-registry'
 
@@ -320,14 +321,14 @@ export class BaseModularPermissionChecker extends BasePermissionChecker implemen
   /**
    * 获取用户属性（需要子类实现）
    */
-  protected async getUserAttributes(userId: string): Promise<Record<string, any>> {
+  protected async getUserAttributes(_userId: string): Promise<Record<string, any>> {
     return {}
   }
 
   /**
    * 获取租户属性（需要子类实现）
    */
-  protected async getTenantAttributes(tenantId: string): Promise<Record<string, any>> {
+  protected async getTenantAttributes(_tenantId: string): Promise<Record<string, any>> {
     return {}
   }
 }

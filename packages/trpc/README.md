@@ -1,40 +1,37 @@
 # @linch-kit/trpc
 
-Type-safe tRPC utilities and integrations for Linch Kit framework.
+🚀 **Linch Kit tRPC 包** - 类型安全的 tRPC 工具和集成，支持认证、权限控制和多租户。
 
-## 🚀 Features
+## ✨ 核心特性
 
-- **Type-safe API**: End-to-end type safety with TypeScript
-- **Authentication Integration**: Built-in auth middleware with @linch-kit/auth-core
-- **Permission System**: Granular permission control
-- **Multi-tenant Support**: Built-in tenant isolation
-- **React Integration**: Seamless React Query integration
-- **Middleware Ecosystem**: Rich set of middleware for common use cases
-- **Error Handling**: Standardized error responses
-- **Development Experience**: Zero-config setup with hot reload
+- 🔒 **端到端类型安全** - 完整的 TypeScript 类型推导和验证
+- 🔐 **认证集成** - 内置 @linch-kit/auth 中间件支持
+- 🛡️ **权限系统** - 细粒度权限控制和资源保护
+- 🏢 **多租户支持** - 内置租户隔离和上下文管理
+- ⚛️ **React 集成** - 无缝 React Query 集成和 Hooks
+- 🔧 **中间件生态** - 丰富的中间件支持常见用例
+- 🚨 **错误处理** - 标准化错误响应和追踪
+- 🛠️ **开发体验** - 零配置设置和热重载支持
+- 🔄 **CRUD 集成** - 自动生成 CRUD 路由和操作
+- 📊 **Schema 集成** - 与 @linch-kit/schema 深度集成
 
-## 📦 Installation
+## 📦 安装
 
 ```bash
-# Using pnpm (recommended)
 pnpm add @linch-kit/trpc
-
-# Using npm
+# 或
 npm install @linch-kit/trpc
-
-# Using yarn
-yarn add @linch-kit/trpc
 ```
 
-### Peer Dependencies
+### 对等依赖
 
 ```bash
 pnpm add @trpc/server @trpc/client @trpc/react-query @tanstack/react-query
 ```
 
-## 🏗️ Quick Start
+## 🚀 快速开始
 
-### 1. Server Setup
+### 1. 服务端设置
 
 ```typescript
 import { z } from 'zod'
@@ -43,41 +40,64 @@ import {
   router,
   procedure,
   protectedProcedure,
+  adminProcedure,
   createContext
 } from '@linch-kit/trpc'
 
-// Create your router
+// 创建路由
 const appRouter = router({
-  // Public endpoint
+  // 公开端点
+  health: procedure
+    .query(() => ({ status: 'ok', timestamp: new Date() })),
+
   hello: procedure
     .input(z.object({ name: z.string() }))
     .query(({ input }) => `Hello ${input.name}!`),
 
-  // Protected endpoint
+  // 需要认证的端点
   me: protectedProcedure
     .query(({ ctx }) => ({
       id: ctx.user!.id,
-      name: ctx.user!.name
-    }))
+      name: ctx.user!.name,
+      email: ctx.user!.email
+    })),
+
+  // 管理员端点
+  users: adminProcedure
+    .query(({ ctx }) => {
+      // 只有管理员可以访问
+      return ctx.db.user.findMany()
+    })
 })
 
 export type AppRouter = typeof appRouter
 ```
 
-### 2. Client Setup (React)
+### 2. 客户端设置 (React)
 
 ```typescript
 import { createTrpcClient, trpc } from '@linch-kit/trpc'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-// Create clients
+// 创建客户端
 const trpcClient = createTrpcClient({
-  url: '/api/trpc'
+  url: '/api/trpc',
+  headers: async () => {
+    const token = localStorage.getItem('authToken')
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
 })
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 分钟
+      retry: 1
+    }
+  }
+})
 
-// App component
+// App 组件
 function App() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
@@ -88,11 +108,47 @@ function App() {
   )
 }
 
-// Use in components
+// 在组件中使用
 function MyComponent() {
-  const { data } = trpc.hello.useQuery({ name: 'World' })
-  return <div>{data}</div>
+  const { data, isLoading, error } = trpc.hello.useQuery({ name: 'World' })
+  const { data: user } = trpc.me.useQuery()
+
+  const createUserMutation = trpc.users.create.useMutation({
+    onSuccess: () => {
+      // 刷新用户列表
+      trpc.users.list.invalidate()
+    }
+  })
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error: {error.message}</div>
+
+  return (
+    <div>
+      <p>{data}</p>
+      <p>Current user: {user?.name}</p>
+    </div>
+  )
 }
+```
+
+### 3. Next.js API 路由
+
+```typescript
+// pages/api/trpc/[trpc].ts 或 app/api/trpc/[trpc]/route.ts
+import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
+import { appRouter } from '../../../server/router'
+import { createContext } from '@linch-kit/trpc'
+
+const handler = (req: Request) =>
+  fetchRequestHandler({
+    endpoint: '/api/trpc',
+    req,
+    router: appRouter,
+    createContext
+  })
+
+export { handler as GET, handler as POST }
 ```
 
 ## 🔐 Authentication & Permissions
@@ -231,7 +287,7 @@ See the [examples](./examples) directory for complete usage examples:
 
 ## 🔗 Integration with Other Packages
 
-### With @linch-kit/auth-core
+### With @linch-kit/auth
 
 ```typescript
 import { createAuthIntegration } from '@linch-kit/trpc'
@@ -255,31 +311,236 @@ const userRouter = createSchemaRouter(UserEntity, {
 })
 ```
 
-## 📖 API Reference
+## 📚 API 文档
 
-### Core Functions
+### 核心函数
 
-- `createTRPCRouter()` - Create router factory
-- `createContext(opts)` - Create tRPC context
-- `createTrpcClient(options)` - Create tRPC client
+#### createTRPCRouter()
 
-### Procedures
+创建 tRPC 路由器：
 
-- `procedure` - Basic procedure
-- `protectedProcedure` - Authenticated procedure
-- `adminProcedure` - Admin-only procedure
-- `tenantProcedure` - Multi-tenant procedure
+```typescript
+import { createTRPCRouter } from '@linch-kit/trpc'
 
-### Types
+const router = createTRPCRouter({
+  // 路由定义
+})
+```
 
-- `RouterInputs<T>` - Infer router input types
-- `RouterOutputs<T>` - Infer router output types
-- `BaseContext` - Base context interface
+#### createContext(opts)
 
-## 🤝 Contributing
+创建 tRPC 上下文：
 
-Contributions are welcome! Please read our [contributing guide](../../CONTRIBUTING.md) for details.
+```typescript
+import { createContext } from '@linch-kit/trpc'
 
-## 📄 License
+export const createTRPCContext = async (opts: CreateContextOptions) => {
+  const context = await createContext(opts)
+  return {
+    ...context,
+    // 自定义上下文
+  }
+}
+```
 
-MIT License - see [LICENSE](../../LICENSE) for details.
+#### createTrpcClient(options)
+
+创建 tRPC 客户端：
+
+```typescript
+import { createTrpcClient } from '@linch-kit/trpc'
+
+const client = createTrpcClient({
+  url: string                    // API 端点 URL
+  headers?: () => Record<string, string> | Promise<Record<string, string>>  // 请求头
+  fetch?: typeof fetch           // 自定义 fetch 函数
+  transformer?: any              // 数据转换器（默认 superjson）
+})
+```
+
+### 预定义过程
+
+#### procedure
+
+基础过程，无认证要求：
+
+```typescript
+const publicEndpoint = procedure
+  .input(z.object({ name: z.string() }))
+  .query(({ input }) => `Hello ${input.name}`)
+```
+
+#### protectedProcedure
+
+需要认证的过程：
+
+```typescript
+const protectedEndpoint = protectedProcedure
+  .query(({ ctx }) => {
+    // ctx.user 保证存在
+    return { userId: ctx.user.id }
+  })
+```
+
+#### adminProcedure
+
+管理员专用过程：
+
+```typescript
+const adminEndpoint = adminProcedure
+  .mutation(({ ctx }) => {
+    // 只有管理员可以访问
+    return performAdminAction()
+  })
+```
+
+#### tenantProcedure
+
+多租户过程：
+
+```typescript
+const tenantEndpoint = tenantProcedure
+  .query(({ ctx }) => {
+    // ctx.tenant 保证存在
+    return getTenantData(ctx.tenant.id)
+  })
+```
+
+### 中间件函数
+
+#### authMiddleware
+
+认证中间件：
+
+```typescript
+import { authMiddleware } from '@linch-kit/trpc'
+
+const customProcedure = procedure.use(authMiddleware)
+```
+
+#### permissionMiddleware
+
+权限检查中间件：
+
+```typescript
+import { permissionMiddleware } from '@linch-kit/trpc'
+
+const permissionProcedure = procedure.use(
+  permissionMiddleware('users', 'read')
+)
+```
+
+#### createPermissionMiddleware
+
+创建权限中间件：
+
+```typescript
+import { createPermissionMiddleware } from '@linch-kit/trpc'
+
+const customPermissionMiddleware = createPermissionMiddleware({
+  resource: 'posts',
+  action: 'create',
+  roles: ['admin', 'editor'],
+  permissions: ['posts:create']
+})
+```
+
+### 类型工具
+
+#### RouterInputs<T>
+
+推导路由输入类型：
+
+```typescript
+import type { RouterInputs } from '@linch-kit/trpc'
+
+type HelloInput = RouterInputs['hello']
+// { name: string }
+```
+
+#### RouterOutputs<T>
+
+推导路由输出类型：
+
+```typescript
+import type { RouterOutputs } from '@linch-kit/trpc'
+
+type HelloOutput = RouterOutputs['hello']
+// string
+```
+
+#### BaseContext
+
+基础上下文接口：
+
+```typescript
+interface BaseContext {
+  user?: User                    // 当前用户
+  session?: Session              // 用户会话
+  tenant?: Tenant                // 当前租户
+  permissionChecker?: PermissionChecker  // 权限检查器
+  req: Request                   // HTTP 请求
+  res: Response                  // HTTP 响应
+}
+```
+
+## 🧪 开发
+
+```bash
+# 安装依赖
+pnpm install
+
+# 开发模式
+pnpm dev
+
+# 构建
+pnpm build
+
+# 类型检查
+pnpm type-check
+
+# 代码检查
+pnpm lint
+
+# 测试
+pnpm test
+```
+
+## 📋 变更日志
+
+### v0.1.0 (2024-06-21)
+
+**新增功能**
+- ✨ 完整的 tRPC 服务端和客户端工具
+- ✨ 认证和权限中间件系统
+- ✨ 多租户支持和上下文管理
+- ✨ React Query 集成和 Hooks
+- ✨ 标准化错误处理和追踪
+- ✨ CRUD 操作自动生成
+- ✨ Schema 集成和类型安全
+
+**中间件支持**
+- 🔐 认证中间件（基础、可选、管理员）
+- 🛡️ 权限中间件（资源、角色、所有权）
+- 🏢 多租户中间件
+- 🔧 工具中间件（限流、验证、日志）
+
+**技术特性**
+- 🔒 端到端类型安全
+- 🚀 零配置设置
+- 📦 最小化依赖
+- 🛠️ 丰富的开发工具
+
+## 📄 许可证
+
+MIT License
+
+## 🔗 相关链接
+
+- [Linch Kit 文档](https://github.com/laofahai/linch-kit)
+- [AI 上下文文档](../../ai-context/packages/trpc.md)
+- [@linch-kit/auth](../auth/README.md)
+- [@linch-kit/crud](../crud/README.md)
+- [@linch-kit/schema](../schema/README.md)
+- [tRPC 官方文档](https://trpc.io/docs)
+- [示例项目](../../apps/starter)

@@ -6,9 +6,9 @@
 
 import {
   createPackageI18n,
-  type TranslationFunction,
-  type I18nProps
+  type TranslationFunction
 } from '@linch-kit/core'
+
 import type { I18nText } from '../core/types'
 
 /**
@@ -54,7 +54,7 @@ export type TranslateFunction = TranslationFunction
 /**
  * 设置全局翻译函数（向后兼容）
  */
-export function setTranslateFunction(translateFn: TranslationFunction): void {
+export function setTranslateFunction(_translateFn: TranslationFunction): void {
   // 这个函数保留用于向后兼容，但建议使用新的模式
   console.warn('setTranslateFunction is deprecated. Use the new i18n pattern with component props.')
 }

@@ -17,20 +17,20 @@ let globalI18nContext: I18nContext | undefined
 
 /**
  * 设置全局 i18n 上下文
- * 
+ *
  * 应用启动时调用此函数设置全局翻译函数
- * 
+ *
  * @param context - i18n 上下文
- * 
+ *
  * @example
  * ```typescript
  * import { setGlobalI18nContext } from '@linch-kit/core'
  * import { useTranslation } from 'react-i18next'
- * 
+ *
  * // 在应用启动时设置
  * function App() {
  *   const { t, i18n } = useTranslation()
- *   
+ *
  *   useEffect(() => {
  *     setGlobalI18nContext({
  *       t,
@@ -38,13 +38,15 @@ let globalI18nContext: I18nContext | undefined
  *       supportedLocales: ['en', 'zh-CN']
  *     })
  *   }, [t, i18n.language])
- *   
+ *
  *   return <YourApp />
  * }
  * ```
  */
 export function setGlobalI18nContext(context: I18nContext): void {
   globalI18nContext = context
+  // 同时设置到全局对象，供其他模块使用
+  globalThis.__LINCH_I18N_CONTEXT__ = context
 }
 
 /**

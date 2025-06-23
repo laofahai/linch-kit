@@ -3,11 +3,12 @@
  */
 
 import React from "react"
+import { X } from "lucide-react"
+
 import { Slider } from "../ui/slider"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { Button } from "../ui/button"
-import { X } from "lucide-react"
 
 import type { RangeFilterProps } from "./types"
 

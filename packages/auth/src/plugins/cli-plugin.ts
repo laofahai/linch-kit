@@ -1,18 +1,20 @@
 /**
- * Auth Core CLI 插件
+ * Auth CLI 插件
  *
  * 将认证相关的 CLI 命令注册到 core 包的 CLI 系统中
  */
 
 import type { CommandPlugin, CommandMetadata, CLIContext } from '@linch-kit/core/cli'
-import { authCoreConfigPlugin } from './config-plugin'
+
 import { generateAuthEntities, authPresets } from '../generators/auth-entities'
 
+import { authConfigPlugin } from './config-plugin'
+
 /**
- * Auth Core CLI 插件
+ * Auth CLI 插件
  */
 export const authCoreCliPlugin: CommandPlugin = {
-  name: '@linch-kit/auth-core',
+  name: '@linch-kit/auth',
   description: 'Authentication and authorization commands',
   version: '0.1.0',
   aiTags: ['auth', 'generation', 'validation'],
@@ -26,12 +28,12 @@ export const authCoreCliPlugin: CommandPlugin = {
           {
             flags: '-t, --type <type>',
             description: 'Config file type (ts|js|json|mjs)',
-            defaultValue: 'ts'
+            defaultValue: 'ts',
           },
           {
             flags: '-f, --force',
-            description: 'Overwrite existing config file'
-          }
+            description: 'Overwrite existing config file',
+          },
         ],
         async handler(context: CLIContext): Promise<void> {
           const { args = [] } = context
@@ -48,7 +50,7 @@ export const authCoreCliPlugin: CommandPlugin = {
               process.exit(1)
             }
 
-            const template = authCoreConfigPlugin.getConfigTemplate(type as 'ts' | 'js' | 'json')
+            const template = authConfigPlugin.getConfigTemplate(type as 'ts' | 'js' | 'json')
             fs.writeFileSync(fileName, template)
             console.log(`✅ Created ${fileName}`)
             console.log('\nNext steps:')
@@ -59,7 +61,7 @@ export const authCoreCliPlugin: CommandPlugin = {
             console.error(`❌ Failed to create config file: ${error}`)
             process.exit(1)
           }
-        }
+        },
       },
       'auth-generate': {
         description: 'Generate authentication entities',
@@ -67,29 +69,29 @@ export const authCoreCliPlugin: CommandPlugin = {
           {
             flags: '--kit <kit>',
             description: 'Auth kit type (basic|standard|enterprise|multi-tenant)',
-            defaultValue: 'standard'
+            defaultValue: 'standard',
           },
           {
             flags: '--preset <preset>',
-            description: 'Use preset configuration (blog|enterprise|saas)'
+            description: 'Use preset configuration (blog|enterprise|saas)',
           },
           {
             flags: '--roles',
-            description: 'Include roles and permissions'
+            description: 'Include roles and permissions',
           },
           {
             flags: '--departments',
-            description: 'Include department hierarchy'
+            description: 'Include department hierarchy',
           },
           {
             flags: '--tenants',
-            description: 'Include multi-tenant support'
+            description: 'Include multi-tenant support',
           },
           {
             flags: '--output <dir>',
             description: 'Output directory',
-            defaultValue: './src/auth'
-          }
+            defaultValue: './src/auth',
+          },
         ],
         async handler(context: CLIContext): Promise<void> {
           const { args = [] } = context
@@ -112,7 +114,7 @@ export const authCoreCliPlugin: CommandPlugin = {
                 includeRoles: roles,
                 includeDepartments: departments,
                 includeTenants: tenants,
-                outputDir: output
+                outputDir: output,
               }
             }
 
@@ -129,20 +131,19 @@ export const authCoreCliPlugin: CommandPlugin = {
             console.log('1. Run schema generation: linch schema-generate')
             console.log('2. Run database migration')
             console.log('3. Update your auth config to use custom entities')
-
           } catch (error) {
             console.error(`❌ Failed to generate auth entities: ${error}`)
             process.exit(1)
           }
-        }
+        },
       },
       'auth-validate': {
         description: 'Validate auth configuration',
         options: [
           {
             flags: '-c, --config <path>',
-            description: 'Config file path'
-          }
+            description: 'Config file path',
+          },
         ],
         async handler(context: CLIContext): Promise<void> {
           const { args = [] } = context
@@ -152,7 +153,12 @@ export const authCoreCliPlugin: CommandPlugin = {
           try {
             // 简化版本：只检查配置文件是否存在
             const fs = await import('fs')
-            const configFiles = ['auth.config.ts', 'auth.config.js', 'auth.config.mjs', 'auth.config.json']
+            const configFiles = [
+              'auth.config.ts',
+              'auth.config.js',
+              'auth.config.mjs',
+              'auth.config.json',
+            ]
             const configFile = configFiles.find(file => fs.existsSync(config || file))
 
             if (!configFile) {
@@ -164,28 +170,27 @@ export const authCoreCliPlugin: CommandPlugin = {
             console.log('✅ Auth configuration file found')
             console.log(`Config file: ${configFile}`)
             console.log('\nNote: Use auth-info for detailed configuration information')
-
           } catch (error) {
             console.error(`❌ Configuration validation failed: ${error}`)
             process.exit(1)
           }
-        }
-      }
+        },
+      },
     }
 
     // 注册所有命令
     for (const [name, command] of Object.entries(commands)) {
       registry.registerCommand(name, command)
     }
-  }
+  },
 }
 /**
- * 注册 Auth Core CLI 插件
+ * 注册 Auth CLI 插件
  */
 export function registerAuthCoreCliPlugin() {
   // 这个函数会在包被导入时自动调用
   // 通过 core 包的插件系统注册命令
   if (typeof globalThis !== 'undefined' && (globalThis as any).__LINCH_CLI_REGISTRY__) {
-    (globalThis as any).__LINCH_CLI_REGISTRY__.registerPlugin(authCoreCliPlugin)
+    ;(globalThis as any).__LINCH_CLI_REGISTRY__.registerPlugin(authCoreCliPlugin)
   }
 }

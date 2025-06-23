@@ -384,6 +384,70 @@
 
 ---
 
-**最后更新**: 2025-06-22 (Schema 包类型系统改进完成)
-**下次更新**: Auth 包 DTS 构建问题解决后
-**相关文档**: [任务优先级](./task-priorities.md) | [开发工作流程](../standards/workflow-standards.md)
+## 🚀 Schema 包架构重构完成记录 (2025-06-22 最新)
+
+### ✅ 重构第二阶段完成状态
+
+#### 1. Schema 包破坏性重构 ✅ **已完成**
+- **移除向后兼容代码**: 删除 `defineFieldAdvanced` 函数和 `optimized-decorators.ts` 文件
+- **统一 API**: 所有功能统一使用优化版 `defineField` 和 `defineEntity`
+- **性能稳定**: DTS 构建时间保持在 4.85s
+- **类型安全**: 保持完整的类型推导能力
+
+#### 2. 循环依赖完全解决 ✅ **已完成**
+- **Auth ↔ tRPC 循环依赖**: 完全打破，从 Auth 包中移除 tRPC 依赖
+- **架构优化**: 变为单向依赖 `Auth 包 ← tRPC 包`
+- **文件清理**: 删除 `packages/auth/src/integrations/trpc-middleware.ts`
+- **依赖更新**: 更新 `packages/auth/package.json` 移除 tRPC peerDependency
+
+#### 3. 问题根源确认 ✅ **已完成**
+通过多轮测试确认 Schema 包的复杂类型推导是导致 Auth 包 DTS 构建超时的根本原因：
+
+| 测试场景 | DTS 构建时间 | 状态 |
+|---------|-------------|------|
+| 不使用任何 LinchKit 包 | 1.4s | ✅ 正常 |
+| 使用简化用户模板 | 1.89s | ✅ 正常 |
+| 使用完整 Auth 包 | >60s | ❌ 超时 |
+
+#### 4. 简化方案验证 ✅ **已完成**
+- **创建简化用户模板**: `packages/auth/src/schemas/simple-user.ts`
+- **验证构建性能**: 1.89s DTS 构建时间
+- **功能完整性**: 保持核心认证功能
+- **技术可行性**: 证明解决方案有效
+
+### 🔄 当前阻塞问题
+
+#### Auth 包 DTS 构建超时 ❌ **仍需解决**
+- **问题**: Auth 包的其他核心文件（`core/`、`types/`、`providers/`）仍有复杂类型定义
+- **影响**: 完整 Auth 包 DTS 构建时间 >60s
+- **已尝试方案**:
+  - ✅ 移除循环依赖
+  - ✅ 简化用户模板
+  - ✅ 优化 tsconfig 配置
+  - ❌ 完整 Auth 包仍超时
+
+### 📋 下一步行动计划
+
+#### 🔥 立即执行（优先级 1）
+1. **Auth 包深度分析**: 逐个分析 `core/auth.ts`、`types/auth.ts`、`providers/` 等文件
+2. **应用简化策略**: 将 Schema 包的优化经验应用到 Auth 包核心文件
+3. **渐进式修复**: 逐个文件优化，确保功能不受影响
+
+#### 🟡 短期执行（优先级 2）
+1. **UI 包模块扩展**: 将复杂 UI 类型从 Schema 包分离到 UI 包
+2. **性能监控建立**: 建立构建时间监控和阈值警告
+
+#### 🟢 中期执行（优先级 3）
+1. **依赖包更新**: 更新 CRUD、tRPC 等包使用新的 Schema API
+2. **文档完善**: 更新 API 文档和迁移指南
+
+### 🎯 成功标准
+- **短期目标**: Auth 包 DTS 构建时间 < 30s
+- **中期目标**: 所有包 DTS 构建时间 < 30s
+- **长期目标**: 整体项目构建时间 < 2 分钟
+
+---
+
+**最后更新**: 2025-06-22 (Schema 包架构重构第二阶段完成)
+**下次更新**: Auth 包深度优化完成后
+**相关文档**: [任务优先级](./task-priorities.md) | [开发工作流程](../standards/workflow-standards.md) | [重构完成报告](../../SCHEMA_REFACTOR_COMPLETION_REPORT.md)

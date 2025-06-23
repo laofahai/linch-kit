@@ -6,6 +6,7 @@
  */
 
 import type { CommandMetadata } from '../../types/cli'
+
 import { initCommand } from './init'
 import { configCommands } from './config'
 import { pluginCommands } from './plugin'

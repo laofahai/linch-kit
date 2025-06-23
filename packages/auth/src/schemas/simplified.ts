@@ -3,9 +3,53 @@ import { defineEntity, defineField } from '@linch-kit/schema'
 
 /**
  * 简化的用户实体 - JSON 优先架构
- * 
+ *
  * 使用 JSON 字段替代复杂的多对多关系表，减少数据库复杂性
  */
+
+// === 拆分复杂的嵌套 Schema 以避免 TypeScript DTS 构建性能问题 ===
+
+/**
+ * 用户部门关联 Schema
+ * 拆分出来避免过度嵌套的泛型推导，使用显式类型注解
+ */
+const UserDepartmentSchema = z.object({
+  departmentId: z.string(),
+  position: z.string().optional(),
+  isManager: z.boolean().default(false),
+  level: z.number().int().min(0).optional(),
+  reportTo: z.string().optional(),
+  joinedAt: z.date(),
+  leftAt: z.date().optional(),
+  isPrimary: z.boolean().default(false)
+})
+
+/**
+ * 用户部门关联类型
+ * 显式定义类型，避免深度类型推导
+ */
+export type UserDepartment = z.infer<typeof UserDepartmentSchema>
+
+/**
+ * 用户租户关联 Schema
+ * 拆分出来避免过度嵌套的泛型推导，使用显式类型注解
+ */
+const UserTenantSchema = z.object({
+  tenantId: z.string(),
+  roles: z.array(z.string()).optional(),
+  permissions: z.array(z.string()).optional(),
+  departments: z.array(UserDepartmentSchema).optional(),
+  status: z.enum(['active', 'inactive', 'suspended']).default('active'),
+  joinedAt: z.date(),
+  metadata: z.record(z.string(), z.unknown()).optional()
+})
+
+/**
+ * 用户租户关联类型
+ * 显式定义类型，避免深度类型推导
+ */
+export type UserTenant = z.infer<typeof UserTenantSchema>
+
 export const SimplifiedUserTemplate = defineEntity('User', {
   id: defineField(z.string(), {
     primary: true,
@@ -38,24 +82,8 @@ export const SimplifiedUserTemplate = defineEntity('User', {
   }),
   
   // 租户关联（JSON 字段，替代 UserRole 关联表）
-  tenants: defineField(z.array(z.object({
-    tenantId: z.string(),
-    roles: z.array(z.string()).optional(),
-    permissions: z.array(z.string()).optional(),
-    departments: z.array(z.object({
-      departmentId: z.string(),
-      position: z.string().optional(),
-      isManager: z.boolean().default(false),
-      level: z.number().int().min(0).optional(),
-      reportTo: z.string().optional(),
-      joinedAt: z.date(),
-      leftAt: z.date().optional(),
-      isPrimary: z.boolean().default(false)
-    })).optional(),
-    status: z.enum(['active', 'inactive', 'suspended']).default('active'),
-    joinedAt: z.date(),
-    metadata: z.record(z.any()).optional()
-  })).optional(), {
+  // 使用拆分后的 schema 避免过度嵌套的泛型推导
+  tenants: defineField(z.array(UserTenantSchema).optional(), {
     label: 'auth.user.tenants',
     db: { type: 'JSON' }
   }),
@@ -72,7 +100,7 @@ export const SimplifiedUserTemplate = defineEntity('User', {
   }),
   
   // 扩展字段
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.user.metadata',
     db: { type: 'JSON' }
   }),
@@ -177,7 +205,7 @@ export const SimplifiedRoleTemplate = defineEntity('Role', {
     label: 'auth.role.priority'
   }),
   
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.role.metadata',
     db: { type: 'JSON' }
   }),
@@ -260,7 +288,7 @@ export const SimplifiedDepartmentTemplate = defineEntity('Department', {
     label: 'auth.department.sort'
   }),
 
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.department.metadata',
     db: { type: 'JSON' }
   }),
@@ -274,7 +302,7 @@ export const SimplifiedDepartmentTemplate = defineEntity('Department', {
     updatedAt: true,
     label: 'auth.department.updatedAt'
   }),
-  
+
   // 软删除字段
   deletedAt: defineField(z.date().optional(), {
     softDelete: true,

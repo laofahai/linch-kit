@@ -2,10 +2,11 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
 import './globals.css'
+import { Toaster } from '@linch-kit/ui'
+
 import { TRPCProvider } from '@/lib/trpc-provider'
 import { AuthProvider } from '@/contexts/auth-context'
 import { Navigation } from '@/components/layout/navigation'
-import { Toaster } from '@linch-kit/ui'
 
 const inter = Inter({ subsets: ['latin'] })
 

@@ -7,6 +7,7 @@
  */
 
 import { z } from 'zod'
+
 import type { CLIConfig } from '../../types/cli'
 
 /**

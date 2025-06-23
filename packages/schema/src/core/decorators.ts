@@ -1,24 +1,27 @@
 import { z } from 'zod'
 
 import type { FieldAttributes, FieldConfig, SimpleFieldConfig, I18nText } from './types'
+import {
+  type CoreFieldConfig,
+  type FieldMetadata,
+  FIELD_META_SYMBOL,
+  validateFieldConfig,
+} from './core-types'
 
-/**
- * 字段元数据符号，用于标记字段属性
- */
-const FIELD_META_SYMBOL = Symbol('fieldMeta')
+// 重新导出符号以保持兼容性
+export { FIELD_META_SYMBOL }
 
 /**
  * 为 Zod Schema 添加字段属性
- * 改进版本：保持基本类型安全，避免复杂泛型推导
+ * 性能优化版本：使用更简单的类型操作，避免复杂泛型推导
  */
 export function withFieldMeta<T extends z.ZodSchema>(
   schema: T,
   attributes: FieldAttributes
 ): T {
-  // 使用类型断言，但保持输入输出类型一致
-  const enhanced = schema as T & { [FIELD_META_SYMBOL]: FieldAttributes }
-  enhanced[FIELD_META_SYMBOL] = attributes
-  return enhanced
+  // 直接在对象上添加属性，避免复杂的类型断言
+  ;(schema as any)[FIELD_META_SYMBOL] = attributes
+  return schema
 }
 
 /**
@@ -29,7 +32,7 @@ export function getFieldMeta(schema: z.ZodSchema): FieldAttributes | undefined {
 }
 
 /**
- * 🎯 定义字段 - 推荐使用（改进版本）
+ * 🎯 定义字段 - 推荐使用（性能优化版本）
  *
  * @param schema Zod schema
  * @param config 简化的字段配置对象（可选）
@@ -46,97 +49,40 @@ export function getFieldMeta(schema: z.ZodSchema): FieldAttributes | undefined {
  *   unique: true,
  *   order: 1
  * })
- *
- * // 复杂配置
- * password: defineField(z.string().min(8), {
- *   label: 'user.password.label',
- *   group: 'security',
- *   order: 3,
- *   required: true
- * })
  * ```
  */
 export function defineField<T extends z.ZodSchema>(
   schema: T,
-  config?: SimpleFieldConfig
+  config?: CoreFieldConfig
 ): T {
+  // 快速路径：如果没有配置，直接返回
   if (!config) return schema
 
-  // 转换为 FieldAttributes 格式，保持类型安全
-  const attributes: FieldAttributes = {
-    // 数据库相关
-    id: config.primary,
-    unique: config.unique,
-    default: config.default,
-    map: config.map,
-    updatedAt: config.updatedAt,
-    createdAt: config.createdAt,
-    softDelete: config.softDelete,
-    db: config.db,
-    relation: config.relation,
-
-    // UI 相关
-    label: config.label,
-    description: config.description,
-    placeholder: config.placeholder,
-    helpText: config.helpText,
-    order: config.order,
-    hidden: config.hidden,
-    group: config.group,
-    required: config.required,
-    readonly: config.readonly,
-    errorMessages: config.errorMessages,
+  // 运行时验证（替代复杂的类型推导）
+  if (!validateFieldConfig(config)) {
+    console.warn('Invalid field config provided, using default')
+    return schema
   }
 
-  return withFieldMeta(schema, attributes)
-}
+  // 创建最小化的元数据对象
+  const metadata: FieldMetadata = {}
 
-/**
- * 🔧 高级字段定义 - 支持完整功能（可能影响 DTS 性能）
- *
- * 注意：此函数支持所有高级功能，但可能导致 DTS 构建性能问题
- * 在大多数情况下推荐使用 defineField
- */
-export function defineFieldAdvanced<T extends z.ZodSchema>(
-  schema: T,
-  config?: FieldConfig
-): T {
-  if (!config) return schema
+  // 只设置有值的属性
+  if (config.primary) metadata.isPrimary = true
+  if (config.unique) metadata.isUnique = true
+  if (config.default !== undefined) metadata.defaultValue = config.default
 
-  // 转换为 FieldAttributes 格式，支持所有功能
-  const attributes: FieldAttributes = {
-    // 数据库相关
-    id: config.primary,
-    unique: config.unique,
-    default: config.default,
-    map: config.map,
-    updatedAt: config.updatedAt,
-    createdAt: config.createdAt,
-    softDelete: config.softDelete,
-    db: config.db,
-    relation: config.relation,
-
-    // UI 相关
-    label: config.label,
-    description: config.description,
-    placeholder: config.placeholder,
-    helpText: config.helpText,
-    order: config.order,
-    hidden: config.hidden,
-    group: config.group,
-    required: config.required,
-    readonly: config.readonly,
-    errorMessages: config.errorMessages,
-
-    // 高级特性
-    permissions: config.permissions,
-    transform: config.transform,
-    audit: config.audit,
-    virtual: config.virtual,
+  // 直接设置元数据，避免复杂的类型操作
+  ;(schema as any)[FIELD_META_SYMBOL] = {
+    ...metadata,
+    // 保存完整配置用于后续处理
+    _fullConfig: config
   }
 
-  return withFieldMeta(schema, attributes)
+  return schema
 }
+
+// defineFieldAdvanced 已移除 - 使用 defineField 替代
 
 // === 便捷装饰器（向后兼容） ===
 
@@ -179,6 +125,48 @@ export function updatedAt<T extends z.ZodSchema>(schema: T): T {
  */
 export function softDelete<T extends z.ZodSchema>(schema: T): T {
   return defineField(schema, { softDelete: true })
+}
+
+/**
+ * 便捷装饰器 - 标签
+ */
+export function label<T extends z.ZodSchema>(schema: T, labelText: string): T {
+  return defineField(schema, { label: labelText })
+}
+
+/**
+ * 便捷装饰器 - 描述
+ */
+export function description<T extends z.ZodSchema>(schema: T, desc: string): T {
+  return defineField(schema, { description: desc })
+}
+
+/**
+ * 便捷装饰器 - 占位符
+ */
+export function placeholder<T extends z.ZodSchema>(schema: T, text: string): T {
+  return defineField(schema, { placeholder: text })
+}
+
+/**
+ * 便捷装饰器 - 字段分组
+ */
+export function group<T extends z.ZodSchema>(schema: T, groupName: string): T {
+  return defineField(schema, { group: groupName })
+}
+
+/**
+ * 便捷装饰器 - 显示顺序
+ */
+export function order<T extends z.ZodSchema>(schema: T, orderNum: number): T {
+  return defineField(schema, { order: orderNum })
+}
+
+/**
+ * 便捷装饰器 - 隐藏字段
+ */
+export function hidden<T extends z.ZodSchema>(schema: T): T {
+  return defineField(schema, { hidden: true })
 }
 
 // === 向后兼容别名 ===

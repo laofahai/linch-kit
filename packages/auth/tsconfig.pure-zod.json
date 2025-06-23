@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist-pure-zod",
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": [
+    "src/test-pure-zod.ts"
+  ]
+}

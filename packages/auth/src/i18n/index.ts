@@ -6,9 +6,9 @@
 
 import {
   createPackageI18n,
-  type TranslationFunction,
-  type I18nProps
+  type TranslationFunction
 } from '@linch-kit/core'
+
 import { defaultMessages } from './messages'
 
 /**
@@ -38,8 +38,20 @@ export function getAuthTranslation(userT?: TranslationFunction): TranslationFunc
 
 /**
  * Auth 翻译函数（向后兼容）
+ *
+ * 支持三个参数：key, params, fallback
  */
-export const authT = getAuthTranslation()
+export const authT = (key: string, params?: Record<string, any>, fallback?: string): string => {
+  const baseT = getAuthTranslation()
+  const result = baseT(key, params)
+
+  // 如果翻译结果与 key 相同且提供了 fallback，则使用 fallback
+  if (result === key && fallback) {
+    return fallback
+  }
+
+  return result
+}
 
 /**
  * 创建带命名空间的翻译函数

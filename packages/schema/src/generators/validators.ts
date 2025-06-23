@@ -8,7 +8,7 @@ import { getFieldMeta } from '../core/decorators'
  * 生成实体的各种验证器
  */
 export class ValidatorGenerator {
-  constructor(private entity: EntityDefinition<any>) {}
+  constructor(private entity: EntityDefinition) {}
 
   /**
    * 生成创建输入验证器

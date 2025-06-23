@@ -26,7 +26,7 @@ try {
   if (typeof CredentialsProvider !== 'function') {
     CredentialsProvider = createMockCredentialsProvider
   }
-} catch (error) {
+} catch {
   // 在 CLI 环境中，next-auth 可能不可用，提供一个 mock
   CredentialsProvider = createMockCredentialsProvider
 }

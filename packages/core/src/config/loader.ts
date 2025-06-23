@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
+
 import type { LinchConfig } from '../types/config'
 
 /**

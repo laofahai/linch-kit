@@ -9,26 +9,26 @@ import type {
  */
 export class BasePermissionChecker implements PermissionChecker {
   async hasPermission(
-    userId: string,
-    resource: string,
-    action: string,
-    context?: any
+    _userId: string,
+    _resource: string,
+    _action: string,
+    _context?: any
   ): Promise<boolean> {
     // 基础实现，用户可以覆盖
     return false
   }
 
-  async hasRole(userId: string, role: string | string[], context?: any): Promise<boolean> {
+  async hasRole(_userId: string, _role: string | string[], _context?: any): Promise<boolean> {
     // 基础实现，用户可以覆盖
     return false
   }
 
-  async getUserPermissions(userId: string, tenantId?: string) {
+  async getUserPermissions(_userId: string, _tenantId?: string) {
     // 基础实现，用户可以覆盖
     return {}
   }
 
-  async getUserRoles(userId: string, tenantId?: string): Promise<string[]> {
+  async getUserRoles(_userId: string, _tenantId?: string): Promise<string[]> {
     // 基础实现，用户可以覆盖
     return []
   }
@@ -63,25 +63,25 @@ export class BaseHierarchicalPermissionChecker implements HierarchicalPermission
   }
 
   async canAccessDepartment(
-    userId: string,
-    departmentId: string,
-    action: string
+    _userId: string,
+    _departmentId: string,
+    _action: string
   ): Promise<boolean> {
     // 基础实现，用户可以覆盖
     return false
   }
 
-  async getAccessibleSubordinates(userId: string): Promise<string[]> {
+  async getAccessibleSubordinates(_userId: string): Promise<string[]> {
     // 基础实现，用户可以覆盖
     return []
   }
 
-  async getAccessibleDepartments(userId: string): Promise<string[]> {
+  async getAccessibleDepartments(_userId: string): Promise<string[]> {
     // 基础实现，用户可以覆盖
     return []
   }
 
-  async isSuperior(userId: string, targetUserId: string): Promise<boolean> {
+  async isSuperior(_userId: string, _targetUserId: string): Promise<boolean> {
     // 基础实现，用户可以覆盖
     return false
   }

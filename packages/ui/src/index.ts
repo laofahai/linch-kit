@@ -25,5 +25,24 @@ export * from './i18n'
 export * from './i18n/hooks'
 
 // Schema Integration
-export * from './schema'
+// 选择性导出 schema 模块，避免命名冲突
+export {
+  generateTableColumns,
+  generateFormFields,
+  generateSearchConfig,
+  getFieldDisplayValue,
+  createTableColumnBuilder,
+  createFormFieldBuilder,
+  integrateSchemaUI,
+  createSchemaUIIntegrator,
+  batchIntegrateSchemaUI,
+  UIConfigPresets,
+  type SearchConfig,
+  type ExtendedFormFieldConfig as UIFormFieldConfig,
+  type UIIntegrationOptions,
+  type UIIntegrationResult,
+} from './schema'
+
+// Schema 包模块扩展 - 必须导入以激活类型扩展
+import './schema/field-config-extensions'
 

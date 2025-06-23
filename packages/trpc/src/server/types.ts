@@ -6,8 +6,8 @@ import type { inferRouterInputs, inferRouterOutputs, AnyRouter } from '@trpc/ser
 
 import type { Context } from './context'
 
-// 临时类型定义，等待 auth-core 正确集成
-// TODO: 当 auth-core 模块解析正确后，替换为真实的导入
+// 临时类型定义，等待 auth 正确集成
+// TODO: 当 auth 模块解析正确后，替换为真实的导入
 
 /**
  * 基础用户类型

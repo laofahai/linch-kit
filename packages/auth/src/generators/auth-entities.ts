@@ -1,16 +1,20 @@
 /**
  * Auth Core Schema 生成器集成
- * 
- * 与 @linch-kit/schema 的命令生成器集成
+ *
+ * 临时简化版本：避免导入 Schema 包，解决 DTS 构建超时问题
+ * TODO: 在 Schema 包 DTS 构建性能优化完成后，恢复完整功能
  */
 
-import type { Entity } from '@linch-kit/schema'
+// 临时类型定义，替代 Schema 包的 Entity 类型
+interface SimpleEntity {
+  name: string
+  schema: any
+  config?: any
+}
+
 import {
-  BasicAuthKit,
-  StandardAuthKit,
-  EnterpriseAuthKit,
-  MultiTenantAuthKit
-} from '../schemas'
+  UltraMinimalAuthKit,
+} from '../schemas/user-ultra-minimal'
 
 /**
  * 认证实体生成选项
@@ -50,86 +54,43 @@ export interface PermissionSystemGeneratorOptions {
 }
 
 /**
- * 生成认证实体
+ * 生成认证实体（临时简化版本）
  */
-export function generateAuthEntities(options: AuthEntityGeneratorOptions): Entity[] {
-  const { kit, includeUserFields, includeRoles, includeDepartments, includeTenants } = options
+export function generateAuthEntities(options: AuthEntityGeneratorOptions): SimpleEntity[] {
+  const { kit } = options
 
-  let entities: Entity[] = []
+  let entities: SimpleEntity[] = []
 
-  // 根据套件类型选择基础实体
+  // 临时简化：只支持基础套件
   switch (kit) {
     case 'basic':
-      entities = Object.values(BasicAuthKit)
-      break
     case 'standard':
-      entities = Object.values(StandardAuthKit)
-      break
     case 'enterprise':
-      entities = Object.values(EnterpriseAuthKit)
-      break
     case 'multi-tenant':
-      entities = Object.values(MultiTenantAuthKit)
+      entities = Object.values(UltraMinimalAuthKit)
       break
-  }
-
-  // 根据选项过滤实体
-  if (!includeRoles) {
-    entities = entities.filter(entity => 
-      !['Role', 'Permission', 'UserRole'].includes(entity.name)
-    )
-  }
-
-  if (!includeDepartments) {
-    entities = entities.filter(entity => 
-      !['Department', 'UserDepartment'].includes(entity.name)
-    )
-  }
-
-  if (!includeTenants) {
-    entities = entities.filter(entity => 
-      entity.name !== 'Tenant'
-    )
   }
 
   return entities
 }
 
 /**
- * 生成权限系统
+ * 生成权限系统（临时简化版本）
  */
 export function generatePermissionSystem(options: PermissionSystemGeneratorOptions): {
-  entities: Entity[]
+  entities: SimpleEntity[]
   config: Record<string, any>
 } {
   const { strategy, includeHierarchical, includeMultiTenant, defaultRoles } = options
 
-  const entities: Entity[] = []
+  const entities: SimpleEntity[] = []
   const config: Record<string, any> = {
     strategy,
     includeHierarchical,
     includeMultiTenant
   }
 
-  // 基础权限实体
-  if (strategy === 'rbac' || strategy === 'hybrid') {
-    // 添加角色和权限实体
-    entities.push(
-      // 这里应该从 schemas 中获取，但为了避免循环依赖，先用占位符
-    )
-  }
-
-  // 层级权限
-  if (includeHierarchical) {
-    // 添加部门相关实体
-  }
-
-  // 多租户权限
-  if (includeMultiTenant) {
-    // 添加租户相关实体
-  }
-
-  // 默认角色配置
+  // 临时简化：只返回基础配置
   if (defaultRoles) {
     config.defaultRoles = defaultRoles
   }
@@ -138,10 +99,10 @@ export function generatePermissionSystem(options: PermissionSystemGeneratorOptio
 }
 
 /**
- * 生成多租户支持
+ * 生成多租户支持（临时简化版本）
  */
 export function generateMultiTenant(): {
-  entities: Entity[]
+  entities: SimpleEntity[]
   config: Record<string, any>
 } {
   return {

@@ -53,6 +53,16 @@ export const SessionTemplate = defineEntity('Session', {
 })
 
 /**
+ * 位置信息 Schema - 拆分出来避免过度嵌套
+ */
+const LocationSchema = z.object({
+  country: z.string().optional(),
+  region: z.string().optional(),
+  city: z.string().optional(),
+  timezone: z.string().optional()
+})
+
+/**
  * 扩展会话实体模板（包含更多信息）
  */
 export const ExtendedSessionTemplate = defineEntity('Session', {
@@ -94,12 +104,8 @@ export const ExtendedSessionTemplate = defineEntity('Session', {
     label: 'auth.session.deviceType'
   }),
   
-  location: defineField(z.object({
-    country: z.string().optional(),
-    region: z.string().optional(),
-    city: z.string().optional(),
-    timezone: z.string().optional()
-  }).optional(), {
+  // 使用拆分后的 Schema
+  location: defineField(LocationSchema.optional(), {
     label: 'auth.session.location',
     db: { type: 'JSON' }
   }),
@@ -121,7 +127,7 @@ export const ExtendedSessionTemplate = defineEntity('Session', {
   }),
   
   // 扩展数据
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.session.metadata',
     db: { type: 'JSON' }
   }),

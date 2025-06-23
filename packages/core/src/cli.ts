@@ -8,6 +8,7 @@
  */
 
 import { Command } from 'commander'
+
 import { builtinCommands } from './cli/commands'
 import { CommandRegistry } from './cli/core/command-registry'
 import { ConfigManager } from './cli/core/config-manager'

@@ -1,38 +1,39 @@
 # @linch-kit/crud
 
-基于 tRPC 和 Schema 的 CRUD 操作包，提供类型安全的数据操作接口。
+🚀 **Linch Kit CRUD 包** - 类型安全的 CRUD 操作和状态管理，支持权限控制、查询构建和数据源抽象。
+
+## ✨ 核心特性
+
+- 🔒 **类型安全** - 基于 Schema 的完整类型推导和验证
+- 🚀 **自动生成** - 自动生成标准 CRUD 操作和 tRPC 路由
+- 🔐 **权限控制** - 内置角色权限检查和数据过滤
+- 🔄 **生命周期钩子** - 支持操作前后的自定义逻辑和事件
+- 📊 **查询构建器** - 强大的查询构建和优化功能
+- 🗄️ **数据源抽象** - 支持多种数据源（数据库、API、内存等）
+- 📱 **状态管理** - 内置 React 状态管理和缓存
+- 🔍 **搜索过滤** - 智能搜索、分页、排序和过滤
+- 🤖 **AI-First** - 为 AI 辅助开发优化的接口设计
 
 ## 📦 安装
 
 ```bash
-npm install @linch-kit/crud
-# 或
 pnpm add @linch-kit/crud
 # 或
-yarn add @linch-kit/crud
+npm install @linch-kit/crud
 ```
 
-## 🚀 特性
-
-- 🔒 **类型安全** - 基于 Schema 的完整类型推导
-- 🚀 **自动生成** - 自动生成 CRUD 操作
-- 🔐 **权限控制** - 内置权限检查和数据过滤
-- 🔄 **生命周期钩子** - 支持操作前后的自定义逻辑
-- 📊 **查询优化** - 智能查询优化和缓存
-- 🤖 **AI-First** - 为 AI 辅助开发优化
-
-## 📖 使用方式
+## 🚀 快速开始
 
 ### 基础 CRUD 操作
 
 ```typescript
-import { createCRUD } from '@linch-kit/crud'
-import { userSchema } from './schemas/user'
+import { CRUDManager, createCRUDFromSchema } from '@linch-kit/crud'
+import { userEntity } from './schemas/user'
+import { databaseDataSource } from './data-sources/database'
 
-// 创建 CRUD 操作
-const userCRUD = createCRUD({
-  schema: userSchema,
-  table: 'users',
+// 从 Schema 创建 CRUD 管理器
+const userCRUD = createCRUDFromSchema(userEntity, {
+  dataSource: databaseDataSource,
   permissions: {
     create: ['admin', 'user'],
     read: ['admin', 'user', 'guest'],
@@ -40,6 +41,29 @@ const userCRUD = createCRUD({
     delete: ['admin', 'owner']
   }
 })
+
+// 基础操作
+const users = await userCRUD.list({ page: 1, limit: 10 })
+const user = await userCRUD.get('user-id')
+const newUser = await userCRUD.create({ name: 'John', email: 'john@example.com' })
+const updated = await userCRUD.update('user-id', { name: 'Jane' })
+await userCRUD.delete('user-id')
+```
+
+### 查询构建器
+
+```typescript
+import { QueryBuilder } from '@linch-kit/crud'
+
+// 复杂查询
+const results = await userCRUD.query()
+  .where('status', '=', 'active')
+  .where('age', '>=', 18)
+  .search('john', ['name', 'email'])
+  .sort('createdAt', 'desc')
+  .include(['profile', 'posts'])
+  .paginate(1, 20)
+```
 
 // 在 tRPC 路由中使用
 export const userRouter = router({
@@ -150,32 +174,61 @@ const extendedUserCRUD = createCRUD({
 
 ## 📚 API 文档
 
-### createCRUD 配置
+### CRUDManager 核心类
 
 ```typescript
-interface CRUDConfig<T> {
-  schema: Schema<T>                    // 数据模式
-  table: string                       // 数据表名
-  permissions?: PermissionConfig      // 权限配置
-  hooks?: LifecycleHooks<T>          // 生命周期钩子
-  query?: QueryConfig                 // 查询配置
-  customOperations?: CustomOps<T>     // 自定义操作
+class CRUDManager<T> {
+  // 基础 CRUD 操作
+  async list(options?: ListOptions, context?: CRUDContext): Promise<PaginatedResponse<T>>
+  async get(id: string, context?: CRUDContext): Promise<T | null>
+  async create(data: CreateInput<T>, context?: CRUDContext): Promise<OperationResult<T>>
+  async update(id: string, data: UpdateInput<T>, context?: CRUDContext): Promise<OperationResult<T>>
+  async delete(id: string, context?: CRUDContext): Promise<OperationResult<void>>
+
+  // 批量操作
+  async bulkCreate(items: CreateInput<T>[], context?: CRUDContext): Promise<BulkOperationResult>
+  async bulkUpdate(updates: BulkUpdateInput<T>[], context?: CRUDContext): Promise<BulkOperationResult>
+  async bulkDelete(ids: string[], context?: CRUDContext): Promise<BulkOperationResult>
+
+  // 搜索和查询
+  async search(options: SearchOptions, context?: CRUDContext): Promise<PaginatedResponse<T>>
+  query(): QueryBuilder<T>
+
+  // 关联操作
+  async getRelated<R>(id: string, relation: string, options?: ListOptions): Promise<PaginatedResponse<R>>
+  async addRelation(id: string, relation: string, relatedId: string): Promise<OperationResult<void>>
+  async removeRelation(id: string, relation: string, relatedId: string): Promise<OperationResult<void>>
+
+  // 状态管理
+  getState(): CRUDState<T>
+  subscribe(listener: (state: CRUDState<T>) => void): () => void
 }
 ```
 
-### 权限配置
+### 配置接口
 
 ```typescript
-interface PermissionConfig {
-  create?: Permission
-  read?: Permission
-  update?: Permission
-  delete?: Permission
+interface CRUDConfig<T> {
+  name: string                        // CRUD 实例名称
+  resource: string                    // 资源名称
+  dataSource: DataSource<T>          // 数据源
+  permissions?: CRUDPermissions       // 权限配置
+  validation?: ValidationConfig       // 验证配置
+  schema?: SchemaConfig              // Schema 配置
+  debug?: boolean                    // 调试模式
 }
 
-type Permission = 
+interface CRUDPermissions {
+  create?: PermissionRule
+  read?: PermissionRule
+  update?: PermissionRule
+  delete?: PermissionRule
+  custom?: Record<string, PermissionRule>
+}
+
+type PermissionRule =
   | string[]                          // 角色列表
-  | ((ctx: Context, data?: any) => boolean | Promise<boolean>)  // 自定义函数
+  | ((context: CRUDContext, data?: any) => boolean | Promise<boolean>)  // 自定义函数
 ```
 
 ### 生命周期钩子
@@ -203,52 +256,171 @@ interface QueryConfig {
 }
 ```
 
-## 🔧 高级功能
-
-### 数据验证
+### 数据源接口
 
 ```typescript
-// 自动基于 Schema 进行数据验证
-const result = await userCRUD.create({
-  name: 'John Doe',
-  email: 'john@example.com',
-  age: 25
-})
-// 如果数据不符合 Schema，会自动抛出验证错误
+interface DataSource<T> {
+  // 基础查询操作
+  list(options?: ListOptions, context?: CRUDContext): Promise<PaginatedResponse<T>>
+  get(id: string, context?: CRUDContext): Promise<T | null>
+  search(options: SearchOptions, context?: CRUDContext): Promise<PaginatedResponse<T>>
+  count(options?: Omit<ListOptions, 'pagination'>, context?: CRUDContext): Promise<number>
+
+  // 基础变更操作
+  create(data: CreateInput<T>, context?: CRUDContext): Promise<T>
+  update(id: string, data: UpdateInput<T>, context?: CRUDContext): Promise<T>
+  delete(id: string, context?: CRUDContext): Promise<void>
+
+  // 批量操作
+  bulkCreate?(items: CreateInput<T>[], context?: CRUDContext): Promise<T[]>
+  bulkUpdate?(updates: BulkUpdateInput<T>[], context?: CRUDContext): Promise<T[]>
+  bulkDelete?(ids: string[], context?: CRUDContext): Promise<void>
+
+  // 事务支持
+  transaction?<R>(callback: (tx: DataSourceTransaction<T>) => Promise<R>): Promise<R>
+}
 ```
 
-### 关联查询
+### 查询构建器
 
 ```typescript
-// 自动处理关联数据
-const posts = await postCRUD.findMany({
-  include: {
-    author: true,
-    tags: true,
-    comments: {
-      include: {
-        author: true
-      }
-    }
+interface QueryBuilder<T> {
+  // 过滤方法
+  where(field: keyof T, operator: FilterOperator, value: any): QueryBuilder<T>
+  whereIn(field: keyof T, values: any[]): QueryBuilder<T>
+  whereNotIn(field: keyof T, values: any[]): QueryBuilder<T>
+  whereBetween(field: keyof T, min: any, max: any): QueryBuilder<T>
+  whereNull(field: keyof T): QueryBuilder<T>
+  whereNotNull(field: keyof T): QueryBuilder<T>
+
+  // 排序方法
+  sort(field: keyof T, direction?: 'asc' | 'desc'): QueryBuilder<T>
+  orderBy(field: keyof T, direction?: 'asc' | 'desc'): QueryBuilder<T>
+
+  // 分页方法
+  limit(count: number): QueryBuilder<T>
+  offset(count: number): QueryBuilder<T>
+  paginate(page: number, pageSize: number): Promise<PaginatedResponse<T>>
+
+  // 字段选择
+  select(fields: (keyof T)[]): QueryBuilder<T>
+  include(relations: string[]): QueryBuilder<T>
+
+  // 搜索方法
+  search(query: string, fields?: (keyof T)[]): QueryBuilder<T>
+  fullTextSearch(query: string): QueryBuilder<T>
+
+  // 执行方法
+  execute(): Promise<T[]>
+  first(): Promise<T | null>
+  count(): Promise<number>
+}
+```
+
+## 🔧 高级功能
+
+### 权限控制
+
+```typescript
+// 基于角色的权限
+const userCRUD = createCRUDFromSchema(userEntity, {
+  dataSource,
+  permissions: {
+    create: ['admin', 'manager'],
+    read: ['admin', 'manager', 'user'],
+    update: (context, data) => {
+      // 自定义权限逻辑
+      return context.user.role === 'admin' || context.user.id === data.id
+    },
+    delete: ['admin']
+  }
+})
+
+// 数据过滤
+const posts = await postCRUD.list({
+  filters: {
+    authorId: context.user.id  // 只显示用户自己的文章
   }
 })
 ```
 
-### 搜索和过滤
+### 生命周期钩子
 
 ```typescript
-// 智能搜索
-const results = await postCRUD.search({
-  query: 'TypeScript',
-  filters: {
-    published: true,
-    createdAt: {
-      gte: new Date('2024-01-01')
-    }
-  },
-  sort: { createdAt: 'desc' },
-  page: 1,
-  pageSize: 20
+const userCRUD = new CRUDManager({
+  // ... 其他配置
+})
+
+// 监听事件
+userCRUD.on('before:create', async ({ data, context }) => {
+  // 创建前的处理
+  data.createdBy = context.user.id
+  data.createdAt = new Date()
+})
+
+userCRUD.on('after:update', async ({ result, context }) => {
+  // 更新后的处理
+  await auditLog.create({
+    action: 'update',
+    resourceId: result.id,
+    userId: context.user.id
+  })
+})
+```
+
+### 状态管理集成
+
+```typescript
+import { useCRUDState } from '@linch-kit/crud'
+
+// React Hook 使用
+function UserList() {
+  const {
+    items,
+    loading,
+    error,
+    pagination,
+    actions
+  } = useCRUDState(userCRUD)
+
+  useEffect(() => {
+    actions.loadList({ page: 1, limit: 10 })
+  }, [])
+
+  return (
+    <div>
+      {loading.list && <div>Loading...</div>}
+      {error.list && <div>Error: {error.list.message}</div>}
+      {items.map(user => (
+        <div key={user.id}>{user.name}</div>
+      ))}
+    </div>
+  )
+}
+```
+
+### tRPC 集成
+
+```typescript
+import { createTRPCRouter } from '@linch-kit/crud'
+
+// 自动生成 tRPC 路由
+const userRouter = createTRPCRouter(userCRUD, {
+  basePath: 'users',
+  middleware: [authMiddleware],
+  customProcedures: {
+    getProfile: publicProcedure
+      .input(z.string())
+      .query(async ({ input }) => {
+        return userCRUD.get(input, { includeProfile: true })
+      })
+  }
+})
+
+// 在主路由中使用
+export const appRouter = router({
+  users: userRouter,
+  // ... 其他路由
 })
 ```
 
@@ -274,13 +446,37 @@ pnpm check-types
 pnpm lint
 ```
 
+## 📋 变更日志
+
+### v0.1.0 (2024-06-21)
+
+**新增功能**
+- ✨ 核心 CRUD 操作管理器
+- ✨ 类型安全的数据源抽象
+- ✨ 强大的查询构建器
+- ✨ 权限控制系统
+- ✨ 生命周期钩子和事件系统
+- ✨ React 状态管理集成
+- ✨ tRPC 路由自动生成
+- ✨ 批量操作支持
+- ✨ 搜索和过滤功能
+- ✨ 事务处理支持
+
+**技术特性**
+- 🔒 完整的 TypeScript 类型支持
+- 🚀 AI-First 设计理念
+- 📱 框架无关的核心实现
+- 🔌 可扩展的插件架构
+
 ## 📄 许可证
 
 MIT License
 
 ## 🔗 相关链接
 
-- [Linch Kit 文档](https://github.com/linch-tech/linch-kit)
+- [Linch Kit 文档](https://github.com/laofahai/linch-kit)
+- [AI 上下文文档](../../ai-context/packages/crud.md)
 - [@linch-kit/schema](../schema/README.md)
 - [@linch-kit/trpc](../trpc/README.md)
-- [tRPC 文档](https://trpc.io/docs)
+- [@linch-kit/auth](../auth/README.md)
+- [示例项目](../../apps/starter)

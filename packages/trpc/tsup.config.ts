@@ -15,13 +15,13 @@ export default defineConfig({
     'next',
     'react',
     '@tanstack/react-query',
-    '@linch-kit/auth-core',
+    '@linch-kit/auth',
     '@linch-kit/schema',
     '@linch-kit/core',
-    '@linch-kit/types'
+    '@linch-kit/types',
   ],
   banner: {
-    js: '"use client";'
+    js: '"use client";',
   },
-  tsconfig: "./tsconfig.build.json"
+  tsconfig: './tsconfig.build.json',
 })

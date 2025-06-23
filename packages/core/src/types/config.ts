@@ -5,6 +5,7 @@
  */
 
 import { z } from 'zod'
+
 import type { Named, Versioned, OptionalConfig, DatabaseProvider, Environment } from './common'
 
 /**

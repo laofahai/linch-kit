@@ -1,6 +1,24 @@
 import { z } from 'zod'
 import { defineEntity, defineField } from '@linch-kit/schema'
 
+// === 拆分复杂的嵌套 Schema 以避免 TypeScript DTS 构建性能问题 ===
+
+/**
+ * 权限条件 Schema
+ * 拆分出来避免过度嵌套的泛型推导，使用显式类型注解
+ */
+const PermissionConditionSchema = z.object({
+  field: z.string(),
+  operator: z.enum(['eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'in', 'nin', 'contains']),
+  value: z.unknown()
+})
+
+/**
+ * 权限条件类型
+ * 显式定义类型，避免深度类型推导
+ */
+export type PermissionCondition = z.infer<typeof PermissionConditionSchema>
+
 /**
  * 角色实体模板
  */
@@ -59,7 +77,7 @@ export const RoleTemplate = defineEntity('Role', {
   }),
   
   // 扩展数据
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.role.metadata',
     db: { type: 'JSON' }
   }),
@@ -136,11 +154,8 @@ export const PermissionTemplate = defineEntity('Permission', {
   }),
   
   // 权限条件（ABAC）
-  conditions: defineField(z.array(z.object({
-    field: z.string(),
-    operator: z.enum(['eq', 'ne', 'gt', 'gte', 'lt', 'lte', 'in', 'nin', 'contains']),
-    value: z.any()
-  })).optional(), {
+  // 使用拆分后的 schema 避免过度嵌套的泛型推导
+  conditions: defineField(z.array(PermissionConditionSchema).optional(), {
     label: 'auth.permission.conditions',
     db: { type: 'JSON' }
   }),
@@ -162,7 +177,7 @@ export const PermissionTemplate = defineEntity('Permission', {
   }),
   
   // 扩展数据
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.permission.metadata',
     db: { type: 'JSON' }
   }),
@@ -269,7 +284,7 @@ export const UserRoleTemplate = defineEntity('UserRole', {
   }),
   
   // 扩展数据
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.userRole.metadata',
     db: { type: 'JSON' }
   }),
@@ -279,7 +294,7 @@ export const UserRoleTemplate = defineEntity('UserRole', {
     label: 'auth.userRole.createdAt'
   }),
   
-  updatedAt: defineField(z.date(), { 
+  updatedAt: defineField(z.date(), {
     updatedAt: true,
     label: 'auth.userRole.updatedAt'
   })
@@ -363,7 +378,7 @@ export const DepartmentTemplate = defineEntity('Department', {
   }),
 
   // 扩展数据
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.department.metadata',
     db: { type: 'JSON' }
   }),
@@ -485,7 +500,7 @@ export const UserDepartmentTemplate = defineEntity('UserDepartment', {
   }),
 
   // 扩展数据
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.userDepartment.metadata',
     db: { type: 'JSON' }
   }),
@@ -523,54 +538,54 @@ export const TenantTemplate = defineEntity('Tenant', {
     primary: true,
     label: 'auth.tenant.id'
   }),
-  
+
   name: defineField(z.string(), {
     label: 'auth.tenant.name'
   }),
-  
+
   slug: defineField(z.string(), {
     unique: true,
     label: 'auth.tenant.slug'
   }),
-  
+
   domain: defineField(z.string().optional(), {
     unique: true,
     label: 'auth.tenant.domain'
   }),
-  
+
   description: defineField(z.string().optional(), {
     label: 'auth.tenant.description'
   }),
-  
+
   // 租户配置
-  settings: defineField(z.record(z.any()).optional(), {
+  settings: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.tenant.settings',
     db: { type: 'JSON' }
   }),
-  
+
   // 租户状态
   status: defineField(z.enum(['active', 'inactive', 'suspended']), {
     default: 'active',
     label: 'auth.tenant.status'
   }),
-  
+
   // 订阅信息
   plan: defineField(z.string().optional(), {
     label: 'auth.tenant.plan'
   }),
-  
+
   // 扩展数据
-  metadata: defineField(z.record(z.any()).optional(), {
+  metadata: defineField(z.record(z.string(), z.unknown()).optional(), {
     label: 'auth.tenant.metadata',
     db: { type: 'JSON' }
   }),
-  
-  createdAt: defineField(z.date(), { 
+
+  createdAt: defineField(z.date(), {
     createdAt: true,
     label: 'auth.tenant.createdAt'
   }),
-  
-  updatedAt: defineField(z.date(), { 
+
+  updatedAt: defineField(z.date(), {
     updatedAt: true,
     label: 'auth.tenant.updatedAt'
   })
