@@ -148,10 +148,11 @@ pnpm deps:check
 系统自动分析依赖关系，确保按正确顺序构建：
 
 ```
-Level 0: @linch-kit/types
-Level 1: @linch-kit/core
-Level 2: @linch-kit/auth-core, @linch-kit/schema
-Level 3: @linch-kit/trpc, @linch-kit/ui
+Level 0: @linch-kit/core
+Level 1: @linch-kit/schema
+Level 2: @linch-kit/auth, @linch-kit/crud
+Level 3: @linch-kit/trpc
+Level 4: @linch-kit/ui
 ```
 
 ### 4. 本地开发支持

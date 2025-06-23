@@ -36,7 +36,9 @@
   "license": "MIT",
   "dependencies": {
     "@linch-kit/core": "workspace:*",
-    "@linch-kit/types": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
+    "@linch-kit/auth": "workspace:*",
+    "@linch-kit/crud": "workspace:*",
     "superjson": "^2.2.2",
     "zod": "^3.25.67"
   },

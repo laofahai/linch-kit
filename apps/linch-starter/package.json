@@ -22,7 +22,6 @@
     "@linch-kit/crud": "workspace:*",
     "@linch-kit/schema": "workspace:*",
     "@linch-kit/trpc": "workspace:*",
-    "@linch-kit/types": "workspace:*",
     "@linch-kit/ui": "workspace:*",
     "@prisma/client": "^5.0.0",
     "@tanstack/react-query": "^5.0.0",

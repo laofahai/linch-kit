@@ -67,10 +67,11 @@ export function createTsupConfig(options: TsupBaseOptions = {}): Options {
     '@types/react-dom',
     // Linch Kit 内部包
     '@linch-kit/core',
-    '@linch-kit/types',
     '@linch-kit/ui',
     '@linch-kit/auth',
     '@linch-kit/schema',
+    '@linch-kit/crud',
+    '@linch-kit/trpc',
     '@linch-kit/trpc',
     ...external,
   ]

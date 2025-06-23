@@ -46,7 +46,6 @@
   "dependencies": {
     "@linch-kit/core": "workspace:*",
     "@linch-kit/schema": "workspace:*",
-    "@linch-kit/types": "workspace:*",
     "commander": "^11.1.0",
     "next-auth": "^4.24.5",
     "node": "^24.2.0",

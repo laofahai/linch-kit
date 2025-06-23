@@ -15,12 +15,11 @@
 ### 📦 包文档
 每个包都有详细的使用文档和 API 参考：
 
-- [Core 包](../packages/core/README.md) - CLI 工具和核心功能
-- [Types 包](../packages/types/README.md) - TypeScript 类型定义
-- [Auth Core 包](../packages/auth-core/README.md) - 认证和权限管理
+- [Core 包](../packages/core/README.md) - CLI 工具、插件系统和核心功能
 - [Schema 包](../packages/schema/README.md) - 数据模式定义和验证
-- [tRPC 包](../packages/trpc/README.md) - 类型安全的 API 层
+- [Auth 包](../packages/auth/README.md) - 认证和权限管理
 - [CRUD 包](../packages/crud/README.md) - 自动化 CRUD 操作
+- [tRPC 包](../packages/trpc/README.md) - 类型安全的 API 层
 - [UI 包](../packages/ui/README.md) - React 组件库
 
 ### 🔧 开发指南

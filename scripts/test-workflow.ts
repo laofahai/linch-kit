@@ -109,11 +109,10 @@ class WorkflowTester {
 
     const packages = [
       'packages/core',
-      'packages/types',
-      'packages/auth-core',
       'packages/schema',
-      'packages/trpc',
+      'packages/auth',
       'packages/crud',
+      'packages/trpc',
       'packages/ui'
     ]
 
