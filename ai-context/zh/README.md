@@ -86,7 +86,8 @@ cat ai-context/zh/ai-development-guidelines.md
 ### 📋 项目管理
 1. 使用 [`project/roadmap.md`](project/roadmap.md) 跟踪开发路线图
 2. 使用 [`project/progress.md`](project/progress.md) 监控实时进度
-3. 遵循 [`meta.md`](meta.md) 进行文档管理
+3. 查看 [`project/packages-refactor-plan.md`](project/packages-refactor-plan.md) 了解包重构计划
+4. 遵循 [`meta.md`](meta.md) 进行文档管理
 
 ---
 
