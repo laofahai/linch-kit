@@ -879,14 +879,85 @@ export interface ValidationResult {
   score: number
 }
 
-export interface ValidationError {
+// 使用统一的 LinchKit 错误系统
+import {
+  LinchKitError,
+  ValidationError as BaseValidationError,
+  ConflictError,
+  NotFoundError,
+  ErrorContext,
+  ErrorCategory
+} from '@linch-kit/core'
+
+export class SchemaError extends LinchKitError {
+  readonly category = ErrorCategory.VALIDATION
+}
+
+export class EntityDefinitionError extends SchemaError {
+  readonly code = 'ENTITY_DEFINITION_ERROR'
+  readonly statusCode = 400
+}
+
+export class SchemaEntityAlreadyExistsError extends ConflictError {
+  readonly code = 'SCHEMA_ENTITY_ALREADY_EXISTS'
+
+  constructor(message: string, entityName?: string, context?: ErrorContext) {
+    super(message, {
+      ...context,
+      metadata: { entityName, ...context?.metadata }
+    })
+  }
+}
+
+export class SchemaEntityNotFoundError extends NotFoundError {
+  readonly code = 'SCHEMA_ENTITY_NOT_FOUND'
+
+  constructor(message: string, entityName?: string, context?: ErrorContext) {
+    super(message, 'SchemaEntity', entityName, context)
+  }
+}
+
+export class CircularDependencyError extends SchemaError {
+  readonly code = 'CIRCULAR_DEPENDENCY'
+  readonly statusCode = 400
+}
+
+export class EntityBuildError extends SchemaError {
+  readonly code = 'ENTITY_BUILD_ERROR'
+  readonly statusCode = 400
+}
+
+export class CodeGenerationError extends SchemaError {
+  readonly code = 'CODE_GENERATION_ERROR'
+  readonly statusCode = 500
+
+  constructor(message: string, validationErrors?: ValidationError[], context?: ErrorContext) {
+    super(message, {
+      ...context,
+      metadata: { validationErrors, ...context?.metadata }
+    })
+  }
+}
+
+export class SchemaValidationError extends BaseValidationError {
+  readonly code = 'SCHEMA_VALIDATION_ERROR'
+
+  constructor(message: string, validationErrors?: ValidationError[], context?: ErrorContext) {
+    super(message, 'schema', validationErrors, {
+      ...context,
+      metadata: { validationErrors, ...context?.metadata }
+    })
+  }
+}
+
+export interface SchemaValidationError {
   type: 'structure' | 'naming' | 'constraint' | 'relation' | 'type'
   field: string
   message: string
   severity: 'error'
 }
 
-export interface ValidationWarning {
+export interface SchemaValidationWarning {
   type: 'performance' | 'relation' | 'naming' | 'best-practice'
   field: string
   message: string
@@ -1948,55 +2019,119 @@ export interface RelationInfo {
 
 ### 依赖关系
 
-#### 依赖链管理
+#### 服务注册机制
 ```typescript
 /**
- * Schema 依赖链管理器
- * @description 管理 Schema 包在依赖链中的位置和职责
+ * Schema 服务注册器
+ * @description 通过服务注册机制避免硬编码下游依赖
  */
-export class SchemaDependencyManager {
+export class SchemaServiceRegistry {
+  private integrations = new Map<string, SchemaIntegration>()
+
   /**
-   * 向上游包（Core）提供的服务
+   * 注册下游包的集成服务
+   * 下游包在初始化时主动注册自己的集成需求
    */
-  getUpstreamServices(): UpstreamServices {
-    return {
-      // 为 Core 提供实体注册服务
-      entityRegistry: this.registry,
-
-      // 为 Core 提供 Schema 验证服务
-      schemaValidator: new SchemaValidationEngine(),
-
-      // 为 Core 提供代码生成服务
-      codeGenerators: {
-        prisma: new PrismaGenerator(),
-        validators: new ValidatorGenerator(),
-        mock: new MockGenerator(),
-        types: new TypeScriptTypeGenerator()
-      },
-
-      // 为 Core 提供 CLI 命令
-      cliCommands: this.getCLICommands()
-    }
+  registerIntegration<T extends SchemaIntegration>(
+    packageName: string,
+    integration: T
+  ): void {
+    this.integrations.set(packageName, integration)
   }
 
   /**
-   * 向下游包提供的服务
+   * 获取已注册的集成服务
    */
-  getDownstreamServices(): DownstreamServices {
-    return {
-      // 为 Auth 包提供用户相关实体
-      authEntities: new SchemaAuthIntegration(),
+  getIntegration<T extends SchemaIntegration>(
+    packageName: string
+  ): T | undefined {
+    return this.integrations.get(packageName) as T
+  }
 
-      // 为 CRUD 包提供验证器和查询构建器
-      crudIntegration: new SchemaCrudIntegration(this.registry),
+  /**
+   * 为所有已注册的下游包提供 Schema 更新通知
+   */
+  async notifySchemaUpdate(
+    entityName: string,
+    schema: EntitySchema,
+    changeType: 'create' | 'update' | 'delete'
+  ): Promise<void> {
+    const notifications = Array.from(this.integrations.values()).map(
+      integration => integration.handleSchemaChange?.(entityName, schema, changeType)
+    )
 
-      // 为 tRPC 包提供 API Schema
-      apiSchemas: new SchemaApiIntegration(this.registry),
+    await Promise.allSettled(notifications)
+  }
+}
 
-      // 为 UI 包提供表单配置
-      uiConfigs: new SchemaUIIntegration(this.registry)
+/**
+ * Schema 集成接口
+ * 下游包需要实现此接口来定义自己的集成需求
+ */
+export interface SchemaIntegration {
+  packageName: string
+  version: string
+
+  /**
+   * 处理 Schema 变更通知
+   */
+  handleSchemaChange?(
+    entityName: string,
+    schema: EntitySchema,
+    changeType: 'create' | 'update' | 'delete'
+  ): Promise<void>
+
+  /**
+   * 获取需要的 Schema 服务
+   */
+  getRequiredServices(): string[]
+
+  /**
+   * 初始化集成
+   */
+  initialize(schemaManager: SchemaManager): Promise<void>
+}
+
+/**
+ * 示例：Auth 包的集成实现
+ */
+export class AuthSchemaIntegration implements SchemaIntegration {
+  packageName = '@linch-kit/auth'
+  version = '1.0.0'
+
+  getRequiredServices(): string[] {
+    return ['userEntity', 'roleEntity', 'permissionEntity']
+  }
+
+  async initialize(schemaManager: SchemaManager): Promise<void> {
+    // Auth 包初始化时注册自己的集成需求
+    schemaManager.serviceRegistry.registerIntegration(this.packageName, this)
+  }
+
+  async handleSchemaChange(
+    entityName: string,
+    schema: EntitySchema,
+    changeType: 'create' | 'update' | 'delete'
+  ): Promise<void> {
+    // 处理与认证相关的 Schema 变更
+    if (this.isAuthRelatedEntity(entityName)) {
+      await this.updateAuthConfiguration(entityName, schema, changeType)
     }
   }
+
+  private isAuthRelatedEntity(entityName: string): boolean {
+    return ['User', 'Role', 'Permission'].includes(entityName)
+  }
+
+  private async updateAuthConfiguration(
+    entityName: string,
+    schema: EntitySchema,
+    changeType: string
+  ): Promise<void> {
+    // 更新认证配置的具体逻辑
+  }
+}
+```
 
   /**
    * 依赖注入配置
@@ -3437,35 +3572,52 @@ export interface QualityIssue {
 }
 ```
 
-### AI 工具集成点
+### 扩展机制
 
-#### 自然语言到 Schema 转换
-- **需求描述解析**: 将自然语言需求转换为结构化的实体定义
-- **业务规则提取**: 从业务描述中提取验证规则和约束
-- **关系识别**: 自动识别实体间的关系和依赖
-- **字段类型推断**: 基于描述智能推断字段类型和验证规则
+#### TypeScript 模块扩展支持
+Schema 包设计为可扩展的架构，下游包可以通过 TypeScript 模块扩展机制来扩展 Schema 类型：
 
-#### 智能代码生成
-- **上下文感知生成**: 基于项目上下文生成相关的代码
-- **最佳实践应用**: 自动应用行业最佳实践和设计模式
-- **性能优化**: 生成性能优化的 Schema 和索引
-- **安全增强**: 自动添加安全相关的验证和约束
+```typescript
+// 示例：UI 包扩展 Schema 类型
+declare module '@linch-kit/schema' {
+  interface FieldConfig {
+    ui?: {
+      component?: string
+      props?: Record<string, any>
+      layout?: LayoutConfig
+    }
+  }
 
-#### 开发体验优化
-- **智能补全**: 在定义 Schema 时提供智能建议
-- **错误预防**: 在开发阶段预防常见错误
-- **重构建议**: 提供 Schema 重构和优化建议
-- **文档生成**: 自动生成详细的 API 文档和使用指南
+  interface EntityConfig {
+    ui?: {
+      table?: TableConfig
+      form?: FormConfig
+      display?: DisplayConfig
+    }
+  }
+}
+```
 
-### 开发工作流集成
+#### 插件化代码生成
+支持第三方包注册自定义代码生成器：
 
-#### AI 驱动的开发流程
-1. **需求分析**: AI 分析业务需求并生成初始 Schema
-2. **迭代优化**: 基于反馈持续优化 Schema 设计
-3. **代码生成**: 自动生成高质量的代码和配置
-4. **质量检查**: AI 检查代码质量和潜在问题
-5. **文档同步**: 自动更新文档和注释
-6. **测试生成**: 生成全面的测试用例
+```typescript
+// 第三方包可以注册自己的代码生成器
+export class CustomGenerator implements CodeGenerator {
+  name = 'custom-generator'
+
+  async generate(schema: EntitySchema): Promise<GeneratedCode> {
+    // 自定义生成逻辑
+    return {
+      files: [/* 生成的文件 */],
+      dependencies: [/* 需要的依赖 */]
+    }
+  }
+}
+
+// 注册生成器
+SchemaManager.registerGenerator(new CustomGenerator())
+```
 
 #### AI 友好的错误处理
 ```typescript

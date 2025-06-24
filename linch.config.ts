@@ -4,9 +4,9 @@ const config: LinchConfig = {
   // 数据库配置
   database: {
     type: 'postgresql',
-    host: 'localhost',
-    port: 5432,
-    database: 'linch_kit_dev',
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432'),
+    database: process.env.DB_NAME || 'linch_kit_dev',
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'password',
     // 或者使用连接字符串

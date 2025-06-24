@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/github',
-        destination: 'https://github.com/laofahai/linch-kit',
+        destination: process.env.GITHUB_REPOSITORY_URL || 'https://github.com/laofahai/linch-kit',
         permanent: false,
       },
     ]

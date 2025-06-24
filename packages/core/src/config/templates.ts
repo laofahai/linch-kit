@@ -80,36 +80,36 @@ const config: LinchConfig = {
 
   // 应用配置（可选，也可以从数据库加载）
   app: {
-    name: 'My Application',
-    description: 'A Linch Kit application',
-    version: '1.0.0',
-    environment: 'development',
-    url: process.env.APP_URL || 'http://localhost:3000',
-    
+    name: process.env.APP_NAME || 'My Application',
+    description: process.env.APP_DESCRIPTION || 'A Linch Kit application',
+    version: process.env.APP_VERSION || '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    url: process.env.APP_URL || \`http://localhost:\${process.env.PORT || 3000}\`,
+
     // 功能开关
     features: {
-      userRegistration: true,
-      emailVerification: true,
-      twoFactorAuth: false,
-      socialLogin: true
+      userRegistration: process.env.FEATURE_USER_REGISTRATION !== 'false',
+      emailVerification: process.env.FEATURE_EMAIL_VERIFICATION !== 'false',
+      twoFactorAuth: process.env.FEATURE_TWO_FACTOR_AUTH === 'true',
+      socialLogin: process.env.FEATURE_SOCIAL_LOGIN !== 'false'
     },
 
     // 主题配置
     theme: {
-      primaryColor: '#3b82f6',
-      secondaryColor: '#64748b',
-      logo: '/logo.png',
-      favicon: '/favicon.ico'
+      primaryColor: process.env.THEME_PRIMARY_COLOR || '#3b82f6',
+      secondaryColor: process.env.THEME_SECONDARY_COLOR || '#64748b',
+      logo: process.env.THEME_LOGO || '/logo.png',
+      favicon: process.env.THEME_FAVICON || '/favicon.ico'
     },
 
     // 邮件配置
     email: {
-      provider: 'smtp',
-      from: 'noreply@myapp.com',
+      provider: process.env.EMAIL_PROVIDER || 'smtp',
+      from: process.env.EMAIL_FROM || 'noreply@myapp.com',
       config: {
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: false,
+        secure: process.env.SMTP_SECURE === 'true',
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS
@@ -119,10 +119,10 @@ const config: LinchConfig = {
 
     // 存储配置
     storage: {
-      provider: 'local',
+      provider: process.env.STORAGE_PROVIDER || 'local',
       config: {
-        uploadDir: './uploads',
-        maxFileSize: 10 * 1024 * 1024 // 10MB
+        uploadDir: process.env.UPLOAD_DIR || './uploads',
+        maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760') // 10MB
       }
     }
   },
@@ -156,23 +156,23 @@ function generateJsConfigTemplate(): string {
   return `/** @type {import('@linch-kit/config').LinchConfig} */
 const config = {
   database: {
-    type: 'postgresql',
-    host: 'localhost',
-    port: 5432,
-    database: 'myapp',
+    type: process.env.DB_TYPE || 'postgresql',
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432'),
+    database: process.env.DB_NAME || 'myapp',
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'password'
   },
 
   schema: {
-    outputDir: './src/generated',
-    generatePrisma: true,
-    generateMock: false,
-    generateOpenAPI: true
+    outputDir: process.env.SCHEMA_OUTPUT_DIR || './src/generated',
+    generatePrisma: process.env.GENERATE_PRISMA !== 'false',
+    generateMock: process.env.GENERATE_MOCK === 'true',
+    generateOpenAPI: process.env.GENERATE_OPENAPI !== 'false'
   },
 
   auth: {
-    userEntity: 'basic',
+    userEntity: process.env.AUTH_USER_ENTITY || 'basic',
     providers: [
       {
         type: 'shared-token',
@@ -184,18 +184,18 @@ const config = {
       }
     ],
     permissions: {
-      strategy: 'rbac',
-      hierarchical: false,
-      multiTenant: false
+      strategy: process.env.AUTH_STRATEGY || 'rbac',
+      hierarchical: process.env.AUTH_HIERARCHICAL === 'true',
+      multiTenant: process.env.AUTH_MULTI_TENANT === 'true'
     }
   },
 
   app: {
-    name: 'My Application',
-    environment: 'development',
+    name: process.env.APP_NAME || 'My Application',
+    environment: process.env.NODE_ENV || 'development',
     features: {
-      userRegistration: true,
-      emailVerification: true
+      userRegistration: process.env.FEATURE_USER_REGISTRATION !== 'false',
+      emailVerification: process.env.FEATURE_EMAIL_VERIFICATION !== 'false'
     }
   }
 }
@@ -247,21 +247,21 @@ function generateMjsConfigTemplate(): string {
   return `/** @type {import('@linch-kit/config').LinchConfig} */
 const config = {
   database: {
-    type: 'postgresql',
-    host: 'localhost',
-    port: 5432,
-    database: 'myapp',
+    type: process.env.DB_TYPE || 'postgresql',
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '5432'),
+    database: process.env.DB_NAME || 'myapp',
     username: process.env.DB_USERNAME || 'postgres',
     password: process.env.DB_PASSWORD || 'password'
   },
 
   schema: {
-    outputDir: './src/generated',
-    generatePrisma: true
+    outputDir: process.env.SCHEMA_OUTPUT_DIR || './src/generated',
+    generatePrisma: process.env.GENERATE_PRISMA !== 'false'
   },
 
   auth: {
-    userEntity: 'basic',
+    userEntity: process.env.AUTH_USER_ENTITY || 'basic',
     providers: [
       {
         type: 'shared-token',
@@ -275,8 +275,8 @@ const config = {
   },
 
   app: {
-    name: 'My Application',
-    environment: 'development'
+    name: process.env.APP_NAME || 'My Application',
+    environment: process.env.NODE_ENV || 'development'
   }
 }
 

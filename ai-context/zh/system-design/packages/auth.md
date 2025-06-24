@@ -45,6 +45,67 @@
 
 ## 🔌 API 设计
 
+### 错误处理系统
+
+#### 统一错误类型
+```typescript
+// 导入统一的错误管理系统
+import {
+  LinchKitError,
+  ValidationError,
+  AuthenticationError,
+  AuthorizationError,
+  NotFoundError,
+  RateLimitError,
+  ErrorContext,
+  ErrorCategory
+} from '@linch-kit/core'
+
+// Auth 包特定错误类型
+export class InvalidCredentialsError extends AuthenticationError {
+  readonly code = 'INVALID_CREDENTIALS'
+
+  constructor(message: string = 'Invalid credentials', context?: ErrorContext) {
+    super(message, context)
+  }
+}
+
+export class SessionExpiredError extends AuthenticationError {
+  readonly code = 'SESSION_EXPIRED'
+
+  constructor(message: string = 'Session has expired', context?: ErrorContext) {
+    super(message, context)
+  }
+}
+
+export class TokenValidationError extends AuthenticationError {
+  readonly code = 'TOKEN_VALIDATION_ERROR'
+
+  constructor(message: string = 'Token validation failed', context?: ErrorContext) {
+    super(message, context)
+  }
+}
+
+export class PermissionDeniedError extends AuthorizationError {
+  readonly code = 'PERMISSION_DENIED'
+
+  constructor(message: string, resource?: string, action?: string, context?: ErrorContext) {
+    super(message, {
+      ...context,
+      metadata: { resource, action, ...context?.metadata }
+    })
+  }
+}
+
+export class AccountDisabledError extends AuthenticationError {
+  readonly code = 'ACCOUNT_DISABLED'
+
+  constructor(message: string = 'Account is disabled', context?: ErrorContext) {
+    super(message, context)
+  }
+}
+```
+
 ### 公共接口
 
 #### 认证管理器 API
@@ -290,8 +351,8 @@ export interface AuthResult {
     expiresIn: number
     tokenType: 'Bearer' | 'JWT'
   }
-  /** 错误信息 */
-  error?: AuthError
+  /** 错误信息 - 使用统一的 LinchKit 错误类型 */
+  error?: LinchKitError
   /** 额外元数据 */
   metadata?: Record<string, any>
 }
@@ -700,16 +761,17 @@ export class PermissionCheckEngine {
   }
 
   /**
-   * 权限匹配检查
+   * 权限匹配检查 - 支持 AntMatcher 风格
    * @param permission - 权限定义
    * @param resource - 资源名称
    * @param action - 操作名称
    * @returns boolean 是否匹配
    */
   private matchesPermission(permission: Permission, resource: string, action: string): boolean {
-    // 支持通配符匹配
-    const resourceMatch = this.matchPattern(permission.resource, resource)
-    const actionMatch = this.matchPattern(permission.action, action)
+    // 使用 AntMatcher 风格匹配
+    const antMatcher = new AntPathMatcher()
+    const resourceMatch = antMatcher.match(permission.resource, resource)
+    const actionMatch = antMatcher.match(permission.action, action)
 
     return resourceMatch && actionMatch
   }
@@ -768,6 +830,280 @@ export interface PermissionCondition {
   field: string
   value: any
   evaluator?: (context: PermissionContext) => Promise<boolean>
+}
+
+/**
+ * AntPathMatcher 实现 - 支持 Spring AntMatcher 风格的路径匹配
+ */
+export class AntPathMatcher {
+  private readonly DEFAULT_PATH_SEPARATOR = '/'
+  private readonly CACHE_TURNOFF_THRESHOLD = 65536
+  private patternCache = new Map<string, string[]>()
+
+  /**
+   * 匹配路径模式
+   * 支持的通配符：
+   * - ? 匹配一个字符
+   * - * 匹配零个或多个字符（不包括路径分隔符）
+   * - ** 匹配零个或多个路径段
+   */
+  match(pattern: string, path: string): boolean {
+    return this.doMatch(pattern, path, true, null)
+  }
+
+  /**
+   * 匹配路径开始部分
+   */
+  matchStart(pattern: string, path: string): boolean {
+    return this.doMatch(pattern, path, false, null)
+  }
+
+  /**
+   * 提取路径变量
+   */
+  extractUriTemplateVariables(pattern: string, path: string): Record<string, string> {
+    const variables: Record<string, string> = {}
+    const result = this.doMatch(pattern, path, true, variables)
+
+    if (!result) {
+      throw new Error(`Pattern "${pattern}" does not match path "${path}"`)
+    }
+
+    return variables
+  }
+
+  private doMatch(
+    pattern: string,
+    path: string,
+    fullMatch: boolean,
+    uriTemplateVariables: Record<string, string> | null
+  ): boolean {
+    if (path.startsWith(this.DEFAULT_PATH_SEPARATOR) !== pattern.startsWith(this.DEFAULT_PATH_SEPARATOR)) {
+      return false
+    }
+
+    const pattDirs = this.tokenizePattern(pattern)
+    const pathDirs = this.tokenizePath(path)
+
+    let pattIdxStart = 0
+    let pattIdxEnd = pattDirs.length - 1
+    let pathIdxStart = 0
+    let pathIdxEnd = pathDirs.length - 1
+
+    // 匹配开始部分
+    while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd) {
+      const pattDir = pattDirs[pattIdxStart]
+      if (pattDir === '**') {
+        break
+      }
+      if (!this.matchStrings(pattDir, pathDirs[pathIdxStart], uriTemplateVariables)) {
+        return false
+      }
+      pattIdxStart++
+      pathIdxStart++
+    }
+
+    if (pathIdxStart > pathIdxEnd) {
+      // 路径已完全匹配
+      if (pattIdxStart > pattIdxEnd) {
+        return pattern.endsWith(this.DEFAULT_PATH_SEPARATOR) === path.endsWith(this.DEFAULT_PATH_SEPARATOR)
+      }
+      if (!fullMatch) {
+        return true
+      }
+      if (pattIdxStart === pattIdxEnd && pattDirs[pattIdxStart] === '*' && path.endsWith(this.DEFAULT_PATH_SEPARATOR)) {
+        return true
+      }
+      for (let i = pattIdxStart; i <= pattIdxEnd; i++) {
+        if (pattDirs[i] !== '**') {
+          return false
+        }
+      }
+      return true
+    } else if (pattIdxStart > pattIdxEnd) {
+      // 模式已完全匹配，但路径还有剩余
+      return false
+    } else if (!fullMatch && pattDirs[pattIdxStart] === '**') {
+      // 部分匹配且遇到 **
+      return true
+    }
+
+    // 匹配结束部分
+    while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd) {
+      const pattDir = pattDirs[pattIdxEnd]
+      if (pattDir === '**') {
+        break
+      }
+      if (!this.matchStrings(pattDir, pathDirs[pathIdxEnd], uriTemplateVariables)) {
+        return false
+      }
+      pattIdxEnd--
+      pathIdxEnd--
+    }
+
+    if (pathIdxStart > pathIdxEnd) {
+      // 路径已完全匹配
+      for (let i = pattIdxStart; i <= pattIdxEnd; i++) {
+        if (pattDirs[i] !== '**') {
+          return false
+        }
+      }
+      return true
+    }
+
+    // 处理中间的 ** 通配符
+    while (pattIdxStart !== pattIdxEnd && pathIdxStart <= pathIdxEnd) {
+      let patIdxTmp = -1
+      for (let i = pattIdxStart + 1; i <= pattIdxEnd; i++) {
+        if (pattDirs[i] === '**') {
+          patIdxTmp = i
+          break
+        }
+      }
+      if (patIdxTmp === pattIdxStart + 1) {
+        // '**/**' 情况
+        pattIdxStart++
+        continue
+      }
+
+      // 查找匹配的路径段
+      const patLength = patIdxTmp - pattIdxStart - 1
+      const strLength = pathIdxEnd - pathIdxStart + 1
+      let foundIdx = -1
+
+      strLoop: for (let i = 0; i <= strLength - patLength; i++) {
+        for (let j = 0; j < patLength; j++) {
+          const subPat = pattDirs[pattIdxStart + j + 1]
+          const subStr = pathDirs[pathIdxStart + i + j]
+          if (!this.matchStrings(subPat, subStr, uriTemplateVariables)) {
+            continue strLoop
+          }
+        }
+        foundIdx = pathIdxStart + i
+        break
+      }
+
+      if (foundIdx === -1) {
+        return false
+      }
+
+      pattIdxStart = patIdxTmp
+      pathIdxStart = foundIdx + patLength
+    }
+
+    for (let i = pattIdxStart; i <= pattIdxEnd; i++) {
+      if (pattDirs[i] !== '**') {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  private tokenizePattern(pattern: string): string[] {
+    let tokenized = this.patternCache.get(pattern)
+    if (tokenized == null) {
+      tokenized = this.tokenize(pattern)
+      if (this.patternCache.size >= this.CACHE_TURNOFF_THRESHOLD) {
+        this.patternCache.clear()
+      }
+      this.patternCache.set(pattern, tokenized)
+    }
+    return tokenized
+  }
+
+  private tokenizePath(path: string): string[] {
+    return this.tokenize(path)
+  }
+
+  private tokenize(str: string): string[] {
+    if (!str) {
+      return []
+    }
+    return str.split(this.DEFAULT_PATH_SEPARATOR).filter(segment => segment.length > 0)
+  }
+
+  private matchStrings(
+    pattern: string,
+    str: string,
+    uriTemplateVariables: Record<string, string> | null
+  ): boolean {
+    return this.getStringMatcher(pattern).matchStrings(str, uriTemplateVariables)
+  }
+
+  private getStringMatcher(pattern: string): AntPathStringMatcher {
+    return new AntPathStringMatcher(pattern)
+  }
+}
+
+/**
+ * 字符串匹配器
+ */
+class AntPathStringMatcher {
+  private pattern: string
+  private variableNames: string[] = []
+  private regex?: RegExp
+
+  constructor(pattern: string) {
+    this.pattern = pattern
+    this.parsePattern()
+  }
+
+  private parsePattern(): void {
+    let regexPattern = ''
+    let variableIndex = 0
+
+    for (let i = 0; i < this.pattern.length; i++) {
+      const char = this.pattern[i]
+
+      if (char === '*') {
+        regexPattern += '[^/]*'
+      } else if (char === '?') {
+        regexPattern += '[^/]'
+      } else if (char === '{') {
+        // 处理路径变量 {name}
+        const endIndex = this.pattern.indexOf('}', i)
+        if (endIndex !== -1) {
+          const variableName = this.pattern.substring(i + 1, endIndex)
+          this.variableNames[variableIndex++] = variableName
+          regexPattern += '([^/]+)'
+          i = endIndex
+        } else {
+          regexPattern += this.escapeRegex(char)
+        }
+      } else {
+        regexPattern += this.escapeRegex(char)
+      }
+    }
+
+    this.regex = new RegExp(`^${regexPattern}$`)
+  }
+
+  private escapeRegex(char: string): string {
+    const specialChars = /[.*+?^${}()|[\]\\]/g
+    return char.replace(specialChars, '\\$&')
+  }
+
+  matchStrings(str: string, uriTemplateVariables: Record<string, string> | null): boolean {
+    if (!this.regex) {
+      return false
+    }
+
+    const match = str.match(this.regex)
+    if (!match) {
+      return false
+    }
+
+    if (uriTemplateVariables && this.variableNames.length > 0) {
+      for (let i = 0; i < this.variableNames.length; i++) {
+        const variableName = this.variableNames[i]
+        const variableValue = match[i + 1]
+        uriTemplateVariables[variableName] = variableValue
+      }
+    }
+
+    return true
+  }
 }
 ```
 
@@ -1054,6 +1390,166 @@ export class PermissionNode {
   public permissions: Permission[] = []
 
   constructor(public value: string) {}
+}
+
+/**
+ * 权限模式示例和最佳实践
+ */
+export const PermissionPatterns = {
+  // 基础模式
+  EXACT: 'users:read',                    // 精确匹配
+  WILDCARD: 'users:*',                    // 通配符匹配
+
+  // AntMatcher 风格模式
+  PATH_WILDCARD: 'api/users/*',           // 单级路径通配符
+  DEEP_WILDCARD: 'api/users/**',          // 多级路径通配符
+  MIXED: 'api/*/admin/**',                // 混合通配符
+
+  // 路径变量模式
+  PATH_VARIABLE: 'api/users/{userId}',    // 路径变量
+  MULTI_VARIABLE: 'api/{type}/{id}',      // 多个路径变量
+
+  // 复杂模式
+  CONDITIONAL: 'api/users/{userId}:read', // 带条件的路径变量
+  HIERARCHICAL: 'org/{orgId}/users/**',   // 层级权限
+
+  // 实际使用示例
+  USER_PROFILE: 'api/users/{userId}/profile:*',
+  ADMIN_PANEL: 'admin/**',
+  PUBLIC_API: 'api/public/**',
+  TENANT_DATA: 'tenant/{tenantId}/**'
+} as const
+
+/**
+ * 权限匹配器增强版 - 支持 AntMatcher 风格
+ */
+export class EnhancedPermissionMatcher {
+  private antMatcher: AntPathMatcher
+  private cache = new Map<string, boolean>()
+
+  constructor() {
+    this.antMatcher = new AntPathMatcher()
+  }
+
+  /**
+   * 检查用户是否有指定权限
+   */
+  async hasPermission(
+    user: User,
+    resource: string,
+    action: string,
+    context?: PermissionContext
+  ): Promise<boolean> {
+    const cacheKey = this.buildCacheKey(user.id, resource, action, context)
+
+    if (this.cache.has(cacheKey)) {
+      return this.cache.get(cacheKey)!
+    }
+
+    const userPermissions = await this.getUserPermissions(user.id)
+
+    const hasPermission = userPermissions.some(permission =>
+      this.matchesPermission(permission, resource, action, context)
+    )
+
+    this.cache.set(cacheKey, hasPermission)
+    return hasPermission
+  }
+
+  /**
+   * 匹配权限规则 - 支持 AntMatcher 风格
+   */
+  private matchesPermission(
+    permission: Permission,
+    resource: string,
+    action: string,
+    context?: PermissionContext
+  ): boolean {
+    // 使用 AntMatcher 风格匹配资源路径
+    const resourceMatches = this.antMatcher.match(permission.resource, resource)
+    const actionMatches = this.antMatcher.match(permission.action, action)
+
+    if (resourceMatches && actionMatches) {
+      return this.evaluateConditions(permission.conditions, context)
+    }
+
+    return false
+  }
+
+  /**
+   * 批量权限检查
+   */
+  async hasAnyPermission(
+    user: User,
+    permissions: Array<{ resource: string; action: string }>,
+    context?: PermissionContext
+  ): Promise<boolean> {
+    for (const perm of permissions) {
+      if (await this.hasPermission(user, perm.resource, perm.action, context)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * 获取用户在指定资源上的所有权限
+   */
+  async getResourcePermissions(
+    user: User,
+    resourcePattern: string
+  ): Promise<Permission[]> {
+    const userPermissions = await this.getUserPermissions(user.id)
+
+    return userPermissions.filter(permission =>
+      this.antMatcher.match(permission.resource, resourcePattern)
+    )
+  }
+
+  /**
+   * 提取路径变量
+   */
+  extractPathVariables(pattern: string, path: string): Record<string, string> {
+    try {
+      return this.antMatcher.extractUriTemplateVariables(pattern, path)
+    } catch (error) {
+      return {}
+    }
+  }
+
+  private buildCacheKey(userId: string, resource: string, action: string, context?: PermissionContext): string {
+    const contextKey = context ? JSON.stringify(context) : ''
+    return `${userId}:${resource}:${action}:${contextKey}`
+  }
+
+  private evaluateConditions(conditions?: PermissionCondition[], context?: PermissionContext): boolean {
+    if (!conditions || conditions.length === 0) {
+      return true
+    }
+
+    return conditions.every(condition => {
+      // 简化的条件评估逻辑
+      if (!context) return false
+
+      const contextValue = (context as any)[condition.field]
+
+      switch (condition.operator) {
+        case 'eq': return contextValue === condition.value
+        case 'ne': return contextValue !== condition.value
+        case 'gt': return contextValue > condition.value
+        case 'lt': return contextValue < condition.value
+        case 'in': return Array.isArray(condition.value) && condition.value.includes(contextValue)
+        case 'contains': return String(contextValue).includes(condition.value)
+        default: return false
+      }
+    })
+  }
+
+  private async getUserPermissions(userId: string): Promise<Permission[]> {
+    // 实际实现中应该从数据库获取用户权限
+    // 这里返回示例权限
+    return []
+  }
 }
 ```
 
@@ -1777,19 +2273,42 @@ export class AuthDependencyManager {
   }
 
   /**
-   * 向下游包提供的服务
+   * 注册下游服务集成
+   * @description 使用服务注册机制，避免硬编码下游包依赖
    */
-  getDownstreamServices(): AuthDownstreamServices {
-    return {
-      // 为 CRUD 包提供权限检查
-      crudPermissions: new AuthCrudIntegration(this.permissionChecker),
+  registerDownstreamIntegrations(serviceRegistry: ServiceRegistry): void {
+    // 注册权限检查服务，供 CRUD 包使用
+    serviceRegistry.register('auth:permissions', {
+      service: new AuthCrudIntegration(this.permissionChecker),
+      interface: 'PermissionChecker',
+      version: '1.0.0',
+      metadata: {
+        description: 'Authentication and authorization services for CRUD operations',
+        supportedOperations: ['checkPermission', 'hasRole', 'getUserPermissions']
+      }
+    })
 
-      // 为 tRPC 包提供认证中间件
-      trpcAuth: new AuthTrpcIntegration(this.authManager),
+    // 注册认证中间件，供 tRPC 包使用
+    serviceRegistry.register('auth:middleware', {
+      service: new AuthTrpcIntegration(this.authManager),
+      interface: 'AuthMiddleware',
+      version: '1.0.0',
+      metadata: {
+        description: 'Authentication middleware for tRPC routes',
+        supportedOperations: ['authenticate', 'authorize', 'validateSession']
+      }
+    })
 
-      // 为 UI 包提供认证状态
-      uiAuth: new AuthUIIntegration(this.authManager, this.permissionChecker)
-    }
+    // 注册认证状态服务，供 UI 包使用
+    serviceRegistry.register('auth:ui-state', {
+      service: new AuthUIIntegration(this.authManager, this.permissionChecker),
+      interface: 'AuthUIProvider',
+      version: '1.0.0',
+      metadata: {
+        description: 'Authentication state management for UI components',
+        supportedOperations: ['getAuthState', 'checkUIPermission', 'subscribeToAuthChanges']
+      }
+    })
   }
 
   /**
@@ -1823,10 +2342,53 @@ export interface AuthUpstreamServices {
   securityUtils: SecurityUtils
 }
 
-export interface AuthDownstreamServices {
-  crudPermissions: AuthCrudIntegration
-  trpcAuth: AuthTrpcIntegration
-  uiAuth: AuthUIIntegration
+/**
+ * 服务注册接口
+ * @description 用于注册和发现服务的统一接口
+ */
+export interface ServiceRegistry {
+  /** 注册服务 */
+  register(name: string, registration: ServiceRegistration): void
+  /** 获取服务 */
+  get<T>(name: string): T | null
+  /** 检查服务是否存在 */
+  has(name: string): boolean
+  /** 获取服务元数据 */
+  getMetadata(name: string): ServiceMetadata | null
+  /** 列出所有服务 */
+  list(): string[]
+  /** 注销服务 */
+  unregister(name: string): void
+}
+
+/**
+ * 服务注册信息
+ */
+export interface ServiceRegistration {
+  /** 服务实例 */
+  service: any
+  /** 服务接口名称 */
+  interface: string
+  /** 服务版本 */
+  version: string
+  /** 服务元数据 */
+  metadata: ServiceMetadata
+}
+
+/**
+ * 服务元数据
+ */
+export interface ServiceMetadata {
+  /** 服务描述 */
+  description: string
+  /** 支持的操作 */
+  supportedOperations: string[]
+  /** 依赖的服务 */
+  dependencies?: string[]
+  /** 配置要求 */
+  configRequirements?: string[]
+  /** 标签 */
+  tags?: string[]
 }
 ```
 

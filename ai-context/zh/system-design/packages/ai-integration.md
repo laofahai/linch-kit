@@ -1797,38 +1797,830 @@ export class MemoryManager {
 }
 ```
 
+### 6.4 AI 使用场景扩展
+
+#### 智能代码生成场景
+
+```typescript
+export class IntelligentCodeGenerator {
+  constructor(private aiService: AIService) {}
+
+  async generateCRUDOperations(
+    entitySchema: EntitySchema,
+    requirements: CodeGenRequirements
+  ): Promise<GeneratedCode> {
+    const prompt = this.buildCodeGenPrompt(entitySchema, requirements)
+
+    const response = await this.aiService.chat([
+      {
+        role: 'system',
+        content: `You are an expert TypeScript developer specializing in CRUD operations.
+                 Generate clean, type-safe, and well-documented code following LinchKit patterns.`
+      },
+      {
+        role: 'user',
+        content: prompt
+      }
+    ], {
+      temperature: 0.1, // 低温度确保代码一致性
+      maxTokens: 4000
+    })
+
+    return this.parseGeneratedCode(response.message.content)
+  }
+
+  async generateAPIEndpoints(
+    entities: EntitySchema[],
+    apiStyle: 'REST' | 'GraphQL' | 'tRPC'
+  ): Promise<APIEndpoints> {
+    const context = {
+      entities: entities.map(e => e.definition),
+      style: apiStyle,
+      framework: 'LinchKit'
+    }
+
+    const response = await this.aiService.chat([
+      {
+        role: 'system',
+        content: `Generate ${apiStyle} API endpoints for the given entities.
+                 Follow LinchKit conventions and include proper error handling, validation, and documentation.`
+      },
+      {
+        role: 'user',
+        content: JSON.stringify(context, null, 2)
+      }
+    ])
+
+    return this.parseAPIEndpoints(response.message.content, apiStyle)
+  }
+
+  async generateTestCases(
+    codeToTest: string,
+    testType: 'unit' | 'integration' | 'e2e'
+  ): Promise<TestSuite> {
+    const response = await this.aiService.chat([
+      {
+        role: 'system',
+        content: `Generate comprehensive ${testType} tests using Jest and TypeScript.
+                 Include edge cases, error scenarios, and proper mocking.`
+      },
+      {
+        role: 'user',
+        content: `Generate ${testType} tests for this code:\n\n${codeToTest}`
+      }
+    ])
+
+    return this.parseTestSuite(response.message.content)
+  }
+
+  private buildCodeGenPrompt(
+    schema: EntitySchema,
+    requirements: CodeGenRequirements
+  ): string {
+    return `
+Generate CRUD operations for entity: ${schema.name}
+
+Schema:
+${JSON.stringify(schema.definition, null, 2)}
+
+Requirements:
+- Include: ${requirements.operations.join(', ')}
+- Authentication: ${requirements.authentication ? 'Required' : 'Not required'}
+- Validation: ${requirements.validation ? 'Strict' : 'Basic'}
+- Caching: ${requirements.caching ? 'Enabled' : 'Disabled'}
+- Error handling: ${requirements.errorHandling}
+
+Please generate TypeScript code following LinchKit patterns.
+    `.trim()
+  }
+}
+```
+
+#### 自动化测试生成
+
+```typescript
+export class AITestGenerator {
+  constructor(private aiService: AIService) {}
+
+  async generateUnitTests(
+    sourceCode: string,
+    coverage: TestCoverage = 'comprehensive'
+  ): Promise<UnitTestSuite> {
+    const analysis = await this.analyzeCode(sourceCode)
+
+    const prompt = `
+Analyze this TypeScript code and generate comprehensive unit tests:
+
+${sourceCode}
+
+Code Analysis:
+- Functions: ${analysis.functions.length}
+- Classes: ${analysis.classes.length}
+- Complexity: ${analysis.complexity}
+
+Generate tests that cover:
+1. Happy path scenarios
+2. Edge cases and boundary conditions
+3. Error scenarios
+4. Mock dependencies appropriately
+5. Use Jest and TypeScript
+6. Follow AAA pattern (Arrange, Act, Assert)
+    `
+
+    const response = await this.aiService.chat([
+      {
+        role: 'system',
+        content: 'You are an expert test engineer. Generate high-quality, maintainable unit tests.'
+      },
+      {
+        role: 'user',
+        content: prompt
+      }
+    ])
+
+    return this.parseUnitTests(response.message.content)
+  }
+
+  async generateIntegrationTests(
+    apiEndpoints: APIEndpoint[],
+    database: DatabaseSchema
+  ): Promise<IntegrationTestSuite> {
+    const context = {
+      endpoints: apiEndpoints.map(e => ({
+        path: e.path,
+        method: e.method,
+        parameters: e.parameters,
+        responses: e.responses
+      })),
+      database: database.tables.map(t => ({
+        name: t.name,
+        fields: t.fields
+      }))
+    }
+
+    const response = await this.aiService.chat([
+      {
+        role: 'system',
+        content: `Generate integration tests that verify API endpoints work correctly with the database.
+                 Include setup/teardown, data seeding, and comprehensive assertions.`
+      },
+      {
+        role: 'user',
+        content: JSON.stringify(context, null, 2)
+      }
+    ])
+
+    return this.parseIntegrationTests(response.message.content)
+  }
+
+  async generatePerformanceTests(
+    endpoints: APIEndpoint[],
+    performanceTargets: PerformanceTargets
+  ): Promise<PerformanceTestSuite> {
+    const testScenarios = await this.aiService.chat([
+      {
+        role: 'system',
+        content: 'Generate performance test scenarios that validate response times, throughput, and resource usage.'
+      },
+      {
+        role: 'user',
+        content: `
+Create performance tests for these endpoints:
+${JSON.stringify(endpoints, null, 2)}
+
+Performance targets:
+- Response time: < ${performanceTargets.responseTime}ms
+- Throughput: > ${performanceTargets.throughput} req/s
+- Memory usage: < ${performanceTargets.memoryLimit}MB
+- CPU usage: < ${performanceTargets.cpuLimit}%
+
+Include load testing, stress testing, and endurance testing scenarios.
+        `
+      }
+    ])
+
+    return this.parsePerformanceTests(testScenarios.message.content)
+  }
+
+  private async analyzeCode(sourceCode: string): Promise<CodeAnalysis> {
+    const response = await this.aiService.chat([
+      {
+        role: 'system',
+        content: 'Analyze TypeScript code and provide structural information.'
+      },
+      {
+        role: 'user',
+        content: `Analyze this code and return JSON with functions, classes, complexity score:\n\n${sourceCode}`
+      }
+    ])
+
+    return JSON.parse(response.message.content)
+  }
+}
+```
+
+#### 性能优化建议
+
+```typescript
+export class AIPerformanceOptimizer {
+  constructor(private aiService: AIService) {}
+
+  async analyzePerformanceBottlenecks(
+    metrics: PerformanceMetrics,
+    codebase: CodebaseSnapshot
+  ): Promise<OptimizationRecommendations> {
+    const analysis = await this.aiService.chat([
+      {
+        role: 'system',
+        content: `You are a performance optimization expert. Analyze metrics and code to identify bottlenecks
+                 and provide specific, actionable optimization recommendations.`
+      },
+      {
+        role: 'user',
+        content: `
+Performance Metrics:
+${JSON.stringify(metrics, null, 2)}
+
+Codebase Overview:
+- Total files: ${codebase.fileCount}
+- Lines of code: ${codebase.linesOfCode}
+- Dependencies: ${codebase.dependencies.length}
+- Database queries: ${codebase.queryCount}
+
+Identify performance bottlenecks and suggest optimizations.
+        `
+      }
+    ])
+
+    return this.parseOptimizationRecommendations(analysis.message.content)
+  }
+
+  async optimizeDatabase(
+    queryLogs: QueryLog[],
+    schema: DatabaseSchema
+  ): Promise<DatabaseOptimizations> {
+    const slowQueries = queryLogs.filter(q => q.executionTime > 1000)
+
+    const response = await this.aiService.chat([
+      {
+        role: 'system',
+        content: 'Analyze database queries and schema to suggest performance optimizations.'
+      },
+      {
+        role: 'user',
+        content: `
+Slow Queries (>1s):
+${JSON.stringify(slowQueries, null, 2)}
+
+Database Schema:
+${JSON.stringify(schema, null, 2)}
+
+Suggest:
+1. Index optimizations
+2. Query rewrites
+3. Schema improvements
+4. Caching strategies
+        `
+      }
+    ])
+
+    return this.parseDatabaseOptimizations(response.message.content)
+  }
+
+  async optimizeMemoryUsage(
+    memoryProfile: MemoryProfile,
+    applicationCode: string[]
+  ): Promise<MemoryOptimizations> {
+    const response = await this.aiService.chat([
+      {
+        role: 'system',
+        content: 'Analyze memory usage patterns and suggest optimizations to reduce memory consumption.'
+      },
+      {
+        role: 'user',
+        content: `
+Memory Profile:
+- Heap used: ${memoryProfile.heapUsed}MB
+- Heap total: ${memoryProfile.heapTotal}MB
+- External: ${memoryProfile.external}MB
+- Memory leaks detected: ${memoryProfile.leaks.length}
+
+Code samples with high memory usage:
+${applicationCode.join('\n\n---\n\n')}
+
+Suggest memory optimization strategies.
+        `
+      }
+    ])
+
+    return this.parseMemoryOptimizations(response.message.content)
+  }
+}
+```
+
 ---
 
 ## 7. 测试策略
 
-### 7.1 单元测试
+### 7.1 AI 功能测试
 
 ```typescript
-describe('AIServiceManager', () => {
-  let aiService: AIServiceManager
+describe('AI Integration Tests', () => {
+  let aiService: AIService
   let mockProvider: jest.Mocked<AIProvider>
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockProvider = createMockProvider()
-    aiService = new AIServiceManager(testConfig, mockLogger)
-    aiService.registerProvider(mockProvider)
+    aiService = new AIService({
+      defaultProvider: 'mock',
+      providers: {
+        mock: mockProvider
+      }
+    })
   })
 
-  it('should complete text successfully', async () => {
-    const prompt = 'Hello, world!'
-    const expectedResponse = {
-      text: 'Hello! How can I help you?',
-      usage: { promptTokens: 3, completionTokens: 7, totalTokens: 10 },
-      model: 'test-model',
-      finishReason: 'stop'
-    }
+  describe('Text Completion', () => {
+    it('should complete text successfully', async () => {
+      const prompt = 'Hello, world!'
+      const expectedResponse = {
+        text: 'Hello! How can I help you?',
+        usage: { promptTokens: 3, completionTokens: 7, totalTokens: 10 },
+        model: 'test-model',
+        finishReason: 'stop'
+      }
 
-    mockProvider.complete.mockResolvedValue(expectedResponse)
+      mockProvider.complete.mockResolvedValue(expectedResponse)
 
-    const result = await aiService.complete(prompt)
+      const result = await aiService.complete(prompt)
 
-    expect(result).toEqual(expectedResponse)
-    expect(mockProvider.complete).toHaveBeenCalledWith(prompt, {})
+      expect(result).toEqual(expectedResponse)
+      expect(mockProvider.complete).toHaveBeenCalledWith(prompt, {})
+    })
+
+    it('should handle completion errors gracefully', async () => {
+      const prompt = 'Test prompt'
+      const error = new AIProviderError('API rate limit exceeded', 'mock')
+
+      mockProvider.complete.mockRejectedValue(error)
+
+      await expect(aiService.complete(prompt)).rejects.toThrow(AIProviderError)
+    })
+
+    it('should retry on transient failures', async () => {
+      const prompt = 'Retry test'
+      const transientError = new AIProviderError('Temporary failure', 'mock')
+      const successResponse = {
+        text: 'Success after retry',
+        usage: { promptTokens: 2, completionTokens: 3, totalTokens: 5 },
+        model: 'test-model',
+        finishReason: 'stop'
+      }
+
+      mockProvider.complete
+        .mockRejectedValueOnce(transientError)
+        .mockResolvedValueOnce(successResponse)
+
+      const result = await aiService.complete(prompt, { retries: 1 })
+
+      expect(result).toEqual(successResponse)
+      expect(mockProvider.complete).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('Chat Functionality', () => {
+    it('should handle multi-turn conversations', async () => {
+      const messages = [
+        { role: 'user', content: 'What is TypeScript?' },
+        { role: 'assistant', content: 'TypeScript is a typed superset of JavaScript.' },
+        { role: 'user', content: 'What are its benefits?' }
+      ]
+
+      const expectedResponse = {
+        message: {
+          role: 'assistant',
+          content: 'TypeScript provides static typing, better IDE support, and improved code quality.'
+        },
+        usage: { promptTokens: 20, completionTokens: 15, totalTokens: 35 },
+        model: 'test-model',
+        finishReason: 'stop'
+      }
+
+      mockProvider.chat.mockResolvedValue(expectedResponse)
+
+      const result = await aiService.chat(messages)
+
+      expect(result).toEqual(expectedResponse)
+      expect(mockProvider.chat).toHaveBeenCalledWith(messages, {})
+    })
+
+    it('should support streaming responses', async () => {
+      const messages = [{ role: 'user', content: 'Stream test' }]
+      const chunks = [
+        { content: 'Hello', role: 'assistant' },
+        { content: ' world', role: 'assistant' },
+        { content: '!', role: 'assistant', finishReason: 'stop' }
+      ]
+
+      const mockStream = {
+        async *[Symbol.asyncIterator]() {
+          for (const chunk of chunks) {
+            yield chunk
+          }
+        }
+      }
+
+      mockProvider.streamChat.mockReturnValue(mockStream)
+
+      const result = []
+      for await (const chunk of aiService.streamChat(messages)) {
+        result.push(chunk)
+      }
+
+      expect(result).toEqual(chunks)
+    })
+  })
+
+  describe('Function Calling', () => {
+    it('should execute function calls correctly', async () => {
+      const messages = [{ role: 'user', content: 'Get weather for New York' }]
+      const functions = [
+        {
+          name: 'getWeather',
+          description: 'Get weather information',
+          parameters: {
+            type: 'object',
+            properties: {
+              location: { type: 'string' }
+            },
+            required: ['location']
+          }
+        }
+      ]
+
+      const expectedResponse = {
+        message: {
+          role: 'assistant',
+          content: '',
+          functionCall: {
+            name: 'getWeather',
+            arguments: '{"location": "New York"}'
+          }
+        },
+        usage: { promptTokens: 15, completionTokens: 10, totalTokens: 25 },
+        model: 'test-model',
+        finishReason: 'function_call'
+      }
+
+      mockProvider.callFunction.mockResolvedValue(expectedResponse)
+
+      const result = await aiService.callFunction(messages, functions)
+
+      expect(result).toEqual(expectedResponse)
+      expect(result.message.functionCall?.name).toBe('getWeather')
+    })
+  })
+})
+```
+
+### 7.2 模型性能测试
+
+```typescript
+describe('AI Model Performance Tests', () => {
+  let aiService: AIService
+  let performanceMonitor: PerformanceMonitor
+
+  beforeEach(() => {
+    performanceMonitor = new PerformanceMonitor()
+    aiService = new AIService(testConfig)
+  })
+
+  describe('Response Time Performance', () => {
+    it('should complete simple prompts within 2 seconds', async () => {
+      const prompt = 'What is 2 + 2?'
+
+      const start = performance.now()
+      const result = await aiService.complete(prompt)
+      const duration = performance.now() - start
+
+      expect(result.text).toBeDefined()
+      expect(duration).toBeLessThan(2000)
+    })
+
+    it('should handle complex prompts within 10 seconds', async () => {
+      const complexPrompt = `
+        Analyze the following TypeScript code and provide optimization suggestions:
+        ${generateLargeCodeSample(1000)} // 1000 lines of code
+      `
+
+      const start = performance.now()
+      const result = await aiService.complete(complexPrompt)
+      const duration = performance.now() - start
+
+      expect(result.text).toBeDefined()
+      expect(duration).toBeLessThan(10000)
+    })
+
+    it('should maintain performance under concurrent load', async () => {
+      const concurrentRequests = 10
+      const promises = Array.from({ length: concurrentRequests }, (_, i) =>
+        aiService.complete(`Test prompt ${i}`)
+      )
+
+      const start = performance.now()
+      const results = await Promise.all(promises)
+      const duration = performance.now() - start
+
+      expect(results).toHaveLength(concurrentRequests)
+      expect(results.every(r => r.text)).toBe(true)
+      expect(duration).toBeLessThan(15000) // 15 seconds for 10 concurrent requests
+    })
+  })
+
+  describe('Token Usage Optimization', () => {
+    it('should estimate token usage accurately', async () => {
+      const prompt = 'Hello, how are you today?'
+      const estimatedTokens = aiService.estimateTokens(prompt)
+
+      const result = await aiService.complete(prompt)
+      const actualTokens = result.usage.promptTokens
+
+      // Allow 10% variance in estimation
+      const variance = Math.abs(estimatedTokens - actualTokens) / actualTokens
+      expect(variance).toBeLessThan(0.1)
+    })
+
+    it('should optimize token usage for large inputs', async () => {
+      const largePrompt = 'word '.repeat(1000) // ~1000 tokens
+
+      const result = await aiService.complete(largePrompt, {
+        maxTokens: 100,
+        optimizeTokens: true
+      })
+
+      expect(result.usage.promptTokens).toBeLessThan(1000)
+      expect(result.usage.completionTokens).toBeLessThanOrEqual(100)
+    })
+  })
+
+  describe('Memory Usage', () => {
+    it('should not cause memory leaks during extended use', async () => {
+      const initialMemory = process.memoryUsage().heapUsed
+
+      // Perform many AI operations
+      for (let i = 0; i < 100; i++) {
+        await aiService.complete(`Test prompt ${i}`)
+
+        // Force garbage collection every 10 iterations
+        if (i % 10 === 0 && global.gc) {
+          global.gc()
+        }
+      }
+
+      const finalMemory = process.memoryUsage().heapUsed
+      const memoryIncrease = finalMemory - initialMemory
+
+      // Memory increase should be reasonable (< 50MB)
+      expect(memoryIncrease).toBeLessThan(50 * 1024 * 1024)
+    })
+
+    it('should handle large responses without memory issues', async () => {
+      const prompt = 'Generate a detailed 5000-word essay about TypeScript.'
+
+      const initialMemory = process.memoryUsage().heapUsed
+      const result = await aiService.complete(prompt, { maxTokens: 6000 })
+      const finalMemory = process.memoryUsage().heapUsed
+
+      expect(result.text.length).toBeGreaterThan(1000)
+
+      // Memory increase should be proportional to response size
+      const memoryIncrease = finalMemory - initialMemory
+      expect(memoryIncrease).toBeLessThan(100 * 1024 * 1024) // < 100MB
+    })
+  })
+
+  describe('Error Recovery Performance', () => {
+    it('should recover quickly from provider failures', async () => {
+      const failingProvider = createFailingProvider()
+      const backupProvider = createMockProvider()
+
+      aiService.registerProvider(failingProvider)
+      aiService.registerProvider(backupProvider)
+
+      const start = performance.now()
+      const result = await aiService.complete('Test prompt', {
+        fallbackProviders: ['backup']
+      })
+      const duration = performance.now() - start
+
+      expect(result.text).toBeDefined()
+      expect(duration).toBeLessThan(5000) // Should failover within 5 seconds
+    })
+  })
+})
+```
+
+### 7.3 集成测试用例
+
+```typescript
+describe('AI Integration with LinchKit Packages', () => {
+  let aiService: AIService
+  let crudManager: CRUDManager<any>
+  let authManager: AuthManager
+
+  beforeEach(async () => {
+    await setupIntegrationTestEnvironment()
+
+    aiService = new AIService(integrationConfig)
+    crudManager = new CRUDManager(crudConfig)
+    authManager = new AuthManager(authConfig)
+  })
+
+  describe('CRUD Package Integration', () => {
+    it('should generate optimized queries using AI', async () => {
+      const naturalLanguageQuery = 'Find all active users who registered in the last 30 days'
+
+      const optimizedQuery = await aiService.generateQuery(
+        naturalLanguageQuery,
+        'User',
+        userSchema
+      )
+
+      const results = await crudManager
+        .read()
+        .where(optimizedQuery.filter)
+        .findMany()
+
+      expect(results).toBeDefined()
+      expect(Array.isArray(results)).toBe(true)
+      expect(optimizedQuery.estimatedPerformance).toBeGreaterThan(0.8)
+    })
+
+    it('should provide intelligent data validation suggestions', async () => {
+      const invalidData = {
+        name: '',
+        email: 'invalid-email',
+        age: -5
+      }
+
+      const suggestions = await aiService.validateAndSuggest(
+        invalidData,
+        'User',
+        userSchema
+      )
+
+      expect(suggestions.isValid).toBe(false)
+      expect(suggestions.corrections).toHaveLength(3)
+      expect(suggestions.corrections[0].field).toBe('name')
+      expect(suggestions.corrections[1].field).toBe('email')
+      expect(suggestions.corrections[2].field).toBe('age')
+    })
+
+    it('should detect and suggest fixes for data anomalies', async () => {
+      // Create test data with anomalies
+      await crudManager.createMany([
+        { name: 'John Doe', age: 25, salary: 50000 },
+        { name: 'Jane Smith', age: 30, salary: 60000 },
+        { name: 'Bob Johnson', age: 35, salary: 5000000 }, // Anomaly: very high salary
+        { name: 'Alice Brown', age: 200, salary: 55000 }   // Anomaly: impossible age
+      ])
+
+      const anomalies = await aiService.detectAnomalies('User', {
+        fields: ['age', 'salary'],
+        threshold: 0.95
+      })
+
+      expect(anomalies).toHaveLength(2)
+      expect(anomalies.some(a => a.field === 'salary')).toBe(true)
+      expect(anomalies.some(a => a.field === 'age')).toBe(true)
+    })
+  })
+
+  describe('Auth Package Integration', () => {
+    it('should analyze user behavior for security insights', async () => {
+      const userSessions = await authManager.getUserSessions('user123')
+
+      const securityAnalysis = await aiService.analyzeSecurityPatterns(
+        userSessions,
+        {
+          includeLocationAnalysis: true,
+          includeDeviceFingerprinting: true,
+          includeTimePatterns: true
+        }
+      )
+
+      expect(securityAnalysis.riskScore).toBeGreaterThanOrEqual(0)
+      expect(securityAnalysis.riskScore).toBeLessThanOrEqual(1)
+      expect(securityAnalysis.insights).toBeDefined()
+      expect(securityAnalysis.recommendations).toBeDefined()
+    })
+
+    it('should generate intelligent permission recommendations', async () => {
+      const user = await authManager.getUser('user123')
+      const userActivity = await authManager.getUserActivity('user123', {
+        timeRange: '30d'
+      })
+
+      const permissionRecommendations = await aiService.recommendPermissions(
+        user,
+        userActivity,
+        {
+          considerRoleProgression: true,
+          analyzeUsagePatterns: true,
+          includeSecurityContext: true
+        }
+      )
+
+      expect(permissionRecommendations.suggestions).toBeDefined()
+      expect(permissionRecommendations.confidence).toBeGreaterThan(0.7)
+      expect(permissionRecommendations.reasoning).toBeDefined()
+    })
+  })
+
+  describe('UI Package Integration', () => {
+    it('should generate intelligent UI components', async () => {
+      const componentSpec = {
+        type: 'form',
+        entity: 'User',
+        fields: ['name', 'email', 'age'],
+        style: 'modern',
+        framework: 'react'
+      }
+
+      const generatedComponent = await aiService.generateUIComponent(
+        componentSpec,
+        userSchema
+      )
+
+      expect(generatedComponent.code).toContain('export')
+      expect(generatedComponent.code).toContain('React')
+      expect(generatedComponent.dependencies).toContain('@linch-kit/ui')
+      expect(generatedComponent.tests).toBeDefined()
+    })
+
+    it('should optimize UI performance based on usage patterns', async () => {
+      const usageData = await collectUIUsageData('UserForm', '7d')
+
+      const optimizations = await aiService.optimizeUIPerformance(
+        usageData,
+        {
+          targetMetrics: {
+            firstContentfulPaint: 1000,
+            largestContentfulPaint: 2500,
+            cumulativeLayoutShift: 0.1
+          }
+        }
+      )
+
+      expect(optimizations.suggestions).toBeDefined()
+      expect(optimizations.estimatedImprovement).toBeGreaterThan(0)
+      expect(optimizations.implementationComplexity).toBeDefined()
+    })
+  })
+
+  describe('Cross-Package AI Workflows', () => {
+    it('should orchestrate complex AI-driven workflows', async () => {
+      const workflowDefinition = {
+        name: 'intelligent-user-onboarding',
+        steps: [
+          {
+            type: 'ai-validation',
+            input: 'user-registration-data',
+            aiTask: 'validate-and-enhance-user-data'
+          },
+          {
+            type: 'crud-operation',
+            operation: 'create-user',
+            input: 'validated-user-data'
+          },
+          {
+            type: 'ai-analysis',
+            input: 'created-user',
+            aiTask: 'generate-personalized-recommendations'
+          },
+          {
+            type: 'auth-setup',
+            operation: 'setup-user-permissions',
+            input: 'user-and-recommendations'
+          }
+        ]
+      }
+
+      const workflowResult = await aiService.executeWorkflow(
+        workflowDefinition,
+        {
+          'user-registration-data': {
+            name: 'John Doe',
+            email: 'john@example.com',
+            preferences: ['technology', 'sports']
+          }
+        }
+      )
+
+      expect(workflowResult.success).toBe(true)
+      expect(workflowResult.outputs['created-user']).toBeDefined()
+      expect(workflowResult.outputs['personalized-recommendations']).toBeDefined()
+      expect(workflowResult.executionTime).toBeLessThan(30000) // 30 seconds
+    })
   })
 })
 ```

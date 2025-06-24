@@ -1,122 +1,105 @@
-# Linch Kit AI 上下文文档 v3.1
+# LinchKit AI Context
 
-**最后更新**: 2025-06-21
-**文档版本**: v3.1 (架构信息更新和验证完成)
-**重构完成**: AI Context 结构优化，文档数量从 25+ 减少到 8 个核心文件
-**维护责任**: AI Assistant + 开发团队
-**更新内容**: UI 包架构统一、插件系统澄清、国际化要求补充、技术栈版本验证、重复内容优化
-
----
-
-## 🎯 文档重构成果
-
-### 优化效果
-- ✅ **文档数量减少**: 从 25+ 个文件减少到 8 个核心文件
-- ✅ **消除重复内容**: 合并相似信息，建立单一信息源
-- ✅ **提升信息密度**: 每个文档都包含高价值、不重复的信息
-- ✅ **简化导航结构**: AI 可通过少数几个文件快速理解项目全貌
-- ✅ **增强维护性**: 每个信息只在一个地方维护
-
-### 新的三层架构
-```
-ai-context/zh/
-├── core/                    # 项目核心信息 (3个文件)
-│   ├── project-essentials.md   # 项目概览、目标、技术栈、当前状态
-│   ├── package-architecture.md # 包结构、依赖关系、模块设计
-│   └── code-locations.md       # 关键代码位置索引
-├── standards/               # 开发规范和标准 (3个文件)
-│   ├── development-standards.md # 代码质量、TypeScript、JSDoc 规范
-│   ├── ui-standards.md         # UI 组件、设计系统规范
-│   └── workflow-standards.md   # Git 工作流、测试、部署规范
-└── tasks/                   # 任务管理 (2个文件)
-    ├── current-progress.md     # 当前开发进度和状态
-    └── continue-prompt.md      # AI 工作流入口点
-```
-
-## 🚀 AI 助手快速导航
-
-### 🎯 开始工作 (必读)
-**[AI 工作流入口](./tasks/continue-prompt.md)** - 开始任何开发任务前的统一入口点
-
-### 📖 理解项目 (核心信息)
-1. **[项目核心要点](./core/project-essentials.md)** - 项目定位、技术栈、快速开始
-2. **[包架构设计](./core/package-architecture.md)** - 包结构、依赖关系、架构决策
-3. **[代码位置索引](./core/code-locations.md)** - 快速定位关键文件和功能
-
-### 🔒 遵循标准 (强制要求)
-1. **[开发规范](./standards/development-standards.md)** - **永久性标准，不可违背**
-2. **[工作流程标准](./standards/workflow-standards.md)** - 开发、测试、发布流程
-3. **[UI 组件标准](./standards/ui-standards.md)** - UI 开发和设计系统规范
-
-### 📈 跟踪进度 (实时更新)
-1. **[当前进度](./tasks/current-progress.md)** - 最新开发状态和任务优先级
-
-## 🎯 使用指南
-
-### 对于 AI 助手
-1. **开始任务**: 从 [AI 工作流入口](./tasks/continue-prompt.md) 开始
-2. **理解项目**: 阅读 [项目核心要点](./core/project-essentials.md)
-3. **遵循标准**: **必须严格遵循** [开发规范](./standards/development-standards.md)
-4. **查看进度**: 了解 [当前进度](./tasks/current-progress.md)
-5. **定位代码**: 使用 [代码位置索引](./core/code-locations.md)
-
-### 对于开发者
-1. **快速上手**: 阅读 [项目核心要点](./core/project-essentials.md)
-2. **开发规范**: **必须严格遵循** [开发规范](./standards/development-standards.md)
-3. **工作流程**: 遵循 [工作流程标准](./standards/workflow-standards.md)
-4. **架构理解**: 查看 [包架构设计](./core/package-architecture.md)
-
-## 📊 项目当前状态概览
-
-### 核心包完成情况
-| 包名 | 状态 | 发布状态 | 主要功能 |
-|------|------|----------|----------|
-| @linch-kit/schema | ✅ 完成 | 已发布 npm | 数据模式和代码生成 |
-| @linch-kit/core | ✅ 完成 | 待发布 | CLI、配置、插件系统 |
-| @linch-kit/auth-core | ✅ 完成 | 待发布 | 认证和权限管理 |
-| @linch-kit/crud | ✅ 完成 | 待发布 | CRUD 操作核心 |
-| @linch-kit/trpc | ✅ 完成 | 待发布 | tRPC 集成 |
-| @linch-kit/ui | ✅ 完成 | 待发布 | 完整 UI 组件库 (基础+CRUD+认证) |
-
-### 当前开发重点
-- ✅ **已完成**: linch-starter 基座应用前端认证集成 (2025-06-20)
-- 🔄 **进行中**: AI Context 重构优化 (当前任务)
-- 📋 **下一步**: 产品管理模块开发
-
-## 🔄 文档维护原则
-
-### 更新频率
-- **高频更新** (每次开发后): `tasks/current-progress.md`
-- **中频更新** (功能完成后): `core/project-essentials.md`, `core/package-architecture.md`
-- **低频更新** (架构变更后): `standards/*.md`, `core/code-locations.md`
-
-### 维护责任
-- **AI Assistant**: 负责 `tasks/` 目录下的任务管理文档
-- **开发团队**: 负责 `core/` 和 `standards/` 目录下的核心文档
-- **UI 团队**: 负责 `standards/ui-standards.md`
-- **架构团队**: 负责 `core/package-architecture.md`
-
-### 文档质量标准
-1. **及时更新**: 代码变更后及时更新相关文档
-2. **简洁明了**: 重点记录关键信息，避免冗余
-3. **结构化**: 使用统一的格式和结构
-4. **面向 AI**: 文档应该便于 AI 理解和处理
-5. **任务导向**: 使用任务优先级和依赖关系组织内容
-
-## 🔗 外部资源链接
-
-### 项目资源
-- [项目主页](../../README.md) - 项目根目录文档
-- [用户文档](../../docs/README.md) - 面向用户的文档
-- [包级文档](../../packages/) - 各包详细文档
-
-### 开发资源
-- [GitHub 仓库](https://github.com/laofahai/linch-kit) - 源代码仓库
-- [npm 包](https://www.npmjs.com/package/@linch-kit/schema) - 已发布的包
+**版本**: v1.0.0 Final  
+**创建日期**: 2025-06-23  
+**最后更新**: 2025-06-24  
+**状态**: 架构设计完成，准备实施
 
 ---
 
-**重要提醒**:
-1. 所有开发工作都必须严格遵循 [开发规范](./standards/development-standards.md)
-2. 开始任何任务前请先查看 [AI 工作流入口](./tasks/continue-prompt.md)
-3. 使用 [快速开始 Prompt](./tasks/quick-start-prompt.md) 可以快速开始新的开发任务
+## 📋 目录结构
+
+### 🇨🇳 中文文档 (zh/)
+- **系统设计** (`zh/system-design/`): 🔒 **已冻结** - 完整的架构设计文档
+  - 核心架构文档
+  - 开发规范和约束
+  - 包设计文档 (9个包的完整设计)
+  - 企业级特性设计 (安全性、可观测性、性能监控)
+
+### 📚 核心文档
+- **AI 开发指导方针**: [`ai-development-guidelines.md`](ai-development-guidelines.md) - AI 开发助手的全面指导方针和背景提示词
+- **管理指南**: [`meta.md`](meta.md) - 命名规范、内容管理和架构维护
+
+### 📋 项目管理
+- **开发路线图**: [`project/roadmap.md`](project/roadmap.md) - 详细的6周开发计划
+- **进度跟踪**: [`project/progress.md`](project/progress.md) - 实时进度监控和里程碑管理
+
+---
+
+## 🎯 当前状态
+
+### ✅ 已完成工作
+1. **完整架构设计** - 6层架构，9个包的详细设计
+2. **企业级特性** - 安全性、可观测性、性能监控完整设计
+3. **第三方库集成方案** - 避免重复造轮子，使用成熟生态
+4. **架构问题修复** - 解耦、硬编码、重复定义问题全部修复
+5. **可行性验证** - 全面的技术可行性和独立性验证
+
+### 🚀 下一步行动
+**立即开始代码实施** - 使用 [`development.md`](development.md) 中的一句话指令开始开发
+
+---
+
+## 🏗️ 架构亮点
+
+### 企业级特性
+- **安全性**: 完整的安全审计、数据脱敏、配置验证
+- **可观测性**: 指标收集、分布式追踪、健康检查、告警
+- **性能监控**: 基准测试、回归检测、性能分析
+- **扩展性**: 插件系统、模块化设计
+
+### 第三方库集成 (避免重复造轮子)
+- **指标收集**: Prometheus (prom-client) - 减少80%自建代码
+- **分布式追踪**: OpenTelemetry - 减少90%自建代码
+- **健康检查**: @godaddy/terminus - 减少70%自建代码
+- **日志管理**: Pino - 减少60%自建代码
+- **基准测试**: tinybench - 减少75%自建代码
+- **告警系统**: Prometheus Alertmanager - 减少85%自建代码
+
+### 架构质量
+- **模块解耦**: 清晰的依赖关系，避免硬编码
+- **类型安全**: 端到端 TypeScript 类型安全
+- **测试覆盖**: 完整的测试策略和质量保证
+- **文档完整**: 详细的技术文档和最佳实践
+
+---
+
+## 📖 使用指南
+
+### 🚀 立即开始实施
+```bash
+# 使用一句话指令开始代码开发
+cat ai-context/zh/ai-development-guidelines.md
+```
+
+### 👨‍💻 开发者指南
+1. 阅读 [`ai-development-guidelines.md`](ai-development-guidelines.md) 了解完整的 AI 开发指导方针
+2. 查看 [`system-design/`](system-design/) 了解系统架构
+3. 遵循 [`system-design/development-constraints.md`](system-design/development-constraints.md) 的技术约束
+4. 参考 [`project/roadmap.md`](project/roadmap.md) 了解开发路线图和里程碑
+
+### 🏗️ 架构师指南
+1. 查看 [`system-design/architecture.md`](system-design/architecture.md) 理解完整架构
+2. 参考 [`system-design/overview.md`](system-design/overview.md) 了解文档导航
+3. 查阅各包设计文档了解详细设计
+
+### 📋 项目管理
+1. 使用 [`project/roadmap.md`](project/roadmap.md) 跟踪开发路线图
+2. 使用 [`project/progress.md`](project/progress.md) 监控实时进度
+3. 遵循 [`meta.md`](meta.md) 进行文档管理
+
+---
+
+## 🔒 设计冻结说明
+
+`zh/system-design/` 目录下的所有架构设计文档已经冻结，无特殊重大变动不得更改。详细信息请查看 [`zh/system-design/DESIGN_FREEZE_NOTICE.md`](system-design/DESIGN_FREEZE_NOTICE.md)。
+
+---
+
+## 📞 支持
+
+- **架构问题**: 参考 `zh/system-design/` 目录下的设计文档
+- **实施问题**: 查看实施计划和迁移指南
+- **技术问题**: 参考开发约束和最佳实践文档
+
+LinchKit 是一个 AI-First 的全栈开发框架，所有设计都围绕企业级特性和现代化开发体验展开。
