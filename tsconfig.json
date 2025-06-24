@@ -29,10 +29,10 @@
   ],
   "references": [
     { "path": "packages/core" },
-    { "path": "packages/ui" },
-    { "path": "packages/types" },
-    { "path": "packages/auth-core" },
     { "path": "packages/schema" },
-    { "path": "packages/trpc" }
+    { "path": "packages/auth" },
+    { "path": "packages/crud" },
+    { "path": "packages/trpc" },
+    { "path": "packages/ui" }
   ]
 }

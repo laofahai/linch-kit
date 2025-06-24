@@ -36,7 +36,7 @@
 5. **可行性验证** - 全面的技术可行性和独立性验证
 
 ### 🚀 下一步行动
-**立即开始代码实施** - 使用 [`development.md`](development.md) 中的一句话指令开始开发
+**立即开始代码实施** - 使用 [`ai-development-guidelines.md`](ai-development-guidelines.md) 中的一句话指令开始开发
 
 ---
 
@@ -92,7 +92,7 @@ cat ai-context/zh/ai-development-guidelines.md
 
 ## 🔒 设计冻结说明
 
-`zh/system-design/` 目录下的所有架构设计文档已经冻结，无特殊重大变动不得更改。详细信息请查看 [`zh/system-design/DESIGN_FREEZE_NOTICE.md`](system-design/DESIGN_FREEZE_NOTICE.md)。
+`zh/system-design/` 目录下的所有架构设计文档已经冻结，无特殊重大变动不得更改。详细信息请查看 [`zh/system-design/overview.md`](system-design/overview.md) 中的设计冻结通知。
 
 ---
 

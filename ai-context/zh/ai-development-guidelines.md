@@ -117,7 +117,7 @@ Level 4: trpc (API层)
 Level 5: ui (UI组件库)
 ```
 
-### 第三方库集成策略 (引用 implementation.md 内容)
+### 第三方库集成策略
 
 #### 核心第三方库
 - **Prometheus**: 指标收集 (prom-client) - 减少80%自建代码
@@ -272,4 +272,4 @@ Level 5: ui (UI组件库)
 
 **重要提醒**: 本文档是 LinchKit 项目 AI 开发助手的核心指导文档，整合了所有开发规范、架构约束和最佳实践。每次开始新任务时，请先回顾这些要求，确保开发过程的规范性和质量。
 
-**文档状态**: 本文档替代了原有的 `development.md` 和 `implementation.md`，成为 LinchKit AI 开发的唯一权威指导文档。
+**文档状态**: 本文档是 LinchKit AI 开发的唯一权威指导文档，整合了所有开发规范、架构约束和最佳实践。
