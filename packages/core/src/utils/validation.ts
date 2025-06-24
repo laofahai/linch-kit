@@ -12,7 +12,7 @@ import { logger } from './logger'
  * @ai-interface 验证结果
  * @ai-purpose 描述验证操作的结果
  */
-export interface ValidationResult<T = any> {
+export interface ValidationResult<T = unknown> {
   /** @ai-field 是否验证成功 */
   success: boolean
   
@@ -41,10 +41,10 @@ export interface ValidationError {
   code: string
   
   /** @ai-field 接收到的值 */
-  received?: any
-  
+  received?: unknown
+
   /** @ai-field 期望的值 */
-  expected?: any
+  expected?: unknown
 }
 
 /**
@@ -61,7 +61,7 @@ export function validateData<T>(data: unknown, schema: ZodSchema<T>): Validation
     
     logger.debug('Data validation successful', {
       dataType: typeof data,
-      schemaType: (schema as any)._def?.typeName || 'unknown'
+      schemaType: (schema as unknown as { _def?: { typeName?: string } })._def?.typeName || 'unknown'
     })
     
     return {
@@ -140,8 +140,8 @@ export function validateOrThrow<T>(
   if (!result.success) {
     const message = errorMessage || 'Validation failed'
     const error = new Error(message)
-    ;(error as any).validationErrors = result.errors
-    ;(error as any).rawError = result.rawError
+    ;(error as unknown as { validationErrors: ValidationError[]; rawError: ZodError }).validationErrors = result.errors!
+    ;(error as unknown as { validationErrors: ValidationError[]; rawError: ZodError }).rawError = result.rawError!
     throw error
   }
   

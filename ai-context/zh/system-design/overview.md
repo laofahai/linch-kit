@@ -55,6 +55,8 @@
 | @linch-kit/crud | [packages/crud.md](./packages/crud.md) | P1 | 设计完成 |
 | @linch-kit/trpc | [packages/trpc.md](./packages/trpc.md) | P1 | 设计完成 |
 | @linch-kit/ui | [packages/ui.md](./packages/ui.md) | P1 | 设计完成 |
+| **企业级包** | | | |
+| @linch-kit/console | [packages/console.md](./packages/console.md) | P1 | 设计完成 |
 | **插件包** | | | |
 | @linch-kit/ai | [packages/ai-integration.md](./packages/ai-integration.md) | P2 | 设计完成 |
 | @linch-kit/workflow | [packages/workflow.md](./packages/workflow.md) | P2 | 设计完成 |
@@ -90,15 +92,17 @@
 ```mermaid
 graph TD
     A[core] --> B[schema]
+    A --> I[ai]
     B --> C[auth]
     B --> D[crud]
     C --> D
     D --> E[trpc]
     E --> F[ui]
-    
+    F --> J[console]
+
     A -.-> G[workflow]
     A -.-> H[starter-app]
-    
+
     click A "./packages/core.md"
     click B "./packages/schema.md"
     click C "./packages/auth.md"
@@ -107,6 +111,8 @@ graph TD
     click F "./packages/ui.md"
     click G "./packages/workflow.md"
     click H "./packages/starter-app.md"
+    click I "./packages/ai-integration.md"
+    click J "./packages/console.md"
 ```
 
 ---

@@ -6,6 +6,7 @@ export default createCliConfig({
     cli: 'src/bin/cli.ts',
     'cli/index': 'src/cli/index.ts',
     'config/index': 'src/config/index.ts',
-    'utils/index': 'src/utils/index.ts'
+    'utils/index': 'src/utils/index.ts',
+    'enterprise/index': 'src/enterprise/index.ts'
   }
 })

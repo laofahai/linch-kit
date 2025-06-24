@@ -2,9 +2,10 @@
 
 **包版本**: v1.0.0
 **创建日期**: 2025-06-23
+**最后更新**: 2025-06-24
 **开发优先级**: P2 - 中优先级
 **依赖关系**: core → ai
-**维护状态**: 🔄 开发中
+**维护状态**: 🔄 设计中
 
 ---
 
@@ -99,6 +100,50 @@ interface AIArchitecture {
 | **性能优化** | 缓存策略、连接池、请求优化 | 业务层性能优化 |
 | **监控观测** | 使用量统计、性能监控、错误追踪 | 业务指标监控 |
 | **扩展支持** | 插件接口、自定义提供商 | 业务插件开发 |
+
+### 1.5 与 @linch-kit/core 的集成点
+
+#### 钩子和扩展点设计
+```typescript
+/**
+ * AI 包与 core 包的集成接口
+ * @description 定义 AI 包如何与 core 包的插件系统集成
+ */
+export interface AIPluginIntegration {
+  // 注册到 core 包的钩子
+  hooks: {
+    'ai:provider:register': (provider: AIProvider) => void
+    'ai:request:before': (request: AIRequest) => AIRequest | Promise<AIRequest>
+    'ai:request:after': (response: AIResponse) => AIResponse | Promise<AIResponse>
+    'ai:error:handle': (error: AIError) => void | Promise<void>
+    'ai:cache:hit': (key: string, value: any) => void
+    'ai:cache:miss': (key: string) => void
+    'ai:metrics:collect': (metrics: AIMetrics) => void
+  }
+
+  // 使用 core 包的服务
+  coreServices: {
+    observability: CoreObservabilityService  // 使用 core 的指标收集
+    logging: CoreLoggingService              // 使用 core 的日志系统
+    config: CoreConfigService                // 使用 core 的配置管理
+    events: CoreEventBus                     // 使用 core 的事件总线
+  }
+
+  // 提供给其他包的扩展点
+  extensionPoints: {
+    'ai:provider:custom': CustomProviderFactory
+    'ai:cache:strategy': CacheStrategyFactory
+    'ai:monitor:collector': MetricsCollectorFactory
+  }
+}
+```
+
+#### 依赖 core 包的基础设施
+- **日志记录**: 使用 core 包的 Pino 日志系统
+- **指标收集**: 使用 core 包的 Prometheus 指标
+- **健康检查**: 集成到 core 包的健康检查系统
+- **配置管理**: 使用 core 包的配置加载机制
+- **事件总线**: 通过 core 包的事件系统通信
 
 ---
 

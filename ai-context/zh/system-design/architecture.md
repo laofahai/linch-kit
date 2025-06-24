@@ -1,9 +1,9 @@
 # LinchKit 系统架构设计
 
-**文档版本**: v1.0.0  
-**创建日期**: 2025-06-23  
-**冻结日期**: 2025-06-24  
-**维护责任**: 架构团队  
+**文档版本**: v1.0.0
+**创建日期**: 2025-06-23
+**最后更新**: 2025-06-24
+**维护责任**: 架构团队
 **状态**: 🔒 设计冻结 - 禁止修改
 
 ---
@@ -93,13 +93,14 @@ graph TB
 ### 主依赖链
 ```mermaid
 graph TD
-    A[core<br/>插件系统+通用类型+CLI+配置] --> B[schema<br/>数据模式系统]
+    A[core<br/>插件系统+可观测性+性能监控+安全基础] --> B[schema<br/>数据模式系统]
     A --> G[ai<br/>AI服务集成]
     B --> C[auth<br/>认证权限]
     B --> D[crud<br/>CRUD操作]
     C --> D
     D --> E[trpc<br/>API层]
     E --> F[ui<br/>UI组件库]
+    F --> H[console<br/>企业级管理平台]
 
     classDef level0 fill:#e1f5fe
     classDef level1 fill:#f3e5f5
@@ -107,6 +108,7 @@ graph TD
     classDef level3 fill:#fff3e0
     classDef level4 fill:#fce4ec
     classDef level5 fill:#f1f8e9
+    classDef level6 fill:#e8eaf6
     classDef ai fill:#fff8e1
 
     class A level0
@@ -116,6 +118,7 @@ graph TD
     class D level3
     class E level4
     class F level5
+    class H level6
 ```
 
 ### 构建顺序层级
@@ -127,9 +130,11 @@ graph TD
 | Level 3 | crud | 3 | ~60s | ✅ |
 | Level 4 | trpc | 4 | ~40s | ✅ |
 | Level 5 | ui | 1* | ~50s | ✅ |
+| Level 6 | console | 5** | ~60s | ✅ |
 
-*ui 包直接依赖 core，通过 core 获得所有通用类型和插件支持  
+*ui 包直接依赖 core，通过 core 获得所有通用类型和插件支持
 *ai 包与其他业务包并行，独立提供 AI 服务能力
+**console 包依赖 core、auth、crud、trpc、ui，提供企业级管理功能
 
 ---
 
@@ -173,7 +178,7 @@ graph TD
 ### 核心包设计
 | 包名 | 功能定位 | 核心特性 | 开发优先级 |
 |------|----------|----------|------------|
-| **@linch-kit/core** | 基础设施 | 插件系统、错误处理、日志管理、配置系统 | P0 - 最高 |
+| **@linch-kit/core** | 基础设施 | 插件系统、可观测性、性能监控、安全基础、配置系统 | P0 - 最高 |
 | **@linch-kit/schema** | 数据模式 | Schema定义、代码生成、类型推导、验证引擎 | P0 - 最高 |
 | **@linch-kit/auth** | 认证权限 | 多提供者认证、RBAC/ABAC、多租户、MFA | P1 - 高 |
 | **@linch-kit/crud** | 数据操作 | 类型安全CRUD、查询构建、事务管理、缓存 | P1 - 高 |
@@ -185,6 +190,11 @@ graph TD
 |------|----------|----------|------------|
 | **@linch-kit/ai** | AI集成 | 多提供商支持、智能缓存、成本控制、安全检查 | P2 - 中 |
 | **@linch-kit/workflow** | 工作流 | 流程定义、状态管理、事件驱动、可视化编辑 | P2 - 中 |
+
+### 企业级包设计
+| 包名 | 功能定位 | 核心特性 | 开发优先级 |
+|------|----------|----------|------------|
+| **@linch-kit/console** | 企业管理 | 多租户管理、插件市场、高级监控、企业安全 | P1 - 高 |
 
 ### 应用示例
 | 应用 | 功能定位 | 核心特性 | 开发优先级 |
@@ -332,15 +342,23 @@ graph TD
 - ✅ 类型推导链路清晰
 
 ### 潜在风险点
-1. **ui 包与 trpc 包**
+1. **core 包与 schema 包**
+   - 风险: core 包包含基础类型定义，可能与 schema 包形成循环依赖
+   - 解决方案: 严格限制 core 包只包含基础类型，复杂 schema 定义移至 schema 包
+
+2. **console 包的企业级特性**
+   - 风险: console 包可能重复实现 core 包的基础设施功能
+   - 解决方案: console 包依赖 core 包的基础设施，专注于企业级管理功能
+
+3. **ui 包与 trpc 包**
    - 风险: ui 可能需要直接使用 trpc 类型
    - 解决方案: 通过 core 包传递通用类型
 
-2. **auth 包与 crud 包**
+4. **auth 包与 crud 包**
    - 风险: 双向依赖的可能性
    - 解决方案: auth 不依赖 crud，crud 依赖 auth 获取权限接口
 
-3. **schema 包的中心化风险**
+5. **schema 包的中心化风险**
    - 风险: 过度依赖可能导致构建瓶颈
    - 解决方案: 保持 schema 包的轻量化
 
@@ -354,6 +372,9 @@ graph TD
 - ✅ workflow 作为插件实现，不作为核心包
 - ✅ AI 集成独立为 @linch-kit/ai 插件包
 - ✅ 插件系统保持在 @linch-kit/core 内
+- ✅ 企业级基础设施功能从 console 迁移到 core 包
+- ✅ console 包重新定位为纯企业级管理平台
+- ✅ 建立分层的企业级特性架构：基础设施(core) + 管理平台(console)
 
 ---
 

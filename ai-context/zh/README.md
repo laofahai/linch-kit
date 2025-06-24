@@ -21,8 +21,9 @@
 - **管理指南**: [`meta.md`](meta.md) - 命名规范、内容管理和架构维护
 
 ### 📋 项目管理
-- **开发路线图**: [`project/roadmap.md`](project/roadmap.md) - 详细的6周开发计划
-- **进度跟踪**: [`project/progress.md`](project/progress.md) - 实时进度监控和里程碑管理
+- **开发实施计划**: [`project/development-plan.md`](project/development-plan.md) - 4阶段8周全包重写计划
+- **重写实施指南**: [`project/complete-rewrite-implementation-guide.md`](project/complete-rewrite-implementation-guide.md) - 详细的重写实施指南
+- **文档模块化方案**: [`project/documentation-modularization-plan.md`](project/documentation-modularization-plan.md) - 文档模块化重构方案
 
 ---
 
@@ -34,9 +35,11 @@
 3. **第三方库集成方案** - 避免重复造轮子，使用成熟生态
 4. **架构问题修复** - 解耦、硬编码、重复定义问题全部修复
 5. **可行性验证** - 全面的技术可行性和独立性验证
+6. **文档清理** - 移除过程性、重复性、过期内容，保留核心设计文档
+7. **重写策略制定** - 明确全包重写策略和实施计划
 
 ### 🚀 下一步行动
-**立即开始代码实施** - 使用 [`ai-development-guidelines.md`](ai-development-guidelines.md) 中的一句话指令开始开发
+**立即开始全包重写** - 使用 [`project/development-plan.md`](project/development-plan.md) 开始 Phase 1 重写
 
 ---
 
@@ -76,7 +79,7 @@ cat ai-context/zh/ai-development-guidelines.md
 1. 阅读 [`ai-development-guidelines.md`](ai-development-guidelines.md) 了解完整的 AI 开发指导方针
 2. 查看 [`system-design/`](system-design/) 了解系统架构
 3. 遵循 [`system-design/development-constraints.md`](system-design/development-constraints.md) 的技术约束
-4. 参考 [`project/roadmap.md`](project/roadmap.md) 了解开发路线图和里程碑
+4. 参考 [`project/complete-rewrite-implementation-guide.md`](project/complete-rewrite-implementation-guide.md) 了解重写实施计划
 
 ### 🏗️ 架构师指南
 1. 查看 [`system-design/architecture.md`](system-design/architecture.md) 理解完整架构
@@ -84,9 +87,9 @@ cat ai-context/zh/ai-development-guidelines.md
 3. 查阅各包设计文档了解详细设计
 
 ### 📋 项目管理
-1. 使用 [`project/roadmap.md`](project/roadmap.md) 跟踪开发路线图
-2. 使用 [`project/progress.md`](project/progress.md) 监控实时进度
-3. 查看 [`project/packages-refactor-plan.md`](project/packages-refactor-plan.md) 了解包重构计划
+1. 使用 [`project/development-plan.md`](project/development-plan.md) 了解开发实施计划
+2. 使用 [`project/complete-rewrite-implementation-guide.md`](project/complete-rewrite-implementation-guide.md) 执行详细重写指南
+3. 参考 [`project/documentation-modularization-plan.md`](project/documentation-modularization-plan.md) 进行文档模块化
 4. 遵循 [`meta.md`](meta.md) 进行文档管理
 
 ---

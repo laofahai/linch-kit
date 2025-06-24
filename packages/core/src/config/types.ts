@@ -44,7 +44,7 @@ export const AuthConfigSchema = z.object({
   providers: z.array(z.object({
     type: z.enum(['oauth', 'credentials', 'shared-token', 'custom']),
     id: z.string(),
-    config: z.record(z.any())
+    config: z.record(z.string(), z.unknown())
   })).default([]),
   /** 权限策略 */
   permissions: z.object({
@@ -75,7 +75,7 @@ export const AppConfigSchema = z.object({
   /** 应用 URL */
   url: z.string().url().optional(),
   /** 应用设置 */
-  settings: z.record(z.any()).optional(),
+  settings: z.record(z.string(), z.unknown()).optional(),
   /** 功能开关 */
   features: z.record(z.boolean()).optional(),
   /** 主题配置 */
@@ -89,12 +89,12 @@ export const AppConfigSchema = z.object({
   email: z.object({
     provider: z.enum(['smtp', 'sendgrid', 'mailgun', 'ses']).optional(),
     from: z.string().email().optional(),
-    config: z.record(z.any()).optional()
+    config: z.record(z.string(), z.unknown()).optional()
   }).optional(),
   /** 存储配置 */
   storage: z.object({
     provider: z.enum(['local', 's3', 'oss', 'cos']).optional(),
-    config: z.record(z.any()).optional()
+    config: z.record(z.string(), z.unknown()).optional()
   }).optional()
 })
 
@@ -114,10 +114,10 @@ export const LinchConfigSchema = z.object({
   plugins: z.array(z.object({
     name: z.string(),
     enabled: z.boolean().default(true),
-    config: z.record(z.any()).optional()
+    config: z.record(z.string(), z.unknown()).optional()
   })).optional(),
   /** 自定义配置 */
-  custom: z.record(z.any()).optional()
+  custom: z.record(z.string(), z.unknown()).optional()
 })
 
 // 导出类型

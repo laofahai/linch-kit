@@ -20,6 +20,54 @@ export * from './utils'
 // AI: 统一国际化系统导出
 export * from './i18n'
 
+// AI: 企业级特性导出（避免命名冲突）
+export {
+  EnterpriseLogger,
+  LogLevel as EnterpriseLogLevel,
+  AuditEventType,
+  LoggerConfigSchema,
+  createLogger as createEnterpriseLogger,
+  EnterpriseMetrics,
+  MetricsConfigSchema,
+  metrics,
+  createMetrics,
+  EnterpriseTracing,
+  TracingConfigSchema,
+  tracing,
+  createTracing,
+  EnterpriseHealth,
+  HealthStatus,
+  HealthConfigSchema,
+  health,
+  createHealth,
+  EnterpriseBenchmark,
+  BenchmarkConfigSchema,
+  benchmark,
+  createBenchmark,
+  EnterpriseManager,
+  enterprise,
+  createEnterprise
+} from './enterprise'
+
+// AI: 企业级特性类型导出
+export type { LoggerConfig as EnterpriseLoggerConfig } from './enterprise'
+export type { AuditLog } from './enterprise'
+export type { MetricsConfig } from './enterprise'
+export type { TracingConfig } from './enterprise'
+export type { SpanAttributes } from './enterprise'
+export type { TracingContext } from './enterprise'
+export type { HealthConfig } from './enterprise'
+export type { HealthCheckResult } from './enterprise'
+export type { HealthCheckFunction } from './enterprise'
+export type { BenchmarkConfig } from './enterprise'
+export type { BenchmarkResult } from './enterprise'
+export type { RegressionResult } from './enterprise'
+export type { BenchmarkSuite } from './enterprise'
+export type { EnterpriseConfig } from './enterprise'
+export type { Span } from './enterprise'
+export type { SpanKind } from './enterprise'
+export type { SpanStatusCode } from './enterprise'
+
 // AI: 类型定义导出 (仅导出不冲突的类型)
 export type {
     AITag, AbstractConstructor, AsyncResult, AuthConfig, CLIConfig,
@@ -42,6 +90,7 @@ export type { CommandPlugin as CLIPlugin } from './types'
 export * as CLI from './cli'
 export * as Config from './config'
 export * as Utils from './utils'
+export * as Enterprise from './enterprise'
 
 /**
  * @ai-constant 包版本信息
@@ -59,10 +108,15 @@ export const AI_METADATA = {
   architecture: '模块化核心架构',
   keyFeatures: [
     'unified CLI system',
-    'configuration management', 
+    'configuration management',
     'plugin system',
     'development tools',
-    'AI-first design'
+    'AI-first design',
+    'enterprise logging',
+    'metrics collection',
+    'distributed tracing',
+    'health monitoring',
+    'performance benchmarking'
   ],
   extensionPoints: [
     'CLI commands',

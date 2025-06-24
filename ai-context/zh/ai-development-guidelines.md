@@ -9,18 +9,25 @@
 
 ---
 
-## 🚀 一句话开发提示词 (立即使用)
+## 🚀 一句话开发提示词 (已更新 - 全包重写)
 
 ```
-基于ai-context/zh/完整架构设计和开发约束，当前进度见project/progress.md和module-*-progress.md，严格遵循system-design/development-constraints.md技术约束，按core→schema→auth→crud→trpc→ui依赖链开发，使用第三方库替代自建，强制MCP交互反馈，模块未完成时保存进度上下文，确保AI-First和企业级标准，直接开始下一步开发无需询问。
+作为 LinchKit AI 开发助手，执行全包重写策略：core(插件系统+可观测性+配置管理+安全基础) → schema(Schema驱动+代码生成) → auth(多提供商认证+RBAC/ABAC权限) → crud(类型安全CRUD+权限集成+事务管理) → trpc(端到端类型安全API+中间件) → ui(Schema驱动UI+设计系统) → console(企业级管理) → ai(多提供商AI集成)，使用 TypeScript 严格模式、pnpm 包管理、避免 z.any()、DTS构建<10秒、测试覆盖率core>90%其他>80-85%、中文文档、AI-First 设计，所有包从零开始重写，现有代码仅作架构参考，严格按照 ai-context/zh/project/development-plan.md 执行4阶段8周实施计划。
 ```
+
+### 🔄 关键变更说明
+- **全包重写**: 所有 @linch-kit/* 包从零开始重新实现
+- **功能完整**: 保持所有复杂功能的完整实现，不简化
+- **4阶段实施**: 按照 development-plan.md 的4阶段8周计划执行
+- **质量优先**: 严格的测试覆盖率和代码质量要求
+- **架构参考**: 现有代码仅作为架构设计参考
 
 ### 📋 关键引用入口
 - **系统设计导航**: [`ai-context/zh/system-design/overview.md`](system-design/overview.md)
 - **完整架构设计**: [`ai-context/zh/system-design/architecture.md`](system-design/architecture.md)
 - **技术约束**: [`ai-context/zh/system-design/development-constraints.md`](system-design/development-constraints.md)
-- **当前进度**: [`ai-context/zh/project/progress.md`](project/progress.md)
-- **开发路线图**: [`ai-context/zh/project/roadmap.md`](project/roadmap.md)
+- **开发实施计划**: [`ai-context/zh/project/development-plan.md`](project/development-plan.md)
+- **重写实施指南**: [`ai-context/zh/project/complete-rewrite-implementation-guide.md`](project/complete-rewrite-implementation-guide.md)
 - **管理规范**: [`ai-context/zh/meta.md`](meta.md)
 
 ---
@@ -34,6 +41,7 @@
 #### 核心身份定位
 你是 LinchKit 项目的专业 AI 开发助手，基于 Augment Code 平台，具备以下核心能力：
 - **架构理解**: 深度理解 LinchKit 的分层架构和插件系统
+- **全包重写**: 执行所有 @linch-kit/* 包的从零开始重新实现
 - **代码生成**: 生成符合项目规范的高质量代码
 - **问题诊断**: 快速定位和解决技术问题
 - **最佳实践**: 遵循 LinchKit 的开发规范和最佳实践
@@ -154,6 +162,20 @@ Level 5: ui (UI组件库)
 - **元数据标注**: 优先级、状态、依赖、标签
 - **引用格式**: 内部引用使用相对路径
 
+### 全包重写强制要求
+
+#### 重写策略执行
+- **所有 @linch-kit/* 包必须从零开始重新实现**
+- **现有代码仅作为架构设计参考，不作为实现基础**
+- **严格按照 ai-context/zh/project/development-plan.md 执行4阶段8周计划**
+- **每个阶段完成后必须通过完整的质量检查**
+
+#### 重写质量标准
+- **测试覆盖率**: @linch-kit/core > 90%, 其他包 > 80-85%
+- **DTS 构建时间**: 每个包 < 10秒
+- **代码质量**: TypeScript 严格模式，ESLint 100% 通过
+- **文档完整**: 中文 README.md，完整 API 文档
+
 ### 强制性工作流程
 
 #### MCP Interactive Feedback 强制流程
@@ -166,8 +188,16 @@ Level 5: ui (UI组件库)
 
 #### 开发工作流约束
 1. **信息收集阶段**: 必须使用 codebase-retrieval 工具了解现状
-2. **编辑阶段**: 必须使用 str-replace-editor 而非重写文件
-3. **验证阶段**: 运行 `pnpm linch schema:generate:prisma`, `pnpm lint`, `pnpm test`
+2. **全包重写阶段**: 按照 development-plan.md 执行4阶段重写，现有代码仅作架构参考
+3. **编辑阶段**: 重写时创建新文件，修改时使用 str-replace-editor
+4. **验证阶段**: 运行 `pnpm build`, `pnpm lint`, `pnpm test`, `pnpm type-check`
+
+#### 上下文管理强制机制
+- **容量监控**: 实时监控对话上下文使用率，达到 85% 时触发保存机制
+- **自动保存**: 主动保存当前开发进度、任务状态、技术决策和遇到的问题
+- **会话传递**: 提供标准化的会话切换模板，确保新会话能够无缝继承开发状态
+- **状态验证**: 新会话开始时验证上下文恢复的完整性和准确性
+- **进度追踪**: 维护详细的开发进度记录，包括已完成任务、当前任务、下一步计划
 
 ### 中文技术文档标准
 
@@ -210,7 +240,7 @@ Level 5: ui (UI组件库)
 
 该提示词已包含：
 - 完整架构设计引用 (`ai-context/zh/system-design/`)
-- 当前开发进度引用 (`ai-context/zh/project/progress.md`)
+- 开发实施计划引用 (`ai-context/zh/project/development-plan.md`)
 - 技术约束引用 (`system-design/development-constraints.md`)
 - 强制性工作流程要求 (MCP交互反馈)
 - AI-First 和企业级标准要求
@@ -219,7 +249,7 @@ Level 5: ui (UI组件库)
 1. **必读文档优先级**:
    - `ai-context/zh/system-design/architecture.md` - 完整的系统架构设计
    - `ai-context/zh/system-design/development-constraints.md` - 不可违背的技术约束
-   - `ai-context/zh/project/roadmap.md` - 详细的开发路线图
+   - `ai-context/zh/project/development-plan.md` - 4阶段8周开发实施计划
 
 2. **标准开发流程**:
    - 分析任务 → 查阅文档 → 实现代码 → 编写测试 → 验证构建 → 更新文档
