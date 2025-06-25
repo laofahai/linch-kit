@@ -9,10 +9,10 @@
 
 ---
 
-## 🚀 一句话开发提示词 (已更新 - 全包重写)
+## 🚀 一句话开发提示词 (最终版)
 
 ```
-作为 LinchKit AI 开发助手，执行全包重写策略：core(插件系统+可观测性+配置管理+安全基础) → schema(Schema驱动+代码生成) → auth(多提供商认证+RBAC/ABAC权限) → crud(类型安全CRUD+权限集成+事务管理) → trpc(端到端类型安全API+中间件) → ui(Schema驱动UI+设计系统) → console(企业级管理) → ai(多提供商AI集成)，使用 TypeScript 严格模式、pnpm 包管理、避免 z.any()、DTS构建<10秒、测试覆盖率core>90%其他>80-85%、中文文档、AI-First 设计，所有包从零开始重写，现有代码仅作架构参考，严格按照 ai-context/zh/project/development-plan.md 执行4阶段8周实施计划。
+开始 LinchKit 开发：基于 ai-context/zh/ 完整文档体系，按照 4阶段8周计划实施 core→schema→auth→crud→trpc→ui→console→ai 全栈开发，使用 TypeScript 严格模式、pnpm 包管理、现代化技术栈，保持企业级特性和 AI-First 设计，参考模块化文档结构进行开发。
 ```
 
 ### 🔄 关键变更说明
@@ -178,13 +178,10 @@ Level 5: ui (UI组件库)
 
 ### 强制性工作流程
 
-#### MCP Interactive Feedback 强制流程
-- **每个开发阶段都必须调用 `mcp-feedback-enhanced` 工具获取用户反馈**
-- **收到非空反馈时必须再次调用该工具并根据反馈调整行为**
-- **只有用户明确表示结束时才可停止交互**
-
-#### Context7 MCP 优先原则
-- **在使用任何第三方库或框架之前，必须先通过 Context7 MCP 工具查询最新的官方文档和最佳实践**
+#### 用户交互原则
+- **持续与用户沟通开发进度和关键决策**
+- **在重要架构变更前征求用户确认**
+- **及时反馈问题和解决方案**
 
 #### 开发工作流约束
 1. **信息收集阶段**: 必须使用 codebase-retrieval 工具了解现状

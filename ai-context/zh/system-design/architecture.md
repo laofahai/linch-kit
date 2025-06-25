@@ -32,37 +32,37 @@
 ```mermaid
 graph TB
     subgraph "应用层"
-        STARTER[Starter 应用<br/>apps/starter]
-        WEB[其他 Web 应用<br/>Next.js Apps]
+        STARTER[Starter 应用 apps/starter]
+        WEB[其他 Web 应用 Next.js Apps]
     end
 
     subgraph "表现层"
-        UI[UI 组件库<br/>@linch-kit/ui]
+        UI[UI 组件库 @linch-kit/ui]
     end
 
     subgraph "API 层"
-        TRPC[tRPC 集成<br/>@linch-kit/trpc]
-        MW[中间件<br/>Auth/Validation/Permissions]
+        TRPC[tRPC 集成 @linch-kit/trpc]
+        MW[中间件 Auth/Validation/Permissions]
     end
 
     subgraph "业务逻辑层"
-        CRUD[CRUD 操作<br/>@linch-kit/crud]
-        AUTH[认证权限<br/>@linch-kit/auth]
+        CRUD[CRUD 操作 @linch-kit/crud]
+        AUTH[认证权限 @linch-kit/auth]
     end
 
     subgraph "插件层"
-        AI[AI 集成<br/>@linch-kit/ai]
-        WORKFLOW[工作流插件<br/>@linch-kit/workflow]
+        AI[AI 集成 @linch-kit/ai]
+        WORKFLOW[工作流插件 @linch-kit/workflow]
     end
 
     subgraph "数据访问层"
-        SCHEMA[Schema 系统<br/>@linch-kit/schema]
+        SCHEMA[Schema 系统 @linch-kit/schema]
         ORM[Prisma ORM]
         DB[(PostgreSQL)]
     end
 
     subgraph "基础设施层"
-        CORE[核心系统<br/>@linch-kit/core]
+        CORE[核心系统 @linch-kit/core]
         PLUGINS[插件系统]
         CLI[CLI 工具]
     end
@@ -93,14 +93,14 @@ graph TB
 ### 主依赖链
 ```mermaid
 graph TD
-    A[core<br/>插件系统+可观测性+性能监控+安全基础] --> B[schema<br/>数据模式系统]
-    A --> G[ai<br/>AI服务集成]
-    B --> C[auth<br/>认证权限]
-    B --> D[crud<br/>CRUD操作]
+    A[core 插件系统+可观测性+性能监控+安全基础] --> B[schema 数据模式系统]
+    A --> G[ai AI服务集成]
+    B --> C[auth 认证权限]
+    B --> D[crud CRUD操作]
     C --> D
-    D --> E[trpc<br/>API层]
-    E --> F[ui<br/>UI组件库]
-    F --> H[console<br/>企业级管理平台]
+    D --> E[trpc API层]
+    E --> F[ui UI组件库]
+    F --> H[console 企业级管理平台]
 
     classDef level0 fill:#e1f5fe
     classDef level1 fill:#f3e5f5
