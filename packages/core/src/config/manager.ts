@@ -143,7 +143,7 @@ export class ConfigManager extends EventEmitter implements IConfigManager {
         return this.loadFromRemote(source.url!)
       
       default:
-        throw new Error(`Unsupported config source type: ${(source as any).type}`)
+        throw new Error(`Unsupported config source type: ${source.type}`)
     }
   }
 

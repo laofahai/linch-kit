@@ -7,6 +7,7 @@
 
 import { Command } from 'commander'
 import { EventEmitter } from 'eventemitter3'
+
 import type { TranslationFunction } from '../i18n'
 import { useTranslation } from '../i18n'
 

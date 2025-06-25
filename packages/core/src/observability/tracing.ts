@@ -68,13 +68,15 @@ export class LinchKitTracer implements Tracer {
   startSpan(name: string, options?: SpanOptions): Span {
     const otelOptions: Parameters<OtelTracer['startSpan']>[1] = {}
 
+    // Handle parent context through OpenTelemetry context API
+    let ctx = context.active()
     if (options?.parent) {
       if ('traceId' in options.parent) {
-        // TraceContext
-        otelOptions.parent = context.active()
+        // TraceContext - use active context
+        ctx = context.active()
       } else {
-        // Span
-        otelOptions.parent = trace.setSpan(context.active(), (options.parent as LinchKitSpan)['otelSpan'])
+        // Span - set span in context
+        ctx = trace.setSpan(context.active(), (options.parent as LinchKitSpan)['otelSpan'])
       }
     }
 
@@ -97,7 +99,7 @@ export class LinchKitTracer implements Tracer {
       }))
     }
 
-    const otelSpan = this.otelTracer.startSpan(name, otelOptions)
+    const otelSpan = this.otelTracer.startSpan(name, otelOptions, ctx)
     return new LinchKitSpan(otelSpan)
   }
 

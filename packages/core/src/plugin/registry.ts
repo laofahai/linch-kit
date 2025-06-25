@@ -25,7 +25,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       const { id } = plugin.metadata
 
       if (this.plugins.has(id)) {
-        return { success: false, error: `Plugin ${id} already registered` }
+        return { success: false, error: { code: 'PLUGIN_ALREADY_REGISTERED', message: `Plugin ${id} already registered` } }
       }
 
       // 检查依赖
@@ -33,7 +33,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       if (missingDeps.length > 0) {
         return { 
           success: false, 
-          error: `Missing dependencies: ${missingDeps.join(', ')}` 
+          error: { code: 'MISSING_DEPENDENCIES', message: `Missing dependencies: ${missingDeps.join(', ')}` } 
         }
       }
 
@@ -61,7 +61,11 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+        error: { 
+          code: 'OPERATION_ERROR', 
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined
+        } 
       }
     }
   }
@@ -70,7 +74,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
     try {
       const registration = this.plugins.get(pluginId)
       if (!registration) {
-        return { success: false, error: `Plugin ${pluginId} not found` }
+        return { success: false, error: { code: 'PLUGIN_NOT_FOUND', message: `Plugin ${pluginId} not found` } }
       }
 
       // 检查依赖关系
@@ -78,7 +82,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       if (dependents.length > 0) {
         return { 
           success: false, 
-          error: `Cannot unregister ${pluginId}: required by ${dependents.join(', ')}` 
+          error: { code: 'PLUGIN_HAS_DEPENDENTS', message: `Cannot unregister ${pluginId}: required by ${dependents.join(', ')}` } 
         }
       }
 
@@ -99,7 +103,11 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+        error: { 
+          code: 'OPERATION_ERROR', 
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined
+        } 
       }
     }
   }
@@ -108,7 +116,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
     try {
       const registration = this.plugins.get(pluginId)
       if (!registration) {
-        return { success: false, error: `Plugin ${pluginId} not found` }
+        return { success: false, error: { code: 'PLUGIN_NOT_FOUND', message: `Plugin ${pluginId} not found` } }
       }
 
       if (registration.status === 'started') {
@@ -116,7 +124,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       }
 
       if (!registration.config.enabled) {
-        return { success: false, error: `Plugin ${pluginId} is disabled` }
+        return { success: false, error: { code: 'PLUGIN_DISABLED', message: `Plugin ${pluginId} is disabled` } }
       }
 
       // 启动依赖插件
@@ -125,7 +133,11 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
         if (!depResult.success) {
           return { 
             success: false, 
-            error: `Failed to start dependency ${depId}: ${depResult.error}` 
+            error: { 
+              code: 'DEPENDENCY_START_FAILED', 
+              message: `Failed to start dependency ${depId}`,
+              details: { dependencyId: depId, originalError: depResult.error }
+            } 
           }
         }
       }
@@ -157,7 +169,11 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       }
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+        error: { 
+          code: 'OPERATION_ERROR', 
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined
+        } 
       }
     }
   }
@@ -166,7 +182,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
     try {
       const registration = this.plugins.get(pluginId)
       if (!registration) {
-        return { success: false, error: `Plugin ${pluginId} not found` }
+        return { success: false, error: { code: 'PLUGIN_NOT_FOUND', message: `Plugin ${pluginId} not found` } }
       }
 
       if (registration.status !== 'started') {
@@ -180,7 +196,11 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
         if (!depResult.success) {
           return { 
             success: false, 
-            error: `Failed to stop dependent ${depId}: ${depResult.error}` 
+            error: { 
+              code: 'DEPENDENT_STOP_FAILED', 
+              message: `Failed to stop dependent ${depId}`,
+              details: { dependentId: depId, originalError: depResult.error }
+            } 
           }
         }
       }
@@ -197,7 +217,11 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
     } catch (error) {
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+        error: { 
+          code: 'OPERATION_ERROR', 
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined
+        } 
       }
     }
   }

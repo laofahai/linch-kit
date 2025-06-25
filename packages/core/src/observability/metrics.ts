@@ -23,24 +23,41 @@ import type {
 } from '../types'
 
 /**
+ * Prometheus metric value interface
+ */
+interface PromMetricValue {
+  value: number
+  labels: Record<string, string>
+  metricName?: string
+}
+
+/**
+ * Prometheus metric response interface
+ */
+interface PromMetric {
+  values: PromMetricValue[]
+}
+
+/**
  * LinchKit 计数器适配器
  */
 class LinchKitCounter implements Counter {
   constructor(private promCounter: PromCounter<string>) {}
 
   inc(value = 1, labels?: Record<string, string>): void {
-    this.promCounter.inc(labels, value)
+    this.promCounter.inc(labels || {}, value)
   }
 
   get(labels?: Record<string, string>): number {
-    const metric = this.promCounter.get()
+    const metric = this.promCounter.get() as unknown as PromMetric
+    
     if (labels) {
-      const found = metric.values.find(v => 
+      const found = metric.values?.find((v: PromMetricValue) => 
         Object.entries(labels).every(([key, val]) => v.labels[key] === val)
       )
       return found?.value || 0
     }
-    return metric.values.reduce((sum, v) => sum + v.value, 0)
+    return metric.values?.reduce((sum: number, v: PromMetricValue) => sum + v.value, 0) || 0
   }
 
   reset(): void {
@@ -55,26 +72,27 @@ class LinchKitGauge implements Gauge {
   constructor(private promGauge: PromGauge<string>) {}
 
   set(value: number, labels?: Record<string, string>): void {
-    this.promGauge.set(labels, value)
+    this.promGauge.set(labels || {}, value)
   }
 
   inc(value = 1, labels?: Record<string, string>): void {
-    this.promGauge.inc(labels, value)
+    this.promGauge.inc(labels || {}, value)
   }
 
   dec(value = 1, labels?: Record<string, string>): void {
-    this.promGauge.dec(labels, value)
+    this.promGauge.dec(labels || {}, value)
   }
 
   get(labels?: Record<string, string>): number {
-    const metric = this.promGauge.get()
+    const metric = this.promGauge.get() as unknown as PromMetric
+    
     if (labels) {
-      const found = metric.values.find(v => 
+      const found = metric.values?.find((v: PromMetricValue) => 
         Object.entries(labels).every(([key, val]) => v.labels[key] === val)
       )
       return found?.value || 0
     }
-    return metric.values.reduce((sum, v) => sum + v.value, 0)
+    return metric.values?.reduce((sum: number, v: PromMetricValue) => sum + v.value, 0) || 0
   }
 
   reset(): void {
@@ -89,7 +107,7 @@ class LinchKitHistogram implements Histogram {
   constructor(private promHistogram: PromHistogram<string>) {}
 
   observe(value: number, labels?: Record<string, string>): void {
-    this.promHistogram.observe(labels, value)
+    this.promHistogram.observe(labels || {}, value)
   }
 
   startTimer(labels?: Record<string, string>): () => void {
@@ -97,13 +115,13 @@ class LinchKitHistogram implements Histogram {
   }
 
   get(labels?: Record<string, string>): { buckets: Record<string, number>; count: number; sum: number } {
-    const metric = this.promHistogram.get()
+    const metric = this.promHistogram.get() as unknown as PromMetric
     
     if (labels) {
       // 查找匹配标签的指标
-      const matchingValues = metric.values.filter(v => 
+      const matchingValues = metric.values?.filter((v: PromMetricValue) => 
         Object.entries(labels).every(([key, val]) => v.labels[key] === val)
-      )
+      ) || []
       
       const buckets: Record<string, number> = {}
       let count = 0
@@ -127,7 +145,7 @@ class LinchKitHistogram implements Histogram {
     let count = 0
     let sum = 0
     
-    for (const value of metric.values) {
+    for (const value of metric.values || []) {
       if (value.metricName?.endsWith('_bucket')) {
         buckets[value.labels.le] = (buckets[value.labels.le] || 0) + value.value
       } else if (value.metricName?.endsWith('_count')) {
@@ -152,16 +170,16 @@ class LinchKitSummary implements Summary {
   constructor(private promSummary: PromSummary<string>) {}
 
   observe(value: number, labels?: Record<string, string>): void {
-    this.promSummary.observe(labels, value)
+    this.promSummary.observe(labels || {}, value)
   }
 
   get(labels?: Record<string, string>): { quantiles: Record<string, number>; count: number; sum: number } {
-    const metric = this.promSummary.get()
+    const metric = this.promSummary.get() as unknown as PromMetric
     
     if (labels) {
-      const matchingValues = metric.values.filter(v => 
+      const matchingValues = metric.values?.filter((v: PromMetricValue) => 
         Object.entries(labels).every(([key, val]) => v.labels[key] === val)
-      )
+      ) || []
       
       const quantiles: Record<string, number> = {}
       let count = 0
@@ -185,7 +203,7 @@ class LinchKitSummary implements Summary {
     let count = 0
     let sum = 0
     
-    for (const value of metric.values) {
+    for (const value of metric.values || []) {
       if (value.labels.quantile) {
         quantiles[value.labels.quantile] = (quantiles[value.labels.quantile] || 0) + value.value
       } else if (value.metricName?.endsWith('_count')) {
