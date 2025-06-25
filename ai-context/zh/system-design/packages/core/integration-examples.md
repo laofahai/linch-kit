@@ -1,7 +1,11 @@
 # @linch-kit/core 集成示例
 
 > **文档类型**: 集成示例  
-> **适用场景**: 快速上手集成
+> **适用场景**: 快速上手集成，了解最佳实践
+
+## 🎯 概览
+
+本文档提供 @linch-kit/core 与其他包的集成示例，以及在实际项目中的使用模式。通过这些示例，您可以快速理解如何在项目中集成和使用 LinchKit 的核心功能。
 
 ## 🔌 基础插件开发
 
@@ -316,4 +320,339 @@ if (result.success) {
 } else {
   console.error('Error:', result.error.message)
 }
+```
+
+## 🚀 完整应用示例
+
+### 企业级应用启动
+
+```typescript
+// app.ts
+import { 
+  PluginSystem, 
+  ConfigManager, 
+  Logger,
+  MetricsCollector,
+  I18nManager 
+} from '@linch-kit/core'
+
+export class LinchKitApplication {
+  private static instance: LinchKitApplication
+  
+  private constructor() {}
+  
+  static getInstance(): LinchKitApplication {
+    if (!LinchKitApplication.instance) {
+      LinchKitApplication.instance = new LinchKitApplication()
+    }
+    return LinchKitApplication.instance
+  }
+  
+  async start() {
+    const startTime = Date.now()
+    
+    try {
+      Logger.info('Starting LinchKit application...')
+      
+      // 1. 初始化配置
+      await this.initializeConfig()
+      
+      // 2. 初始化国际化
+      await this.initializeI18n()
+      
+      // 3. 初始化监控
+      await this.initializeMetrics()
+      
+      // 4. 加载核心插件
+      await this.loadCorePlugins()
+      
+      // 5. 启动业务服务
+      await this.startServices()
+      
+      const duration = Date.now() - startTime
+      MetricsCollector.recordMetric('app_startup_duration_ms', duration)
+      Logger.info(`Application started successfully in ${duration}ms`)
+      
+      // 发布启动完成事件
+      PluginSystem.emit('app:started', {
+        startTime: new Date(),
+        duration
+      })
+      
+    } catch (error) {
+      Logger.error('Failed to start application', error)
+      throw error
+    }
+  }
+  
+  private async initializeConfig() {
+    const config = await ConfigManager.loadConfig('./config/app.json')
+    Logger.info('Configuration loaded', { 
+      environment: config.environment,
+      features: Object.keys(config.features || {})
+    })
+  }
+  
+  private async initializeI18n() {
+    await I18nManager.loadMessages('zh-CN', 'common')
+    await I18nManager.loadMessages('en-US', 'common')
+    I18nManager.setLocale('zh-CN')
+    Logger.info('Internationalization initialized')
+  }
+  
+  private async initializeMetrics() {
+    // 注册核心指标
+    MetricsCollector.registerMetric('app_startup_duration_ms', 'gauge')
+    MetricsCollector.registerMetric('plugin_count', 'gauge')
+    MetricsCollector.registerMetric('active_connections', 'gauge')
+    Logger.info('Metrics system initialized')
+  }
+  
+  private async loadCorePlugins() {
+    const corePlugins = [
+      '@linch-kit/auth',
+      '@linch-kit/schema', 
+      '@linch-kit/crud',
+      '@linch-kit/trpc'
+    ]
+    
+    for (const pluginName of corePlugins) {
+      try {
+        const plugin = await import(`./plugins/${pluginName}`)
+        await PluginSystem.register(plugin.default)
+        Logger.info(`Plugin loaded: ${pluginName}`)
+      } catch (error) {
+        Logger.warn(`Failed to load plugin: ${pluginName}`, error)
+      }
+    }
+    
+    MetricsCollector.recordMetric('plugin_count', corePlugins.length)
+  }
+  
+  private async startServices() {
+    // 启动服务的逻辑
+    PluginSystem.emit('services:start')
+  }
+  
+  async shutdown() {
+    Logger.info('Shutting down application...')
+    
+    // 发布关闭事件
+    PluginSystem.emit('app:shutdown')
+    
+    // 等待插件清理
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    Logger.info('Application shutdown completed')
+  }
+}
+
+// 启动应用
+const app = LinchKitApplication.getInstance()
+await app.start()
+
+// 优雅关闭处理
+process.on('SIGTERM', async () => {
+  await app.shutdown()
+  process.exit(0)
+})
+```
+
+### 跨包集成示例
+
+```typescript
+// integration/cross-package-example.ts
+import { PluginSystem, ConfigManager, Logger, MetricsCollector } from '@linch-kit/core'
+
+// 模拟其他包的集成
+export class CrossPackageIntegration {
+  static async setupSchemaIntegration() {
+    // 与 @linch-kit/schema 的集成
+    PluginSystem.on('schema:generated', async (schema) => {
+      Logger.info('Schema generated, triggering CRUD generation')
+      PluginSystem.emit('crud:generate', { schema })
+    })
+    
+    PluginSystem.on('crud:generated', async (crudConfig) => {
+      Logger.info('CRUD generated, setting up tRPC routes')
+      PluginSystem.emit('trpc:setup', { crudConfig })
+    })
+  }
+  
+  static async setupAuthIntegration() {
+    // 与 @linch-kit/auth 的集成
+    PluginSystem.on('user:authenticated', async (user) => {
+      Logger.info(`User authenticated: ${user.id}`)
+      
+      // 记录用户活动指标
+      MetricsCollector.recordMetric('user_logins_total', 1, {
+        provider: user.provider,
+        role: user.role
+      })
+    })
+    
+    PluginSystem.on('user:unauthorized', async (attempt) => {
+      Logger.warn('Unauthorized access attempt', attempt)
+      
+      // 记录安全指标
+      MetricsCollector.recordMetric('unauthorized_attempts_total', 1, {
+        ip: attempt.ip,
+        path: attempt.path
+      })
+    })
+  }
+  
+  static async setupUIIntegration() {
+    // 与 @linch-kit/ui 的集成
+    PluginSystem.on('ui:component:generated', async (component) => {
+      Logger.info(`UI component generated: ${component.name}`)
+      
+      // 自动注册到控制台
+      PluginSystem.emit('console:register:component', component)
+    })
+  }
+}
+
+// 初始化跨包集成
+await CrossPackageIntegration.setupSchemaIntegration()
+await CrossPackageIntegration.setupAuthIntegration()
+await CrossPackageIntegration.setupUIIntegration()
+```
+
+## 📝 最佳实践总结
+
+### 1. 插件开发规范
+
+```typescript
+// ✅ 推荐的插件结构
+export const recommendedPlugin: Plugin = {
+  id: 'my-plugin',
+  name: 'My Plugin',
+  version: '1.0.0',
+  dependencies: ['@linch-kit/core'],
+  
+  async setup(config: any) {
+    try {
+      Logger.info(`Initializing plugin: ${this.name}`)
+      
+      // 验证配置
+      await this.validateConfig(config)
+      
+      // 注册事件监听器
+      this.registerEventListeners()
+      
+      // 注册CLI命令
+      this.registerCommands()
+      
+      Logger.info(`Plugin initialized successfully: ${this.name}`)
+    } catch (error) {
+      Logger.error(`Plugin initialization failed: ${this.name}`, error)
+      throw error
+    }
+  },
+  
+  async teardown() {
+    Logger.info(`Cleaning up plugin: ${this.name}`)
+    // 清理资源
+    await this.cleanup()
+  },
+  
+  private async validateConfig(config: any) {
+    // 配置验证逻辑
+  },
+  
+  private registerEventListeners() {
+    // 事件监听器注册
+  },
+  
+  private registerCommands() {
+    // CLI命令注册
+  },
+  
+  private async cleanup() {
+    // 资源清理逻辑
+  }
+}
+```
+
+### 2. 监控集成规范
+
+```typescript
+// ✅ 统一的监控模式
+export class MonitoringBestPractices {
+  static setupBusinessMetrics() {
+    // 业务指标命名规范：业务域.操作.单位
+    MetricsCollector.registerMetric('user.registrations.total', 'counter')
+    MetricsCollector.registerMetric('order.processing.duration_ms', 'histogram')
+    MetricsCollector.registerMetric('inventory.items.count', 'gauge')
+  }
+  
+  static recordOperationMetrics(operation: string, duration: number, success: boolean) {
+    // 记录操作指标
+    MetricsCollector.recordMetric(`operation.${operation}.duration_ms`, duration)
+    MetricsCollector.recordMetric(`operation.${operation}.total`, 1, {
+      status: success ? 'success' : 'error'
+    })
+  }
+  
+  static logStructuredEvent(event: string, data: any) {
+    // 结构化日志记录
+    Logger.info(`Event: ${event}`, {
+      event,
+      timestamp: new Date().toISOString(),
+      ...data
+    })
+  }
+}
+```
+
+### 3. 错误处理规范
+
+```typescript
+// ✅ 统一的错误处理模式
+export class ErrorHandlingBestPractices {
+  static async withErrorHandling<T>(
+    operation: string,
+    fn: () => Promise<T>
+  ): Promise<Result<T, LinchKitError>> {
+    const startTime = Date.now()
+    
+    try {
+      Logger.debug(`Starting operation: ${operation}`)
+      const result = await fn()
+      
+      const duration = Date.now() - startTime
+      Logger.debug(`Operation completed: ${operation}`, { duration })
+      
+      return { success: true, data: result }
+    } catch (error) {
+      const duration = Date.now() - startTime
+      Logger.error(`Operation failed: ${operation}`, error, { duration })
+      
+      // 记录错误指标
+      MetricsCollector.recordMetric('operation.errors.total', 1, {
+        operation,
+        error_type: error.constructor.name
+      })
+      
+      if (error instanceof LinchKitError) {
+        return { success: false, error }
+      }
+      
+      return { 
+        success: false, 
+        error: new LinchKitError('OPERATION_ERROR', `${operation} failed: ${error.message}`)
+      }
+    }
+  }
+}
+```
+
+## 🔗 相关链接
+
+- [API参考](./api-reference.md) - 完整API文档
+- [实现指南](./implementation-guide.md) - 内部实现细节
+- [高级特性](./advanced-features.md) - 企业级特性说明
+- [集成模式](../../../shared/integration-patterns.md) - 通用集成模式
+- [TypeScript约定](../../../shared/typescript-conventions.md) - 开发约定
 ```

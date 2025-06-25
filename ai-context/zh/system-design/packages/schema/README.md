@@ -25,7 +25,8 @@
 | 文档 | 描述 |
 |------|------|
 | [API参考](./api-reference.md) | Schema定义和生成API |
-| [实现指南](./implementation-guide.md) | 代码生成引擎 |
+| [实现指南](./implementation-guide.md) | 基于成熟第三方库的实现架构 |
+| [依赖分析](./dependencies-analysis.md) | 包间依赖关系和风险分析 |
 | [集成示例](./integration-examples.md) | Schema使用示例 |
 | [高级特性](./advanced-features.md) | 自定义字段类型和生成器 |
 

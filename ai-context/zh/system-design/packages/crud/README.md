@@ -25,7 +25,8 @@
 | 文档 | 描述 |
 |------|------|
 | [API参考](./api-reference.md) | CRUD操作API |
-| [实现指南](./implementation-guide.md) | 查询引擎和权限集成 |
+| [实现指南](./implementation-guide.md) | 基于Prisma ORM的实现架构 |
+| [依赖分析](./dependencies-analysis.md) | 包间依赖关系和性能分析 |
 | [集成示例](./integration-examples.md) | 使用示例和模式 |
 | [高级特性](./advanced-features.md) | 事务、缓存、性能优化 |
 

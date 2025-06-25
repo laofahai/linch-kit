@@ -125,14 +125,109 @@ L4: @linch-kit/ai        - AI集成 (多提供商、智能化)
 - **架构**: 完整设计完成，文档重构完成
 - **代码**: 现有代码仅作架构参考，需从零重写
 
-## 🚨 关键约束
+## 🚨 强制性开发约束
 
-### 强制性要求
-- **TypeScript严格模式**: 禁止使用`any`，使用`z.unknown()`替代`z.any()`
-- **测试覆盖率**: core包>90%，其他包>80-85%  
-- **构建性能**: DTS构建<10秒/包
-- **代码质量**: ESLint + Prettier，通过所有检查
-- **文档要求**: 中文README.md，完整API文档
+### 🔒 TypeScript 强制要求
+- **所有文件必须使用 TypeScript (.ts/.tsx)**，禁止 .js/.jsx 文件
+- **严格模式配置**: strict: true, noImplicitAny: true, strictNullChecks: true
+- **禁止使用 `any` 类型**，必须使用 `unknown` 替代
+- **Zod Schema 强制规范**: 禁止 `z.any()`，必须使用 `z.unknown()`
+- **DTS 构建要求**: 所有包构建必须包含完整的 .d.ts 文件
+
+### 🏗️ 架构一致性要求
+- **严格遵循依赖层次**: core → schema → auth → crud → trpc → ui → console → ai
+- **禁止循环依赖和跨层级依赖**
+- **禁止跨包重复实现相同功能**
+- **优先使用现有成熟解决方案**
+
+### 📦 包管理强制规范
+- **必须使用 pnpm 包管理器**
+- **禁止手动编辑包配置文件** (package.json, pnpm-lock.yaml 等)
+- **运行 npm/pnpm 命令时必须使用环境前缀**:
+  ```bash
+  export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"
+  ```
+
+### 🔄 第三方库集成策略
+- **@linch-kit/core 零依赖策略**: 保持基础设施包的独立性
+- **优先使用第三方库**: 不重复造轮子，使用成熟的现有解决方案
+- **核心第三方库集成**:
+  - **Prometheus**: 指标收集 (prom-client) - 减少80%自建代码
+  - **OpenTelemetry**: 分布式追踪 - 减少90%自建代码
+  - **Terminus**: 健康检查 (@godaddy/terminus) - 减少70%自建代码
+  - **Pino**: 日志管理 - 减少60%自建代码
+  - **tinybench**: 基准测试 - 减少75%自建代码
+- **适配器模式**: 通过适配器保持 LinchKit 接口一致性
+- **配置驱动**: 通过环境变量和配置文件管理第三方库集成
+
+### 🌐 ES 模块兼容性要求
+- **优先使用 ES 模块语法**，保持 CommonJS 兼容性
+- **禁止使用 `module` 作为变量名**
+
+### 🌍 国际化强制要求
+- **所有包必须支持国际化**
+- **禁止自行实现 i18n 功能**，必须使用 @linch-kit/core 的 i18n 系统
+- **至少支持英文 (en) 和中文 (zh-CN)**
+
+### 📝 代码质量强制标准
+- **修改后必须运行 `npx eslint --fix`**
+- **所有公共 API 必须有 JSDoc 注释**
+- **测试覆盖率强制要求**:
+  - @linch-kit/core: > 90%
+  - @linch-kit/schema: > 85%
+  - @linch-kit/auth: > 85%
+  - @linch-kit/crud: > 85%
+  - @linch-kit/trpc: > 80%
+  - @linch-kit/ui: > 80%
+  - @linch-kit/console: > 80%
+  - @linch-kit/ai: > 80%
+
+### 🔐 安全性开发强制要求
+- **禁止提交任何密钥、Token、密码等敏感信息到代码库**
+- **必须使用 .env + dotenv-safe 管理环境变量**
+- **定期运行 `pnpm audit` 检查依赖安全**
+
+### 🧩 插件与模块机制强制规范
+- **每个插件必须定义 metadata**，包括 id、name、version、dependencies
+- **插件必须支持 lazy load 和 safe unload**
+- **插件配置必须使用 Zod Schema 定义**
+
+### 📊 性能与构建强制要求
+- **DTS 构建时间**: 每个包 < 10秒
+- **代码质量**: TypeScript 严格模式，ESLint 100% 通过
+- **文档完整**: 中文 README.md，完整 API 文档
+
+### 🚨 强制性工作流程
+1. **信息收集阶段**: 必须先了解现状和需求
+2. **全包重写阶段**: 按照 development-plan.md 执行4阶段重写
+3. **编辑阶段**: 重写时创建新文件，修改时使用编辑工具
+4. **验证阶段**: 运行完整验证流程
+   ```bash
+   pnpm build      # 构建验证
+   pnpm lint       # 代码检查
+   pnpm test       # 测试验证
+   pnpm type-check # 类型检查
+   ```
+5. **进度保存阶段**: 每次开发会话结束前必须保存进度
+   ```bash
+   # 创建或更新进度文件
+   ai-context/zh/project/module-{包名}-progress.md
+   # 必须包含: 完成功能、技术问题、下一步计划、代码变更、测试状态
+   ```
+
+### ⚠️ 违规处理机制
+- **任何违反规范的代码不得合并**
+- **必须修复所有违规问题后才能继续**
+- **每次开发任务完成前必须确认**:
+  - [ ] 所有文件使用 TypeScript
+  - [ ] 运行了 `npx eslint --fix`
+  - [ ] 添加了完整的 JSDoc 注释
+  - [ ] 通过了所有验证命令
+  - [ ] 没有破坏性变更
+  - [ ] 使用了包管理器管理依赖
+  - [ ] 已同步更新相关文档
+  - [ ] 遵循了所有架构约束
+  - [ ] 已保存开发进度到ai-context进度文件
 
 ### 开发顺序 (不可颠倒)
 ```
