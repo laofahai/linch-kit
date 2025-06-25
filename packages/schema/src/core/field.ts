@@ -1,0 +1,628 @@
+/**
+ * @linch-kit/schema 字段定义系统
+ */
+
+import { z } from 'zod'
+
+import type {
+  FieldDefinition,
+  FieldType,
+  StringFieldOptions,
+  NumberFieldOptions,
+  BooleanFieldOptions,
+  DateFieldOptions,
+  EmailFieldOptions,
+  UrlFieldOptions,
+  UuidFieldOptions,
+  TextFieldOptions,
+  JsonFieldOptions,
+  I18nFieldOptions,
+  EnumFieldOptions,
+  ArrayFieldOptions,
+  RelationFieldOptions,
+  I18nFieldConfig,
+  BaseFieldDefinition
+} from '../types'
+
+/**
+ * 字段构建器基类
+ */
+abstract class FieldBuilder<T extends BaseFieldDefinition> {
+  protected definition: T
+
+  constructor(definition: T) {
+    this.definition = { ...definition }
+  }
+
+  /**
+   * 设置字段为必填
+   */
+  required(required = true): this {
+    this.definition.required = required
+    return this
+  }
+
+  /**
+   * 设置字段为可选
+   */
+  optional(): this {
+    this.definition.required = false
+    return this
+  }
+
+  /**
+   * 设置字段为唯一
+   */
+  unique(unique = true): this {
+    this.definition.unique = unique
+    return this
+  }
+
+  /**
+   * 设置字段索引
+   */
+  index(index = true): this {
+    this.definition.index = index
+    return this
+  }
+
+  /**
+   * 设置默认值
+   */
+  default(value: unknown): this {
+    this.definition.defaultValue = value
+    return this
+  }
+
+  /**
+   * 设置字段描述
+   */
+  description(description: string): this {
+    this.definition.description = description
+    return this
+  }
+
+  /**
+   * 标记字段为已弃用
+   */
+  deprecated(deprecated = true): this {
+    this.definition.deprecated = deprecated
+    return this
+  }
+
+  /**
+   * 构建最终的字段定义
+   */
+  build(): T {
+    return { ...this.definition }
+  }
+
+  // Add direct access to common properties (non-conflicting names)
+  get type(): string {
+    return this.definition.type
+  }
+
+  get isRequired(): boolean {
+    return this.definition.required ?? false
+  }
+
+  get isUnique(): boolean {
+    return this.definition.unique ?? false
+  }
+
+  get hasIndex(): boolean {
+    return this.definition.index ?? false
+  }
+
+  get defaultValue(): unknown {
+    return this.definition.defaultValue
+  }
+}
+
+/**
+ * 字符串类型字段构建器  
+ */
+type StringLikeFieldOptions = StringFieldOptions | EmailFieldOptions | UrlFieldOptions | UuidFieldOptions | TextFieldOptions
+
+class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
+  constructor(options: Partial<StringLikeFieldOptions> = {}) {
+    const mergedOptions = { type: 'string' as FieldType, required: false, ...options }
+    super(mergedOptions as StringLikeFieldOptions)
+    // Ensure type override works
+    if (options.type) {
+      this.definition.type = options.type
+    }
+  }
+
+  min(length: number): this {
+    if ('minLength' in this.definition) {
+      (this.definition as any).minLength = length
+    }
+    return this
+  }
+
+  max(length: number): this {
+    if ('maxLength' in this.definition) {
+      (this.definition as any).maxLength = length
+    }
+    return this
+  }
+
+  pattern(regex: RegExp): this {
+    if ('pattern' in this.definition) {
+      (this.definition as any).pattern = regex
+    }
+    return this
+  }
+
+  transform(fn: (value: string) => string): this {
+    if ('transform' in this.definition) {
+      (this.definition as any).transform = fn
+    }
+    return this
+  }
+
+  auto(): this {
+    this.definition.auto = true
+    return this
+  }
+
+  // Add getters for string-specific properties (non-conflicting names)
+  get minLength(): number | undefined {
+    return 'minLength' in this.definition ? (this.definition as any).minLength : undefined
+  }
+
+  get maxLength(): number | undefined {
+    return 'maxLength' in this.definition ? (this.definition as any).maxLength : undefined
+  }
+
+  get regexPattern(): RegExp | undefined {
+    return 'pattern' in this.definition ? (this.definition as any).pattern : undefined
+  }
+
+  get isAuto(): boolean {
+    return this.definition.auto ?? false
+  }
+}
+
+/**
+ * 数字字段构建器
+ */
+class NumberFieldBuilder extends FieldBuilder<NumberFieldOptions> {
+  constructor(options: Partial<NumberFieldOptions> = {}) {
+    super({ type: 'number', required: false, ...options } as NumberFieldOptions)
+  }
+
+  min(value: number): this {
+    this.definition.min = value
+    return this
+  }
+
+  max(value: number): this {
+    this.definition.max = value
+    return this
+  }
+
+  integer(): this {
+    this.definition.integer = true
+    return this
+  }
+
+  positive(): this {
+    this.definition.positive = true
+    return this
+  }
+
+  negative(): this {
+    this.definition.negative = true
+    return this
+  }
+
+  precision(digits: number): this {
+    this.definition.precision = digits
+    return this
+  }
+
+  // Add getters for number-specific properties (non-conflicting names)
+  get minValue(): number | undefined {
+    return this.definition.min
+  }
+
+  get maxValue(): number | undefined {
+    return this.definition.max
+  }
+
+  get isInteger(): boolean {
+    return this.definition.integer ?? false
+  }
+
+  get isPositive(): boolean {
+    return this.definition.positive ?? false
+  }
+
+  get precisionDigits(): number | undefined {
+    return this.definition.precision
+  }
+}
+
+/**
+ * 布尔字段构建器
+ */
+class BooleanFieldBuilder extends FieldBuilder<BooleanFieldOptions> {
+  constructor(options: Partial<BooleanFieldOptions> = {}) {
+    super({ type: 'boolean', required: false, ...options } as BooleanFieldOptions)
+  }
+}
+
+/**
+ * 日期字段构建器
+ */
+class DateFieldBuilder extends FieldBuilder<DateFieldOptions> {
+  constructor(options: Partial<DateFieldOptions> = {}) {
+    super({ type: 'date', required: false, ...options } as DateFieldOptions)
+  }
+
+  min(date: Date): this {
+    this.definition.min = date
+    return this
+  }
+
+  max(date: Date): this {
+    this.definition.max = date
+    return this
+  }
+
+  // Add getters for date-specific properties (non-conflicting names)
+  get minDate(): Date | undefined {
+    return this.definition.min
+  }
+
+  get maxDate(): Date | undefined {
+    return this.definition.max
+  }
+}
+
+/**
+ * 枚举字段构建器
+ */
+class EnumFieldBuilder<T extends readonly string[]> extends FieldBuilder<EnumFieldOptions<T>> {
+  constructor(values: T, options: Partial<EnumFieldOptions<T>> = {}) {
+    super({ type: 'enum', values, required: false, ...options } as EnumFieldOptions<T>)
+  }
+
+  // Add getter for enum-specific properties
+  get values(): T {
+    return this.definition.values
+  }
+}
+
+/**
+ * 数组字段构建器
+ */
+class ArrayFieldBuilder extends FieldBuilder<ArrayFieldOptions> {
+  constructor(items: FieldDefinition, options: Partial<ArrayFieldOptions> = {}) {
+    super({ type: 'array', items, required: false, ...options } as ArrayFieldOptions)
+  }
+
+  min(length: number): this {
+    this.definition.min = length
+    return this
+  }
+
+  max(length: number): this {
+    this.definition.max = length
+    return this
+  }
+
+  // Add getters for array-specific properties (non-conflicting names)
+  get itemType(): FieldDefinition {
+    return this.definition.items
+  }
+
+  get minLength(): number | undefined {
+    return this.definition.min
+  }
+
+  get maxLength(): number | undefined {
+    return this.definition.max
+  }
+}
+
+/**
+ * 关系字段构建器
+ */
+class RelationFieldBuilder extends FieldBuilder<RelationFieldOptions> {
+  constructor(target: string, options: Partial<RelationFieldOptions> = {}) {
+    super({ 
+      type: 'relation', 
+      target, 
+      relationType: 'manyToOne',
+      required: false,
+      ...options 
+    } as RelationFieldOptions)
+  }
+
+  oneToOne(): this {
+    this.definition.relationType = 'oneToOne'
+    return this
+  }
+
+  oneToMany(): this {
+    this.definition.relationType = 'oneToMany'
+    return this
+  }
+
+  manyToOne(): this {
+    this.definition.relationType = 'manyToOne'
+    return this
+  }
+
+  manyToMany(through?: string): this {
+    this.definition.relationType = 'manyToMany'
+    if (through) {
+      this.definition.through = through
+    }
+    return this
+  }
+
+  foreignKey(key: string): this {
+    this.definition.foreignKey = key
+    return this
+  }
+
+  cascade(cascade = true): this {
+    this.definition.cascade = cascade
+    return this
+  }
+
+  onDelete(action: 'CASCADE' | 'SET_NULL' | 'RESTRICT'): this {
+    this.definition.onDelete = action
+    return this
+  }
+
+  onUpdate(action: 'CASCADE' | 'SET_NULL' | 'RESTRICT'): this {
+    this.definition.onUpdate = action
+    return this
+  }
+
+  // Add getters for relation-specific properties (non-conflicting names)
+  get targetEntity(): string {
+    return this.definition.target
+  }
+
+  get relationKind(): string {
+    return this.definition.relationType
+  }
+
+  get foreignKeyName(): string | undefined {
+    return this.definition.foreignKey
+  }
+
+  get throughTable(): string | undefined {
+    return this.definition.through
+  }
+
+  get isCascade(): boolean {
+    return this.definition.cascade ?? false
+  }
+}
+
+/**
+ * 定义字段的主入口
+ */
+export const defineField = {
+  /**
+   * 定义字符串字段
+   */
+  string(options?: Partial<StringFieldOptions>): StringFieldBuilder {
+    return new StringFieldBuilder(options)
+  },
+
+  /**
+   * 定义文本字段（长字符串）
+   */
+  text(options?: Partial<TextFieldOptions>): StringFieldBuilder {
+    return new StringFieldBuilder({ ...options, type: 'text' })
+  },
+
+  /**
+   * 定义数字字段
+   */
+  number(options?: Partial<NumberFieldOptions>): NumberFieldBuilder {
+    return new NumberFieldBuilder(options)
+  },
+
+  /**
+   * 定义整数字段
+   */
+  int(options?: Partial<NumberFieldOptions>): NumberFieldBuilder {
+    return new NumberFieldBuilder({ ...options, integer: true })
+  },
+
+  /**
+   * 定义布尔字段
+   */
+  boolean(options?: Partial<BooleanFieldOptions>): BooleanFieldBuilder {
+    return new BooleanFieldBuilder(options)
+  },
+
+  /**
+   * 定义日期字段
+   */
+  date(options?: Partial<DateFieldOptions>): DateFieldBuilder {
+    return new DateFieldBuilder(options)
+  },
+
+  /**
+   * 定义枚举字段
+   */
+  enum<T extends readonly string[]>(values: T, options?: Partial<EnumFieldOptions<T>>): EnumFieldBuilder<T> {
+    return new EnumFieldBuilder(values, options)
+  },
+
+  /**
+   * 定义数组字段
+   */
+  array(items: FieldDefinition, options?: Partial<ArrayFieldOptions>): ArrayFieldBuilder {
+    return new ArrayFieldBuilder(items, options)
+  },
+
+  /**
+   * 定义关系字段
+   */
+  relation(target: string, options?: Partial<RelationFieldOptions>): RelationFieldBuilder {
+    return new RelationFieldBuilder(target, options)
+  },
+
+  /**
+   * 定义邮箱字段
+   */
+  email(options?: Partial<EmailFieldOptions>): StringFieldBuilder {
+    return new StringFieldBuilder({
+      ...options,
+      type: 'email'
+    }).description('Email address')
+  },
+
+  /**
+   * 定义URL字段
+   */
+  url(options?: Partial<UrlFieldOptions>): StringFieldBuilder {
+    return new StringFieldBuilder({
+      ...options,
+      type: 'url'
+    }).description('URL')
+  },
+
+  /**
+   * 定义UUID字段
+   */
+  uuid(options?: Partial<UuidFieldOptions>): StringFieldBuilder {
+    return new StringFieldBuilder({
+      ...options,
+      type: 'uuid'
+    }).description('UUID')
+  },
+
+  /**
+   * 定义JSON字段
+   */
+  json(options?: Partial<BaseFieldDefinition>): FieldBuilder<BaseFieldDefinition> {
+    const jsonFieldBuilder = new (class extends FieldBuilder<BaseFieldDefinition> {
+      constructor() {
+        super({ type: 'json', required: false, ...options } as BaseFieldDefinition)
+      }
+    })()
+    return jsonFieldBuilder
+  },
+
+  /**
+   * 定义国际化字段
+   */
+  i18n(locales?: string[]): FieldBuilder<BaseFieldDefinition> {
+    const i18nFieldBuilder = new (class extends FieldBuilder<BaseFieldDefinition> {
+      constructor() {
+        super({ 
+          type: 'i18n', 
+          required: false,
+          locales: locales || ['en', 'zh-CN']
+        } as BaseFieldDefinition & { locales: string[] })
+      }
+      
+      get locales(): string[] {
+        return (this.definition as any).locales
+      }
+    })()
+    return i18nFieldBuilder
+  }
+}
+
+/**
+ * 将字段定义转换为Zod Schema
+ */
+export function fieldToZod(field: FieldDefinition): z.ZodSchema {
+  let schema: z.ZodSchema
+
+  switch (field.type) {
+    case 'string':
+    case 'email':
+    case 'url':
+    case 'uuid':
+    case 'text':
+      schema = z.string()
+      if ('minLength' in field && field.minLength !== undefined) schema = (schema as z.ZodString).min(field.minLength)
+      if ('maxLength' in field && field.maxLength !== undefined) schema = (schema as z.ZodString).max(field.maxLength)
+      if ('pattern' in field && field.pattern) schema = (schema as z.ZodString).regex(field.pattern)
+      if ('transform' in field && field.transform) schema = schema.transform(field.transform)
+      break
+
+    case 'number':
+      schema = z.number()
+      if (field.min !== undefined) schema = (schema as z.ZodNumber).min(field.min)
+      if (field.max !== undefined) schema = (schema as z.ZodNumber).max(field.max)
+      if (field.integer) schema = (schema as z.ZodNumber).int()
+      if (field.positive) schema = (schema as z.ZodNumber).positive()
+      if (field.negative) schema = (schema as z.ZodNumber).negative()
+      break
+
+    case 'boolean':
+      schema = z.boolean()
+      break
+
+    case 'date':
+      schema = z.date()
+      if (field.min) schema = (schema as z.ZodDate).min(field.min)
+      if (field.max) schema = (schema as z.ZodDate).max(field.max)
+      break
+
+    case 'enum':
+      schema = z.enum(field.values as [string, ...string[]])
+      break
+
+    case 'array': {
+      const itemSchema = fieldToZod(field.items)
+      schema = z.array(itemSchema)
+      if (field.min !== undefined) schema = (schema as z.ZodArray<z.ZodSchema>).min(field.min)
+      if (field.max !== undefined) schema = (schema as z.ZodArray<z.ZodSchema>).max(field.max)
+      break
+    }
+
+    case 'json':
+      schema = z.record(z.unknown())
+      break
+
+    case 'relation':
+      // 关系字段在验证时通常只验证ID
+      schema = z.string().uuid()
+      break
+
+    case 'i18n':
+      // 国际化字段验证
+      if ('i18n' in field && field.i18n) {
+        const localeShape: Record<string, z.ZodString> = {}
+        field.i18n.locales.forEach(locale => {
+          localeShape[locale] = z.string()
+          if (field.i18n?.required?.includes(locale)) {
+            localeShape[locale] = localeShape[locale].min(1)
+          }
+        })
+        schema = z.object(localeShape)
+      } else {
+        schema = z.record(z.string())
+      }
+      break
+
+    default:
+      schema = z.unknown()
+  }
+
+  // 处理必填和默认值
+  if (!field.required) {
+    schema = schema.optional()
+  }
+  if (field.defaultValue !== undefined) {
+    schema = schema.default(field.defaultValue)
+  }
+
+  return schema
+}
