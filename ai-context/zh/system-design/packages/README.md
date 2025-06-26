@@ -119,10 +119,10 @@ packages/{package-name}/
 6. 补充企业级特性文档
 
 ### 架构师导航
-1. **系统架构**: [architecture.md](../architecture.md)
-2. **技术约束**: [development-constraints.md](../development-constraints.md)
-3. **包依赖关系**: 本文档的包概览部分
-4. **实施计划**: [implementation-strategy.md](../../project/simplified-implementation-strategy.md)
+1. **系统架构**: [../architecture.md](../architecture.md)
+2. **技术约束**: [../development-constraints.md](../development-constraints.md)
+3. **包依赖关系**: 请参考 [LinchKit AI 开发助手核心指导](../../../MASTER_GUIDELINES.md) 中的“包依赖关系和构建顺序”部分，了解完整的依赖链和构建顺序。
+4. **实施计划**: 请参考 [`../../project/PROJECT_DASHBOARD.md`](../../project/PROJECT_DASHBOARD.md) 获取最新项目状态和开发指引。
 
 ## 📝 备注
 

@@ -3,6 +3,49 @@
 > **文档类型**: 高级特性  
 > **适用场景**: 生产环境优化
 
+## 🔌 插件系统扩展性
+
+### 插件类型扩展
+@linch-kit/core 的插件系统设计了扩展点，支持未来添加新的插件类型：
+
+```typescript
+// 插件元数据支持类型扩展
+interface PluginMetadata {
+  id: string
+  name: string
+  version: string
+  type?: 'local' | 'remote' | string  // 可扩展的插件类型
+  extensions?: Record<string, unknown>  // 自定义扩展数据
+}
+
+// 插件扩展处理器接口（预留）
+interface PluginExtensionHandler {
+  register(plugin: Plugin, config?: PluginConfig): Promise<OperationResult>
+  start?(pluginId: string): Promise<OperationResult>
+  stop?(pluginId: string): Promise<OperationResult>
+}
+
+// 注册自定义插件类型（未来）
+pluginRegistry.registerExtension('remote', remotePluginHandler)
+pluginRegistry.registerExtension('wasm', wasmPluginHandler)
+```
+
+### 远程插件支持（规划中）
+虽然 MVP 版本仅支持本地插件，但架构设计已考虑未来的远程插件需求：
+
+- **多语言支持**: Python、Go、Rust 等语言编写的插件
+- **进程隔离**: 插件运行在独立进程或容器中
+- **通信协议**: gRPC、HTTP、WebSocket 等
+- **分布式部署**: 插件可以部署在不同的服务器上
+
+### 扩展包生态（社区驱动）
+```
+@linch-kit/plugin-remote-grpc     # gRPC 远程插件支持
+@linch-kit/plugin-remote-http     # HTTP 远程插件支持
+@linch-kit/plugin-docker          # Docker 容器插件支持
+@linch-kit/plugin-wasm            # WebAssembly 插件支持
+```
+
 ## 🏢 企业级特性
 
 ### 多租户架构

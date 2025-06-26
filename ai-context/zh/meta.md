@@ -18,6 +18,10 @@
 4. **AI-First** - 所有内容必须便于 AI 工具理解和处理
 5. **持续更新** - 建立定期审核和更新机制
 
+### 文档体系核心
+- **AI 开发指导**: [`../../MASTER_GUIDELINES.md`](../../MASTER_GUIDELINES.md) - AI 开发的唯一权威指导方针。
+- **项目仪表盘**: [`./project/PROJECT_DASHBOARD.md`](./project/PROJECT_DASHBOARD.md) - 项目整体概览、最新进度和关键文档导航。
+
 ---
 
 ## 📁 命名规范

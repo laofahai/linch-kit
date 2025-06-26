@@ -178,9 +178,7 @@ pnpm type-check              # TypeScript 类型检查
 - 🎯 **准备开始 Phase 1**
 
 ### 下一步行动
-1. **立即开始**: Phase 1 的 @linch-kit/core 包重写
-2. **并行进行**: 文档模块化重构
-3. **严格遵循**: 所有质量标准和技术约束
+请参考 [`PROJECT_DASHBOARD.md`](./PROJECT_DASHBOARD.md) 获取最新项目状态和开发指引。
 
 ---
 

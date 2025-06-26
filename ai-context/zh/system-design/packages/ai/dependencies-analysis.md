@@ -77,8 +77,7 @@
     "superjson": "^2.2.1",
     
     // LinchKit内部依赖
-    "@linch-kit/core": "workspace:*",
-    "@linch-kit/schema": "workspace:*"
+    // 请参考 [LinchKit AI 开发助手核心指导](../../../../MASTER_GUIDELINES.md) 中的“包依赖关系和构建顺序”部分，了解完整的依赖链和构建顺序。
   }
 }
 ```

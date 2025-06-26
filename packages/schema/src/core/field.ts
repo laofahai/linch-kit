@@ -37,7 +37,7 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
   /**
    * 设置字段为必填
    */
-  required(required = true): this {
+  setRequired(required = true): this {
     this.definition.required = required
     return this
   }
@@ -45,7 +45,7 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
   /**
    * 设置字段为可选
    */
-  optional(): this {
+  setOptional(): this {
     this.definition.required = false
     return this
   }
@@ -53,7 +53,7 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
   /**
    * 设置字段为唯一
    */
-  unique(unique = true): this {
+  setUnique(unique = true): this {
     this.definition.unique = unique
     return this
   }
@@ -61,7 +61,7 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
   /**
    * 设置字段索引
    */
-  index(index = true): this {
+  setIndex(index = true): this {
     this.definition.index = index
     return this
   }
@@ -69,10 +69,11 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
   /**
    * 设置默认值
    */
-  default(value: unknown): this {
+  setDefault(value: unknown): this {
     this.definition.defaultValue = value
     return this
   }
+
 
   /**
    * 设置字段描述
@@ -118,20 +119,7 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
     return this.definition.defaultValue
   }
 
-  // Test compatibility getters
-  get isRequired(): boolean {
-    return this.definition.required ?? false
-  }
-
-  get isUnique(): boolean {
-    return this.definition.unique ?? false  
-  }
-
-  get hasIndex(): boolean {
-    return this.definition.index ?? false
-  }
-
-  // Additional test compatibility aliases
+  // Test compatibility properties (use different names to avoid method conflicts)
   get required(): boolean {
     return this.definition.required ?? false
   }
@@ -158,33 +146,26 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
     if (options.type) {
       this.definition.type = options.type
     }
+    
   }
 
-  min(length: number): this {
-    if ('minLength' in this.definition) {
-      (this.definition as any).minLength = length
-    }
+  setMin(length: number): this {
+    (this.definition as any).minLength = length
     return this
   }
 
-  max(length: number): this {
-    if ('maxLength' in this.definition) {
-      (this.definition as any).maxLength = length
-    }
+  setMax(length: number): this {
+    (this.definition as any).maxLength = length
     return this
   }
 
-  pattern(regex: RegExp): this {
-    if ('pattern' in this.definition) {
-      (this.definition as any).pattern = regex
-    }
+  setPattern(regex: RegExp): this {
+    (this.definition as any).pattern = regex
     return this
   }
 
   transform(fn: (value: string) => string): this {
-    if ('transform' in this.definition) {
-      (this.definition as any).transform = fn
-    }
+    (this.definition as any).transform = fn
     return this
   }
 
@@ -209,6 +190,7 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
   get isAuto(): boolean {
     return this.definition.auto ?? false
   }
+
 }
 
 /**
@@ -217,37 +199,39 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
 class NumberFieldBuilder extends FieldBuilder<NumberFieldOptions> {
   constructor(options: Partial<NumberFieldOptions> = {}) {
     super({ type: 'number', required: false, ...options } as NumberFieldOptions)
+    
   }
 
-  min(value: number): this {
+  setMin(value: number): this {
     this.definition.min = value
     return this
   }
 
-  max(value: number): this {
+  setMax(value: number): this {
     this.definition.max = value
     return this
   }
 
-  integer(): this {
+  setInteger(): this {
     this.definition.integer = true
     return this
   }
 
-  positive(): this {
+  setPositive(): this {
     this.definition.positive = true
     return this
   }
 
-  negative(): this {
+  setNegative(): this {
     this.definition.negative = true
     return this
   }
 
-  precision(digits: number): this {
+  setPrecision(digits: number): this {
     this.definition.precision = digits
     return this
   }
+
 
   // Add getters for number-specific properties (non-conflicting names)
   get minValue(): number | undefined {
@@ -270,7 +254,7 @@ class NumberFieldBuilder extends FieldBuilder<NumberFieldOptions> {
     return this.definition.precision
   }
 
-  // Test compatibility aliases  
+  // Test compatibility getters for number properties
   get min(): number | undefined {
     return this.definition.min
   }
@@ -290,6 +274,7 @@ class NumberFieldBuilder extends FieldBuilder<NumberFieldOptions> {
   get precision(): number | undefined {
     return this.definition.precision
   }
+
 }
 
 /**

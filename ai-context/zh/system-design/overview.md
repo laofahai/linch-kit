@@ -168,7 +168,7 @@ graph TD
 ### 对于开发者
 1. **快速上手**: 从 [starter-app.md](./packages/starter-app.md) 开始
 2. **架构理解**: 阅读 [architecture.md](./architecture.md)
-3. **开发计划**: 查看 [../project/roadmap.md](../project/roadmap.md)
+3. **开发计划**: 查看 [../project/PROJECT_DASHBOARD.md](../project/PROJECT_DASHBOARD.md)
 4. **最佳实践**: 查看各包的详细文档
 
 ---
