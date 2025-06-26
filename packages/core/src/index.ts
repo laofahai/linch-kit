@@ -35,6 +35,9 @@ export {
 // 可观测性
 export * from './observability'
 
+// 审计系统
+export * from './audit'
+
 // 国际化
 export * from './i18n'
 

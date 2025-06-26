@@ -375,7 +375,8 @@ L4: @linch-kit/ai        - ⏳ AI集成 (多提供商、智能化)
    pnpm test       # 测试验证 (覆盖率达标)
    pnpm type-check # TypeScript类型检查
    ```
-5. **进度保存阶段**: 每次开发会话结束前必须保存进度
+5. **Starter App 同步更新**: 每实现一个功能都必须同步更新 starter app 演示
+6. **进度保存阶段**: 每次开发会话结束前必须保存进度
    ```bash
    # 更新统一进度文件
    ai-context/zh/project/unified-development-progress.md
