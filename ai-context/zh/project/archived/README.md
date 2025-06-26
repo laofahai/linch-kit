@@ -11,9 +11,7 @@
 
 ## 当前有效文档
 请参考上级目录的以下文件：
-- `development-plan.md` - **核心开发计划**（主要实施蓝图）
-- `unified-development-progress.md` - **统一开发进度记录**（实时进度跟踪）
-- `module-core-progress.md` - **Core包详细进度**（具体实施记录）
+- [`PROJECT_DASHBOARD.md`](../PROJECT_DASHBOARD.md) - **项目仪表盘**（项目整体概览和最新进度）
 
 ---
 **归档日期**: 2025-06-25  

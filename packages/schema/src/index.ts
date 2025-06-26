@@ -25,18 +25,9 @@ export {
 export {
   Entity,
   Field,
-  ChainField,
-  Required,
-  Unique,
-  Index,
-  Default,
-  Description,
-  Table,
-  Timestamps,
-  SoftDelete,
   getEntityFromClass,
   getEntitiesFromClasses
-} from './decorators'
+} from './decorators/minimal'
 
 // 代码生成器导出
 export { 

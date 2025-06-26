@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { TypeScriptGenerator } from '../typescript'
-import { defineEntity } from '../../core/entity'
-import { defineField } from '../../core/field'
+import { TypeScriptGenerator } from '../generators/typescript'
+import { defineEntity } from '../core/entity'
+import { defineField } from '../core/field'
 
 describe('TypeScript Generator', () => {
   const generator = new TypeScriptGenerator()

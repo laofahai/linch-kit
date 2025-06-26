@@ -197,7 +197,7 @@ export class ConfigManager extends EventEmitter implements IConfigManager {
       const contentType = response.headers.get('content-type') || ''
       
       if (contentType.includes('application/json')) {
-        return response.json()
+        return response.json() as Promise<Record<string, ConfigValue>>
       }
       
       if (contentType.includes('application/yaml') || contentType.includes('text/yaml')) {

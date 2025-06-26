@@ -90,51 +90,7 @@ graph TB
 
 ## 📦 包依赖关系
 
-### 主依赖链
-```mermaid
-graph TD
-    A[core 插件系统+可观测性+性能监控+安全基础] --> B[schema 数据模式系统]
-    A --> G[ai AI服务集成]
-    B --> C[auth 认证权限]
-    B --> D[crud CRUD操作]
-    C --> D
-    D --> E[trpc API层]
-    E --> F[ui UI组件库]
-    F --> H[console 企业级管理平台]
-
-    classDef level0 fill:#e1f5fe
-    classDef level1 fill:#f3e5f5
-    classDef level2 fill:#e8f5e8
-    classDef level3 fill:#fff3e0
-    classDef level4 fill:#fce4ec
-    classDef level5 fill:#f1f8e9
-    classDef level6 fill:#e8eaf6
-    classDef ai fill:#fff8e1
-
-    class A level0
-    class B level1
-    class G ai
-    class C level2
-    class D level3
-    class E level4
-    class F level5
-    class H level6
-```
-
-### 构建顺序层级
-| 层级 | 包名 | 依赖数量 | 构建时间 | 并行构建 |
-|------|------|----------|----------|----------|
-| Level 0 | core | 0 | ~45s | ✅ |
-| Level 1 | schema, ai | 1 | ~45s | ✅ |
-| Level 2 | auth | 2 | ~60s | ✅ |
-| Level 3 | crud | 3 | ~60s | ✅ |
-| Level 4 | trpc | 4 | ~40s | ✅ |
-| Level 5 | ui | 1* | ~50s | ✅ |
-| Level 6 | console | 5** | ~60s | ✅ |
-
-*ui 包直接依赖 core，通过 core 获得所有通用类型和插件支持
-*ai 包与其他业务包并行，独立提供 AI 服务能力
-**console 包依赖 core、auth、crud、trpc、ui，提供企业级管理功能
+请参考 [LinchKit AI 开发助手核心指导](../../../MASTER_GUIDELINES.md) 中的“包依赖关系和构建顺序”部分，了解完整的依赖链和构建顺序。
 
 ---
 

@@ -108,8 +108,8 @@ mkdir -p packages/{core,schema,auth,crud,trpc,ui,console,ai}/src
 
 ### 第二步: 按阶段执行重写
 1. **Phase 1**: 删除现有 core 和 schema 包代码，从零开始实现
-2. **Phase 2**: 删除现有 auth 和 crud 包代码，从零开始实现
-3. **Phase 3**: 删除现有 trpc 和 ui 包代码，从零开始实现
+2. **Phase 2**: 删除现有 auth 和 crud 包代码，从零开始实现 (必须先完成auth，再完成crud)
+3. **Phase 3**: 删除现有 trpc 和 ui 包代码，从零开始实现 (必须先完成crud，trpc依赖crud服务)
 4. **Phase 4**: 删除现有 console 和 ai 包代码，从零开始实现
 
 ### 第三步: 质量验证
@@ -178,9 +178,7 @@ pnpm type-check              # TypeScript 类型检查
 - 🎯 **准备开始 Phase 1**
 
 ### 下一步行动
-1. **立即开始**: Phase 1 的 @linch-kit/core 包重写
-2. **并行进行**: 文档模块化重构
-3. **严格遵循**: 所有质量标准和技术约束
+请参考 [`PROJECT_DASHBOARD.md`](./PROJECT_DASHBOARD.md) 获取最新项目状态和开发指引。
 
 ---
 

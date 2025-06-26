@@ -19,6 +19,8 @@ export interface CommandOption {
   name: string
   /** 选项描述 */
   description: string
+  /** 选项别名 */
+  alias?: string
   /** 是否必需 */
   required?: boolean
   /** 默认值 */

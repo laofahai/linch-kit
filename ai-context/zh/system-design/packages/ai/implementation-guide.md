@@ -1318,8 +1318,8 @@ Schema: ${JSON.stringify(this.schema, null, 2)}
   }
   
   private generateCacheKey(query: string): string {
-    const schemaHash = core.utils.hash(JSON.stringify(this.schema));
-    const queryHash = core.utils.hash(query.toLowerCase().trim());
+    const schemaHash = ctx.services.core.utils.hash(JSON.stringify(this.schema));
+    const queryHash = ctx.services.core.utils.hash(query.toLowerCase().trim());
     return `${schemaHash}:${queryHash}`;
   }
   

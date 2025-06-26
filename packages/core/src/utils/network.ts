@@ -166,7 +166,7 @@ export async function fetchJson<T = unknown>(
     throw new Error(`HTTP ${response.status}: ${response.statusText}`)
   }
   
-  return response.json()
+  return response.json() as Promise<T>
 }
 
 /**
@@ -192,5 +192,5 @@ export async function postJson<T = unknown>(
     throw new Error(`HTTP ${response.status}: ${response.statusText}`)
   }
   
-  return response.json()
+  return response.json() as Promise<T>
 }

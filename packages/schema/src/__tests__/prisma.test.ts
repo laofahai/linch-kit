@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { PrismaGenerator } from '../prisma'
-import { defineEntity } from '../../core/entity'
-import { defineField } from '../../core/field'
+import { PrismaGenerator } from '../generators/prisma'
+import { defineEntity } from '../core/entity'
+import { defineField } from '../core/field'
 
 describe('Prisma Generator', () => {
   const generator = new PrismaGenerator()

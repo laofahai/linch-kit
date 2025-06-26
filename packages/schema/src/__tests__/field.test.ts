@@ -1,64 +1,64 @@
 import { describe, it, expect } from 'vitest'
-import { defineField } from '../field'
+import { defineField } from '../core/field'
 
 describe('Field System', () => {
   describe('String Fields', () => {
     it('should create basic string field', () => {
       const field = defineField.string()
       expect(field.type).toBe('string')
-      expect(field.isRequired).toBe(false)
+      expect(field.required).toBe(false)
     })
 
     it('should create required string field', () => {
-      const field = defineField.string().required()
-      expect(field.isRequired).toBe(true)
+      const field = defineField.string().setRequired()
+      expect(field.required).toBe(true)
     })
 
     it('should create string field with min length', () => {
-      const field = defineField.string().min(5)
+      const field = defineField.string().setMin(5)
       expect(field.minLength).toBe(5)
     })
 
     it('should create string field with max length', () => {
-      const field = defineField.string().max(100)
+      const field = defineField.string().setMax(100)
       expect(field.maxLength).toBe(100)
     })
 
     it('should create string field with pattern', () => {
       const pattern = /^[a-zA-Z]+$/
-      const field = defineField.string().pattern(pattern)
+      const field = defineField.string().setPattern(pattern)
       expect(field.regexPattern).toBe(pattern)
     })
 
     it('should create unique string field', () => {
-      const field = defineField.string().unique()
-      expect(field.isUnique).toBe(true)
+      const field = defineField.string().setUnique()
+      expect(field.unique).toBe(true)
     })
 
     it('should create indexed string field', () => {
-      const field = defineField.string().index()
-      expect(field.hasIndex).toBe(true)
+      const field = defineField.string().setIndex()
+      expect(field.index).toBe(true)
     })
 
     it('should create string field with default value', () => {
-      const field = defineField.string().default('test')
+      const field = defineField.string().setDefault('test')
       expect(field.defaultValue).toBe('test')
     })
 
     it('should support method chaining', () => {
       const field = defineField.string()
-        .required()
-        .min(3)
-        .max(50)
-        .unique()
-        .index()
-        .default('default')
+        .setRequired()
+        .setMin(3)
+        .setMax(50)
+        .setUnique()
+        .setIndex()
+        .setDefault('default')
       
-      expect(field.isRequired).toBe(true)
+      expect(field.required).toBe(true)
       expect(field.minLength).toBe(3)
       expect(field.maxLength).toBe(50)
-      expect(field.isUnique).toBe(true)
-      expect(field.hasIndex).toBe(true)
+      expect(field.unique).toBe(true)
+      expect(field.index).toBe(true)
       expect(field.defaultValue).toBe('default')
     })
   })
@@ -71,32 +71,32 @@ describe('Field System', () => {
     })
 
     it('should create required number field', () => {
-      const field = defineField.number().required()
+      const field = defineField.number().setRequired()
       expect(field.required).toBe(true)
     })
 
     it('should create number field with min value', () => {
-      const field = defineField.number().min(0)
+      const field = defineField.number().setMin(0)
       expect(field.min).toBe(0)
     })
 
     it('should create number field with max value', () => {
-      const field = defineField.number().max(100)
+      const field = defineField.number().setMax(100)
       expect(field.max).toBe(100)
     })
 
     it('should create integer field', () => {
-      const field = defineField.number().integer()
+      const field = defineField.number().setInteger()
       expect(field.integer).toBe(true)
     })
 
     it('should create positive number field', () => {
-      const field = defineField.number().positive()
+      const field = defineField.number().setPositive()
       expect(field.positive).toBe(true)
     })
 
     it('should create number field with precision', () => {
-      const field = defineField.number().precision(2)
+      const field = defineField.number().setPrecision(2)
       expect(field.precision).toBe(2)
     })
   })

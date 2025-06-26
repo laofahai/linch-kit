@@ -194,7 +194,7 @@ export class CodeGenerator {
           allFiles.push(file)
         }
       } catch (error) {
-        throw new Error(`Generator ${generator.name} failed: ${error.message}`)
+        throw new Error(`Generator ${generator.name} failed: ${error instanceof Error ? error.message : String(error)}`)
       }
     }
 

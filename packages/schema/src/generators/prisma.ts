@@ -120,7 +120,7 @@ ${modelBody}
    */
   private generateField(name: string, field: FieldDefinition): string | null {
     // 跳过反向关系字段
-    if (field.type === 'relation' && field.relation === 'one-to-many') {
+    if (field.type === 'relation' && field.relationType === 'oneToMany') {
       return this.generateReverseRelation(name, field)
     }
 
@@ -146,7 +146,7 @@ ${modelBody}
         return 'String' // 或者使用 @db.Text 属性
       
       case 'number':
-        return field.int ? 'Int' : 'Float'
+        return field.integer ? 'Int' : 'Float'
       
       case 'boolean':
         return 'Boolean'
@@ -166,7 +166,7 @@ ${modelBody}
       }
       
       case 'relation':
-        if (field.relation === 'many-to-many') {
+        if (field.relationType === 'manyToMany') {
           return `${field.target}[]`
         }
         return field.target
@@ -191,8 +191,8 @@ ${modelBody}
     }
 
     // 默认值
-    if (field.default !== undefined) {
-      const defaultValue = this.formatDefaultValue(field.default, field.type)
+    if (field.defaultValue !== undefined) {
+      const defaultValue = this.formatDefaultValue(field.defaultValue, field.type)
       attributes.push(`@default(${defaultValue})`)
     }
 
@@ -203,7 +203,7 @@ ${modelBody}
         break
       
       case 'uuid':
-        if (!field.default) {
+        if (!field.defaultValue) {
           attributes.push('@default(uuid())')
         }
         break
@@ -285,7 +285,10 @@ ${modelBody}
    * 生成反向关系字段
    */
   private generateReverseRelation(name: string, field: FieldDefinition): string {
-    return `${name}${' '.repeat(Math.max(1, 12 - name.length))}${field.target}[]`
+    if (field.type === 'relation') {
+      return `${name}${' '.repeat(Math.max(1, 12 - name.length))}${field.target}[]`
+    }
+    return ''
   }
 
   /**

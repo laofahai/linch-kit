@@ -1,0 +1,59 @@
+{
+  "name": "@linch-kit/crud",
+  "version": "0.1.0",
+  "description": "类型安全的 CRUD 操作包，支持复杂查询、权限集成、事务管理、缓存优化",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@linch-kit/core": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
+    "@linch-kit/auth": "workspace:*",
+    "@prisma/client": "^5.22.0",
+    "zod": "^3.25.67",
+    "ioredis": "^5.4.2",
+    "lru-cache": "^10.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.25",
+    "typescript": "^5.8.3",
+    "vitest": "^2.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "tsup": "^8.5.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "crud",
+    "orm",
+    "prisma",
+    "typescript",
+    "ai-first",
+    "schema-driven",
+    "cache",
+    "permissions"
+  ],
+  "author": "LinchKit Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linch-kit/linch-kit.git",
+    "directory": "packages/crud"
+  }
+}
