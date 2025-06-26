@@ -3,8 +3,11 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "composite": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    "incremental": false,
+    "composite": false,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "src/**/*"
@@ -16,14 +19,8 @@
     "**/*.spec.ts"
   ],
   "references": [
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../schema"
-    },
-    {
-      "path": "../auth"
-    }
+    { "path": "../core" },
+    { "path": "../schema" },
+    { "path": "../auth" }
   ]
 }

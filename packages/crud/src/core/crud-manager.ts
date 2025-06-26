@@ -8,18 +8,70 @@
  * - 插件扩展支持
  */
 
-import type { PrismaClient } from '@prisma/client'
-import type { Entity, SchemaRegistry } from '@linch-kit/schema'
+import type { Entity } from '@linch-kit/schema'
 import type { User } from '@linch-kit/auth'
-import type { Logger, PluginManager } from '@linch-kit/core'
+
+// 定义类型，避免运行时依赖
+interface PrismaClient {
+  [key: string]: any
+}
+
+interface Logger {
+  debug(message: string, data?: Record<string, unknown>): void
+  info(message: string, data?: Record<string, unknown>): void
+  warn(message: string, data?: Record<string, unknown>): void
+  error(message: string, error?: Error, data?: Record<string, unknown>): void
+  fatal(message: string, error?: Error, data?: Record<string, unknown>): void
+}
+
+interface PluginRegistration {
+  plugin: Plugin
+  config: any
+  status: string
+  registeredAt: number
+}
+
+interface Plugin {
+  metadata: {
+    id: string
+    name: string
+    version: string
+  }
+  init?: (config: any) => Promise<void> | void
+  hooks?: CrudPluginHooks
+}
+
+interface CrudPluginHooks {
+  beforeCreate?: (entityName: string, data: any, options: any) => Promise<any> | any
+  afterCreate?: (entityName: string, result: any, options: any) => Promise<void> | void
+  beforeUpdate?: (entityName: string, id: any, data: any, existing: any, options: any) => Promise<any> | any
+  afterUpdate?: (entityName: string, result: any, existing: any, options: any) => Promise<void> | void
+  beforeDelete?: (entityName: string, id: any, existing: any, options: any) => Promise<void> | void
+  afterDelete?: (entityName: string, existing: any, options: any) => Promise<void> | void
+  beforeQuery?: (entityName: string, query: any, options: any) => Promise<any> | any
+}
+
+interface PluginManager {
+  getAll(): PluginRegistration[]
+}
+
+interface SchemaRegistry {
+  getEntity(name: string): any
+}
 import type {
   CreateInput,
   UpdateInput,
   QueryInput,
   CrudOptions,
   FindOptions,
-  PaginatedResult
+  PaginatedResult,
+  IValidationManager,
+  IPermissionChecker,
+  ICacheManager
 } from '../types'
+import { ValidationManager } from '../validation/validation-manager'
+import { PermissionChecker } from '../permissions/permission-checker'
+import { CacheManager } from '../cache/cache-manager'
 
 /**
  * CRUD 管理器配置
@@ -37,6 +89,9 @@ export interface CrudManagerOptions {
  */
 export class CrudManager {
   private readonly options: Required<CrudManagerOptions>
+  private readonly validationManager: IValidationManager
+  private readonly permissionChecker: IPermissionChecker
+  private readonly cacheManager: ICacheManager
 
   constructor(
     private readonly prisma: PrismaClient,
@@ -52,6 +107,11 @@ export class CrudManager {
       enableAudit: options.enableAudit ?? true,
       enableMetrics: options.enableMetrics ?? true
     }
+
+    // 初始化管理器组件
+    this.validationManager = new ValidationManager(this.schemaRegistry, this.logger)
+    this.permissionChecker = new PermissionChecker(this.schemaRegistry, this.logger)
+    this.cacheManager = new CacheManager(this.logger)
   }
 
   /**
@@ -461,10 +521,10 @@ export class CrudManager {
   ): Promise<CreateInput<T>> {
     let processed = data
     
-    const plugins = this.pluginManager?.getPlugins('crud') || []
+    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
-      if (plugin.hooks?.beforeCreate) {
-        processed = await plugin.hooks.beforeCreate(entityName, processed, options)
+      if (plugin.plugin.hooks?.beforeCreate) {
+        processed = await plugin.plugin.hooks.beforeCreate(entityName, processed, options)
       }
     }
     
@@ -476,10 +536,10 @@ export class CrudManager {
     result: T,
     options?: CrudOptions
   ): Promise<void> {
-    const plugins = this.pluginManager?.getPlugins('crud') || []
+    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
-      if (plugin.hooks?.afterCreate) {
-        await plugin.hooks.afterCreate(entityName, result, options)
+      if (plugin.plugin.hooks?.afterCreate) {
+        await plugin.plugin.hooks.afterCreate(entityName, result, options)
       }
     }
   }
@@ -493,10 +553,10 @@ export class CrudManager {
   ): Promise<UpdateInput<T>> {
     let processed = data
     
-    const plugins = this.pluginManager?.getPlugins('crud') || []
+    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
-      if (plugin.hooks?.beforeUpdate) {
-        processed = await plugin.hooks.beforeUpdate(entityName, id, processed, existing, options)
+      if (plugin.plugin.hooks?.beforeUpdate) {
+        processed = await plugin.plugin.hooks.beforeUpdate(entityName, id, processed, existing, options)
       }
     }
     
@@ -509,10 +569,10 @@ export class CrudManager {
     existing: unknown,
     options?: CrudOptions
   ): Promise<void> {
-    const plugins = this.pluginManager?.getPlugins('crud') || []
+    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
-      if (plugin.hooks?.afterUpdate) {
-        await plugin.hooks.afterUpdate(entityName, result, existing, options)
+      if (plugin.plugin.hooks?.afterUpdate) {
+        await plugin.plugin.hooks.afterUpdate(entityName, result, existing, options)
       }
     }
   }
@@ -523,10 +583,10 @@ export class CrudManager {
     existing: unknown,
     options?: CrudOptions
   ): Promise<void> {
-    const plugins = this.pluginManager?.getPlugins('crud') || []
+    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
-      if (plugin.hooks?.beforeDelete) {
-        await plugin.hooks.beforeDelete(entityName, id, existing, options)
+      if (plugin.plugin.hooks?.beforeDelete) {
+        await plugin.plugin.hooks.beforeDelete(entityName, id, existing, options)
       }
     }
   }
@@ -536,10 +596,10 @@ export class CrudManager {
     existing: unknown,
     options?: CrudOptions
   ): Promise<void> {
-    const plugins = this.pluginManager?.getPlugins('crud') || []
+    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
-      if (plugin.hooks?.afterDelete) {
-        await plugin.hooks.afterDelete(entityName, existing, options)
+      if (plugin.plugin.hooks?.afterDelete) {
+        await plugin.plugin.hooks.afterDelete(entityName, existing, options)
       }
     }
   }
@@ -551,10 +611,10 @@ export class CrudManager {
   ): Promise<Record<string, unknown>> {
     let processed = query
     
-    const plugins = this.pluginManager?.getPlugins('crud') || []
+    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
-      if (plugin.hooks?.beforeQuery) {
-        processed = await plugin.hooks.beforeQuery(entityName, processed, options)
+      if (plugin.plugin.hooks?.beforeQuery) {
+        processed = await plugin.plugin.hooks.beforeQuery(entityName, processed, options)
       }
     }
     
@@ -564,23 +624,66 @@ export class CrudManager {
   // 占位符方法 - 具体实现将由专门的类处理
   
   private async validateCreate<T>(entityName: string, data: CreateInput<T>): Promise<void> {
-    // 将由 ValidationManager 实现
+    if (!this.options.enableValidation) return
+    
+    const entity = this.schemaRegistry.getEntity(entityName)
+    if (!entity) {
+      throw new Error(`Entity '${entityName}' not found`)
+    }
+
+    const errors = await this.validationManager.validateCreate(entity, data)
+    if (errors.length > 0) {
+      const message = errors.map(e => `${e.field}: ${e.message}`).join(', ')
+      throw new Error(`Validation failed: ${message}`)
+    }
   }
 
   private async validateUpdate<T>(entityName: string, id: string, data: UpdateInput<T>): Promise<void> {
-    // 将由 ValidationManager 实现
+    if (!this.options.enableValidation) return
+    
+    const entity = this.schemaRegistry.getEntity(entityName)
+    if (!entity) {
+      throw new Error(`Entity '${entityName}' not found`)
+    }
+
+    const errors = await this.validationManager.validateUpdate(entity, id, data)
+    if (errors.length > 0) {
+      const message = errors.map(e => `${e.field}: ${e.message}`).join(', ')
+      throw new Error(`Validation failed: ${message}`)
+    }
   }
 
   private async checkCreatePermission<T>(entityName: string, user: User, data: CreateInput<T>): Promise<void> {
-    // 将由 PermissionChecker 实现
+    if (!this.options.enablePermissions) return
+    
+    const entity = this.schemaRegistry.getEntity(entityName)
+    if (!entity) {
+      throw new Error(`Entity '${entityName}' not found`)
+    }
+
+    await this.permissionChecker.checkCreate(entity, user, data)
   }
 
   private async checkUpdatePermission<T>(entityName: string, user: User, existing: unknown, data: UpdateInput<T>): Promise<void> {
-    // 将由 PermissionChecker 实现
+    if (!this.options.enablePermissions) return
+    
+    const entity = this.schemaRegistry.getEntity(entityName)
+    if (!entity) {
+      throw new Error(`Entity '${entityName}' not found`)
+    }
+
+    await this.permissionChecker.checkUpdate(entity, user, existing, data)
   }
 
   private async checkDeletePermission(entityName: string, user: User, existing: unknown): Promise<void> {
-    // 将由 PermissionChecker 实现
+    if (!this.options.enablePermissions) return
+    
+    const entity = this.schemaRegistry.getEntity(entityName)
+    if (!entity) {
+      throw new Error(`Entity '${entityName}' not found`)
+    }
+
+    await this.permissionChecker.checkDelete(entity, user, existing)
   }
 
   private async applyPermissionFilter(
@@ -589,8 +692,15 @@ export class CrudManager {
     user: User,
     operation: string
   ): Promise<Record<string, unknown>> {
-    // 将由 PermissionChecker 实现
-    return query
+    if (!this.options.enablePermissions) return query
+    
+    const entity = this.schemaRegistry.getEntity(entityName)
+    if (!entity) {
+      throw new Error(`Entity '${entityName}' not found`)
+    }
+
+    const rowFilter = await this.permissionChecker.buildRowFilter(entity, user, operation as any)
+    return { ...query, ...rowFilter }
   }
 
   private async applyFieldPermissions<T>(
@@ -599,7 +709,14 @@ export class CrudManager {
     user: User,
     operation: string
   ): Promise<T[]> {
-    // 将由 PermissionChecker 实现
-    return data
+    if (!this.options.enablePermissions) return data
+    
+    const entity = this.schemaRegistry.getEntity(entityName)
+    if (!entity) {
+      throw new Error(`Entity '${entityName}' not found`)
+    }
+
+    const filteredData = await this.permissionChecker.filterFields(entity, user, data, operation as any)
+    return filteredData as T[]
   }
 }

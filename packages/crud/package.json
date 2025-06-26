@@ -7,38 +7,34 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "rollup -c rollup.config.js",
-    "dev": "rollup -c rollup.config.js --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext .ts,.tsx --fix",
     "type-check": "tsc --noEmit"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@linch-kit/core": "workspace:*",
     "@linch-kit/schema": "workspace:*",
     "@linch-kit/auth": "workspace:*",
     "@prisma/client": "^5.22.0",
-    "zod": "^3.25.67"
-  },
-  "dependencies": {
+    "zod": "^3.25.67",
     "ioredis": "^5.4.2",
     "lru-cache": "^10.4.3"
   },
   "devDependencies": {
-    "@types/node": "^20.19.2",
+    "@types/node": "^20.11.25",
     "typescript": "^5.8.3",
     "vitest": "^2.0.0",
     "@vitest/coverage-v8": "^2.0.0",
-    "rollup": "^4.0.0",
-    "@rollup/plugin-typescript": "^12.0.0",
-    "@rollup/plugin-node-resolve": "^15.0.0"
+    "tsup": "^8.5.0"
   },
   "files": [
     "dist"

@@ -19,11 +19,13 @@ export { PrismaQueryBuilder, QueryBuilderFactory } from './core/query-builder/pr
 export { BaseQueryBuilder } from './core/query-builder/base-query-builder'
 export { QueryConditionBuilder } from './core/query-builder/condition-builder'
 export { QueryExecutor, QueryExecutorFactory } from './core/query-builder/query-executor'
+export { QueryOptimizer, createQueryOptimizer } from './core/query-builder/query-optimizer'
+export { QueryValidator, createQueryValidator } from './core/query-builder/query-validator'
 
 // 工具类
 export { PermissionChecker } from './permissions/permission-checker'
 export { ValidationManager } from './validation/validation-manager'
-export { CacheManager } from './cache/cache-manager'
+export { CacheManager, createCacheManager } from './cache/cache-manager'
 
 // 类型定义
 export type * from './types'
