@@ -1,6 +1,6 @@
 /**
- * @linch-kit/schema 装饰器系统
- * 支持基于装饰器的Schema定义方式
+ * @linch-kit/schema Decorator System
+ * Support decorator-based Schema definition
  */
 
 import 'reflect-metadata'
@@ -17,13 +17,13 @@ import type {
   RelationFieldOptions
 } from '../types'
 
-// 元数据键
+// Metadata keys
 const ENTITY_KEY = Symbol('linch:entity')
 const FIELDS_KEY = Symbol('linch:fields')
 const OPTIONS_KEY = Symbol('linch:options')
 
 /**
- * 实体装饰器
+ * Entity decorator
  * 
  * @example
  * ```typescript

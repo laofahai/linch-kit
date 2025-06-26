@@ -68,7 +68,7 @@ export class TypeScriptGenerator extends BaseGenerator {
     // 检查是否需要导入其他实体类型
     const relationTargets = new Set<string>()
     Object.values(entity.fields).forEach(field => {
-      if (field.type === 'relation' && field.target !== entity.name) {
+      if (field.type === 'relation' && 'target' in field && field.target !== entity.name) {
         relationTargets.add(field.target)
       }
     })
@@ -131,7 +131,7 @@ export interface ${entity.name} extends ${extendsClause} {${fieldsString}}`
     
     Object.entries(entity.fields).forEach(([name, field]) => {
       // 跳过反向关系字段
-      if (field.type === 'relation' && field.relation === 'one-to-many') {
+      if (field.type === 'relation' && field.relationType === 'oneToMany') {
         return
       }
       
@@ -246,12 +246,15 @@ export interface ${entity.name}Where extends ${entity.name}Filter {
     }
 
     const includeFields = relationFields.map(([name, field]) => {
-      if (field.relation === 'one-to-many' || field.relation === 'many-to-many') {
-        return `  ${name}?: boolean | ${field.target}FindManyArgs`
-      } else {
-        return `  ${name}?: boolean | ${field.target}FindUniqueArgs`
+      if (field.type === 'relation' && 'target' in field && 'relationType' in field) {
+        if (field.relationType === 'oneToMany' || field.relationType === 'manyToMany') {
+          return `  ${name}?: boolean | ${field.target}FindManyArgs`
+        } else {
+          return `  ${name}?: boolean | ${field.target}FindUniqueArgs`
+        }
       }
-    }).join('\n')
+      return ''
+    }).filter(Boolean).join('\n')
 
     return `/**
  * Include relations for ${entity.name}
@@ -445,17 +448,20 @@ export interface FindUniqueArgs<T = any> {
       case 'relation':
         if (context === 'create') {
           // 创建时通常只需要ID
-          if (field.relation === 'one-to-many' || field.relation === 'many-to-many') {
+          if ('relationType' in field && (field.relationType === 'oneToMany' || field.relationType === 'manyToMany')) {
             return 'string[]'
           }
           return 'string'
         }
         
         // 读取时返回完整对象
-        if (field.relation === 'one-to-many' || field.relation === 'many-to-many') {
-          return `${field.target}[]`
+        if ('relationType' in field && 'target' in field) {
+          if (field.relationType === 'oneToMany' || field.relationType === 'manyToMany') {
+            return `${field.target}[]`
+          }
+          return field.target
         }
-        return field.target
+        return 'unknown'
       
       case 'i18n':
         if (field.i18n) {

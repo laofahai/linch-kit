@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { defineField } from '../field'
+import { defineField } from '../core/field'
 
 describe('Field System', () => {
   describe('String Fields', () => {

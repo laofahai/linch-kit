@@ -117,6 +117,32 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
   get defaultValue(): unknown {
     return this.definition.defaultValue
   }
+
+  // Test compatibility getters
+  get isRequired(): boolean {
+    return this.definition.required ?? false
+  }
+
+  get isUnique(): boolean {
+    return this.definition.unique ?? false  
+  }
+
+  get hasIndex(): boolean {
+    return this.definition.index ?? false
+  }
+
+  // Additional test compatibility aliases
+  get required(): boolean {
+    return this.definition.required ?? false
+  }
+
+  get unique(): boolean {
+    return this.definition.unique ?? false  
+  }
+
+  get index(): boolean {
+    return this.definition.index ?? false
+  }
 }
 
 /**
@@ -167,7 +193,7 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
     return this
   }
 
-  // Add getters for string-specific properties (non-conflicting names)
+  // Getters for test compatibility
   get minLength(): number | undefined {
     return 'minLength' in this.definition ? (this.definition as any).minLength : undefined
   }
@@ -241,6 +267,27 @@ class NumberFieldBuilder extends FieldBuilder<NumberFieldOptions> {
   }
 
   get precisionDigits(): number | undefined {
+    return this.definition.precision
+  }
+
+  // Test compatibility aliases  
+  get min(): number | undefined {
+    return this.definition.min
+  }
+
+  get max(): number | undefined {
+    return this.definition.max
+  }
+
+  get integer(): boolean {
+    return this.definition.integer ?? false
+  }
+
+  get positive(): boolean {
+    return this.definition.positive ?? false
+  }
+
+  get precision(): number | undefined {
     return this.definition.precision
   }
 }

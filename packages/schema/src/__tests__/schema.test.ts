@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { schema } from '../schema'
-import { defineField } from '../field'
+import { schema } from '../core/schema'
+import { defineField } from '../core/field'
 
 describe('Schema Builder System', () => {
   describe('Basic Schema Creation', () => {

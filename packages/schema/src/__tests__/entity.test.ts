@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { defineEntity } from '../entity'
-import { defineField } from '../field'
+import { defineEntity } from '../core/entity'
+import { defineField } from '../core/field'
 
 describe('Entity System', () => {
   describe('Basic Entity Creation', () => {
