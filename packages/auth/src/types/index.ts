@@ -1,43 +1,116 @@
 /**
  * @linch-kit/auth 类型定义
- * 企业级认证和权限管理类型系统
+ * 基于 NextAuth.js 的企业级认证和权限管理类型系统
+ *
+ * 遵循 LinchKit "不重复造轮子" 原则
+ * 扩展 NextAuth.js 类型以支持企业级特性
  */
 
 import { z } from 'zod'
+import type { User as NextAuthUser, Session as NextAuthSession, Account, Profile } from 'next-auth'
+import type { JWT } from 'next-auth/jwt'
 
 // ============================================================================
-// 认证相关类型
+// NextAuth.js 扩展类型
 // ============================================================================
 
 /**
- * 用户基础信息
+ * LinchKit 用户类型 - 扩展 NextAuth.js User
+ */
+export interface LinchKitUser extends NextAuthUser {
+  id: string
+  email: string
+  name?: string | null
+  image?: string | null
+  tenantId?: string
+  status?: 'active' | 'inactive' | 'disabled' | 'pending'
+  emailVerified?: Date | null
+  createdAt?: Date
+  updatedAt?: Date
+  lastLoginAt?: Date | null
+  metadata?: Record<string, unknown>
+}
+
+/**
+ * 用户类型别名 - 为了向后兼容
+ */
+export type User = LinchKitUser
+
+/**
+ * 用户 Zod Schema
  */
 export const UserSchema = z.object({
   id: z.string(),
   email: z.string().email(),
-  name: z.string(),
-  avatar: z.string().optional(),
-  status: z.enum(['active', 'inactive', 'disabled', 'pending']).default('pending'),
-  emailVerified: z.boolean().default(false),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  lastLoginAt: z.date().optional(),
+  name: z.string().nullable().optional(),
+  image: z.string().nullable().optional(),
+  tenantId: z.string().optional(),
+  status: z.enum(['active', 'inactive', 'disabled', 'pending']).optional(),
+  emailVerified: z.date().nullable().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  lastLoginAt: z.date().nullable().optional(),
   metadata: z.record(z.unknown()).optional()
 })
 
-export type User = z.infer<typeof UserSchema>
+/**
+ * LinchKit 会话类型 - 扩展 NextAuth.js Session
+ */
+export interface LinchKitSession extends NextAuthSession {
+  user: LinchKitUser
+  tenantId?: string
+  permissions?: string[]
+  roles?: string[]
+}
+
+// ============================================================================
+// LinchKit 认证配置类型
+// ============================================================================
 
 /**
- * 认证提供商类型
+ * LinchKit 认证配置
  */
-export type AuthProvider = 
-  | 'credentials' 
-  | 'google' 
-  | 'github' 
-  | 'microsoft' 
-  | 'saml'
-  | 'ldap'
-  | 'custom'
+export interface LinchKitAuthConfig {
+  providers?: {
+    github?: {
+      clientId: string
+      clientSecret: string
+    }
+    google?: {
+      clientId: string
+      clientSecret: string
+    }
+    credentials?: {
+      authorize: (credentials: Record<string, unknown>) => Promise<LinchKitUser | null>
+    }
+  }
+  // 注意：数据库集成已移至 @linch-kit/trpc 包
+  session?: {
+    maxAge?: number
+  }
+  jwt?: {
+    maxAge?: number
+  }
+  pages?: {
+    signIn?: string
+    signOut?: string
+    error?: string
+    verifyRequest?: string
+    newUser?: string
+  }
+  callbacks?: {
+    beforeSignIn?: (params: { user: LinchKitUser; account: Account | null; profile?: Profile }) => Promise<boolean>
+    extendSession?: (session: LinchKitSession, token: JWT) => Promise<LinchKitSession>
+    extendJWT?: (token: JWT, user?: LinchKitUser, account?: Account | null) => Promise<JWT>
+  }
+  events?: {
+    onSignIn?: (params: { user: LinchKitUser; account: Account | null; profile?: Profile }) => Promise<void>
+    onSignOut?: (params: { session?: LinchKitSession; token?: JWT }) => Promise<void>
+  }
+  debug?: boolean
+}
+
+// 注意：Prisma 适配器配置已移至 @linch-kit/trpc 包
 
 /**
  * 认证请求
@@ -379,7 +452,7 @@ export interface IAuthProvider {
 export interface IPermissionChecker {
   check(user: User, action: PermissionAction, subject: PermissionSubject | any, context?: PermissionContext): Promise<boolean>
   checkMultiple(user: User, checks: PermissionCheck[], context?: PermissionContext): Promise<Record<string, boolean>>
-  getAccessibleResources<T>(user: User, action: PermissionAction, resourceType: PermissionSubject): Promise<any>
+  getAccessibleResources(user: User, action: PermissionAction, resourceType: PermissionSubject): Promise<any>
 }
 
 /**

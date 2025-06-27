@@ -1,60 +1,82 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-// import { AuthManager } from '@linch-kit/auth'
-// import type { User, AuthSession } from '@linch-kit/auth'
+import { createLinchKitAuthConfig, EnterpriseAuthExtensions, MFAManager } from '@linch-kit/auth'
+import type { LinchKitUser, LinchKitSession } from '@linch-kit/auth'
 
-// 临时类型定义，避免构建错误
-interface User {
-  id: string
-  email: string
-  name: string
+// 使用 LinchKit Auth 的类型定义
+interface User extends LinchKitUser {
   role: string
-  createdAt: Date
-  updatedAt: Date
 }
 
-interface AuthSession {
-  id: string
+interface AuthSession extends LinchKitSession {
   token: string
-  user: User
-  createdAt: Date
-  expiresAt: Date
 }
 
-// 模拟AuthManager类
-class AuthManager {
-  constructor(config: any) {}
-  
-  async getSession(): Promise<AuthSession | null> {
-    const stored = localStorage.getItem('demo-session')
-    return stored ? JSON.parse(stored) : null
+// LinchKit Auth 管理器
+class LinchKitAuthManager {
+  private enterpriseAuth: EnterpriseAuthExtensions
+  private mfaManager: MFAManager
+
+  constructor(config: any) {
+    this.enterpriseAuth = new EnterpriseAuthExtensions({
+      tenantId: 'starter-app',
+      enableMFA: false, // 演示应用暂时禁用 MFA
+      enableAuditLog: true,
+      enableRoleBasedAccess: true
+    })
+
+    this.mfaManager = new MFAManager({
+      enabled: false,
+      methods: ['totp'],
+      issuer: 'LinchKit Starter'
+    })
   }
-  
+
+  async getSession(): Promise<AuthSession | null> {
+    const stored = localStorage.getItem('linchkit-session')
+    if (!stored) return null
+
+    const session = JSON.parse(stored)
+    // 检查会话是否过期
+    if (new Date(session.expiresAt) < new Date()) {
+      await this.destroySession()
+      return null
+    }
+
+    return session
+  }
+
   async createSession(user: User): Promise<AuthSession> {
     const session: AuthSession = {
       id: `session-${Date.now()}`,
       token: `token-${Date.now()}`,
+      userId: user.id,
+      tenantId: 'starter-app',
       user,
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + 3600000) // 1小时后过期
     }
-    localStorage.setItem('demo-session', JSON.stringify(session))
+    localStorage.setItem('linchkit-session', JSON.stringify(session))
     return session
   }
-  
+
   async destroySession(): Promise<void> {
-    localStorage.removeItem('demo-session')
+    localStorage.removeItem('linchkit-session')
   }
-  
+
   async refreshSession(token: string): Promise<AuthSession> {
-    const stored = localStorage.getItem('demo-session')
+    const stored = localStorage.getItem('linchkit-session')
     if (!stored) throw new Error('No session found')
-    
+
     const session = JSON.parse(stored)
     session.expiresAt = new Date(Date.now() + 3600000)
-    localStorage.setItem('demo-session', JSON.stringify(session))
+    localStorage.setItem('linchkit-session', JSON.stringify(session))
     return session
+  }
+
+  async validateUserAccess(user: User): Promise<boolean> {
+    return await this.enterpriseAuth.checkUserAccess(user)
   }
 }
 
@@ -62,8 +84,8 @@ interface AuthContextType {
   user: User | null
   session: AuthSession | null
   isLoading: boolean
-  login: (email: string, password: string) => Promise<void>
-  logout: () => Promise<void>
+  signIn: (email: string, password: string) => Promise<void>
+  signOut: () => Promise<void>
   refreshSession: () => Promise<void>
   validateAuth: () => { isValid: boolean; message: string }
   getAuthStats: () => { sessionCount: number; lastActivity: Date | null; permissions: string[] }
@@ -87,17 +109,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<AuthSession | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [authManager] = useState(() => new AuthManager({
-    providers: {
-      jwt: {
-        secret: process.env.NEXT_PUBLIC_JWT_SECRET || 'demo-secret-key',
-        expiresIn: '1h'
-      }
-    },
-    session: {
-      strategy: 'jwt',
-      storage: 'localStorage'
-    }
+  const [authManager] = useState(() => new LinchKitAuthManager({
+    tenantId: 'starter-app',
+    enableMFA: false,
+    enableAuditLog: true,
+    enableRoleBasedAccess: true
   }))
 
   useEffect(() => {
@@ -132,10 +148,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   const getAuthStats = () => {
-    const sessions = localStorage.getItem('demo-session') ? 1 : 0
+    const sessions = localStorage.getItem('linchkit-session') ? 1 : 0
     const lastActivity = session ? session.createdAt : null
     const permissions = user ? ['read', 'write', user.role === 'admin' ? 'admin' : 'user'] : []
-    
+
     return {
       sessionCount: sessions,
       lastActivity,
@@ -143,7 +159,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  const login = async (email: string, _password: string) => {
+  const signIn = async (email: string, _password: string) => {
     try {
       setIsLoading(true)
       // 演示用户 - 实际应用中会调用真实的认证API
@@ -152,10 +168,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         email,
         name: email.split('@')[0],
         role: 'user',
+        tenantId: 'starter-app',
+        status: 'active',
         createdAt: new Date(),
         updatedAt: new Date()
       }
-      
+
+      // 验证用户访问权限
+      const hasAccess = await authManager.validateUserAccess(mockUser)
+      if (!hasAccess) {
+        throw new Error('用户无权限访问此应用')
+      }
+
       const newSession = await authManager.createSession(mockUser)
       setSession(newSession)
       setUser(mockUser)
@@ -167,7 +191,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  const logout = async () => {
+  const signOut = async () => {
     try {
       setIsLoading(true)
       await authManager.destroySession()
@@ -189,7 +213,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error('会话刷新失败:', error)
       // 如果刷新失败，清除会话
-      await logout()
+      await signOut()
     }
   }
 
@@ -197,8 +221,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     session,
     isLoading,
-    login,
-    logout,
+    signIn,
+    signOut,
     refreshSession,
     validateAuth,
     getAuthStats

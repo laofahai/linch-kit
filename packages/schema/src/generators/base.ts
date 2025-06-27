@@ -20,7 +20,7 @@ export abstract class BaseGenerator implements Generator {
   /**
    * 生成代码
    */
-  abstract generate(entities: Entity[]): Promise<GeneratedFile[]>
+  abstract generate(context: GeneratorContext): Promise<GeneratedFile[]>
 
   /**
    * 获取输出文件扩展名
@@ -171,6 +171,14 @@ export class CodeGenerator {
   async generate(): Promise<GeneratedFile[]> {
     const context: GeneratorContext = {
       entities: this.options.entities,
+      outputDir: this.options.outputDir || './generated',
+      config: this.options.config || {},
+      schema: {
+        name: 'default',
+        version: '1.0.0',
+        entities: this.options.entities,
+        config: this.options.config || {}
+      },
       options: this.options
     }
 
@@ -184,7 +192,7 @@ export class CodeGenerator {
     // 执行所有生成器
     for (const generator of this.generators.values()) {
       try {
-        const files = await generator.generate(this.options.entities)
+        const files = await generator.generate(context)
         
         // 执行文件生成后钩子
         for (const file of files) {
@@ -200,7 +208,7 @@ export class CodeGenerator {
 
     // 执行生成完成钩子
     if (this.hooks.afterGenerate) {
-      await this.hooks.afterGenerate(allFiles)
+      await this.hooks.afterGenerate(allFiles, context)
     }
 
     return allFiles
@@ -215,7 +223,19 @@ export class CodeGenerator {
       throw new Error(`Generator ${type} not found`)
     }
 
-    return generator.generate(this.options.entities)
+    const context: GeneratorContext = {
+      entities: this.options.entities,
+      outputDir: this.options.outputDir || './generated',
+      config: this.options.config || {},
+      schema: {
+        name: 'default',
+        version: '1.0.0',
+        entities: this.options.entities,
+        config: this.options.config || {}
+      },
+      options: this.options
+    }
+    return generator.generate(context)
   }
 
   /**

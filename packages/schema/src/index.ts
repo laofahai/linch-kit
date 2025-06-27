@@ -58,14 +58,7 @@ export * from './migration'
 /**
  * Core插件系统集成
  */
-export { schemaPlugin } from './plugin'
-
-// ==================== 基础设施导出 ====================
-/**
- * Core基础设施集成
- * 包含日志、国际化、配置管理等
- */
-export * from './infrastructure'
+export * from './plugins'
 
 // ==================== 版本信息 ====================
 /**

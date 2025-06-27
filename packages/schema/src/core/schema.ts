@@ -99,6 +99,7 @@ export class SchemaBuilder<T extends Record<string, FieldDefinition> = {}> {
     }
 
     return new EntityImpl(entityName, {
+      name: entityName,
       fields: this._fields,
       options: this._options
     }) as Entity
