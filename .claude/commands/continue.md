@@ -1,1 +1,0 @@
-继续 LinchKit 开发：基于 ai-context/zh/ 完整文档体系，core→schema→auth→crud→trpc→ui→console→ai 全栈开发，使用 TypeScript 严格模式、pnpm 包管理、现代化技术栈，保持企业级特性和 AI-First 设计，严格遵守ai-context/zh/下的开发约束，参考模块化文档结构进行开发。

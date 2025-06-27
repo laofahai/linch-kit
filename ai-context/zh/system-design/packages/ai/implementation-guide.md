@@ -1450,7 +1450,7 @@ export class Security {
       throw new Error('请求频率超限');
     }
     
-    await core.cache.increment(key, { ttl: this.parseTimeWindow(window) });
+    await ctx.services.core.cache.increment(key, { ttl: this.parseTimeWindow(window) });
   }
   
   private getRequiredPermission(request: any): string {
