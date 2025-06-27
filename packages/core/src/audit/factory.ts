@@ -4,6 +4,7 @@
  */
 
 import type { Logger, MetricCollector } from '../types/observability'
+
 import type { AuditConfig, AuditManager, AuditPolicy } from './types'
 import { DefaultAuditManager } from './audit-manager'
 import { DatabaseAuditStore } from './stores/database-store'
@@ -86,7 +87,7 @@ export function createSimpleFileAuditManager(
 export function createDatabaseAuditManager(
   logger: Logger,
   metrics: MetricCollector,
-  prisma: any,
+  prisma: { $queryRaw: (query: TemplateStringsArray) => Promise<unknown>; $disconnect: () => Promise<void>; audit_logs: { create: (data: { data: Record<string, unknown> }) => Promise<Record<string, unknown>>; createMany: (data: { data: Record<string, unknown>[]; skipDuplicates?: boolean }) => Promise<{ count: number }>; findMany: (query: Record<string, unknown>) => Promise<Record<string, unknown>[]>; count: (query: Record<string, unknown>) => Promise<number>; deleteMany: (query: Record<string, unknown>) => Promise<{ count: number }> } },
   policy?: Partial<AuditPolicy>
 ): AuditManager {
   const auditManager = new DefaultAuditManager(logger, metrics, policy)

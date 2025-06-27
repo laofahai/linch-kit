@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+
 import { ConfigManager } from '../../config/manager'
-import type { ConfigSource, ConfigValue } from '../../types'
+import type { ConfigSource } from '../../types'
 
 // Mock dependencies
 vi.mock('fs/promises', () => ({
@@ -16,8 +17,8 @@ global.fetch = vi.fn()
 
 describe('ConfigManager', () => {
   let manager: ConfigManager
-  let mockFs: any
-  let mockYaml: any
+  let mockFs: unknown
+  let mockYaml: unknown
 
   beforeEach(async () => {
     manager = new ConfigManager()
@@ -436,7 +437,7 @@ describe('ConfigManager', () => {
     it('should reject unsupported source types', async () => {
       const source = {
         id: 'unsupported-source',
-        type: 'unknown' as any
+        type: 'unknown' as never
       }
 
       await expect(manager.loadConfig(source)).rejects.toThrow('Unsupported config source type: unknown')

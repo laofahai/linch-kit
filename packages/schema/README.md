@@ -30,6 +30,12 @@ LinchKit Schema驱动开发引擎 - 基于TypeScript的企业级Schema定义和�
 - **审计跟踪**: 自动时间戳和软删除支持
 - **索引优化**: 智能索引建议和优化
 
+### 🏗️ 架构集成
+- **Core插件系统**: 完全集成LinchKit Core的插件架构
+- **统一基础设施**: 使用Core的日志、国际化、配置管理
+- **CLI集成**: Schema命令集成到Core的CLI框架
+- **事件驱动**: 支持插件间的事件通信机制
+
 ## 快速开始
 
 ### 安装
@@ -304,31 +310,53 @@ const userData = { name: 'John', email: 'john@example.com', age: 25 }
 const validatedData = User.validateCreate(userData)
 ```
 
-## 插件生态
+## 插件集成
 
-### 官方插件
+### Core插件注册
 
-- `@linch-kit/schema-plugin-audit`: 审计日志插件
-- `@linch-kit/schema-plugin-cache`: 缓存优化插件
-- `@linch-kit/schema-plugin-search`: 全文搜索插件
-
-### 自定义插件
+Schema包现在作为标准的LinchKit Core插件运行：
 
 ```typescript
-import { SchemaPlugin } from '@linch-kit/schema'
+import { createPluginRegistry } from '@linch-kit/core'
+import { schemaPlugin } from '@linch-kit/schema'
 
-const auditPlugin: SchemaPlugin = {
-  name: 'audit-plugin',
-  transformEntity: (entity) => {
-    // 自动为所有实体添加审计字段
-    return entity.extend({
-      createdBy: defineField.uuid().required(),
-      updatedBy: defineField.uuid().required(),
-      deletedBy: defineField.uuid().optional(),
-      deletedAt: defineField.date().optional()
-    })
-  }
-}
+// 注册Schema插件
+const registry = createPluginRegistry()
+await registry.register(schemaPlugin, {
+  autoRegisterCommands: true,
+  enableWatcher: false,
+  defaultGenerators: ['typescript', 'prisma'],
+  inputDir: './src/schema',
+  outputDir: './generated'
+})
+
+// 启动插件
+await registry.startAll()
+```
+
+### 基础设施集成
+
+Schema包完全集成了Core包的基础设施：
+
+```typescript
+import {
+  logger,
+  useSchemaTranslation,
+  logInfo,
+  logError
+} from '@linch-kit/schema'
+
+// 使用统一的日志系统
+logger.info('Schema operation completed')
+
+// 使用国际化功能
+const t = useSchemaTranslation()
+console.log(t('generate.success'))
+
+// 使用便捷的日志函数
+logInfo('Starting code generation')
+logError('Generation failed', error)
+```
 ```
 
 ## 配置选项

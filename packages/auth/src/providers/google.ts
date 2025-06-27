@@ -4,7 +4,9 @@
  */
 
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
+
 import type { AuthRequest, AuthResult, User } from '../types'
+
 import { BaseAuthProvider } from './base'
 
 /**
@@ -92,10 +94,10 @@ export class GoogleAuthProvider extends BaseAuthProvider {
 
   protected async performAuthentication(request: AuthRequest): Promise<AuthResult> {
     // OAuth流程通常通过重定向处理，这里主要用于处理回调结果
-    const { code, state, error } = request.credentials as { 
-      code?: string 
-      state?: string 
-      error?: string 
+    const { code, state: _state, error } = request.credentials as {
+      code?: string
+      state?: string
+      error?: string
     }
 
     if (error) {
@@ -111,7 +113,7 @@ export class GoogleAuthProvider extends BaseAuthProvider {
     throw new Error('Use passport middleware for Google OAuth authentication')
   }
 
-  protected async performValidation(payload: any): Promise<User | null> {
+  protected async performValidation(payload: unknown): Promise<User | null> {
     // 对于Google OAuth，验证通常通过Google令牌完成
     if (payload.googleId) {
       return await this.findUserByGoogleId(payload.googleId)
@@ -123,12 +125,12 @@ export class GoogleAuthProvider extends BaseAuthProvider {
     return await this.findUserByEmail(identifier)
   }
 
-  protected async createUser(userData: Partial<User>): Promise<User> {
+  protected async createUser(_userData: Partial<User>): Promise<User> {
     // TODO: 实现用户创建逻辑
     throw new Error('User creation not implemented')
   }
 
-  protected async verifyPassword(user: User, password: string): Promise<boolean> {
+  protected async verifyPassword(_user: User, _password: string): Promise<boolean> {
     // Google OAuth不需要密码验证
     return true
   }
@@ -167,10 +169,10 @@ export class GoogleAuthProvider extends BaseAuthProvider {
    * 关联Google账户到现有用户
    */
   private async linkGoogleAccount(
-    userId: string, 
-    googleId: string, 
-    accessToken: string, 
-    refreshToken?: string
+    userId: string,
+    googleId: string,
+    _accessToken: string,
+    _refreshToken?: string
   ): Promise<void> {
     // TODO: 实现数据库更新
     console.log(`Linking Google account ${googleId} to user ${userId}`)
@@ -180,7 +182,7 @@ export class GoogleAuthProvider extends BaseAuthProvider {
    * 从Google资料创建新用户
    */
   private async createUserFromGoogleProfile(
-    profile: any, 
+    profile: unknown,
     accessToken: string, 
     refreshToken?: string
   ): Promise<User> {
@@ -221,9 +223,9 @@ export class GoogleAuthProvider extends BaseAuthProvider {
    * 更新Google令牌
    */
   private async updateGoogleTokens(
-    userId: string, 
-    accessToken: string, 
-    refreshToken?: string
+    userId: string,
+    _accessToken: string,
+    _refreshToken?: string
   ): Promise<void> {
     // TODO: 实现数据库更新
     console.log(`Updating Google tokens for user ${userId}`)
@@ -293,7 +295,7 @@ export class GoogleAuthProvider extends BaseAuthProvider {
   /**
    * 获取Google用户信息
    */
-  public async getUserInfo(accessToken: string): Promise<any> {
+  public async getUserInfo(accessToken: string): Promise<unknown> {
     try {
       const response = await fetch(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`)
       

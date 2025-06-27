@@ -1,56 +1,74 @@
 /**
  * @linch-kit/schema 主入口文件
- * Schema驱动开发引擎
+ *
+ * Schema驱动开发引擎 - 提供完整的Schema定义、代码生成、验证和迁移功能
+ *
+ * @module @linch-kit/schema
+ * @version 0.1.0
  */
 
-// 核心类型导出
+// ==================== 类型定义导出 ====================
+/**
+ * 所有类型定义的统一导出
+ * 包含字段类型、实体类型、插件类型等
+ */
 export type * from './types'
 
-// 核心功能导出
-export { defineField } from './core/field'
-export { defineEntity, defineEntities, isEntity, entityToTypeString } from './core/entity'
-export { 
-  schema, 
-  fromEntity, 
-  mixin, 
-  template, 
-  conditional, 
-  group, 
-  variants, 
-  compose,
-  SchemaBuilder 
-} from './core/schema'
+// ==================== 核心功能导出 ====================
+/**
+ * Schema核心功能
+ * 包含字段定义、实体定义、Schema构建器等
+ */
+export * from './core'
 
-// 装饰器系统导出
-export {
-  Entity,
-  Field,
-  getEntityFromClass,
-  getEntitiesFromClasses
-} from './decorators/minimal'
+// ==================== 装饰器系统导出 ====================
+/**
+ * 基于装饰器的Schema定义方式
+ * 支持类和属性装饰器
+ */
+export { Entity as EntityDecorator, Field } from './decorators'
 
-// 代码生成器导出
-export { 
-  BaseGenerator, 
-  CodeGenerator, 
-  GeneratorRegistry, 
-  createGenerator, 
-  quickGenerate,
-  PrismaGenerator,
-  TypeScriptGenerator
-} from './generators'
+// ==================== 代码生成器导出 ====================
+/**
+ * 完整的代码生成器系统
+ * 包含基础框架和具体生成器实现
+ */
+export * from './generators'
 
-// CLI命令导出
-export { schemaCommands } from './cli'
+// ==================== CLI命令导出 ====================
+/**
+ * Schema相关的命令行工具
+ * 集成到Core的CLI系统
+ */
+export * from './cli'
 
-// 验证系统导出
-export { SchemaValidator } from './validation'
+// ==================== 验证系统导出 ====================
+/**
+ * 基于Schema的数据验证功能
+ */
+export * from './validation'
 
-// 迁移系统导出
-export { SchemaMigrator } from './migration'
+// ==================== 迁移系统导出 ====================
+/**
+ * Schema变更的数据迁移功能
+ */
+export * from './migration'
 
-// 插件系统导出
-export { SchemaPluginManager } from './plugins'
+// ==================== 插件系统导出 ====================
+/**
+ * Core插件系统集成
+ */
+export { schemaPlugin } from './plugin'
 
-// 版本信息
+// ==================== 基础设施导出 ====================
+/**
+ * Core基础设施集成
+ * 包含日志、国际化、配置管理等
+ */
+export * from './infrastructure'
+
+// ==================== 版本信息 ====================
+/**
+ * 包版本信息
+ */
 export const VERSION = '0.1.0'

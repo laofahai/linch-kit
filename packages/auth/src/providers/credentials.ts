@@ -5,7 +5,9 @@
 
 import bcrypt from 'bcryptjs'
 import { Strategy as LocalStrategy } from 'passport-local'
+
 import type { AuthRequest, AuthResult, User } from '../types'
+
 import { BaseAuthProvider } from './base'
 
 /**
@@ -131,7 +133,7 @@ export class CredentialsAuthProvider extends BaseAuthProvider {
     }
   }
 
-  protected async performValidation(payload: any): Promise<User | null> {
+  protected async performValidation(_payload: unknown): Promise<User | null> {
     // 对于凭据认证，通常不需要额外验证
     // JWT验证由JWT提供商处理
     return null
@@ -159,7 +161,7 @@ export class CredentialsAuthProvider extends BaseAuthProvider {
     return null
   }
 
-  protected async createUser(userData: Partial<User>): Promise<User> {
+  protected async createUser(_userData: Partial<User>): Promise<User> {
     // TODO: 实现用户创建逻辑
     throw new Error('User creation not implemented')
   }

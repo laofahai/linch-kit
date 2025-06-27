@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+
 import { PluginRegistry } from '../../plugin/registry'
 import type { Plugin, PluginMetadata, PluginStatus } from '../../types'
 

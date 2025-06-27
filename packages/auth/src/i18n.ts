@@ -53,7 +53,25 @@ export const authI18n = createPackageI18n({
       // OAuth相关
       'oauth.google.domain_not_allowed': 'Domain not allowed for Google authentication',
       'oauth.github.org_membership_required': 'Organization membership required',
-      'oauth.callback_error': 'OAuth callback error'
+      'oauth.callback_error': 'OAuth callback error',
+
+      // CLI相关
+      'cli.init.starting': 'Initializing authentication system...',
+      'cli.init.success': 'Authentication system initialized successfully',
+      'cli.init.error': 'Failed to initialize authentication system: {error}',
+      'cli.user.creating': 'Creating user: {email}',
+      'cli.user.created': 'User created successfully: {email}',
+      'cli.user.create.error': 'Failed to create user: {error}',
+      'cli.user.listing': 'Listing users...',
+      'cli.user.list.error': 'Failed to list users: {error}',
+      'cli.password.resetting': 'Resetting password for: {email}',
+      'cli.password.reset': 'Password reset successfully for: {email}',
+      'cli.password.reset.error': 'Failed to reset password: {error}',
+      'cli.mfa.setting': 'Setting up MFA for {email} (type: {type})',
+      'cli.mfa.setup': 'MFA setup completed for: {email}',
+      'cli.mfa.setup.error': 'Failed to setup MFA: {error}',
+      'cli.audit.querying': 'Querying audit logs...',
+      'cli.audit.error': 'Failed to query audit logs: {error}'
     },
     'zh-CN': {
       // 认证相关
@@ -96,7 +114,25 @@ export const authI18n = createPackageI18n({
       // OAuth相关
       'oauth.google.domain_not_allowed': 'Google认证不允许该域名',
       'oauth.github.org_membership_required': '需要组织成员身份',
-      'oauth.callback_error': 'OAuth回调错误'
+      'oauth.callback_error': 'OAuth回调错误',
+
+      // CLI相关
+      'cli.init.starting': '正在初始化认证系统...',
+      'cli.init.success': '认证系统初始化成功',
+      'cli.init.error': '认证系统初始化失败: {error}',
+      'cli.user.creating': '正在创建用户: {email}',
+      'cli.user.created': '用户创建成功: {email}',
+      'cli.user.create.error': '用户创建失败: {error}',
+      'cli.user.listing': '正在列出用户...',
+      'cli.user.list.error': '用户列表获取失败: {error}',
+      'cli.password.resetting': '正在重置密码: {email}',
+      'cli.password.reset': '密码重置成功: {email}',
+      'cli.password.reset.error': '密码重置失败: {error}',
+      'cli.mfa.setting': '正在为 {email} 设置MFA (类型: {type})',
+      'cli.mfa.setup': 'MFA设置完成: {email}',
+      'cli.mfa.setup.error': 'MFA设置失败: {error}',
+      'cli.audit.querying': '正在查询审计日志...',
+      'cli.audit.error': '审计日志查询失败: {error}'
     }
   }
 })

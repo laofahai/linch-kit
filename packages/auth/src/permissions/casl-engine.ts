@@ -5,6 +5,7 @@
 
 import { AbilityBuilder, createMongoAbility, MongoAbility } from '@casl/ability'
 import { LRUCache } from 'lru-cache'
+
 import type { 
   User, 
   PermissionAction, 
@@ -17,7 +18,7 @@ import type {
 /**
  * CASL权限引擎类型定义
  */
-type AppAbility = MongoAbility<[PermissionAction, PermissionSubject | any]>
+type AppAbility = MongoAbility<[PermissionAction, PermissionSubject | unknown]>
 
 /**
  * 基于CASL的权限引擎
@@ -56,7 +57,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
   public async check(
     user: User,
     action: PermissionAction,
-    subject: PermissionSubject | any,
+    subject: PermissionSubject | unknown,
     context?: PermissionContext
   ): Promise<boolean> {
     const cacheKey = this.generatePermissionCacheKey(user.id, action, subject, context)
@@ -105,13 +106,13 @@ export class CASLPermissionEngine implements IPermissionChecker {
   /**
    * 获取用户可访问的资源查询条件
    */
-  public async getAccessibleResources<T>(
+  public async getAccessibleResources(
     user: User,
     action: PermissionAction,
     resourceType: PermissionSubject
-  ): Promise<any> {
-    const ability = await this.getAbilityForUser(user)
-    
+  ): Promise<unknown> {
+    await this.getAbilityForUser(user)
+
     // TODO: 实现查询构建功能
     // CASL的query方法在某些版本中可能不可用
     console.log('Getting accessible resources for user', user.id, action, resourceType)
@@ -170,8 +171,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
   private async applyRoleBasedPermissions(
     user: User,
     roles: string[],
-    can: any,
-    cannot: any
+    can: unknown,
+    cannot: unknown
   ): Promise<void> {
     // 超级管理员权限
     if (roles.includes('super_admin')) {
@@ -231,8 +232,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
   private async applyAttributeBasedPermissions(
     user: User,
     context: PermissionContext,
-    can: any,
-    cannot: any
+    can: unknown,
+    cannot: unknown
   ): Promise<void> {
     // 基于部门的权限
     const userDepartment = await this.getUserDepartment(user.id)
@@ -299,8 +300,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
   private async applyDirectPermissions(
     user: User,
     permissions: string[],
-    can: any,
-    cannot: any
+    can: unknown,
+    _cannot: unknown
   ): Promise<void> {
     for (const permission of permissions) {
       const [action, subject, conditions] = this.parsePermission(permission)
@@ -318,8 +319,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
    */
   private async applyFieldLevelPermissions(
     user: User,
-    can: any,
-    cannot: any
+    can: unknown,
+    cannot: unknown
   ): Promise<void> {
     const roles = await this.getUserRoles(user.id)
     
@@ -358,8 +359,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
     
     requestedFields.forEach(field => {
       // 检查用户是否有权限读取该字段
-      if (ability.can('read', resource as any, field)) {
-        (filteredFields as any)[field] = (resource as any)[field]
+      if (ability.can('read', resource as unknown, field)) {
+        (filteredFields as unknown as Record<string, unknown>)[field] = (resource as unknown as Record<string, unknown>)[field]
       }
     })
     
@@ -399,7 +400,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
   private generatePermissionCacheKey(
     userId: string,
     action: PermissionAction,
-    subject: PermissionSubject | any,
+    subject: PermissionSubject | unknown,
     context?: PermissionContext
   ): string {
     const subjectKey = typeof subject === 'string' ? subject : JSON.stringify(subject)
@@ -412,7 +413,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
     return `${userId}:ability:${contextKey}`
   }
 
-  private parsePermission(permission: string): [PermissionAction, PermissionSubject, any?] {
+  private parsePermission(permission: string): [PermissionAction, PermissionSubject, unknown?] {
     // 解析权限字符串，如 "read:User" 或 "update:Post:authorId=123"
     const parts = permission.split(':')
     const action = parts[0] as PermissionAction
@@ -423,32 +424,32 @@ export class CASLPermissionEngine implements IPermissionChecker {
   }
 
   // 模拟数据库查询方法（实际应该从数据库获取）
-  private async getUserRoles(userId: string): Promise<string[]> {
+  private async getUserRoles(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户角色
     return ['user'] // 示例数据
   }
 
-  private async getUserPermissions(userId: string): Promise<string[]> {
+  private async getUserPermissions(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户直接权限
     return [] // 示例数据
   }
 
-  private async getUserDepartment(userId: string): Promise<string | null> {
+  private async getUserDepartment(_userId: string): Promise<string | null> {
     // TODO: 从数据库查询用户部门
     return null
   }
 
-  private async getUserManagedProjects(userId: string): Promise<string[]> {
+  private async getUserManagedProjects(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户管理的项目
     return []
   }
 
-  private async getUserAllowedRegions(userId: string): Promise<string[]> {
+  private async getUserAllowedRegions(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户允许访问的地区
     return ['CN', 'US'] // 示例数据
   }
 
-  private async getUserTenants(userId: string): Promise<string[]> {
+  private async getUserTenants(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户所属租户
     return ['tenant-1'] // 示例数据
   }

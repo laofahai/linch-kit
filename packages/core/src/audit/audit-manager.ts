@@ -4,6 +4,7 @@
  */
 
 import type { Logger, MetricCollector, Counter } from '../types/observability'
+
 import type {
   AuditManager,
   AuditEvent,

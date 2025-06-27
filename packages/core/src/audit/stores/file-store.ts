@@ -8,6 +8,7 @@ import { createReadStream, createWriteStream } from 'fs'
 import { createGzip } from 'zlib'
 import { pipeline } from 'stream/promises'
 import { dirname } from 'path'
+
 import type { AuditStore, AuditEvent, AuditFilter } from '../types'
 
 export interface FileStoreConfig {
@@ -58,7 +59,7 @@ export class FileAuditStore implements AuditStore {
     const dataSize = Buffer.byteLength(lines, 'utf8')
 
     // 检查是否需要轮转文件
-    if (this.shouldRotateFile(dataSize)) {
+    if (await this.shouldRotateFile(dataSize)) {
       await this.rotateFile()
     }
 
@@ -81,12 +82,20 @@ export class FileAuditStore implements AuditStore {
       const orderBy = filter.orderBy || 'timestamp'
       const direction = filter.orderDirection || 'DESC'
       
-      const aValue = a[orderBy] as any
-      const bValue = b[orderBy] as any
-      
+      const aValue = a[orderBy]
+      const bValue = b[orderBy]
+
       let comparison = 0
-      if (aValue > bValue) comparison = 1
-      if (aValue < bValue) comparison = -1
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        if (aValue > bValue) comparison = 1
+        if (aValue < bValue) comparison = -1
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        if (aValue > bValue) comparison = 1
+        if (aValue < bValue) comparison = -1
+      } else if (aValue instanceof Date && bValue instanceof Date) {
+        if (aValue > bValue) comparison = 1
+        if (aValue < bValue) comparison = -1
+      }
       
       return direction === 'DESC' ? -comparison : comparison
     })
@@ -162,29 +171,29 @@ export class FileAuditStore implements AuditStore {
 
   // 私有方法
 
-  private shouldRotateFile(newDataSize: number): boolean {
+  private async shouldRotateFile(newDataSize: number): Promise<boolean> {
     switch (this.rotationPolicy) {
       case 'size':
         return this.currentFileSize + newDataSize > this.maxFileSize
-      
+
       case 'daily':
-        return this.shouldRotateByTime('daily')
-      
+        return await this.shouldRotateByTime('daily')
+
       case 'weekly':
-        return this.shouldRotateByTime('weekly')
-      
+        return await this.shouldRotateByTime('weekly')
+
       case 'monthly':
-        return this.shouldRotateByTime('monthly')
-      
+        return await this.shouldRotateByTime('monthly')
+
       default:
         return false
     }
   }
 
-  private shouldRotateByTime(policy: 'daily' | 'weekly' | 'monthly'): boolean {
+  private async shouldRotateByTime(policy: 'daily' | 'weekly' | 'monthly'): Promise<boolean> {
     try {
-      const stats = fs.stat(this.config.filePath)
-      const fileDate = new Date((stats as any).mtime)
+      const stats = await fs.stat(this.config.filePath)
+      const fileDate = new Date(stats.mtime)
       const now = new Date()
 
       switch (policy) {
@@ -193,9 +202,10 @@ export class FileAuditStore implements AuditStore {
                  fileDate.getMonth() !== now.getMonth() || 
                  fileDate.getFullYear() !== now.getFullYear()
         
-        case 'weekly':
+        case 'weekly': {
           const weeksDiff = Math.floor((now.getTime() - fileDate.getTime()) / (7 * 24 * 60 * 60 * 1000))
           return weeksDiff >= 1
+        }
         
         case 'monthly':
           return fileDate.getMonth() !== now.getMonth() || 
@@ -250,14 +260,13 @@ export class FileAuditStore implements AuditStore {
         .filter(file => file.startsWith(baseName) && file !== baseName)
         .map(file => ({
           name: file,
-          path: `${dir}/${file}`,
-          stat: fs.stat(`${dir}/${file}`)
+          path: `${dir}/${file}`
         }))
 
       const backupStats = await Promise.all(
         backupFiles.map(async file => ({
           ...file,
-          stat: await file.stat
+          stat: await fs.stat(file.path)
         }))
       )
 

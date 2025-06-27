@@ -1,40 +1,54 @@
 /**
  * @linch-kit/auth 认证权限包主入口
- * 企业级认证和权限管理解决方案
+ *
+ * 企业级认证和权限管理解决方案 - 提供完整的认证、授权、会话管理和安全特性
+ *
+ * @module @linch-kit/auth
+ * @version 0.1.0
  */
 
-// 类型导出
-export * from './types'
+// ==================== 类型定义导出 ====================
+/**
+ * 所有类型定义的统一导出
+ * 包含认证类型、权限类型、会话类型等
+ */
+export type * from './types'
 
-// 认证管理器
-export { AuthManager } from './auth-manager'
+// ==================== 核心功能导出 ====================
+/**
+ * Auth核心功能
+ * 包含认证管理、权限引擎、会话管理等
+ */
+export * from './core'
 
-// 认证提供商
-export { BaseAuthProvider } from './providers/base'
-export { CredentialsAuthProvider } from './providers/credentials'
-export { GoogleAuthProvider, type GoogleAuthConfig } from './providers/google'
-export { GitHubAuthProvider, type GitHubAuthConfig } from './providers/github'
+// ==================== CLI命令导出 ====================
+/**
+ * Auth相关的命令行工具
+ * 集成到Core的CLI系统
+ */
+export * from './cli'
 
-// 权限引擎
-export { CASLPermissionEngine } from './permissions/casl-engine'
+// ==================== 插件系统导出 ====================
+/**
+ * Core插件系统集成
+ */
+export { authPlugin } from './plugin'
 
-// 会话管理
-export { JWTSessionManager } from './session/jwt-manager'
+// ==================== 基础设施导出 ====================
+/**
+ * Core基础设施集成
+ * 包含日志、国际化、配置管理等
+ */
+export * from './infrastructure'
 
-// MFA系统
-export { TOTPManager, type TOTPConfig } from './mfa/totp-manager'
-
-// 审计日志
-export { SimpleAuditLogger, createSimpleAuditLogger } from './audit/simple-logger'
-
-// 便捷创建函数
-export {
-  createAuthManager,
-  createJWTSessionManager,
-  createTOTPManager,
-  createAuditLogger,
-  createPermissionEngine
-} from './factory'
-
-// 国际化支持
+// ==================== 国际化导出 ====================
+/**
+ * 国际化支持（保持向后兼容）
+ */
 export { authI18n, useAuthTranslation } from './i18n'
+
+// ==================== 版本信息 ====================
+/**
+ * 包版本信息
+ */
+export const VERSION = '0.1.0'

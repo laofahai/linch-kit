@@ -100,6 +100,23 @@ export default [
     },
   },
 
+  // 测试文件特殊规则
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+
+  // 装饰器文件特殊规则 - 装饰器代码需要类型灵活性
+  {
+    files: ['**/decorators/**/*.ts', '**/decorators/**/*.tsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+
   // prettier 关闭和兼容相关规则
   {
     rules: {

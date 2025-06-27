@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { LinchKitMetricCollector } from '../../observability/metrics'
 import { register } from 'prom-client'
+
+import { LinchKitMetricCollector } from '../../observability/metrics'
 
 // Mock prom-client
 vi.mock('prom-client', () => {

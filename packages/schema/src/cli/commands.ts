@@ -2,12 +2,13 @@
  * @linch-kit/schema CLI命令集成
  */
 
-import { join, resolve } from 'path'
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
+import { join, resolve } from 'path'
 
 import type { CLICommand } from '@linch-kit/core'
 
 import { CodeGenerator, GeneratorRegistry } from '../generators'
+import { useSchemaTranslation } from '../infrastructure'
 import type { Entity } from '../types'
 
 /**
@@ -49,7 +50,8 @@ export const generateSchemaCommand: CLICommand = {
     }
   ],
   handler: async (context) => {
-    const { options, t } = context
+    const { options } = context
+    const t = useSchemaTranslation()
     
     try {
       const { input, output, generators, watch, clean } = options as {
@@ -163,7 +165,8 @@ export const validateSchemaCommand: CLICommand = {
     }
   ],
   handler: async (context) => {
-    const { options, t } = context
+    const { options } = context
+    const t = useSchemaTranslation()
     
     try {
       const { input, strict } = options as {
@@ -232,7 +235,8 @@ export const initSchemaCommand: CLICommand = {
     }
   ],
   handler: async (context) => {
-    const { options, t } = context
+    const { options } = context
+    const t = useSchemaTranslation()
     
     try {
       const { typescript, decorators, examples } = options as {
@@ -317,7 +321,8 @@ export const infoSchemaCommand: CLICommand = {
     }
   ],
   handler: async (context) => {
-    const { options, t } = context
+    const { options } = context
+    const t = useSchemaTranslation()
     
     try {
       const { input, detailed } = options as {

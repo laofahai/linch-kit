@@ -4,10 +4,10 @@
  */
 
 import { logger } from '@linch-kit/core'
-import type { 
-  AuditLog, 
-  AuditEventType, 
-  IAuditLogger 
+
+import type {
+  AuditLog,
+  IAuditLogger
 } from '../types'
 
 /**

@@ -295,15 +295,44 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
  */
 export function defineEntity<T extends Record<string, FieldDefinition>>(
   name: string,
-  definition: EntityDefinition<T> | T
+  definition: EntityDefinition<T> | T | Record<string, unknown>
 ): Entity {
   // 检查是否为简化写法（直接传入字段）
   const isSimplified = !('fields' in definition) && !('options' in definition)
-  
-  const entityDef: EntityDefinition<T> = isSimplified
-    ? { fields: definition as T }
-    : definition as EntityDefinition<T>
-  
+
+  let entityDef: EntityDefinition<T>
+
+  if (isSimplified) {
+    // 转换FieldBuilder对象为FieldDefinition对象
+    const fields: Record<string, FieldDefinition> = {}
+    Object.entries(definition as Record<string, unknown>).forEach(([key, value]) => {
+      if (value && typeof value === 'object' && 'build' in value && typeof value.build === 'function') {
+        // 这是一个FieldBuilder对象
+        fields[key] = (value as { build(): FieldDefinition }).build()
+      } else {
+        // 这已经是一个FieldDefinition对象
+        fields[key] = value as FieldDefinition
+      }
+    })
+    entityDef = { fields: fields as T }
+  } else {
+    const def = definition as EntityDefinition<T>
+    // 如果有fields属性，也需要转换其中的FieldBuilder对象
+    if (def.fields) {
+      const fields: Record<string, FieldDefinition> = {}
+      Object.entries(def.fields).forEach(([key, value]) => {
+        if (value && typeof value === 'object' && 'build' in value && typeof value.build === 'function') {
+          fields[key] = (value as { build(): FieldDefinition }).build()
+        } else {
+          fields[key] = value as FieldDefinition
+        }
+      })
+      entityDef = { ...def, fields: fields as T }
+    } else {
+      entityDef = def
+    }
+  }
+
   return new EntityImpl(name, entityDef) as Entity
 }
 
@@ -334,12 +363,12 @@ export function defineEntity<T extends Record<string, FieldDefinition>>(
 export function defineEntities<T extends Record<string, EntityDefinition>>(
   entities: T
 ): { [K in keyof T]: Entity } {
-  const result: any = {}
-  
+  const result = {} as Record<string, Entity>
+
   Object.entries(entities).forEach(([name, definition]) => {
     result[name] = defineEntity(name, definition)
   })
-  
+
   return result as { [K in keyof T]: Entity }
 }
 

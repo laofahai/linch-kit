@@ -3,9 +3,11 @@
  * 基于 speakeasy 和 qrcode 实现
  */
 
+import { randomBytes } from 'crypto'
+
 import * as speakeasy from 'speakeasy'
 import * as QRCode from 'qrcode'
-import { randomBytes } from 'crypto'
+
 import type { User, TOTPSetup, MFAVerification } from '../types'
 
 /**
@@ -230,7 +232,7 @@ export class TOTPManager {
   /**
    * 生成TOTP URI（已通过speakeasy.generateSecret的otpauth_url替代）
    */
-  private generateTOTPUri(email: string, secret: string): string {
+  private generateTOTPUri(_email: string, _secret: string): string {
     // 这个方法已被speakeasy.generateSecret的otpauth_url替代
     throw new Error('Use speakeasy.generateSecret otpauth_url in setupTOTP method')
   }
@@ -243,14 +245,14 @@ export class TOTPManager {
       const qrCodeDataURL = await new Promise<string>((resolve, reject) => {
         QRCode.toDataURL(uri, {
           errorCorrectionLevel: 'M',
-          type: 'image/png' as any,
+          type: 'image/png' as unknown,
           quality: 0.92,
           margin: 1,
           color: {
             dark: '#000000',
             light: '#FFFFFF'
           }
-        } as any, (err: any, url: string) => {
+        } as unknown, (err: unknown, url: string) => {
           if (err) reject(err)
           else resolve(url)
         })
@@ -309,7 +311,7 @@ export class TOTPManager {
   /**
    * 记录MFA事件
    */
-  private async logMFAEvent(userId: string, eventType: string, details?: any): Promise<void> {
+  private async logMFAEvent(userId: string, eventType: string, details?: unknown): Promise<void> {
     const eventData = {
       userId,
       eventType,

@@ -15,12 +15,12 @@ import type {
   UrlFieldOptions,
   UuidFieldOptions,
   TextFieldOptions,
-  JsonFieldOptions,
-  I18nFieldOptions,
+  // JsonFieldOptions,     // 暂时注释掉未使用的类型
+  // I18nFieldOptions,     // 暂时注释掉未使用的类型
   EnumFieldOptions,
   ArrayFieldOptions,
   RelationFieldOptions,
-  I18nFieldConfig,
+  // I18nFieldConfig,      // 暂时注释掉未使用的类型
   BaseFieldDefinition
 } from '../types'
 
@@ -74,6 +74,62 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
     return this
   }
 
+  // 简化的别名方法
+  /**
+   * 设置字段为必填 (别名)
+   */
+  require(required = true): this {
+    return this.setRequired(required)
+  }
+
+  /**
+   * 设置字段为必填 (别名)
+   */
+  required(required = true): this {
+    return this.setRequired(required)
+  }
+
+  /**
+   * 设置字段为可选 (别名)
+   */
+  optional(): this {
+    return this.setOptional()
+  }
+
+  /**
+   * 设置字段为唯一 (别名)
+   */
+  makeUnique(unique = true): this {
+    return this.setUnique(unique)
+  }
+
+  /**
+   * 设置字段为唯一 (别名)
+   */
+  unique(unique = true): this {
+    return this.setUnique(unique)
+  }
+
+  /**
+   * 设置字段索引 (别名)
+   */
+  makeIndex(index = true): this {
+    return this.setIndex(index)
+  }
+
+  /**
+   * 设置字段索引 (别名)
+   */
+  index(index = true): this {
+    return this.setIndex(index)
+  }
+
+  /**
+   * 设置默认值 (别名)
+   */
+  default(value: unknown): this {
+    return this.setDefault(value)
+  }
 
   /**
    * 设置字段描述
@@ -119,18 +175,7 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
     return this.definition.defaultValue
   }
 
-  // Test compatibility properties (use different names to avoid method conflicts)
-  get required(): boolean {
-    return this.definition.required ?? false
-  }
 
-  get unique(): boolean {
-    return this.definition.unique ?? false  
-  }
-
-  get index(): boolean {
-    return this.definition.index ?? false
-  }
 }
 
 /**
@@ -150,22 +195,24 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
   }
 
   setMin(length: number): this {
-    (this.definition as any).minLength = length
+    (this.definition as StringFieldOptions & BaseFieldDefinition).minLength = length;
+    (this.definition as StringFieldOptions & BaseFieldDefinition).min = length
     return this
   }
 
   setMax(length: number): this {
-    (this.definition as any).maxLength = length
+    (this.definition as StringFieldOptions & BaseFieldDefinition).maxLength = length;
+    (this.definition as StringFieldOptions & BaseFieldDefinition).max = length
     return this
   }
 
   setPattern(regex: RegExp): this {
-    (this.definition as any).pattern = regex
+    (this.definition as StringFieldOptions & BaseFieldDefinition).pattern = regex
     return this
   }
 
   transform(fn: (value: string) => string): this {
-    (this.definition as any).transform = fn
+    (this.definition as StringFieldOptions & BaseFieldDefinition).transform = fn
     return this
   }
 
@@ -174,17 +221,34 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
     return this
   }
 
+  // 简化的别名方法
+  minimum(length: number): this {
+    return this.setMin(length)
+  }
+
+  maximum(length: number): this {
+    return this.setMax(length)
+  }
+
+  min(length: number): this {
+    return this.setMin(length)
+  }
+
+  max(length: number): this {
+    return this.setMax(length)
+  }
+
   // Getters for test compatibility
   get minLength(): number | undefined {
-    return 'minLength' in this.definition ? (this.definition as any).minLength : undefined
+    return 'minLength' in this.definition ? (this.definition as StringFieldOptions & BaseFieldDefinition).minLength : undefined
   }
 
   get maxLength(): number | undefined {
-    return 'maxLength' in this.definition ? (this.definition as any).maxLength : undefined
+    return 'maxLength' in this.definition ? (this.definition as StringFieldOptions & BaseFieldDefinition).maxLength : undefined
   }
 
   get regexPattern(): RegExp | undefined {
-    return 'pattern' in this.definition ? (this.definition as any).pattern : undefined
+    return 'pattern' in this.definition ? (this.definition as StringFieldOptions & BaseFieldDefinition).pattern : undefined
   }
 
   get isAuto(): boolean {
@@ -232,6 +296,42 @@ class NumberFieldBuilder extends FieldBuilder<NumberFieldOptions> {
     return this
   }
 
+  // 简化的别名方法
+  minimum(value: number): this {
+    return this.setMin(value)
+  }
+
+  maximum(value: number): this {
+    return this.setMax(value)
+  }
+
+  makeInteger(): this {
+    return this.setInteger()
+  }
+
+  makePositive(): this {
+    return this.setPositive()
+  }
+
+  makeNegative(): this {
+    return this.setNegative()
+  }
+
+  setPrecisionDigits(digits: number): this {
+    return this.setPrecision(digits)
+  }
+
+  min(value: number): this {
+    return this.setMin(value)
+  }
+
+  max(value: number): this {
+    return this.setMax(value)
+  }
+
+  precision(digits: number): this {
+    return this.setPrecision(digits)
+  }
 
   // Add getters for number-specific properties (non-conflicting names)
   get minValue(): number | undefined {
@@ -251,27 +351,6 @@ class NumberFieldBuilder extends FieldBuilder<NumberFieldOptions> {
   }
 
   get precisionDigits(): number | undefined {
-    return this.definition.precision
-  }
-
-  // Test compatibility getters for number properties
-  get min(): number | undefined {
-    return this.definition.min
-  }
-
-  get max(): number | undefined {
-    return this.definition.max
-  }
-
-  get integer(): boolean {
-    return this.definition.integer ?? false
-  }
-
-  get positive(): boolean {
-    return this.definition.positive ?? false
-  }
-
-  get precision(): number | undefined {
     return this.definition.precision
   }
 
@@ -562,7 +641,7 @@ export const defineField = {
       }
       
       get locales(): string[] {
-        return (this.definition as any).locales
+        return (this.definition as BaseFieldDefinition & { locales: string[] }).locales
       }
     })()
     return i18nFieldBuilder

@@ -280,7 +280,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
   /**
    * Check for circular dependencies
    */
-  private hasCircularDependency(pluginId: string, dependencies: string[]): boolean {
+  private hasCircularDependency(pluginId: string, _dependencies: string[]): boolean {
     const visited = new Set<string>()
     const visiting = new Set<string>()
     
@@ -456,7 +456,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
   /**
    * Safely emit events, catching any listener errors
    */
-  private safeEmit(event: string, ...args: any[]): void {
+  private safeEmit(event: string, ...args: unknown[]): void {
     try {
       this.emit(event, ...args)
     } catch (error) {

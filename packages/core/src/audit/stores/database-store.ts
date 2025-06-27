@@ -6,18 +6,33 @@
 import type { AuditStore, AuditEvent, AuditFilter } from '../types'
 
 /**
+ * 简化的 Prisma 接口定义
+ */
+interface SimplePrismaClient {
+  $queryRaw: (query: TemplateStringsArray) => Promise<unknown>
+  $disconnect: () => Promise<void>
+  audit_logs: {
+    create: (data: { data: Record<string, unknown> }) => Promise<Record<string, unknown>>
+    createMany: (data: { data: Record<string, unknown>[]; skipDuplicates?: boolean }) => Promise<{ count: number }>
+    findMany: (query: Record<string, unknown>) => Promise<Record<string, unknown>[]>
+    count: (query: Record<string, unknown>) => Promise<number>
+    deleteMany: (query: Record<string, unknown>) => Promise<{ count: number }>
+  }
+}
+
+/**
  * Prisma审计存储适配器
  */
 export class DatabaseAuditStore implements AuditStore {
   readonly name = 'database'
 
-  constructor(private readonly prisma: any) {} // 使用any避免依赖Prisma类型
+  constructor(private readonly prisma: SimplePrismaClient) {}
 
   async initialize(): Promise<void> {
     // 确保审计表存在
     try {
       await this.prisma.$queryRaw`SELECT 1 FROM audit_logs LIMIT 1`
-    } catch (error) {
+    } catch {
       throw new Error(`Audit table 'audit_logs' not found. Please run database migrations.`)
     }
   }
@@ -49,23 +64,24 @@ export class DatabaseAuditStore implements AuditStore {
       classification: event.classification
     }))
 
-    await this.prisma.auditLog.createMany({
+    await this.prisma.audit_logs.createMany({
       data,
       skipDuplicates: true
     })
   }
 
   async query(filter: AuditFilter): Promise<AuditEvent[]> {
-    const where: any = {}
-    
+    const where: Record<string, unknown> = {}
+
     if (filter.startDate || filter.endDate) {
-      where.timestamp = {}
+      const timestamp: Record<string, unknown> = {}
       if (filter.startDate) {
-        where.timestamp.gte = filter.startDate
+        timestamp.gte = filter.startDate
       }
       if (filter.endDate) {
-        where.timestamp.lte = filter.endDate
+        timestamp.lte = filter.endDate
       }
+      where.timestamp = timestamp
     }
     
     if (filter.userIds?.length) {
@@ -104,7 +120,7 @@ export class DatabaseAuditStore implements AuditStore {
       ]
     }
 
-    const results = await this.prisma.auditLog.findMany({
+    const results = await this.prisma.audit_logs.findMany({
       where,
       orderBy: {
         [filter.orderBy || 'timestamp']: filter.orderDirection?.toLowerCase() || 'desc'
@@ -117,16 +133,17 @@ export class DatabaseAuditStore implements AuditStore {
   }
 
   async count(filter: AuditFilter): Promise<number> {
-    const where: any = {}
-    
+    const where: Record<string, unknown> = {}
+
     if (filter.startDate || filter.endDate) {
-      where.timestamp = {}
+      const timestamp: Record<string, unknown> = {}
       if (filter.startDate) {
-        where.timestamp.gte = filter.startDate
+        timestamp.gte = filter.startDate
       }
       if (filter.endDate) {
-        where.timestamp.lte = filter.endDate
+        timestamp.lte = filter.endDate
       }
+      where.timestamp = timestamp
     }
     
     if (filter.userIds?.length) {
@@ -141,7 +158,7 @@ export class DatabaseAuditStore implements AuditStore {
       where.service = { in: filter.services }
     }
 
-    return await this.prisma.auditLog.count({ where })
+    return await this.prisma.audit_logs.count({ where })
   }
 
   async export(filter: AuditFilter, format: 'json' | 'csv' | 'xml'): Promise<string> {
@@ -163,7 +180,7 @@ export class DatabaseAuditStore implements AuditStore {
   }
 
   async purge(beforeDate: Date): Promise<number> {
-    const result = await this.prisma.auditLog.deleteMany({
+    const result = await this.prisma.audit_logs.deleteMany({
       where: {
         timestamp: {
           lt: beforeDate
@@ -189,29 +206,29 @@ export class DatabaseAuditStore implements AuditStore {
 
   // 私有方法
 
-  private transformToAuditEvent(record: any): AuditEvent {
+  private transformToAuditEvent(record: Record<string, unknown>): AuditEvent {
     return {
-      id: record.id,
-      timestamp: record.timestamp,
-      eventType: record.eventType,
-      category: record.category,
-      severity: record.severity,
-      operation: record.operation,
-      resource: record.resource,
-      resourceId: record.resourceId,
-      userId: record.userId,
-      userAgent: record.userAgent,
-      ipAddress: record.ipAddress,
-      sessionId: record.sessionId,
-      success: record.success,
-      errorCode: record.errorCode,
-      errorMessage: record.errorMessage,
-      metadata: record.metadata ? JSON.parse(record.metadata) : undefined,
-      service: record.service,
-      requestId: record.requestId,
-      traceId: record.traceId,
-      retentionPolicy: record.retentionPolicy,
-      classification: record.classification
+      id: record.id as string,
+      timestamp: record.timestamp as Date,
+      eventType: record.eventType as string,
+      category: record.category as "SECURITY" | "DATA" | "SYSTEM" | "BUSINESS",
+      severity: record.severity as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
+      operation: record.operation as string,
+      resource: record.resource as string,
+      resourceId: record.resourceId as string | undefined,
+      userId: record.userId as string | undefined,
+      userAgent: record.userAgent as string | undefined,
+      ipAddress: record.ipAddress as string | undefined,
+      sessionId: record.sessionId as string | undefined,
+      success: record.success as boolean,
+      errorCode: record.errorCode as string | undefined,
+      errorMessage: record.errorMessage as string | undefined,
+      metadata: record.metadata ? JSON.parse(record.metadata as string) : undefined,
+      service: (record.service as string) || 'unknown',
+      requestId: record.requestId as string | undefined,
+      traceId: record.traceId as string | undefined,
+      retentionPolicy: record.retentionPolicy as string | undefined,
+      classification: record.classification as "PUBLIC" | "INTERNAL" | "CONFIDENTIAL" | "RESTRICTED" | undefined
     }
   }
 

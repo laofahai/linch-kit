@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+
 import { LinchKitTracer } from '../../observability/tracing'
 
 // Mock OpenTelemetry

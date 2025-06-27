@@ -4,6 +4,7 @@
  */
 
 import type { TranslationFunction } from '@linch-kit/core'
+
 import { authI18n } from './i18n'
 import type { 
   AuthRequest, 
@@ -91,7 +92,7 @@ export class AuthManager {
   /**
    * 验证用户（用于JWT等场景）
    */
-  public async validateUser(provider: AuthProvider, payload: any): Promise<User | null> {
+  public async validateUser(provider: AuthProvider, payload: unknown): Promise<User | null> {
     try {
       const authProvider = this.providers.get(provider)
       if (!authProvider || !authProvider.validate) {
@@ -159,7 +160,7 @@ export class AuthManager {
   /**
    * 获取配置的提供商信息
    */
-  public getProviderConfig(name: AuthProvider): any {
+  public getProviderConfig(name: AuthProvider): unknown {
     return this.config.providers?.[name]?.config ?? {}
   }
 
@@ -288,9 +289,9 @@ export class AuthManager {
   /**
    * 更新用户活动记录
    */
-  private async updateUserActivity(userId: string, metadata?: any): Promise<void> {
+  private async updateUserActivity(_userId: string, _metadata?: unknown): Promise<void> {
     // TODO: 更新数据库中的用户活动记录
-    console.log(`Updating activity for user ${userId}`, metadata)
+    // console.log(`Updating activity for user ${userId}`, metadata)
   }
 
   /**

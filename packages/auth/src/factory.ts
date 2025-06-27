@@ -3,6 +3,8 @@
  * 提供便捷的实例创建方法
  */
 
+import type { TranslationFunction } from '@linch-kit/core'
+
 import { AuthManager } from './auth-manager'
 import { JWTSessionManager } from './session/jwt-manager'
 import { TOTPManager, type TOTPConfig } from './mfa/totp-manager'
@@ -10,7 +12,6 @@ import { createSimpleAuditLogger } from './audit/simple-logger'
 import type { IAuditLogger } from './types'
 import { CASLPermissionEngine } from './permissions/casl-engine'
 import type { AuthConfig } from './types'
-import type { TranslationFunction } from '@linch-kit/core'
 
 /**
  * 创建认证管理器

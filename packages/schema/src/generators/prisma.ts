@@ -227,30 +227,31 @@ ${modelBody}
   /**
    * 格式化默认值
    */
-  private formatDefaultValue(value: any, fieldType: string): string {
+  private formatDefaultValue(value: unknown, fieldType: string): string {
     if (value === null) return 'null'
-    
+    if (value === undefined) return '""'
+
     switch (fieldType) {
       case 'string':
       case 'email':
       case 'url':
       case 'text':
         return `"${value}"`
-      
+
       case 'number':
       case 'boolean':
         return String(value)
-      
+
       case 'date':
         if (value === 'now') return 'now()'
         return `"${value}"`
-      
+
       case 'uuid':
         return 'uuid()'
-      
+
       case 'enum':
-        return value
-      
+        return String(value)
+
       default:
         return `"${value}"`
     }

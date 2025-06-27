@@ -4,6 +4,7 @@
  */
 
 import passport from 'passport'
+
 import type { AuthRequest, AuthResult, User, IAuthProvider } from '../types'
 
 /**
@@ -56,7 +57,7 @@ export abstract class BaseAuthProvider implements IAuthProvider {
   /**
    * 验证用户（用于JWT等场景）
    */
-  public async validate(payload: any): Promise<User | null> {
+  public async validate(payload: unknown): Promise<User | null> {
     try {
       return await this.performValidation(payload)
     } catch (error) {
@@ -112,12 +113,12 @@ export abstract class BaseAuthProvider implements IAuthProvider {
   /**
    * 执行验证（子类实现）
    */
-  protected abstract performValidation(payload: any): Promise<User | null>
+  protected abstract performValidation(payload: unknown): Promise<User | null>
 
   /**
    * 生成访问令牌
    */
-  protected generateTokens(user: User): { accessToken: string; refreshToken: string; expiresIn: number } {
+  protected generateTokens(_user: User): { accessToken: string; refreshToken: string; expiresIn: number } {
     // 这里会依赖会话管理器，暂时返回示例结构
     return {
       accessToken: 'generated-access-token',
@@ -214,7 +215,7 @@ export abstract class BaseAuthProvider implements IAuthProvider {
   /**
    * 获取提供商配置
    */
-  protected getConfig(): any {
+  protected getConfig(): unknown {
     // TODO: 从配置管理器获取
     return {}
   }

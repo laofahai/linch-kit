@@ -247,7 +247,6 @@ export class DefaultDataMasker implements DataMasker {
     }
 
     // 对象和数组转换为字符串后脱敏
-    const str = JSON.stringify(value)
     return `***[${typeof value}]***`
   }
 }

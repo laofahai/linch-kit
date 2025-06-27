@@ -495,6 +495,28 @@ export const postRouter = router({
             <li>REST API端点和OpenAPI文档</li>
           </ul>
         </div>
+
+        {/* 新增：插件集成演示 */}
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+          <h4 className="font-semibold text-blue-900 mb-2">🔌 Core插件集成</h4>
+          <p className="text-blue-800 text-sm mb-3">
+            Schema包现在作为LinchKit Core插件运行，享受统一的基础设施：
+          </p>
+          <div className="space-y-2 text-xs">
+            <div className="bg-white p-2 rounded border-l-4 border-blue-400">
+              <strong>统一日志:</strong> 使用Core的日志系统记录Schema操作
+            </div>
+            <div className="bg-white p-2 rounded border-l-4 border-green-400">
+              <strong>国际化:</strong> 支持多语言的Schema验证和错误消息
+            </div>
+            <div className="bg-white p-2 rounded border-l-4 border-purple-400">
+              <strong>CLI集成:</strong> Schema命令集成到Core的CLI框架
+            </div>
+            <div className="bg-white p-2 rounded border-l-4 border-orange-400">
+              <strong>事件驱动:</strong> 支持插件间的事件通信和生命周期管理
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

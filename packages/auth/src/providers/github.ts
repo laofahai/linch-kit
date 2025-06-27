@@ -4,7 +4,9 @@
  */
 
 import { Strategy as GitHubStrategy } from 'passport-github2'
+
 import type { AuthRequest, AuthResult, User } from '../types'
+
 import { BaseAuthProvider } from './base'
 
 /**
@@ -48,7 +50,7 @@ export class GitHubAuthProvider extends BaseAuthProvider {
         customHeaders: this.config.customHeaders,
         passReqToCallback: true
       },
-      async (req: any, accessToken: string, refreshToken: string, profile: any, done: any) => {
+      async (_req: unknown, accessToken: string, _refreshToken: string, profile: unknown, done: unknown) => {
         try {
           // 获取用户邮箱（GitHub可能不在profile中提供）
           const userEmails = await this.getUserEmails(accessToken)
@@ -101,10 +103,10 @@ export class GitHubAuthProvider extends BaseAuthProvider {
 
   protected async performAuthentication(request: AuthRequest): Promise<AuthResult> {
     // OAuth流程通常通过重定向处理，这里主要用于处理回调结果
-    const { code, state, error } = request.credentials as { 
-      code?: string 
-      state?: string 
-      error?: string 
+    const { code, state: _state, error } = request.credentials as {
+      code?: string
+      state?: string
+      error?: string
     }
 
     if (error) {
@@ -120,7 +122,7 @@ export class GitHubAuthProvider extends BaseAuthProvider {
     throw new Error('Use passport middleware for GitHub OAuth authentication')
   }
 
-  protected async performValidation(payload: any): Promise<User | null> {
+  protected async performValidation(payload: unknown): Promise<User | null> {
     // 对于GitHub OAuth，验证通常通过GitHub令牌完成
     if (payload.githubId) {
       return await this.findUserByGitHubId(payload.githubId)
@@ -132,12 +134,12 @@ export class GitHubAuthProvider extends BaseAuthProvider {
     return await this.findUserByEmail(identifier)
   }
 
-  protected async createUser(userData: Partial<User>): Promise<User> {
+  protected async createUser(_userData: Partial<User>): Promise<User> {
     // TODO: 实现用户创建逻辑
     throw new Error('User creation not implemented')
   }
 
-  protected async verifyPassword(user: User, password: string): Promise<boolean> {
+  protected async verifyPassword(_user: User, _password: string): Promise<boolean> {
     // GitHub OAuth不需要密码验证
     return true
   }
@@ -145,7 +147,7 @@ export class GitHubAuthProvider extends BaseAuthProvider {
   /**
    * 获取用户邮箱列表
    */
-  private async getUserEmails(accessToken: string): Promise<any[]> {
+  private async getUserEmails(accessToken: string): Promise<unknown[]> {
     try {
       const response = await fetch('https://api.github.com/user/emails', {
         headers: {
@@ -169,7 +171,7 @@ export class GitHubAuthProvider extends BaseAuthProvider {
   /**
    * 获取主要邮箱
    */
-  private getPrimaryEmail(emails: any[]): string | null {
+  private getPrimaryEmail(emails: unknown[]): string | null {
     const primaryEmail = emails.find(email => email.primary && email.verified)
     return primaryEmail ? primaryEmail.email : null
   }
@@ -237,7 +239,7 @@ export class GitHubAuthProvider extends BaseAuthProvider {
    * 从GitHub资料创建新用户
    */
   private async createUserFromGitHubProfile(
-    profile: any, 
+    profile: unknown,
     email: string,
     accessToken: string
   ): Promise<User> {
@@ -278,9 +280,9 @@ export class GitHubAuthProvider extends BaseAuthProvider {
    * 更新GitHub令牌和信息
    */
   private async updateGitHubTokens(
-    userId: string, 
-    accessToken: string, 
-    username: string
+    userId: string,
+    _accessToken: string,
+    _username: string
   ): Promise<void> {
     // TODO: 实现数据库更新
     console.log(`Updating GitHub tokens for user ${userId}`)
@@ -342,7 +344,7 @@ export class GitHubAuthProvider extends BaseAuthProvider {
   /**
    * 获取GitHub用户信息
    */
-  public async getUserInfo(accessToken: string): Promise<any> {
+  public async getUserInfo(accessToken: string): Promise<unknown> {
     try {
       const response = await fetch('https://api.github.com/user', {
         headers: {
@@ -366,7 +368,7 @@ export class GitHubAuthProvider extends BaseAuthProvider {
   /**
    * 获取用户的GitHub仓库
    */
-  public async getUserRepositories(accessToken: string, type: 'all' | 'owner' | 'member' = 'all'): Promise<any[]> {
+  public async getUserRepositories(accessToken: string, type: 'all' | 'owner' | 'member' = 'all'): Promise<unknown[]> {
     try {
       const response = await fetch(`https://api.github.com/user/repos?type=${type}&sort=updated`, {
         headers: {
@@ -390,7 +392,7 @@ export class GitHubAuthProvider extends BaseAuthProvider {
   /**
    * 获取用户的组织列表
    */
-  public async getUserOrganizations(accessToken: string): Promise<any[]> {
+  public async getUserOrganizations(accessToken: string): Promise<unknown[]> {
     try {
       const response = await fetch('https://api.github.com/user/orgs', {
         headers: {
