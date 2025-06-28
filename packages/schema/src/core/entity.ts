@@ -11,7 +11,6 @@ import type {
   FieldDefinition,
   CreateInput,
   UpdateInput,
-  RelationFieldOptions,
   I18nFieldOptions
 } from '../types'
 
@@ -76,7 +75,7 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
   /**
    * 验证完整数据
    */
-  async validate(data: any): Promise<boolean> {
+  async validate(data: unknown): Promise<boolean> {
     try {
       this.zodSchema.parse(data)
       return true

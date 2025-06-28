@@ -7,14 +7,21 @@
  * - 插件模式：支持扩展查询功能
  */
 
-import type { PrismaClient } from '@prisma/client'
-import type { Entity, SchemaRegistry } from '@linch-kit/schema'
-import type { Logger, PluginManager } from '@linch-kit/core'
+import type { Entity } from '@linch-kit/schema'
+import type { PluginManager } from '@linch-kit/core'
+
 import type {
   IQueryBuilder,
   Operator,
-  PerformanceMetrics
+  PerformanceMetrics,
+  SchemaRegistry,
+  Logger
 } from '../../types'
+
+// 简化的 PrismaClient 类型定义
+interface PrismaClient {
+  [key: string]: any
+}
 import { QueryConditionBuilder } from './condition-builder'
 import { QueryExecutor } from './query-executor'
 import { QueryOptimizer } from './query-optimizer'
@@ -47,8 +54,8 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
     // 初始化组件
     this.conditionBuilder = new QueryConditionBuilder(entity, logger)
     this.executor = new QueryExecutor<T>(entityName, prisma, logger)
-    this.optimizer = new QueryOptimizer(entity, logger)
-    this.validator = new QueryValidator(entity, logger)
+    this.optimizer = new QueryOptimizer(logger)
+    this.validator = new QueryValidator(logger)
   }
 
   /**
@@ -180,13 +187,16 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
    */
   protected async buildFinalQuery(): Promise<Record<string, unknown>> {
     // 1. 验证查询
-    await this.validator.validate(this.query)
+    const validationResult = this.validator.validate(this.query, this.entity)
+    if (validationResult.errors.length > 0) {
+      throw new Error(`Query validation failed: ${validationResult.errors.map(e => e.message).join(', ')}`)
+    }
 
     // 2. 优化查询
-    const optimizedQuery = await this.optimizer.optimize(this.query)
+    const optimizedResult = this.optimizer.optimize(this.query, this.entity)
 
     // 3. 应用插件
-    return await this.applyPlugins(optimizedQuery)
+    return await this.applyPlugins(optimizedResult.query)
   }
 
   /**
@@ -198,13 +208,14 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
     }
 
     // 应用查询插件
-    const plugins = this.pluginManager.getPlugins('query-builder')
+    const plugins = this.pluginManager.getAll().map(reg => reg.plugin)
     let processedQuery = query
 
     for (const plugin of plugins) {
-      if (plugin.hooks?.beforeExecute) {
-        processedQuery = await plugin.hooks.beforeExecute(processedQuery, this.entity)
-      }
+      // TODO: Add query plugin hooks support
+      // if (plugin.hooks?.beforeExecute) {
+      //   processedQuery = await plugin.hooks.beforeExecute(processedQuery, this.entity)
+      // }
     }
 
     return processedQuery
@@ -215,19 +226,26 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
    */
   protected async recordMetrics(metrics: PerformanceMetrics): Promise<void> {
     try {
-      this.logger.debug('Query performance metrics', metrics)
+      this.logger.debug('Query performance metrics', { 
+        operation: metrics.operation,
+        entityName: metrics.entityName,
+        duration: metrics.duration,
+        queryComplexity: metrics.queryComplexity,
+        timestamp: metrics.timestamp.toISOString()
+      })
       
       // 应用指标插件
       if (this.pluginManager) {
-        const plugins = this.pluginManager.getPlugins('metrics')
+        const plugins = this.pluginManager.getAll().map(reg => reg.plugin)
         for (const plugin of plugins) {
-          if (plugin.hooks?.recordMetrics) {
-            await plugin.hooks.recordMetrics(metrics)
-          }
+          // TODO: Add metrics plugin hooks support
+          // if (plugin.hooks?.recordMetrics) {
+          //   await plugin.hooks.recordMetrics(metrics)
+          // }
         }
       }
     } catch (error) {
-      this.logger.error('Failed to record query metrics', { error })
+      this.logger.error('Failed to record query metrics', error instanceof Error ? error : new Error('Unknown error'))
     }
   }
 

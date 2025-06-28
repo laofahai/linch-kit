@@ -4,9 +4,12 @@
  * 使用命令模式封装查询执行逻辑
  */
 
-import type { PrismaClient } from '@prisma/client'
-import type { Logger } from '@linch-kit/core'
-import type { PerformanceMetrics } from '../../types'
+import type { PerformanceMetrics, Logger } from '../../types'
+
+// 简化的 PrismaClient 类型定义
+interface PrismaClient {
+  [key: string]: any
+}
 
 /**
  * 查询命令接口
@@ -97,10 +100,9 @@ class FindManyCommand extends BaseQueryCommand {
       this.getMetrics().recordsAffected = result.length
       return result
     } catch (error) {
-      this.logger.error('FindMany execution failed', {
+      this.logger.error('FindMany execution failed', error instanceof Error ? error : new Error('Unknown error'), {
         entityName: this.entityName,
-        query: this.query,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        query: this.query
       })
       throw error
     }
@@ -123,10 +125,9 @@ class FindFirstCommand extends BaseQueryCommand {
       this.getMetrics().recordsAffected = result ? 1 : 0
       return result
     } catch (error) {
-      this.logger.error('FindFirst execution failed', {
+      this.logger.error('FindFirst execution failed', error instanceof Error ? error : new Error('Unknown error'), {
         entityName: this.entityName,
-        query: this.query,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        query: this.query
       })
       throw error
     }
@@ -149,10 +150,9 @@ class CountCommand extends BaseQueryCommand {
       
       return result
     } catch (error) {
-      this.logger.error('Count execution failed', {
+      this.logger.error('Count execution failed', error instanceof Error ? error : new Error('Unknown error'), {
         entityName: this.entityName,
-        query: countQuery,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        query: this.query
       })
       throw error
     }
@@ -190,10 +190,9 @@ class AggregateCommand extends BaseQueryCommand {
       
       return result[`_${this.operation}`][this.field] || 0
     } catch (error) {
-      this.logger.error(`${this.operation} execution failed`, {
+      this.logger.error(`${this.operation} execution failed`, error instanceof Error ? error : new Error('Unknown error'), {
         entityName: this.entityName,
-        field: this.field,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        field: this.field
       })
       throw error
     }

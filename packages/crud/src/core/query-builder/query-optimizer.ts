@@ -8,8 +8,9 @@
  * - 批量查询合并
  */
 
-import type { Logger } from '@linch-kit/core';
 import type { Entity } from '@linch-kit/schema';
+
+import type { Logger } from '../../types';
 
 export interface QueryOptimizationHint {
   type: 'index' | 'join' | 'filter' | 'sort' | 'limit';
@@ -111,7 +112,7 @@ export class QueryOptimizer {
       
       if (fieldDef) {
         // 检查是否有索引
-        if (fieldDef.indexed || fieldDef.unique) {
+        if (fieldDef.index || fieldDef.unique) {
           hints.push({
             type: 'index',
             field,
@@ -144,7 +145,7 @@ export class QueryOptimizer {
 
           // 优化LIKE查询
           if ('contains' in condition || 'startsWith' in condition || 'endsWith' in condition) {
-            if (!fieldDef.indexed) {
+            if (!fieldDef.index) {
               hints.push({
                 type: 'filter',
                 field,
@@ -197,11 +198,11 @@ export class QueryOptimizer {
     for (const field of fields) {
       const fieldDef = entity.fields[field];
       
-      if (fieldDef && !fieldDef.indexed) {
+      if (fieldDef && !fieldDef.index) {
         hints.push({
           type: 'sort',
           field,
-          suggestion: `Sorting by non-indexed field '${field}' may be slow`,
+          suggestion: `Sorting by non-index field '${field}' may be slow`,
           impact: 'medium'
         });
         cost += 15;

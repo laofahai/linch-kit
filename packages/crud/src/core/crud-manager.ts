@@ -9,19 +9,12 @@
  */
 
 import type { Entity } from '@linch-kit/schema'
-import type { User } from '@linch-kit/auth'
+import type { LinchKitUser, IPermissionChecker as AuthPermissionChecker } from '@linch-kit/auth'
+import type { PluginManager as CorePluginManager } from '@linch-kit/core'
 
 // 定义类型，避免运行时依赖
 interface PrismaClient {
   [key: string]: any
-}
-
-interface Logger {
-  debug(message: string, data?: Record<string, unknown>): void
-  info(message: string, data?: Record<string, unknown>): void
-  warn(message: string, data?: Record<string, unknown>): void
-  error(message: string, error?: Error, data?: Record<string, unknown>): void
-  fatal(message: string, error?: Error, data?: Record<string, unknown>): void
 }
 
 interface PluginRegistration {
@@ -55,13 +48,12 @@ interface PluginManager {
   getAll(): PluginRegistration[]
 }
 
-interface SchemaRegistry {
-  getEntity(name: string): any
-}
 import type {
   CreateInput,
   UpdateInput,
   QueryInput,
+  SchemaRegistry,
+  Logger,
   CrudOptions,
   FindOptions,
   PaginatedResult,
@@ -82,13 +74,15 @@ export interface CrudManagerOptions {
   enableCache?: boolean
   enableAudit?: boolean
   enableMetrics?: boolean
+  authPermissionChecker?: AuthPermissionChecker
+  pluginManager?: CorePluginManager
 }
 
 /**
  * CRUD 管理器
  */
 export class CrudManager {
-  private readonly options: Required<CrudManagerOptions>
+  private readonly options: Required<Omit<CrudManagerOptions, 'authPermissionChecker' | 'pluginManager'>> & Pick<CrudManagerOptions, 'authPermissionChecker' | 'pluginManager'>
   private readonly validationManager: IValidationManager
   private readonly permissionChecker: IPermissionChecker
   private readonly cacheManager: ICacheManager
@@ -105,12 +99,19 @@ export class CrudManager {
       enableValidation: options.enableValidation ?? true,
       enableCache: options.enableCache ?? true,
       enableAudit: options.enableAudit ?? true,
-      enableMetrics: options.enableMetrics ?? true
+      enableMetrics: options.enableMetrics ?? true,
+      authPermissionChecker: options.authPermissionChecker,
+      pluginManager: options.pluginManager
     }
 
     // 初始化管理器组件
     this.validationManager = new ValidationManager(this.schemaRegistry, this.logger)
-    this.permissionChecker = new PermissionChecker(this.schemaRegistry, this.logger)
+    this.permissionChecker = new PermissionChecker(
+      this.schemaRegistry, 
+      this.logger,
+      options.authPermissionChecker,
+      options.pluginManager
+    )
     this.cacheManager = new CacheManager(this.logger)
   }
 
@@ -653,7 +654,7 @@ export class CrudManager {
     }
   }
 
-  private async checkCreatePermission<T>(entityName: string, user: User, data: CreateInput<T>): Promise<void> {
+  private async checkCreatePermission<T>(entityName: string, user: LinchKitUser, data: CreateInput<T>): Promise<void> {
     if (!this.options.enablePermissions) return
     
     const entity = this.schemaRegistry.getEntity(entityName)
@@ -664,7 +665,7 @@ export class CrudManager {
     await this.permissionChecker.checkCreate(entity, user, data)
   }
 
-  private async checkUpdatePermission<T>(entityName: string, user: User, existing: unknown, data: UpdateInput<T>): Promise<void> {
+  private async checkUpdatePermission<T>(entityName: string, user: LinchKitUser, existing: unknown, data: UpdateInput<T>): Promise<void> {
     if (!this.options.enablePermissions) return
     
     const entity = this.schemaRegistry.getEntity(entityName)
@@ -675,7 +676,7 @@ export class CrudManager {
     await this.permissionChecker.checkUpdate(entity, user, existing, data)
   }
 
-  private async checkDeletePermission(entityName: string, user: User, existing: unknown): Promise<void> {
+  private async checkDeletePermission(entityName: string, user: LinchKitUser, existing: unknown): Promise<void> {
     if (!this.options.enablePermissions) return
     
     const entity = this.schemaRegistry.getEntity(entityName)
@@ -689,7 +690,7 @@ export class CrudManager {
   private async applyPermissionFilter(
     entityName: string,
     query: Record<string, unknown>,
-    user: User,
+    user: LinchKitUser,
     operation: string
   ): Promise<Record<string, unknown>> {
     if (!this.options.enablePermissions) return query
@@ -706,7 +707,7 @@ export class CrudManager {
   private async applyFieldPermissions<T>(
     entityName: string,
     data: T[],
-    user: User,
+    user: LinchKitUser,
     operation: string
   ): Promise<T[]> {
     if (!this.options.enablePermissions) return data

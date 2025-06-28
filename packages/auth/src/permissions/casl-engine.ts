@@ -7,7 +7,7 @@
 import { AbilityBuilder, createMongoAbility, MongoAbility } from '@casl/ability'
 
 import type { 
-  User, 
+  LinchKitUser, 
   PermissionAction, 
   PermissionSubject, 
   PermissionContext, 
@@ -43,7 +43,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
    * 主要的权限检查方法
    */
   public async check(
-    user: User,
+    user: LinchKitUser,
     action: string,
     subject: any,
     context?: PermissionContext
@@ -54,7 +54,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
     }
 
     // 执行权限检查（缓存由上层应用负责）
-    const ability = await this.getAbilityForUser(user, context)
+    const ability = await this.getAbilityForLinchKitUser(user, context)
     return ability.can(action, subject)
   }
 
@@ -62,11 +62,11 @@ export class CASLPermissionEngine implements IPermissionChecker {
    * 批量权限检查
    */
   public async checkMultiple(
-    user: User,
+    user: LinchKitUser,
     checks: PermissionCheck[],
     context?: PermissionContext
   ): Promise<Record<string, boolean>> {
-    const ability = await this.getAbilityForUser(user, context)
+    const ability = await this.getAbilityForLinchKitUser(user, context)
     const results: Record<string, boolean> = {}
 
     checks.forEach((check, index) => {
@@ -82,11 +82,11 @@ export class CASLPermissionEngine implements IPermissionChecker {
    * 获取用户可访问的资源查询条件
    */
   public async getAccessibleResources(
-    user: User,
+    user: LinchKitUser,
     action: PermissionAction,
     resourceType: PermissionSubject
   ): Promise<unknown> {
-    await this.getAbilityForUser(user)
+    await this.getAbilityForLinchKitUser(user)
 
     // TODO: 实现查询构建功能
     // CASL的query方法在某些版本中可能不可用
@@ -97,15 +97,15 @@ export class CASLPermissionEngine implements IPermissionChecker {
   /**
    * 为用户创建能力对象
    */
-  private async getAbilityForUser(user: User, context?: PermissionContext): Promise<AppAbility> {
+  private async getAbilityForLinchKitUser(user: LinchKitUser, context?: PermissionContext): Promise<AppAbility> {
     // 创建能力对象（缓存由上层应用负责）
-    return await this.createAbilityForUser(user, context)
+    return await this.createAbilityForLinchKitUser(user, context)
   }
 
   /**
    * 创建用户权限能力对象
    */
-  private async createAbilityForUser(user: User, context?: PermissionContext): Promise<AppAbility> {
+  private async createAbilityForLinchKitUser(user: LinchKitUser, context?: PermissionContext): Promise<AppAbility> {
     const { can, cannot, build } = new AbilityBuilder<AppAbility>(createMongoAbility)
 
     // 检查用户是否有效
@@ -114,8 +114,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
     }
 
     // 获取用户角色和权限
-    const userRoles = await this.getUserRoles(user.id)
-    const userPermissions = await this.getUserPermissions(user.id)
+    const userRoles = await this.getLinchKitUserRoles(user.id)
+    const userPermissions = await this.getLinchKitUserPermissions(user.id)
     
     // 基于角色的基础权限 (RBAC)
     await this.applyRoleBasedPermissions(user, userRoles, can, cannot)
@@ -138,7 +138,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
    * 应用基于角色的权限 (RBAC)
    */
   private async applyRoleBasedPermissions(
-    user: User,
+    user: LinchKitUser,
     roles: string[],
     can: any,
     cannot: any
@@ -151,7 +151,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
     
     // 管理员权限
     if (roles.includes('admin')) {
-      can('manage', ['User', 'Role', 'Permission'])
+      can('manage', ['LinchKitUser', 'Role', 'Permission'])
       can('read', 'all')
       can('create', ['Project', 'Post'])
       can('update', ['Project', 'Post'])
@@ -162,7 +162,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
     if (roles.includes('project_manager')) {
       can('manage', 'Project', { managerId: user.id })
       can('read', 'Project', { teamMembers: { $in: [user.id] } })
-      can('update', 'User', { projectId: { $in: await this.getUserManagedProjects(user.id) } })
+      can('update', 'LinchKitUser', { projectId: { $in: await this.getLinchKitUserManagedProjects(user.id) } })
       can('create', ['Post', 'Comment'])
       can('update', ['Post', 'Comment'], { authorId: user.id })
     }
@@ -182,7 +182,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
       can('create', 'Comment')
       can('update', 'Comment', { authorId: user.id })
       can('delete', 'Comment', { authorId: user.id })
-      can('update', 'User', { id: user.id }) // 只能编辑自己的信息
+      can('update', 'LinchKitUser', { id: user.id }) // 只能编辑自己的信息
     }
     
     // 访客权限
@@ -199,19 +199,19 @@ export class CASLPermissionEngine implements IPermissionChecker {
    * 应用基于属性的权限 (ABAC)
    */
   private async applyAttributeBasedPermissions(
-    user: User,
+    user: LinchKitUser,
     context: PermissionContext,
     can: any,
     cannot: any
   ): Promise<void> {
     // 基于部门的权限
-    const userDepartment = await this.getUserDepartment(user.id)
+    const userDepartment = await this.getLinchKitUserDepartment(user.id)
     if (userDepartment) {
-      can('read', 'User', { department: userDepartment })
+      can('read', 'LinchKitUser', { department: userDepartment })
       
       if (userDepartment === 'hr') {
-        can('read', 'User', ['salary', 'performance'])
-        can('update', 'User', ['department', 'position'])
+        can('read', 'LinchKitUser', ['salary', 'performance'])
+        can('update', 'LinchKitUser', ['department', 'position'])
       }
       
       if (userDepartment === 'finance') {
@@ -220,7 +220,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
       }
       
       if (userDepartment === 'it') {
-        can('manage', 'User', ['permissions', 'roles'])
+        can('manage', 'LinchKitUser', ['permissions', 'roles'])
         can('read', 'all') // IT部门可以读取所有数据
       }
     }
@@ -229,14 +229,14 @@ export class CASLPermissionEngine implements IPermissionChecker {
     const currentHour = new Date().getHours()
     if (currentHour < 9 || currentHour > 18) {
       // 非工作时间限制某些操作
-      cannot('delete', ['Project', 'User'])
-      cannot('update', 'User', ['roles', 'permissions'])
+      cannot('delete', ['Project', 'LinchKitUser'])
+      cannot('update', 'LinchKitUser', ['roles', 'permissions'])
       cannot('create', 'Project')
     }
     
     // 基于地理位置的权限
     if (context.location) {
-      const userAllowedRegions = await this.getUserAllowedRegions(user.id)
+      const userAllowedRegions = await this.getLinchKitUserAllowedRegions(user.id)
       if (userAllowedRegions && !userAllowedRegions.includes(context.location)) {
         cannot('access', 'all')
         return // 地理位置不符，拒绝所有访问
@@ -245,13 +245,13 @@ export class CASLPermissionEngine implements IPermissionChecker {
     
     // 基于设备类型的权限
     if (context.deviceType === 'mobile') {
-      cannot('manage', ['User', 'Project']) // 移动设备不允许管理操作
+      cannot('manage', ['LinchKitUser', 'Project']) // 移动设备不允许管理操作
       cannot('delete', 'all') // 移动设备不允许删除操作
     }
     
     // 基于租户的权限
     if (context.tenantId) {
-      const userTenants = await this.getUserTenants(user.id)
+      const userTenants = await this.getLinchKitUserTenants(user.id)
       if (!userTenants.includes(context.tenantId)) {
         cannot('access', 'all')
         return
@@ -267,7 +267,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
    * 应用直接分配的权限
    */
   private async applyDirectPermissions(
-    user: User,
+    user: LinchKitUser,
     permissions: string[],
     can: any,
     _cannot: any
@@ -287,43 +287,43 @@ export class CASLPermissionEngine implements IPermissionChecker {
    * 应用字段级权限控制
    */
   private async applyFieldLevelPermissions(
-    user: User,
+    user: LinchKitUser,
     can: any,
     cannot: any
   ): Promise<void> {
-    const roles = await this.getUserRoles(user.id)
+    const roles = await this.getLinchKitUserRoles(user.id)
     
     // 所有用户都能读取基本字段
-    can('read', 'User', ['id', 'name', 'email', 'avatar', 'status'])
+    can('read', 'LinchKitUser', ['id', 'name', 'email', 'avatar', 'status'])
     
     // 敏感字段默认禁止
-    cannot('read', 'User', ['password', 'salt', 'resetToken', 'apiKeys'])
+    cannot('read', 'LinchKitUser', ['password', 'salt', 'resetToken', 'apiKeys'])
     
     // 根据角色开放不同字段
     if (roles.includes('hr') || roles.includes('admin')) {
-      can('read', 'User', ['salary', 'department', 'hireDate', 'performance'])
+      can('read', 'LinchKitUser', ['salary', 'department', 'hireDate', 'performance'])
     }
     
     if (roles.includes('admin') || roles.includes('super_admin')) {
-      can('read', 'User', ['lastLoginAt', 'loginCount', 'permissions', 'roles'])
+      can('read', 'LinchKitUser', ['lastLoginAt', 'loginCount', 'permissions', 'roles'])
       can('read', 'Project', ['budget', 'expenses', 'profit'])
     }
     
     // 用户只能看到自己的私人信息
-    can('read', 'User', ['phone', 'address', 'personalNotes'], { id: user.id })
-    can('update', 'User', ['name', 'avatar', 'phone', 'address'], { id: user.id })
+    can('read', 'LinchKitUser', ['phone', 'address', 'personalNotes'], { id: user.id })
+    can('update', 'LinchKitUser', ['name', 'avatar', 'phone', 'address'], { id: user.id })
   }
 
   /**
    * 字段级权限过滤
    */
   public async filterFields<T>(
-    user: User,
+    user: LinchKitUser,
     resource: T,
     requestedFields: string[],
     context?: PermissionContext
   ): Promise<Partial<T>> {
-    const ability = await this.getAbilityForUser(user, context)
+    const ability = await this.getAbilityForLinchKitUser(user, context)
     const filteredFields: Partial<T> = {}
     
     requestedFields.forEach(field => {
@@ -345,7 +345,7 @@ export class CASLPermissionEngine implements IPermissionChecker {
 
 
   private parsePermission(permission: string): [string, string, any?] {
-    // 解析权限字符串，如 "read:User" 或 "update:Post:authorId=123"
+    // 解析权限字符串，如 "read:LinchKitUser" 或 "update:Post:authorId=123"
     const parts = permission.split(':')
     const action = parts[0]
     const subject = parts[1]
@@ -355,32 +355,32 @@ export class CASLPermissionEngine implements IPermissionChecker {
   }
 
   // 模拟数据库查询方法（实际应该从数据库获取）
-  private async getUserRoles(_userId: string): Promise<string[]> {
+  private async getLinchKitUserRoles(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户角色
     return ['user'] // 示例数据
   }
 
-  private async getUserPermissions(_userId: string): Promise<string[]> {
+  private async getLinchKitUserPermissions(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户直接权限
     return [] // 示例数据
   }
 
-  private async getUserDepartment(_userId: string): Promise<string | null> {
+  private async getLinchKitUserDepartment(_userId: string): Promise<string | null> {
     // TODO: 从数据库查询用户部门
     return null
   }
 
-  private async getUserManagedProjects(_userId: string): Promise<string[]> {
+  private async getLinchKitUserManagedProjects(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户管理的项目
     return []
   }
 
-  private async getUserAllowedRegions(_userId: string): Promise<string[]> {
+  private async getLinchKitUserAllowedRegions(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户允许访问的地区
     return ['CN', 'US'] // 示例数据
   }
 
-  private async getUserTenants(_userId: string): Promise<string[]> {
+  private async getLinchKitUserTenants(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户所属租户
     return ['tenant-1'] // 示例数据
   }

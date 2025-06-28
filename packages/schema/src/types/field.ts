@@ -29,7 +29,7 @@ export type FieldType =
  */
 export interface ValidationRule {
   type: string
-  value?: any
+  value?: unknown
   message?: string
 }
 
@@ -39,7 +39,7 @@ export interface ValidationRule {
 export interface PermissionRule {
   action: string
   roles?: string[]
-  conditions?: Record<string, any>
+  conditions?: Record<string, unknown>
 }
 
 /**
@@ -71,8 +71,8 @@ export interface BaseFieldDefinition {
   required?: boolean
   unique?: boolean
   index?: boolean
-  default?: any
-  defaultValue?: any
+  default?: unknown
+  defaultValue?: unknown
   description?: string
   validation?: ValidationRule[]
   permissions?: FieldPermissions
@@ -176,7 +176,7 @@ export interface UuidFieldOptions extends BaseFieldDefinition {
  */
 export interface JsonFieldOptions extends BaseFieldDefinition {
   type: 'json'
-  schema?: Record<string, any>
+  schema?: Record<string, unknown>
 }
 
 /**
@@ -235,7 +235,7 @@ export interface CustomFieldTypeConfig {
   name: string
   baseType: FieldType
   validation?: ValidationRule[]
-  transform?: (value: any) => any
+  transform?: (value: unknown) => unknown
 }
 
 /**

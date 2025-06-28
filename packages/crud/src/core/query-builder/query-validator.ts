@@ -8,8 +8,9 @@
  * - 查询复杂度限制
  */
 
-import type { Logger } from '@linch-kit/core';
 import type { Entity } from '@linch-kit/schema';
+
+import type { Logger } from '../../types';
 
 export interface QueryValidationError {
   field?: string;
@@ -326,8 +327,9 @@ export class QueryValidator {
       }
 
       // 如果包含嵌套查询，递归验证
-      if (typeof value === 'object' && value !== true) {
-        if (value.include) {
+      if (typeof value === 'object' && value !== null && typeof value !== 'boolean') {
+        const objectValue = value as Record<string, unknown>
+        if (objectValue.include) {
           // 这里需要获取关联实体，简化处理
           warnings.push({
             field: relation,

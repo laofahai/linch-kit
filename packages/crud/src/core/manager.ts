@@ -12,6 +12,7 @@ import type { PrismaClient } from '@prisma/client'
 import type { Entity, SchemaRegistry } from '@linch-kit/schema'
 import type { User } from '@linch-kit/auth'
 import type { Logger } from '@linch-kit/core'
+
 import type {
   ICrudManager,
   CreateInput,

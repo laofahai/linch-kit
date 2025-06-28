@@ -2,11 +2,16 @@
  * CRUD 工厂函数 - 提供便捷的创建方法
  */
 
-import type { PrismaClient } from '@prisma/client'
-import type { SchemaRegistry } from '@linch-kit/schema'
-import type { Logger, PluginManager } from '@linch-kit/core'
+import type { PluginManager } from '@linch-kit/core'
+
+import type { SchemaRegistry, Logger } from './types'
 import { CrudManager, type CrudManagerOptions } from './core/crud-manager'
 import { PrismaQueryBuilder } from './core/query-builder/prisma-query-builder'
+
+// 简化的 PrismaClient 类型定义 - 避免运行时依赖
+interface PrismaClient {
+  [key: string]: any
+}
 
 /**
  * 创建 CRUD 管理器

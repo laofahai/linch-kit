@@ -2,7 +2,8 @@
  * 基础 CRUD 插件类
  */
 
-import type { Logger } from '@linch-kit/core'
+import type { Logger } from '../types'
+
 import type { CrudPlugin, CrudPluginHooks, PluginMetadata } from './types'
 
 /**
@@ -22,7 +23,7 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
     this.name = metadata.name
     this.version = metadata.version
     this.description = metadata.description
-    this.dependencies = metadata.dependencies
+    this.dependencies = metadata.dependencies ? Object.keys(metadata.dependencies) : undefined
   }
 
   /**
@@ -52,7 +53,7 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
       this.initialized = true
       this.logger?.info(`Plugin ${this.name} v${this.version} initialized successfully`)
     } catch (error) {
-      this.logger?.error(`Failed to initialize plugin ${this.name}`, { error })
+      this.logger?.error(`Failed to initialize plugin ${this.name}`, error instanceof Error ? error : new Error(String(error)))
       throw error
     }
   }
@@ -70,7 +71,7 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
       this.initialized = false
       this.logger?.info(`Plugin ${this.name} destroyed successfully`)
     } catch (error) {
-      this.logger?.error(`Failed to destroy plugin ${this.name}`, { error })
+      this.logger?.error(`Failed to destroy plugin ${this.name}`, error instanceof Error ? error : new Error(String(error)))
       throw error
     }
   }
@@ -84,7 +85,7 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
       await this.onConfigure(this.config)
       this.logger?.debug(`Plugin ${this.name} configured`, { config: this.config })
     } catch (error) {
-      this.logger?.error(`Failed to configure plugin ${this.name}`, { error, config })
+      this.logger?.error(`Failed to configure plugin ${this.name}`, error instanceof Error ? error : new Error(String(error)), { config })
       throw error
     }
   }
@@ -156,7 +157,13 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
       ...meta
     }
 
-    this.logger[level](message, logMeta)
+    if (level === 'error') {
+      // error level expects (message, error?, data?)
+      this.logger.error(message, undefined, logMeta)
+    } else {
+      // other levels expect (message, data?)
+      this.logger[level](message, logMeta)
+    }
   }
 
   /**

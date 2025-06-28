@@ -23,7 +23,7 @@ export interface GeneratedFile {
 export interface GeneratorContext {
   entities: EntityDefinition[]
   outputDir: string
-  config: Record<string, any>
+  config: Record<string, unknown>
   schema: SchemaContext
   options?: CodeGeneratorOptions
 }
@@ -35,7 +35,7 @@ export interface SchemaContext {
   name: string
   version: string
   entities: EntityDefinition[]
-  config: Record<string, any>
+  config: Record<string, unknown>
 }
 
 /**
@@ -45,7 +45,7 @@ export interface CodeGeneratorOptions {
   entities: EntityDefinition[]
   outputDir?: string
   template?: string
-  config?: Record<string, any>
+  config?: Record<string, unknown>
   hooks?: GeneratorHooks
 }
 
@@ -95,7 +95,7 @@ export interface SchemaPlugin {
   generators?: Generator[]
   
   // 插件配置
-  config?: Record<string, any>
+  config?: Record<string, unknown>
   
   // 插件钩子
   hooks?: {

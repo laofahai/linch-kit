@@ -5,9 +5,10 @@
  */
 
 import type { Entity } from '@linch-kit/schema'
-import type { Logger } from '@linch-kit/core/types'
 import type { PluginManager } from '@linch-kit/core'
-import type { PaginatedResult } from '../../types'
+
+import type { PaginatedResult, SchemaRegistry, Logger } from '../../types'
+
 import { BaseQueryBuilder } from './base-query-builder'
 import { QueryExecutorFactory } from './query-executor'
 

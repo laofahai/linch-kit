@@ -10,6 +10,7 @@
 import type { PrismaClient } from '@prisma/client'
 import type { Entity, SchemaRegistry } from '@linch-kit/schema'
 import type { Logger } from '@linch-kit/core'
+
 import type {
   IQueryBuilder,
   Operator,

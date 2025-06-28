@@ -32,12 +32,12 @@ export interface EntityPermissions {
  * 实体钩子
  */
 export interface EntityHooks {
-  beforeCreate?: (data: any) => Promise<any> | any
-  afterCreate?: (entity: any) => Promise<void> | void
-  beforeUpdate?: (data: any, entity: any) => Promise<any> | any
-  afterUpdate?: (entity: any) => Promise<void> | void
-  beforeDelete?: (entity: any) => Promise<void> | void
-  afterDelete?: (entity: any) => Promise<void> | void
+  beforeCreate?: (data: unknown) => Promise<unknown> | unknown
+  afterCreate?: (entity: unknown) => Promise<void> | void
+  beforeUpdate?: (data: unknown, entity: unknown) => Promise<unknown> | unknown
+  afterUpdate?: (entity: unknown) => Promise<void> | void
+  beforeDelete?: (entity: unknown) => Promise<void> | void
+  afterDelete?: (entity: unknown) => Promise<void> | void
 }
 
 /**
@@ -73,7 +73,7 @@ export interface Entity<T = Record<string, unknown>> {
   options: EntityOptions
 
   // Schema相关方法（不包含数据库操作）
-  validate(data: any): Promise<boolean>
+  validate(data: unknown): Promise<boolean>
   validateAndParse(data: unknown): T
   validateCreate(data: unknown): CreateInput<T>
   validateUpdate(data: unknown): UpdateInput<T>
@@ -109,17 +109,17 @@ export interface Migration {
     type: MigrationOperation
     table: string
     column?: string
-    definition?: any
-    options?: any
+    definition?: unknown
+    options?: unknown
   }[]
 }
 
 /**
  * 创建输入类型
  */
-export type CreateInput<T = any> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>
+export type CreateInput<T = Record<string, unknown>> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>
 
 /**
  * 更新输入类型
  */
-export type UpdateInput<T = any> = Partial<Omit<T, 'id' | 'createdAt' | 'updatedAt'>>
+export type UpdateInput<T = Record<string, unknown>> = Partial<Omit<T, 'id' | 'createdAt' | 'updatedAt'>>

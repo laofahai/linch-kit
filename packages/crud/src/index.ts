@@ -25,7 +25,7 @@ export { QueryValidator, createQueryValidator } from './core/query-builder/query
 // 工具类
 export { PermissionChecker } from './permissions/permission-checker'
 export { ValidationManager } from './validation/validation-manager'
-export { CacheManager, createCacheManager } from './cache/cache-manager'
+export { CacheManager } from './cache/cache-manager'
 
 // 类型定义
 export type * from './types'

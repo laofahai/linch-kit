@@ -5,7 +5,8 @@
  */
 
 import type { Entity } from '@linch-kit/schema'
-import type { Logger } from '@linch-kit/core/types'
+
+import type { Logger } from '../../types'
 import type { Operator } from '../../types'
 
 /**
@@ -177,11 +178,10 @@ export class QueryConditionBuilder {
     try {
       strategy.validate(field, value, this.entity)
     } catch (error) {
-      this.logger.error('Condition validation failed', {
+      this.logger.error('Condition validation failed', error instanceof Error ? error : new Error('Unknown error'), {
         field,
         operator,
-        value,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        value
       })
       throw error
     }
@@ -206,10 +206,9 @@ export class QueryConditionBuilder {
         const conditionClause = condition.strategy.build(condition.field, condition.value)
         this.mergeConditions(whereClause, conditionClause)
       } catch (error) {
-        this.logger.error('Failed to build condition', {
+        this.logger.error('Failed to build condition', error instanceof Error ? error : new Error('Unknown error'), {
           field: condition.field,
-          value: condition.value,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          value: condition.value
         })
         throw error
       }

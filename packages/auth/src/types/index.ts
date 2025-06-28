@@ -443,23 +443,23 @@ export class PermissionError extends Error {
 export interface IAuthProvider {
   readonly name: string
   authenticate(request: AuthRequest): Promise<AuthResult>
-  validate?(user: any): Promise<User | null>
+  validate?(user: any): Promise<LinchKitUser | null>
 }
 
 /**
  * 权限检查器接口
  */
 export interface IPermissionChecker {
-  check(user: User, action: PermissionAction, subject: PermissionSubject | any, context?: PermissionContext): Promise<boolean>
-  checkMultiple(user: User, checks: PermissionCheck[], context?: PermissionContext): Promise<Record<string, boolean>>
-  getAccessibleResources(user: User, action: PermissionAction, resourceType: PermissionSubject): Promise<any>
+  check(user: LinchKitUser, action: PermissionAction, subject: PermissionSubject | any, context?: PermissionContext): Promise<boolean>
+  checkMultiple(user: LinchKitUser, checks: PermissionCheck[], context?: PermissionContext): Promise<Record<string, boolean>>
+  getAccessibleResources(user: LinchKitUser, action: PermissionAction, resourceType: PermissionSubject): Promise<any>
 }
 
 /**
  * 会话管理器接口
  */
 export interface ISessionManager {
-  create(user: User, metadata?: any): Promise<Session>
+  create(user: LinchKitUser, metadata?: any): Promise<Session>
   validate(token: string): Promise<Session | null>
   refresh(refreshToken: string): Promise<Session | null>
   revoke(sessionId: string): Promise<boolean>

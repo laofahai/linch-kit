@@ -8,9 +8,46 @@
  * - 权限配置
  */
 
-import type { User } from '@linch-kit/auth'
+import type { LinchKitUser } from '@linch-kit/auth'
 import type { Entity, FieldDefinition } from '@linch-kit/schema'
-import type { Logger } from '@linch-kit/core'
+
+/**
+ * 日志器接口
+ */
+export interface Logger {
+  debug(message: string, data?: Record<string, unknown>): void
+  info(message: string, data?: Record<string, unknown>): void
+  warn(message: string, data?: Record<string, unknown>): void
+  error(message: string, error?: Error, data?: Record<string, unknown>): void
+  fatal(message: string, error?: Error, data?: Record<string, unknown>): void
+  child(bindings: Record<string, unknown>): Logger
+}
+
+/**
+ * Schema注册表接口
+ * 用于存储和检索实体定义
+ */
+export interface SchemaRegistry {
+  /**
+   * 获取实体定义
+   */
+  getEntity(name: string): Entity | undefined
+  
+  /**
+   * 注册实体
+   */
+  registerEntity(entity: Entity): void
+  
+  /**
+   * 获取所有实体名称
+   */
+  getEntityNames(): string[]
+  
+  /**
+   * 检查实体是否存在
+   */
+  hasEntity(name: string): boolean
+}
 
 /**
  * 查询操作符
@@ -87,7 +124,7 @@ export interface CrudOptions {
   /** 跳过数据验证 */
   skipValidation?: boolean
   /** 操作用户 */
-  user?: User
+  user?: LinchKitUser
   /** 租户ID */
   tenantId?: string
   /** 操作来源 */
@@ -143,7 +180,7 @@ export type UpdateInput<T> = Partial<Omit<T, 'id' | 'createdAt' | 'updatedAt'>>
 /**
  * Upsert 输入类型
  */
-export type UpsertInput<T> = Partial<T> & Pick<T, 'id'>
+export type UpsertInput<T extends { id: unknown }> = Partial<T> & Pick<T, 'id'>
 
 /**
  * 聚合操作类型
@@ -264,7 +301,7 @@ export interface BatchResult<T> {
  */
 export interface TransactionContext {
   id: string
-  user?: User
+  user?: LinchKitUser
   tenantId?: string
   operations: Array<{
     type: 'create' | 'update' | 'delete'
@@ -355,7 +392,7 @@ export interface IBatchOperations {
   createMany<T>(entityName: string, data: CreateInput<T>[], options?: BatchOptions): Promise<T[]>
   updateMany<T>(entityName: string, query: QueryInput, data: UpdateInput<T>, options?: BatchOptions): Promise<number>
   deleteMany(entityName: string, query: QueryInput, options?: BatchOptions): Promise<number>
-  upsertMany<T>(entityName: string, data: UpsertInput<T>[], options?: UpsertOptions): Promise<T[]>
+  upsertMany<T extends { id: unknown }>(entityName: string, data: UpsertInput<T>[], options?: UpsertOptions): Promise<T[]>
 }
 
 /**
@@ -374,12 +411,12 @@ export interface ICacheManager {
  * 权限检查器接口
  */
 export interface IPermissionChecker {
-  checkCreate(entity: Entity, user: User, data: unknown): Promise<void>
-  checkRead(entity: Entity, user: User, resource?: unknown): Promise<void>
-  checkUpdate(entity: Entity, user: User, resource: unknown, data: unknown): Promise<void>
-  checkDelete(entity: Entity, user: User, resource: unknown): Promise<void>
-  filterFields<T>(entity: Entity, user: User, data: T[], operation: 'read' | 'write'): Promise<Partial<T>[]>
-  buildRowFilter(entity: Entity, user: User, operation: 'read' | 'write' | 'delete'): Promise<Record<string, unknown>>
+  checkCreate(entity: Entity, user: LinchKitUser, data: unknown): Promise<void>
+  checkRead(entity: Entity, user: LinchKitUser, resource?: unknown): Promise<void>
+  checkUpdate(entity: Entity, user: LinchKitUser, resource: unknown, data: unknown): Promise<void>
+  checkDelete(entity: Entity, user: LinchKitUser, resource: unknown): Promise<void>
+  filterFields<T>(entity: Entity, user: LinchKitUser, data: T[], operation: 'read' | 'write'): Promise<Partial<T>[]>
+  buildRowFilter(entity: Entity, user: LinchKitUser, operation: 'read' | 'write' | 'delete'): Promise<Record<string, unknown>>
 }
 
 /**
