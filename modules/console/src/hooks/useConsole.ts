@@ -6,12 +6,17 @@
 
 'use client'
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useCallback, useMemo } from 'react'
-import { trpc } from '@linch-kit/trpc/client'
-import { useConsoleTranslation } from '../i18n'
-import { toast } from '@linch-kit/ui'
+// 临时使用 stub 实现，避免 tRPC 依赖问题
+// TODO: 当 tRPC 集成完成后，切换回真实实现
+export * from './useConsole-stubs'
 
+/*
+// 真实实现（临时注释掉）
+// import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+// import { useCallback, useMemo } from 'react'
+// import { trpc } from '@linch-kit/trpc/client'
+// import { useConsoleTranslation } from '../i18n'
+// import { toast } from '@linch-kit/ui'
 // 查询键
 export const consoleKeys = {
   dashboard: ['console', 'dashboard'] as const,
@@ -331,3 +336,4 @@ export function useConsoleStatus() {
     systemHealth: systemHealth.data
   }
 }
+*/

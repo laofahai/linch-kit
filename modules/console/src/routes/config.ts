@@ -65,7 +65,15 @@ export const defaultRoutes: Record<ConsoleFeature, ConsoleRoute[]> = {
         parent: '/tenants'
       }
     }
-  ]
+  ],
+  
+  // 暂未实现的功能模块 - 空数组
+  users: [],
+  permissions: [],
+  plugins: [],
+  monitoring: [],
+  schemas: [],
+  settings: []
 }
 
 /**
@@ -77,9 +85,15 @@ export const defaultFeatures: ConsoleFeature[] = [
 ]
 
 /**
- * 权限映射 - 只包含已实现的
+ * 权限映射 - 包含所有功能模块
  */
 export const permissionMap: Record<ConsoleFeature, string[]> = {
   dashboard: ['console:dashboard:read'],
-  tenants: ['console:tenant:read', 'console:tenant:create', 'console:tenant:update', 'console:tenant:delete']
+  tenants: ['console:tenant:read', 'console:tenant:create', 'console:tenant:update', 'console:tenant:delete'],
+  users: [],
+  permissions: [],
+  plugins: [],
+  monitoring: [],
+  schemas: [],
+  settings: []
 }

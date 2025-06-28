@@ -50,5 +50,5 @@ export * from './utils'
 // 默认实例导出
 export { PluginSystem } from './plugin'
 export { ConfigManager } from './config'
-export { metrics as Metrics } from './observability/metrics'
+export { metrics as Metrics } from './observability/metrics-client-safe'
 export { logger as Logger } from './observability/logger'
