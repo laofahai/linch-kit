@@ -1,14 +1,15 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: [
-    'src/index.ts',
-    'src/entities/index.ts',
-    'src/services/index.ts',
-    'src/components/index.ts'
-  ],
+  entry: ['src/index.ts'],
   format: ['esm'],
-  dts: true,
+  dts: {
+    resolve: true,
+    compilerOptions: {
+      composite: false,
+      incremental: false,
+    },
+  },
   clean: true,
   external: [
     'react',
@@ -23,5 +24,5 @@ export default defineConfig({
   treeshake: true,
   splitting: false,
   sourcemap: true,
-  minify: false
+  minify: false,
 })

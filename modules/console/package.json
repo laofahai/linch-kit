@@ -1,7 +1,7 @@
 {
   "name": "@linch-kit/console",
   "version": "0.1.0",
-  "description": "LinchKit 企业级管理控制台包 - 多租户管理、权限控制、插件市场、系统监控",
+  "description": "LinchKit 企业级管理控制台功能库 - 多租户管理、权限控制、插件市场、系统监控",
   "keywords": [
     "linch-kit",
     "console",
@@ -18,25 +18,34 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
     "./entities": {
-      "import": "./dist/entities/index.js",
-      "types": "./dist/entities/index.d.ts"
+      "types": "./dist/entities/index.d.ts",
+      "import": "./dist/entities/index.js"
     },
     "./services": {
-      "import": "./dist/services/index.js",
-      "types": "./dist/services/index.d.ts"
+      "types": "./dist/services/index.d.ts",
+      "import": "./dist/services/index.js"
     },
     "./components": {
-      "import": "./dist/components/index.js",
-      "types": "./dist/components/index.d.ts"
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.js"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "import": "./dist/api/index.js"
     }
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "DESIGN.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -60,14 +69,34 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@linch-kit/configs": "workspace:*",
+    "@tanstack/react-query": "^5.66.1",
+    "@tanstack/react-query-devtools": "^5.66.1",
+    "@trpc/client": "^11.0.0-rc.680",
+    "@trpc/react-query": "^11.0.0-rc.680",
+    "@trpc/server": "^11.0.0-rc.680",
     "@types/node": "^22.10.2",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "date-fns": "^4.1.0",
     "eslint": "^9.17.0",
-    "typescript": "^5.8.3",
+    "lucide-react": "^0.469.0",
+    "prisma": "^6.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "tsup": "^8.3.5",
-    "vitest": "^2.2.5"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
+    "@prisma/client": "^6.0.0",
+    "@tanstack/react-query": "^5.66.1",
+    "@tanstack/react-query-devtools": "^5.66.1",
+    "@trpc/client": "^11.0.0",
+    "@trpc/react-query": "^11.0.0",
+    "@trpc/server": "^11.0.0",
+    "date-fns": "^4.0.0",
+    "lucide-react": "^0.460.0",
+    "next": "^15.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

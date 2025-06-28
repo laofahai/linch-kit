@@ -33,59 +33,59 @@ export const TenantEntity = defineEntity('Tenant', {
     .required()
     .unique()
     .max(100)
-    .description('租户名称'),
+    .description('console.entities.tenant.fields.name'),
   
   domain: defineField.string()
     .unique()
     .max(255)
     .optional()
-    .description('自定义域名'),
+    .description('console.entities.tenant.fields.domain'),
   
   slug: defineField.string()
     .required()
     .unique()
     .max(50)
-    .description('URL友好标识符'),
+    .description('console.entities.tenant.fields.slug'),
   
   description: defineField.text()
     .optional()
-    .description('租户描述'),
+    .description('console.entities.tenant.fields.description'),
   
   status: defineField.enum(['active', 'suspended', 'deleted', 'pending'])
     .required()
     .default('active')
-    .description('租户状态'),
+    .description('console.entities.tenant.fields.status'),
   
   // 计费信息
   plan: defineField.enum(['free', 'starter', 'professional', 'enterprise'])
     .required()
     .default('free')
-    .description('订阅计划'),
+    .description('console.entities.tenant.fields.plan'),
   
   billingCycle: defineField.enum(['monthly', 'yearly'])
     .optional()
-    .description('计费周期'),
+    .description('console.entities.tenant.fields.billingCycle'),
   
   maxUsers: defineField.int()
     .required()
     .default(10)
     .min(1)
-    .description('最大用户数限制'),
+    .description('console.entities.tenant.fields.maxUsers'),
   
   maxStorage: defineField.bigint()
     .required()
     .default(1073741824n) // 1GB
     .min(0n)
-    .description('最大存储限制(字节)'),
+    .description('console.entities.tenant.fields.maxStorage'),
   
   // 扩展字段
   settings: defineField.json<TenantSettings>()
     .default({})
-    .description('租户特定设置'),
+    .description('console.entities.tenant.fields.settings'),
   
   metadata: defineField.json<TenantMetadata>()
     .default({})
-    .description('扩展元数据'),
+    .description('console.entities.tenant.fields.metadata'),
   
   // 关系字段
   users: defineField.relation('User').oneToMany(),
@@ -96,15 +96,15 @@ export const TenantEntity = defineEntity('Tenant', {
   // 审计字段
   createdAt: defineField.datetime()
     .default('now')
-    .description('创建时间'),
+    .description('console.entities.tenant.fields.createdAt'),
   
   updatedAt: defineField.datetime()
     .updatedAt()
-    .description('更新时间'),
+    .description('console.entities.tenant.fields.updatedAt'),
   
   deletedAt: defineField.datetime()
     .optional()
-    .description('软删除时间')
+    .description('console.entities.tenant.fields.deletedAt')
 })
 
 /**
@@ -115,85 +115,85 @@ export const TenantQuotasEntity = defineEntity('TenantQuotas', {
   tenant: defineField.relation('Tenant')
     .oneToOne()
     .required()
-    .description('关联租户'),
+    .description('console.entities.tenantQuotas.fields.tenant'),
   
   // 用户配额
   maxUsers: defineField.int()
     .required()
     .default(10)
     .min(0)
-    .description('最大用户数'),
+    .description('console.entities.tenantQuotas.fields.maxUsers'),
   
   currentUsers: defineField.int()
     .required()
     .default(0)
     .min(0)
-    .description('当前用户数'),
+    .description('console.entities.tenantQuotas.fields.currentUsers'),
   
   // 存储配额
   maxStorage: defineField.bigint()
     .required()
     .default(1073741824n) // 1GB
     .min(0n)
-    .description('最大存储限制(字节)'),
+    .description('console.entities.tenantQuotas.fields.maxStorage'),
   
   currentStorage: defineField.bigint()
     .required()
     .default(0n)
     .min(0n)
-    .description('当前存储使用量(字节)'),
+    .description('console.entities.tenantQuotas.fields.currentStorage'),
   
   // API配额
   maxApiCalls: defineField.int()
     .required()
     .default(10000)
     .min(0)
-    .description('最大API调用次数(每月)'),
+    .description('console.entities.tenantQuotas.fields.maxApiCalls'),
   
   currentApiCalls: defineField.int()
     .required()
     .default(0)
     .min(0)
-    .description('当前API调用次数'),
+    .description('console.entities.tenantQuotas.fields.currentApiCalls'),
   
   apiResetAt: defineField.datetime()
     .optional()
-    .description('API配额重置时间'),
+    .description('console.entities.tenantQuotas.fields.apiResetAt'),
   
   // 插件配额
   maxPlugins: defineField.int()
     .required()
     .default(5)
     .min(0)
-    .description('最大插件数'),
+    .description('console.entities.tenantQuotas.fields.maxPlugins'),
   
   currentPlugins: defineField.int()
     .required()
     .default(0)
     .min(0)
-    .description('当前插件数'),
+    .description('console.entities.tenantQuotas.fields.currentPlugins'),
   
   // 数据模型配额
   maxSchemas: defineField.int()
     .required()
     .default(10)
     .min(0)
-    .description('最大Schema数'),
+    .description('console.entities.tenantQuotas.fields.maxSchemas'),
   
   currentSchemas: defineField.int()
     .required()
     .default(0)
     .min(0)
-    .description('当前Schema数'),
+    .description('console.entities.tenantQuotas.fields.currentSchemas'),
   
   // 时间戳
   createdAt: defineField.datetime()
     .default('now')
-    .description('创建时间'),
+    .description('console.entities.tenantQuotas.fields.createdAt'),
   
   updatedAt: defineField.datetime()
     .updatedAt()
-    .description('更新时间')
+    .description('console.entities.tenantQuotas.fields.updatedAt')
 })
 
 // 导出类型

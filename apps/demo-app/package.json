@@ -1,8 +1,8 @@
 {
-  "name": "starter-app",
+  "name": "demo-app",
   "version": "0.1.0",
   "private": true,
-  "description": "LinchKit Starter Application - Schema驱动全栈开发演示",
+  "description": "LinchKit Demo Application - 功能演示和测试",
   "keywords": [
     "linchkit",
     "starter",

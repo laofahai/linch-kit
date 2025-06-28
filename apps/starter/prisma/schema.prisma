@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表 - 扩展基础用户模型
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("user")
+  tenantId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联租户
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+
+  @@map("users")
+}
+
+// 租户表
+model Tenant {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  status      String   @default("active")
+  plan        String   @default("basic")
+  quota       Int      @default(100)
+  description String?
+  settings    String?  // JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联用户
+  users User[]
+
+  @@map("tenants")
+}
+
+// 插件表
+model Plugin {
+  id          String   @id @default(cuid())
+  name        String
+  version     String
+  status      String   @default("inactive")
+  config      String?  // JSON
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name, version])
+  @@map("plugins")
+}
+
+// 监控数据表
+model MonitoringData {
+  id        String   @id @default(cuid())
+  metric    String
+  value     Float
+  tags      String?  // JSON
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@map("monitoring_data")
+}

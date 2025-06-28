@@ -12,7 +12,8 @@ import {
   type CrudResult 
 } from '@linch-kit/crud'
 import { z } from 'zod'
-import { TenantEntity, TenantQuotasEntity } from '../entities/tenant'
+import { TenantEntity, TenantQuotasEntity } from '../entities'
+import { tenantValidators, tenantQuotasValidators } from '../validation'
 import { logger } from '@linch-kit/core'
 import { requireAuth, requirePermission } from '@linch-kit/auth'
 
@@ -91,8 +92,8 @@ export class TenantService {
     logger.info('创建租户', { tenantName: input.name, operatorId: context.user?.id })
 
     try {
-      // 验证输入数据
-      const validatedInput = CreateTenantInput.parse(input)
+      // 使用运行时验证器验证输入数据
+      const validatedInput = tenantValidators.assertCreate(input)
       
       // 生成唯一ID
       const tenantId = crypto.randomUUID()

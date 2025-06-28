@@ -5,7 +5,8 @@ export default defineConfig({
     'src/index.ts',
     'src/components/index.ts',
     'src/forms/index.ts',
-    'src/tables/index.ts'
+    'src/tables/index.ts',
+    'src/utils/index.ts'
   ],
   format: ['cjs', 'esm'],
   dts: true,
