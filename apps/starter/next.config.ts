@@ -82,6 +82,23 @@ const nextConfig: NextConfig = {
 
   // Webpack 配置
   webpack: (config, { dev, isServer }) => {
+    // 使用轮询模式解决 EMFILE 问题
+    if (dev) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+        ignored: [
+          '**/node_modules/**',
+          '**/.next/**',
+          '**/.git/**',
+          '**/dist/**',
+          '**/build/**',
+          '**/coverage/**',
+          '**/.turbo/**'
+        ]
+      }
+    }
+
     // 客户端构建时排除 Node.js 特定模块
     if (!isServer) {
       config.resolve.fallback = {
