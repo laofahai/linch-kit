@@ -1,112 +1,125 @@
 /**
- * @linch-kit/schema 实体相关类型定义
+ * @linch-kit/schema 实体类型定义
+ * 
+ * @description 实体相关的类型定义
+ * @author LinchKit Team
+ * @since 0.1.0
  */
-
-import type { z } from 'zod'
 
 import type { FieldDefinition, PermissionRule } from './field'
 
 /**
- * 实体权限配置
+ * 索引定义
+ */
+export interface IndexDefinition {
+  name?: string
+  fields: string[]
+  unique?: boolean
+  type?: 'btree' | 'hash' | 'gin' | 'gist'
+}
+
+/**
+ * 实体权限
  */
 export interface EntityPermissions {
-  read?: PermissionRule[]
-  write?: PermissionRule[]
   create?: PermissionRule[]
+  read?: PermissionRule[]
+  update?: PermissionRule[]
   delete?: PermissionRule[]
 }
 
 /**
- * 索引定义接口
- */
-export interface IndexDefinition {
-  fields: string[]
-  unique?: boolean
-  name?: string
-}
-
-/**
- * 实体钩子接口
+ * 实体钩子
  */
 export interface EntityHooks {
-  beforeCreate?: (data: unknown) => unknown | Promise<unknown>
-  afterCreate?: (data: unknown) => void | Promise<void>
-  beforeUpdate?: (data: unknown) => unknown | Promise<unknown>
-  afterUpdate?: (data: unknown) => void | Promise<void>
-  beforeDelete?: (id: unknown) => void | Promise<void>
-  afterDelete?: (id: unknown) => void | Promise<void>
+  beforeCreate?: (data: any) => Promise<any> | any
+  afterCreate?: (entity: any) => Promise<void> | void
+  beforeUpdate?: (data: any, entity: any) => Promise<any> | any
+  afterUpdate?: (entity: any) => Promise<void> | void
+  beforeDelete?: (entity: any) => Promise<void> | void
+  afterDelete?: (entity: any) => Promise<void> | void
 }
 
 /**
- * 实体选项接口
+ * 实体选项
  */
 export interface EntityOptions {
   tableName?: string
-  timestamps?: boolean
+  description?: string
   softDelete?: boolean
+  timestamps?: boolean
+  audit?: boolean
+  cache?: boolean
   permissions?: EntityPermissions
-  indexes?: IndexDefinition[]
   hooks?: EntityHooks
+  indexes?: IndexDefinition[]
 }
 
 /**
- * 实体定义接口
+ * 实体定义
  */
 export interface EntityDefinition<T = Record<string, FieldDefinition>> {
+  name: string
   fields: T
   options?: EntityOptions
 }
 
 /**
- * 实体接口
+ * 实体类 - Schema定义，不包含数据库操作
  */
 export interface Entity<T = Record<string, unknown>> {
   name: string
   fields: Record<keyof T, FieldDefinition>
   options: EntityOptions
-  
-  // 类型推导
-  type: T
-  createInput: CreateInput<T>
-  updateInput: UpdateInput<T>
-  
-  // Zod Schema
-  zodSchema: z.ZodObject<Record<string, z.ZodSchema>>
-  createSchema: z.ZodObject<Record<string, z.ZodSchema>>
-  updateSchema: z.ZodObject<Record<string, z.ZodSchema>>
-  
-  // 辅助方法
-  validate(data: unknown): T
+
+  // Schema相关方法（不包含数据库操作）
+  validate(data: any): Promise<boolean>
+  validateAndParse(data: unknown): T
   validateCreate(data: unknown): CreateInput<T>
   validateUpdate(data: unknown): UpdateInput<T>
+
+  // Schema操作方法
+  clone(): Entity<T>
+  extend(fields: Record<string, FieldDefinition>): Entity
+  withOptions(options: Partial<EntityOptions>): Entity<T>
+}
+
+/**
+ * 迁移操作类型
+ */
+export type MigrationOperation = 
+  | 'CREATE_TABLE'
+  | 'DROP_TABLE'
+  | 'ADD_COLUMN'
+  | 'DROP_COLUMN'
+  | 'MODIFY_COLUMN'
+  | 'ADD_INDEX'
+  | 'DROP_INDEX'
+  | 'ADD_CONSTRAINT'
+  | 'DROP_CONSTRAINT'
+
+/**
+ * 迁移定义
+ */
+export interface Migration {
+  id: string
+  name: string
+  timestamp: number
+  operations: {
+    type: MigrationOperation
+    table: string
+    column?: string
+    definition?: any
+    options?: any
+  }[]
 }
 
 /**
  * 创建输入类型
  */
-export type CreateInput<T> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>
+export type CreateInput<T = any> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>
 
 /**
  * 更新输入类型
  */
-export type UpdateInput<T> = Partial<CreateInput<T>>
-
-/**
- * 迁移接口
- */
-export interface Migration {
-  id: string
-  timestamp: Date
-  operations: MigrationOperation[]
-  sql: string
-  checksum: string
-}
-
-/**
- * 迁移操作
- */
-export interface MigrationOperation {
-  type: 'create_table' | 'drop_table' | 'add_column' | 'drop_column' | 'alter_column' | 'create_index' | 'drop_index'
-  table: string
-  details: Record<string, unknown>
-}
+export type UpdateInput<T = any> = Partial<Omit<T, 'id' | 'createdAt' | 'updatedAt'>>

@@ -2,7 +2,7 @@
  * @linch-kit/schema TypeScript 类型生成器
  */
 
-import type { Entity, FieldDefinition, GeneratedFile } from '../types'
+import type { Entity, FieldDefinition, GeneratedFile, GeneratorContext } from '../types'
 
 import { BaseGenerator } from './base'
 
@@ -15,7 +15,13 @@ export class TypeScriptGenerator extends BaseGenerator {
   /**
    * 生成TypeScript类型文件
    */
-  async generate(entities: Entity[]): Promise<GeneratedFile[]> {
+  async generate(context: GeneratorContext): Promise<GeneratedFile[]> {
+    const entities = context.entities.map(def => ({
+      name: def.name,
+      fields: def.fields,
+      options: def.options || {},
+      definition: def
+    } as unknown as Entity))
     this.validateEntities(entities)
 
     const files: GeneratedFile[] = []

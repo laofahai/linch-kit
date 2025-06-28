@@ -1,51 +1,47 @@
 /**
  * @linch-kit/auth 认证权限包主入口
  *
- * 企业级认证和权限管理解决方案 - 提供完整的认证、授权、会话管理和安全特性
+ * 企业级认证和权限管理解决方案 - 基于 NextAuth.js 的适配器架构
+ * 遵循 LinchKit "不重复造轮子" 原则，使用成熟的第三方认证解决方案
  *
  * @module @linch-kit/auth
  * @version 0.1.0
  */
 
+// ==================== NextAuth.js 核心导出 ====================
+/**
+ * 基于 NextAuth.js 的认证核心
+ * 使用成熟的认证解决方案而非重新发明轮子
+ */
+export { default as NextAuth } from 'next-auth'
+export type { NextAuthConfig, Session, User } from 'next-auth'
+
+// ==================== LinchKit 适配器导出 ====================
+/**
+ * LinchKit 认证适配器 - 在 NextAuth.js 基础上添加企业级特性
+ */
+export { createLinchKitAuthConfig } from './adapters/nextauth-adapter'
+
+// ==================== 权限引擎导出 ====================
+/**
+ * 权限引擎 - 基于CASL的权限控制
+ * 保留企业级权限管理功能
+ */
+export { CASLPermissionEngine } from './permissions/casl-engine'
+
+// ==================== 企业级扩展导出 ====================
+/**
+ * 企业级认证扩展 - 在成熟方案基础上的增强功能
+ * 注意：审计日志功能已移至 @linch-kit/core，Prisma 适配器已移至 @linch-kit/trpc
+ */
+export { EnterpriseAuthExtensions } from './extensions/enterprise'
+export { MFAManager } from './extensions/mfa'
+
 // ==================== 类型定义导出 ====================
 /**
- * 所有类型定义的统一导出
- * 包含认证类型、权限类型、会话类型等
+ * LinchKit 认证类型定义
  */
 export type * from './types'
-
-// ==================== 核心功能导出 ====================
-/**
- * Auth核心功能
- * 包含认证管理、权限引擎、会话管理等
- */
-export * from './core'
-
-// ==================== CLI命令导出 ====================
-/**
- * Auth相关的命令行工具
- * 集成到Core的CLI系统
- */
-export * from './cli'
-
-// ==================== 插件系统导出 ====================
-/**
- * Core插件系统集成
- */
-export { authPlugin } from './plugin'
-
-// ==================== 基础设施导出 ====================
-/**
- * Core基础设施集成
- * 包含日志、国际化、配置管理等
- */
-export * from './infrastructure'
-
-// ==================== 国际化导出 ====================
-/**
- * 国际化支持（保持向后兼容）
- */
-export { authI18n, useAuthTranslation } from './i18n'
 
 // ==================== 版本信息 ====================
 /**

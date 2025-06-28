@@ -9,6 +9,19 @@ import importPlugin from 'eslint-plugin-import';
 import prettierConfig from 'eslint-config-prettier';
 
 export default [
+  // 忽略文件配置
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/*.config.ts',
+      '**/*.config.js',
+      '**/coverage/**',
+      '**/.next/**',
+      '**/build/**'
+    ]
+  },
+
   // ESLint 推荐规则
   js.configs.recommended,
 
@@ -114,6 +127,15 @@ export default [
     files: ['**/decorators/**/*.ts', '**/decorators/**/*.tsx'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+
+  // Auth 包特殊规则 - 权限引擎和适配器需要类型灵活性
+  {
+    files: ['packages/auth/**/*.ts', 'packages/auth/**/*.tsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
 

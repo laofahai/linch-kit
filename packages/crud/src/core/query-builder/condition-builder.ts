@@ -5,7 +5,7 @@
  */
 
 import type { Entity } from '@linch-kit/schema'
-import type { Logger } from '@linch-kit/core'
+import type { Logger } from '@linch-kit/core/types'
 import type { Operator } from '../../types'
 
 /**

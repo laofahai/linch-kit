@@ -1,10 +1,10 @@
 /**
  * @linch-kit/auth 权限引擎
  * 基于 CASL 实现复杂权限逻辑
+ * 缓存功能已移至 @linch-kit/core 包
  */
 
 import { AbilityBuilder, createMongoAbility, MongoAbility } from '@casl/ability'
-import { LRUCache } from 'lru-cache'
 
 import type { 
   User, 
@@ -18,7 +18,7 @@ import type {
 /**
  * CASL权限引擎类型定义
  */
-type AppAbility = MongoAbility<[PermissionAction, PermissionSubject | unknown]>
+type AppAbility = MongoAbility<[string, any]>
 
 /**
  * 基于CASL的权限引擎
@@ -31,24 +31,12 @@ type AppAbility = MongoAbility<[PermissionAction, PermissionSubject | unknown]>
  * - 权限缓存优化性能
  */
 export class CASLPermissionEngine implements IPermissionChecker {
-  private permissionCache: LRUCache<string, boolean>
-  private abilityCache: LRUCache<string, AppAbility>
+  // 注意：缓存功能已移至 @linch-kit/core 包，由上层应用负责缓存管理
 
-  constructor(options: {
-    cacheSize?: number
-    cacheTTL?: number
+  constructor(_options: {
+    // 保留配置接口以便未来扩展
   } = {}) {
-    // 权限检查结果缓存
-    this.permissionCache = new LRUCache<string, boolean>({
-      max: options.cacheSize ?? 10000,
-      ttl: options.cacheTTL ?? 1000 * 60 * 5 // 5分钟缓存
-    })
-
-    // 用户能力对象缓存
-    this.abilityCache = new LRUCache<string, AppAbility>({
-      max: Math.floor((options.cacheSize ?? 10000) / 10),
-      ttl: (options.cacheTTL ?? 1000 * 60 * 5) * 2 // 10分钟缓存
-    })
+    // 权限引擎初始化
   }
 
   /**
@@ -56,26 +44,18 @@ export class CASLPermissionEngine implements IPermissionChecker {
    */
   public async check(
     user: User,
-    action: PermissionAction,
-    subject: PermissionSubject | unknown,
+    action: string,
+    subject: any,
     context?: PermissionContext
   ): Promise<boolean> {
-    const cacheKey = this.generatePermissionCacheKey(user.id, action, subject, context)
-    
-    // 检查缓存
-    const cached = this.permissionCache.get(cacheKey)
-    if (cached !== undefined) {
-      return cached
+    // 检查用户是否有效
+    if (!user || !user.id) {
+      return false
     }
 
-    // 执行权限检查
+    // 执行权限检查（缓存由上层应用负责）
     const ability = await this.getAbilityForUser(user, context)
-    const result = ability.can(action, subject)
-    
-    // 缓存结果
-    this.permissionCache.set(cacheKey, result)
-    
-    return result
+    return ability.can(action, subject)
   }
 
   /**
@@ -88,18 +68,13 @@ export class CASLPermissionEngine implements IPermissionChecker {
   ): Promise<Record<string, boolean>> {
     const ability = await this.getAbilityForUser(user, context)
     const results: Record<string, boolean> = {}
-    
+
     checks.forEach((check, index) => {
       const key = `${check.action}_${typeof check.subject === 'string' ? check.subject : check.subject.constructor.name}_${index}`
-      const result = ability.can(check.action as PermissionAction, check.subject)
-      
+      const result = ability.can(check.action, check.subject)
       results[key] = result
-      
-      // 缓存单个结果
-      const cacheKey = this.generatePermissionCacheKey(user.id, check.action as PermissionAction, check.subject, context)
-      this.permissionCache.set(cacheKey, result)
     })
-    
+
     return results
   }
 
@@ -123,19 +98,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
    * 为用户创建能力对象
    */
   private async getAbilityForUser(user: User, context?: PermissionContext): Promise<AppAbility> {
-    const cacheKey = this.generateAbilityCacheKey(user.id, context)
-    
-    // 检查缓存
-    const cached = this.abilityCache.get(cacheKey)
-    if (cached) return cached
-    
-    // 创建新的能力对象
-    const ability = await this.createAbilityForUser(user, context)
-    
-    // 缓存结果
-    this.abilityCache.set(cacheKey, ability)
-    
-    return ability
+    // 创建能力对象（缓存由上层应用负责）
+    return await this.createAbilityForUser(user, context)
   }
 
   /**
@@ -143,7 +107,12 @@ export class CASLPermissionEngine implements IPermissionChecker {
    */
   private async createAbilityForUser(user: User, context?: PermissionContext): Promise<AppAbility> {
     const { can, cannot, build } = new AbilityBuilder<AppAbility>(createMongoAbility)
-    
+
+    // 检查用户是否有效
+    if (!user || !user.id) {
+      return build()
+    }
+
     // 获取用户角色和权限
     const userRoles = await this.getUserRoles(user.id)
     const userPermissions = await this.getUserPermissions(user.id)
@@ -171,8 +140,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
   private async applyRoleBasedPermissions(
     user: User,
     roles: string[],
-    can: unknown,
-    cannot: unknown
+    can: any,
+    cannot: any
   ): Promise<void> {
     // 超级管理员权限
     if (roles.includes('super_admin')) {
@@ -232,8 +201,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
   private async applyAttributeBasedPermissions(
     user: User,
     context: PermissionContext,
-    can: unknown,
-    cannot: unknown
+    can: any,
+    cannot: any
   ): Promise<void> {
     // 基于部门的权限
     const userDepartment = await this.getUserDepartment(user.id)
@@ -300,8 +269,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
   private async applyDirectPermissions(
     user: User,
     permissions: string[],
-    can: unknown,
-    _cannot: unknown
+    can: any,
+    _cannot: any
   ): Promise<void> {
     for (const permission of permissions) {
       const [action, subject, conditions] = this.parsePermission(permission)
@@ -319,8 +288,8 @@ export class CASLPermissionEngine implements IPermissionChecker {
    */
   private async applyFieldLevelPermissions(
     user: User,
-    can: unknown,
-    cannot: unknown
+    can: any,
+    cannot: any
   ): Promise<void> {
     const roles = await this.getUserRoles(user.id)
     
@@ -367,57 +336,19 @@ export class CASLPermissionEngine implements IPermissionChecker {
     return filteredFields
   }
 
-  /**
-   * 用户权限变更时清除缓存
-   */
-  public clearUserCache(userId: string): void {
-    // 清除用户相关的所有缓存
-    for (const key of this.permissionCache.keys()) {
-      if (key.startsWith(`${userId}:`)) {
-        this.permissionCache.delete(key)
-      }
-    }
-    
-    for (const key of this.abilityCache.keys()) {
-      if (key.startsWith(`${userId}:`)) {
-        this.abilityCache.delete(key)
-      }
-    }
-  }
-
-  /**
-   * 清除所有缓存
-   */
-  public clearAllCache(): void {
-    this.permissionCache.clear()
-    this.abilityCache.clear()
-  }
+  // 注意：缓存管理已移至 @linch-kit/core 包
 
   // ============================================================================
   // 私有辅助方法
   // ============================================================================
 
-  private generatePermissionCacheKey(
-    userId: string,
-    action: PermissionAction,
-    subject: PermissionSubject | unknown,
-    context?: PermissionContext
-  ): string {
-    const subjectKey = typeof subject === 'string' ? subject : JSON.stringify(subject)
-    const contextKey = context ? JSON.stringify(context) : ''
-    return `${userId}:${action}:${subjectKey}:${contextKey}`
-  }
 
-  private generateAbilityCacheKey(userId: string, context?: PermissionContext): string {
-    const contextKey = context ? JSON.stringify(context) : ''
-    return `${userId}:ability:${contextKey}`
-  }
 
-  private parsePermission(permission: string): [PermissionAction, PermissionSubject, unknown?] {
+  private parsePermission(permission: string): [string, string, any?] {
     // 解析权限字符串，如 "read:User" 或 "update:Post:authorId=123"
     const parts = permission.split(':')
-    const action = parts[0] as PermissionAction
-    const subject = parts[1] as PermissionSubject
+    const action = parts[0]
+    const subject = parts[1]
     const conditions = parts[2] ? JSON.parse(parts[2]) : undefined
     
     return [action, subject, conditions]

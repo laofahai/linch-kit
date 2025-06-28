@@ -14,9 +14,9 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -36,35 +36,14 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@auth/core": "^0.37.2",
     "@casl/ability": "^6.7.1",
-    "@casl/prisma": "^1.4.0",
-    "passport": "^0.7.0",
-    "passport-local": "^1.0.0",
-    "passport-jwt": "^4.0.1",
-    "passport-google-oauth20": "^2.0.0",
-    "passport-github2": "^0.1.12",
-    "passport-saml": "^3.2.4",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "speakeasy": "^2.0.0",
-    "qrcode": "^1.5.3",
-    "validator": "^13.11.0",
-    "lru-cache": "^10.1.0",
+    "next-auth": "5.0.0-beta.25",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@linch-kit/core": "workspace:*",
     "@linch-kit/schema": "workspace:*",
-    "@types/passport": "^1.0.16",
-    "@types/passport-local": "^1.0.38",
-    "@types/passport-jwt": "^4.0.1",
-    "@types/passport-google-oauth20": "^2.0.14",
-    "@types/passport-github2": "^1.2.9",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.5",
-    "@types/speakeasy": "^2.0.10",
-    "@types/qrcode": "^1.5.5",
-    "@types/validator": "^13.11.8",
     "typescript": "^5.8.3",
     "tsup": "^8.5.0",
     "vitest": "^2.1.9"

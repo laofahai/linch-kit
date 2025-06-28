@@ -2,7 +2,7 @@
  * @linch-kit/schema Prisma Schema 生成器
  */
 
-import type { Entity, FieldDefinition, GeneratedFile } from '../types'
+import type { Entity, FieldDefinition, GeneratedFile, GeneratorContext } from '../types'
 
 import { BaseGenerator } from './base'
 
@@ -15,11 +15,17 @@ export class PrismaGenerator extends BaseGenerator {
   /**
    * 生成Prisma Schema文件
    */
-  async generate(entities: Entity[]): Promise<GeneratedFile[]> {
+  async generate(context: GeneratorContext): Promise<GeneratedFile[]> {
+    const entities = context.entities.map(def => ({
+      name: def.name,
+      fields: def.fields,
+      options: def.options || {},
+      definition: def
+    } as unknown as Entity))
     this.validateEntities(entities)
 
     const schemaContent = this.generateSchema(entities)
-    
+
     return [
       this.createGeneratedFile('schema.prisma', schemaContent, 'prisma')
     ]

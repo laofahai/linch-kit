@@ -133,7 +133,7 @@ class FieldDecoratorFactory {
   /**
    * 枚举字段装饰器
    */
-  enum<T extends readonly string[]>(values: T, options: Partial<EnumFieldOptions<T>> = {}) {
+  enum<T extends readonly string[]>(values: T, options: Partial<EnumFieldOptions> = {}) {
     return this.createFieldDecorator(defineField.enum(values, options))
   }
 

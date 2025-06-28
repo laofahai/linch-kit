@@ -247,7 +247,7 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
     return 'maxLength' in this.definition ? (this.definition as StringFieldOptions & BaseFieldDefinition).maxLength : undefined
   }
 
-  get regexPattern(): RegExp | undefined {
+  get regexPattern(): string | RegExp | undefined {
     return 'pattern' in this.definition ? (this.definition as StringFieldOptions & BaseFieldDefinition).pattern : undefined
   }
 
@@ -663,7 +663,10 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
       schema = z.string()
       if ('minLength' in field && field.minLength !== undefined) schema = (schema as z.ZodString).min(field.minLength)
       if ('maxLength' in field && field.maxLength !== undefined) schema = (schema as z.ZodString).max(field.maxLength)
-      if ('pattern' in field && field.pattern) schema = (schema as z.ZodString).regex(field.pattern)
+      if ('pattern' in field && field.pattern) {
+        const pattern = typeof field.pattern === 'string' ? new RegExp(field.pattern) : field.pattern
+        schema = (schema as z.ZodString).regex(pattern)
+      }
       if ('transform' in field && field.transform) schema = schema.transform(field.transform)
       break
 

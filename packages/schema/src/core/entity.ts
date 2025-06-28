@@ -10,7 +10,9 @@ import type {
   EntityOptions,
   FieldDefinition,
   CreateInput,
-  UpdateInput
+  UpdateInput,
+  RelationFieldOptions,
+  I18nFieldOptions
 } from '../types'
 
 import { fieldToZod } from './field'
@@ -74,7 +76,19 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
   /**
    * 验证完整数据
    */
-  validate(data: unknown): T {
+  async validate(data: any): Promise<boolean> {
+    try {
+      this.zodSchema.parse(data)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * 验证并解析数据
+   */
+  validateAndParse(data: unknown): T {
     return this.zodSchema.parse(data) as T
   }
 
@@ -235,6 +249,7 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
    */
   clone(): Entity<T> {
     return new EntityImpl(this.name, {
+      name: this.name,
       fields: { ...this.fields },
       options: { ...this.options }
     })
@@ -247,6 +262,7 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
     fields: E
   ): Entity {
     return new EntityImpl(this.name, {
+      name: this.name,
       fields: { ...this.fields, ...fields },
       options: { ...this.options }
     }) as Entity
@@ -257,10 +273,13 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
    */
   withOptions(options: Partial<EntityOptions>): Entity<T> {
     return new EntityImpl(this.name, {
+      name: this.name,
       fields: { ...this.fields },
       options: { ...this.options, ...options }
     })
   }
+
+
 }
 
 /**
@@ -314,7 +333,7 @@ export function defineEntity<T extends Record<string, FieldDefinition>>(
         fields[key] = value as FieldDefinition
       }
     })
-    entityDef = { fields: fields as T }
+    entityDef = { name, fields: fields as T }
   } else {
     const def = definition as EntityDefinition<T>
     // 如果有fields属性，也需要转换其中的FieldBuilder对象
@@ -446,8 +465,9 @@ function fieldToTsType(field: FieldDefinition): string {
       return field.target
     
     case 'i18n':
-      if (field.i18n) {
-        const locales = field.i18n.locales.map(l => `'${l}'`).join(' | ')
+      if (field.type === 'i18n') {
+        const i18nField = field as I18nFieldOptions
+        const locales = i18nField.locales.map((l: string) => `'${l}'`).join(' | ')
         return `Partial<Record<${locales}, string>>`
       }
       return 'Record<string, string>'

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useAuth } from './AuthProvider'
 
 export function LoginForm() {
-  const { user, login, logout, isLoading } = useAuth()
+  const { user, signIn, signOut, isLoading } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -12,22 +12,22 @@ export function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    
+
     if (!email || !password) {
       setError('请输入邮箱和密码')
       return
     }
 
     try {
-      await login(email, password)
+      await signIn(email, password)
     } catch (err) {
       setError('登录失败，请重试')
     }
   }
 
-  const handleLogout = async () => {
+  const handleSignOut = async () => {
     try {
-      await logout()
+      await signOut()
     } catch (err) {
       setError('注销失败，请重试')
     }
@@ -45,7 +45,7 @@ export function LoginForm() {
         </div>
         
         <button
-          onClick={handleLogout}
+          onClick={handleSignOut}
           disabled={isLoading}
           className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 disabled:opacity-50"
         >
