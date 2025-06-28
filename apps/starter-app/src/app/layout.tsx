@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+
 import { Layout } from '@/components/layout/Layout'
 import './globals.css'
 

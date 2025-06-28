@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+
 import { AuthProvider, useAuth } from '@/components/auth/AuthProvider'
 
 function SignOutContent() {

@@ -1,5 +1,7 @@
 import { ReactNode } from 'react'
+
 import { Navigation } from './Navigation'
+import { TRPCProvider } from '../providers/TRPCProvider'
 
 interface LayoutProps {
   children: ReactNode
@@ -7,11 +9,12 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      <main className="flex-1">
-        {children}
-      </main>
+    <TRPCProvider>
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <main className="flex-1">
+          {children}
+        </main>
       
       {/* Footer */}
       <footer className="bg-white border-t mt-auto">
@@ -43,6 +46,7 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </TRPCProvider>
   )
 }

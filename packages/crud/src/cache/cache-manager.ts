@@ -15,7 +15,7 @@ export class CacheManager implements ICacheManager {
   /**
    * 获取缓存
    */
-  async get<T>(key: string): Promise<T | null> {
+  async get<T>(_key: string): Promise<T | null> {
     // 简化实现 - TODO: 实现完整的缓存获取
     return null
   }
@@ -23,7 +23,7 @@ export class CacheManager implements ICacheManager {
   /**
    * 设置缓存
    */
-  async set<T>(key: string, value: T, ttl?: number): Promise<void> {
+  async set<T>(_key: string, _value: T, _ttl?: number): Promise<void> {
     // 简化实现 - TODO: 实现完整的缓存设置
     return
   }
@@ -31,7 +31,7 @@ export class CacheManager implements ICacheManager {
   /**
    * 删除缓存
    */
-  async delete(key: string): Promise<void> {
+  async delete(_key: string): Promise<void> {
     // 简化实现 - TODO: 实现完整的缓存删除
     return
   }
@@ -39,7 +39,7 @@ export class CacheManager implements ICacheManager {
   /**
    * 使缓存无效
    */
-  async invalidate(pattern: string): Promise<void> {
+  async invalidate(_pattern: string): Promise<void> {
     // 简化实现 - TODO: 实现完整的缓存无效化
     return
   }

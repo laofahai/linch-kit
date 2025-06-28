@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 
 // 模拟ConfigManager类
 class ConfigManager {
-  constructor(config: any) {}
+  constructor(_config: unknown) {}
 }
 
 // 模拟配置数据
@@ -109,7 +109,7 @@ export function ConfigDemo() {
   const [configs, setConfigs] = useState(mockConfigs)
   const [validationResult, setValidationResult] = useState<string>('')
   const [configStats, setConfigStats] = useState<{ totalConfigs: number; validConfigs: number; lastUpdated: string } | null>(null)
-  const [configManager] = useState(() => new ConfigManager({
+  const [_configManager] = useState(() => new ConfigManager({
     sources: [
       { type: 'env', priority: 1 },
       { type: 'file', path: './config/default.json', priority: 2 },
@@ -180,11 +180,11 @@ export function ConfigDemo() {
     })
   }
 
-  const updateConfig = (path: string, value: any) => {
+  const updateConfig = (path: string, value: unknown) => {
     setConfigs(prev => {
       const updated = { ...prev }
       const keys = path.split('.')
-      let current = updated as any
+      let current = updated as Record<string, unknown>
       
       for (let i = 0; i < keys.length - 1; i++) {
         current = current[keys[i]]
@@ -195,7 +195,7 @@ export function ConfigDemo() {
     })
   }
 
-  const renderConfigValue = (key: string, value: any, path: string = '') => {
+  const renderConfigValue = (key: string, value: unknown, path: string = '') => {
     const fullPath = path ? `${path}.${key}` : key
 
     if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
@@ -286,7 +286,7 @@ export function ConfigDemo() {
             </label>
             <select
               value={environment}
-              onChange={(e) => setEnvironment(e.target.value as any)}
+              onChange={(e) => setEnvironment(e.target.value as 'development' | 'staging' | 'production')}
               className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="development">开发环境 (Development)</option>

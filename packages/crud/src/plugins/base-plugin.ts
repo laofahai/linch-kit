@@ -139,7 +139,7 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
   /**
    * 配置时调用
    */
-  protected async onConfigure(config: Record<string, unknown>): Promise<void> {
+  protected async onConfigure(_config: Record<string, unknown>): Promise<void> {
     // 子类可以重写此方法
   }
 

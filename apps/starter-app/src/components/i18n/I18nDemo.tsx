@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 // import { I18nManager } from '@linch-kit/core'
 
 // 模拟I18nManager类
 class I18nManager {
-  constructor(config: any) {}
+  constructor(_config: unknown) {}
 }
 
 // 模拟多语言数据
@@ -238,7 +238,7 @@ const demoSections = [
 export function I18nDemo() {
   const [currentLanguage, setCurrentLanguage] = useState<string>('zh-CN')
   const [selectedSection, setSelectedSection] = useState<string>('common')
-  const [i18nManager] = useState(() => new I18nManager({
+  const [_i18nManager] = useState(() => new I18nManager({
     defaultLanguage: 'zh-CN',
     fallbackLanguage: 'en-US',
     supportedLanguages: ['zh-CN', 'en-US', 'ja-JP', 'ko-KR'],
@@ -246,9 +246,9 @@ export function I18nDemo() {
   }))
 
   // 翻译函数
-  const t = (key: string, params?: Record<string, any>) => {
+  const t = (key: string, params?: Record<string, unknown>) => {
     const keys = key.split('.')
-    let value = translations[currentLanguage as keyof typeof translations] as any
+    let value = translations[currentLanguage as keyof typeof translations] as Record<string, unknown>
     
     for (const k of keys) {
       value = value?.[k]
@@ -256,7 +256,7 @@ export function I18nDemo() {
     
     if (!value) {
       // 回退到英文
-      value = translations['en-US'] as any
+      value = translations['en-US'] as Record<string, unknown>
       for (const k of keys) {
         value = value?.[k]
       }
@@ -305,7 +305,7 @@ export function I18nDemo() {
 
   const getCurrentTranslations = () => {
     const lang = translations[currentLanguage as keyof typeof translations]
-    return (lang as any)[selectedSection] || {}
+    return (lang as Record<string, Record<string, string>>)[selectedSection] || {}
   }
 
   return (

@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { createLinchKitAuthConfig, EnterpriseAuthExtensions, MFAManager } from '@linch-kit/auth'
+import { EnterpriseAuthExtensions, MFAManager } from '@linch-kit/auth'
 import type { LinchKitUser, LinchKitSession } from '@linch-kit/auth'
 
 // 使用 LinchKit Auth 的类型定义
@@ -18,7 +18,7 @@ class LinchKitAuthManager {
   private enterpriseAuth: EnterpriseAuthExtensions
   private mfaManager: MFAManager
 
-  constructor(config: any) {
+  constructor(_config: unknown) {
     this.enterpriseAuth = new EnterpriseAuthExtensions({
       tenantId: 'starter-app',
       enableMFA: false, // 演示应用暂时禁用 MFA
@@ -65,7 +65,7 @@ class LinchKitAuthManager {
     localStorage.removeItem('linchkit-session')
   }
 
-  async refreshSession(token: string): Promise<AuthSession> {
+  async refreshSession(_token: string): Promise<AuthSession> {
     const stored = localStorage.getItem('linchkit-session')
     if (!stored) throw new Error('No session found')
 

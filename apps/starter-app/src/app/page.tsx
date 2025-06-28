@@ -20,6 +20,15 @@ const demoModules = [
     testable: true
   },
   {
+    id: 'trpc',
+    title: '🚀 tRPC API层',
+    description: '端到端类型安全的API开发，自动同步前后端类型定义',
+    features: ['类型安全API', '健康检查', '用户CRUD', '实时演示'],
+    href: '/trpc',
+    color: 'cyan',
+    testable: true
+  },
+  {
     id: 'config',
     title: '⚙️ 配置管理',
     description: '灵活的配置系统，支持多环境、多租户和运行时热重载',
@@ -84,6 +93,13 @@ const getColorClasses = (color: string) => {
       button: 'bg-indigo-600 hover:bg-indigo-700',
       text: 'text-indigo-800',
       feature: 'bg-indigo-100 text-indigo-800'
+    },
+    cyan: {
+      bg: 'bg-cyan-50',
+      border: 'border-cyan-200',
+      button: 'bg-cyan-600 hover:bg-cyan-700',
+      text: 'text-cyan-800',
+      feature: 'bg-cyan-100 text-cyan-800'
     }
   }
   return colorMap[color as keyof typeof colorMap] || colorMap.blue

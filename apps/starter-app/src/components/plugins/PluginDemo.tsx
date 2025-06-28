@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 // import { PluginManager } from '@linch-kit/core'
 
 // 模拟PluginManager类
 class PluginManager {
-  constructor(config: any) {}
+  constructor(_config: unknown) {}
 }
 
 // 模拟插件数据
@@ -21,7 +21,7 @@ interface MockPlugin {
   permissions: string[]
   size: string
   installDate: string
-  config?: Record<string, any>
+  config?: Record<string, unknown>
 }
 
 const mockPlugins: MockPlugin[] = [
@@ -138,7 +138,7 @@ export function PluginDemo() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedPlugin, setSelectedPlugin] = useState<MockPlugin | null>(null)
   const [showInstallModal, setShowInstallModal] = useState(false)
-  const [pluginManager] = useState(() => new PluginManager({
+  const [_pluginManager] = useState(() => new PluginManager({
     pluginDir: './plugins',
     autoLoad: true,
     security: {

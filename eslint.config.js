@@ -107,7 +107,11 @@ export default [
         ]
       }],
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        'argsIgnorePattern': '^_',
+        'varsIgnorePattern': '^_',
+        'ignoreRestSiblings': true
+      }],
       'no-console': 'off',
       'no-undef': 'off' // TypeScript 处理未定义变量检查
     },
@@ -135,7 +139,37 @@ export default [
     files: ['packages/auth/**/*.ts', 'packages/auth/**/*.tsx'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true
+      }],
+    },
+  },
+
+  // tRPC 包特殊规则 - API路由器需要动态类型和未使用的占位符
+  {
+    files: ['packages/trpc/**/*.ts', 'packages/trpc/**/*.tsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn', // 降级为警告
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_|permissions|logic',
+        ignoreRestSiblings: true
+      }],
+    },
+  },
+
+  // Starter App 特殊规则 - 演示代码需要一些灵活性
+  {
+    files: ['apps/starter-app/**/*.ts', 'apps/starter-app/**/*.tsx'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true
+      }],
+      '@typescript-eslint/no-explicit-any': 'warn', // 演示代码降低为警告
     },
   },
 

@@ -181,7 +181,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     existing: unknown,
     changes: FieldChange[],
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     const userId = this.extractUserId(user)
     if (!userId) return
 

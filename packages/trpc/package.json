@@ -1,0 +1,56 @@
+{
+  "name": "@linch-kit/trpc",
+  "version": "0.1.0",
+  "description": "LinchKit tRPC API layer - End-to-end type-safe API development",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist node_modules/.cache",
+    "lint": "eslint src --ext .ts,.tsx --fix",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@linch-kit/core": "workspace:*",
+    "@linch-kit/auth": "workspace:*",
+    "@trpc/server": "^11.0.0",
+    "@trpc/client": "^11.0.0",
+    "zod": "^3.24.1",
+    "superjson": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "typescript": "^5.8.3",
+    "tsup": "^8.5.0",
+    "vitest": "^2.1.9",
+    "eslint": "^9.29.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "keywords": [
+    "linchkit",
+    "trpc",
+    "api",
+    "typescript",
+    "type-safe"
+  ],
+  "author": "LinchKit Team",
+  "license": "MIT"
+}

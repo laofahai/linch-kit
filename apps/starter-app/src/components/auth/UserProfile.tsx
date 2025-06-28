@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from './AuthProvider'
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
+
+import { useAuth } from './AuthProvider'
 
 export function UserProfile() {
   const { user, session, isLoading, refreshSession, validateAuth, getAuthStats } = useAuth()

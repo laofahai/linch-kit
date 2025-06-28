@@ -9,6 +9,7 @@
  */
 
 import type { Logger } from '@linch-kit/core'
+
 import type { 
   CrudPluginHooks, 
   HookContext, 
@@ -227,7 +228,7 @@ export class AuditLogPlugin extends BaseCrudPlugin {
     newValue: unknown,
     operation: 'create' | 'update',
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     const logEntry: AuditLogEntry = {
       id: `field_change_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       timestamp: context.timestamp,

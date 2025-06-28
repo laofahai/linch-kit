@@ -20,7 +20,7 @@ export class ValidationManager implements IValidationManager {
   /**
    * 验证创建数据
    */
-  async validateCreate(entity: Entity, data: unknown): Promise<ValidationError[]> {
+  async validateCreate(_entity: Entity, _data: unknown): Promise<ValidationError[]> {
     // 简化实现 - TODO: 实现完整的创建验证
     return []
   }
@@ -28,7 +28,7 @@ export class ValidationManager implements IValidationManager {
   /**
    * 验证更新数据
    */
-  async validateUpdate(entity: Entity, id: string, data: unknown): Promise<ValidationError[]> {
+  async validateUpdate(_entity: Entity, _id: string, _data: unknown): Promise<ValidationError[]> {
     // 简化实现 - TODO: 实现完整的更新验证
     return []
   }
@@ -36,7 +36,7 @@ export class ValidationManager implements IValidationManager {
   /**
    * 验证字段
    */
-  async validateField(field: FieldDefinition, value: unknown): Promise<ValidationError[]> {
+  async validateField(_field: FieldDefinition, _value: unknown): Promise<ValidationError[]> {
     // 简化实现 - TODO: 实现完整的字段验证
     return []
   }
@@ -44,7 +44,7 @@ export class ValidationManager implements IValidationManager {
   /**
    * 验证查询参数
    */
-  async validateQuery(entity: Entity, query: QueryInput): Promise<ValidationError[]> {
+  async validateQuery(_entity: Entity, _query: QueryInput): Promise<ValidationError[]> {
     // 简化实现 - TODO: 实现完整的查询验证
     return []
   }

@@ -24,6 +24,12 @@ const navigationItems = [
     description: '认证权限系统'
   },
   {
+    name: 'tRPC API',
+    href: '/trpc',
+    icon: '🚀',
+    description: 'API层演示'
+  },
+  {
     name: '配置',
     href: '/config',
     icon: '⚙️',

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+
 import { useAuth } from './AuthProvider'
 
 export function LoginForm() {
@@ -20,7 +21,7 @@ export function LoginForm() {
 
     try {
       await signIn(email, password)
-    } catch (err) {
+    } catch (_err) {
       setError('登录失败，请重试')
     }
   }
@@ -28,7 +29,7 @@ export function LoginForm() {
   const handleSignOut = async () => {
     try {
       await signOut()
-    } catch (err) {
+    } catch (_err) {
       setError('注销失败，请重试')
     }
   }
