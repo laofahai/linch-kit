@@ -36,6 +36,8 @@ L4: @linch-kit/ai        ⏳ AI集成
 ## 📚 文档位置
 - **当前状态**: `ai-context/zh/current/development-status.md`
 - **开发约束**: `ai-context/zh/current/development-constraints.md`
+- **模块化架构**: `ai-context/zh/current/module-architecture-design.md`
+- **包 API 参考**: `ai-context/zh/current/packages-api-reference.md`
 - **Console 设计**: `ai-context/zh/current/console-module-design.md`
 - **架构设计**: `ai-context/zh/system-design/architecture.md`
 - **决策指南**: `ai-context/zh/current/build-vs-buy-decisions.md`
@@ -88,10 +90,19 @@ pnpm validate   # 完整验证
 - ⏳ Phase 4 待开始：AI 集成包和生产级 Starter
 
 ## 🎯 下一步任务
-**Console 模块开发** - 企业级管理平台，验证所有 LinchKit 包集成可行性
-- 📁 位置: `/modules/console` (非包形式)
+**Console 模块开发** - 企业级管理控制台主模块
+- 📁 位置: `/modules/console` (独立 npm 包)
 - 🎯 功能: 多租户管理、权限控制、插件市场、系统监控
-- 📦 计划: 完成后创建基于 Console 的生产级 apps/starter
+- 🔗 集成: 使用所有 packages/* 包，不重复实现功能
+- 📦 使用: Starter 引用 Console，提供路由和界面，布局由 Starter 实现
+
+## 🏗️ 模块化架构
+```
+apps/starter (应用层)    - 布局、环境配置、Prisma 生成
+modules/console (模块层) - 核心管理功能、路由、界面
+packages/* (包层)       - 基础功能库、不可重复实现
+plugins/* (插件层)      - 功能扩展、可选安装
+```
 
 ## 🔗 集成模式
 
