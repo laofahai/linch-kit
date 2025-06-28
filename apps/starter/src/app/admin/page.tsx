@@ -1,3 +1,5 @@
+'use client'
+
 import { Dashboard } from '@linch-kit/console'
 
 export default function AdminPage() {

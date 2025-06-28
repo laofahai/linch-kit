@@ -4,35 +4,32 @@
  * LinchKit Console - 企业级管理控制台
  */
 
-// 实体和类型
-export * from './entities'
-export * from './validation'
+// 确保所有导出都是客户端安全的
+// 对于包含React hooks的组件，在各自文件中标记'use client'
 
-// 服务层
+// 服务层 (纯JavaScript，无客户端依赖)
 export * from './services'
 
-// 路由系统
-export * from './routes'
+// Provider和上下文 (已标记为客户端组件)
+export { ConsoleProvider } from './providers/ConsoleProvider'
 
-// 组件
-export * from './components'
-
-// 页面组件
-export * from './pages'
-
-// Hooks
-export * from './hooks'
-
-// Providers 和上下文
-export * from './providers/ConsoleProvider'
-
-// 国际化
+// 国际化 (纯JavaScript)
 export * from './i18n'
 
-// 默认导出 - 主要的 Console 功能
-export { default as ConsoleRouter } from './routes/ConsoleRoutes'
-export { ConsoleProvider } from './providers/ConsoleProvider'
+// 暂时只启用基础功能，逐步完善
+// 1. 首先启用Dashboard页面
 export { Dashboard } from './pages/Dashboard'
+
+// 2. 基础组件 (暂时禁用复杂组件)
+// export * from './components'
+
+// 其他功能等依赖稳定后再启用
+// export { TenantCreate } from './pages/tenants/TenantCreate'  
+// export { TenantList } from './pages/tenants/TenantList'
+// export { TenantDetail } from './pages/tenants/TenantDetail'
+// export * from './hooks'
+
+// 默认导出已在上面包含ConsoleProvider，不需要重复导出
 
 /**
  * Console 模块信息
@@ -42,19 +39,19 @@ export const ConsoleModule = {
   version: '0.1.0',
   description: 'LinchKit 企业级管理控制台',
   
-  // 主要导出
-  Router: require('./routes/ConsoleRoutes').default,
+  // 主要导出 (暂时只保留Provider)
+  // Router: require('./routes/ConsoleRoutes').default,
   Provider: require('./providers/ConsoleProvider').ConsoleProvider,
   
-  // 创建路由配置
-  createRoutes: require('./routes').createConsoleRoutes,
-  createRouter: require('./routes').createConsoleRouter,
+  // 创建路由配置 (暂时禁用)
+  // createRoutes: require('./routes').createConsoleRoutes,
+  // createRouter: require('./routes').createConsoleRouter,
   
-  // 实体集合
-  entities: require('./entities').ConsoleEntities,
+  // 实体集合 (暂时禁用)
+  // entities: require('./entities').ConsoleEntities,
   
-  // 验证器
-  validators: require('./validation').consoleValidators,
+  // 验证器 (暂时禁用) 
+  // validators: require('./validation').consoleValidators,
   
   // 服务
   services: require('./services').consoleServices,

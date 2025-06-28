@@ -25,4 +25,7 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   minify: false,
+  banner: {
+    js: `'use client';`
+  }
 })

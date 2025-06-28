@@ -5,7 +5,7 @@
  */
 
 import React from 'react'
-import { cn } from '@linch-kit/ui/lib/utils'
+import { cn } from '@linch-kit/ui/utils'
 
 /**
  * 统计网格属性

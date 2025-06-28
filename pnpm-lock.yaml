@@ -214,6 +214,9 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      react-hook-form:
+        specifier: ^7.59.0
+        version: 7.59.0(react@18.3.1)
       superjson:
         specifier: ^2.2.1
         version: 2.2.2
@@ -272,6 +275,9 @@ importers:
 
   modules/console:
     dependencies:
+      '@hookform/resolvers':
+        specifier: ^5.1.1
+        version: 5.1.1(react-hook-form@7.59.0(react@18.3.1))
       '@linch-kit/auth':
         specifier: workspace:*
         version: link:../../packages/auth
@@ -296,6 +302,9 @@ importers:
       next:
         specifier: ^15.0.0
         version: 15.3.4(@babel/core@7.27.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-hook-form:
+        specifier: ^7.59.0
+        version: 7.59.0(react@18.3.1)
       zod:
         specifier: ^3.25.67
         version: 3.25.67
@@ -615,7 +624,7 @@ importers:
         specifier: ^1.1.0
         version: 1.1.7(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-select':
-        specifier: ^2.1.2
+        specifier: ^2.2.5
         version: 2.2.5(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-separator':
         specifier: ^1.1.0

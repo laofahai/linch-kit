@@ -8,6 +8,8 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { 
   Card, 
@@ -62,17 +64,29 @@ export function TenantCreate() {
   const t = useConsoleTranslation()
   const { createTenant } = useTenantOperations()
   
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [formData, setFormData] = useState<Partial<CreateTenantForm>>({
-    plan: 'starter',
-    billingCycle: 'monthly',
-    maxUsers: 10,
-    maxStorage: 1000,
-    maxApiCalls: 10000,
-    maxPlugins: 5,
-    autoActivate: true
+
+  const {
+    register,
+    handleSubmit: handleFormSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting }
+  } = useForm<CreateTenantForm>({
+    resolver: zodResolver(createTenantSchema),
+    defaultValues: {
+      plan: 'starter',
+      billingCycle: 'monthly',
+      maxUsers: 10,
+      maxStorage: 1000,
+      maxApiCalls: 10000,
+      maxPlugins: 5,
+      autoActivate: true
+    }
   })
+
+  const planValue = watch('plan')
+  const nameValue = watch('name')
   
   // 根据计划自动设置配额
   React.useEffect(() => {
@@ -103,58 +117,45 @@ export function TenantCreate() {
       }
     }
     
-    const quotas = quotasByPlan[formData.plan as keyof typeof quotasByPlan]
+    const quotas = quotasByPlan[planValue as keyof typeof quotasByPlan]
     if (quotas) {
-      setFormData(prev => ({ ...prev, ...quotas }))
+      setValue('maxUsers', quotas.maxUsers)
+      setValue('maxStorage', quotas.maxStorage)
+      setValue('maxApiCalls', quotas.maxApiCalls)
+      setValue('maxPlugins', quotas.maxPlugins)
     }
-  }, [formData.plan])
+  }, [planValue, setValue])
   
   // 根据名称自动生成slug
   React.useEffect(() => {
-    if (formData.name) {
-      const slug = formData.name
+    if (nameValue) {
+      const slug = nameValue
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
         .trim()
-      setFormData(prev => ({ ...prev, slug }))
+      setValue('slug', slug)
     }
-  }, [formData.name])
+  }, [nameValue, setValue])
   
   // 提交表单
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const onSubmit = async (data: CreateTenantForm) => {
     setSubmitError(null)
     
     try {
-      // 验证数据
-      const validatedData = createTenantSchema.parse(formData)
-      
       const tenant = await createTenant.mutateAsync({
-        ...validatedData,
-        status: validatedData.autoActivate ? 'active' : 'pending'
+        ...data,
+        status: data.autoActivate ? 'active' : 'pending'
       })
       
       // 跳转到租户详情页
       router.push(`/admin/tenants/${tenant.id}`)
     } catch (error: any) {
-      if (error.issues) {
-        // Zod 验证错误
-        setSubmitError(error.issues[0]?.message || '表单数据无效')
-      } else {
-        setSubmitError(error.message || '创建租户失败')
-      }
-    } finally {
-      setIsSubmitting(false)
+      setSubmitError(error.message || '创建租户失败')
     }
   }
   
-  // 更新表单字段
-  const updateField = (field: keyof CreateTenantForm, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -174,7 +175,7 @@ export function TenantCreate() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleFormSubmit(onSubmit)} className="space-y-6">
         {/* 基本信息 */}
         <Card>
           <CardHeader>
@@ -193,8 +194,8 @@ export function TenantCreate() {
                 <Input
                   id="name"
                   placeholder="输入租户名称"
-                  value={formData.name || ''}
-                  onChange={(e) => updateField('name', e.target.value)}
+                  {...register('name')}
+                  error={errors.name?.message}
                 />
               </div>
               
