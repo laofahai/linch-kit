@@ -29,17 +29,17 @@
   "dependencies": {
     "@linch-kit/core": "workspace:*",
     "@linch-kit/auth": "workspace:*",
-    "@trpc/server": "^11.0.0",
-    "@trpc/client": "^11.0.0",
-    "zod": "^3.24.1",
-    "superjson": "^2.2.1"
+    "@trpc/server": "^11.4.3",
+    "@trpc/client": "^11.4.3",
+    "zod": "^3.25.67",
+    "superjson": "^2.2.2"
   },
   "devDependencies": {
-    "@types/node": "^22.10.5",
+    "@types/node": "^24.0.7",
     "typescript": "^5.8.3",
     "tsup": "^8.5.0",
-    "vitest": "^2.1.9",
-    "eslint": "^9.29.0"
+    "vitest": "^3.2.4",
+    "eslint": "^9.30.0"
   },
   "peerDependencies": {
     "typescript": ">=5.0.0"

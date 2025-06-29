@@ -218,7 +218,7 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
       react-hook-form:
-        specifier: ^7.55.0
+        specifier: ^7.59.0
         version: 7.59.0(react@18.3.1)
       superjson:
         specifier: ^2.2.1
@@ -659,9 +659,6 @@ importers:
       lucide-react:
         specifier: ^0.462.0
         version: 0.462.0(react@18.3.1)
-      react-hook-form:
-        specifier: ^7.55.0
-        version: 7.59.0(react@18.3.1)
       tailwind-merge:
         specifier: ^2.5.4
         version: 2.6.0
@@ -708,6 +705,9 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      react-hook-form:
+        specifier: ^7.59.0
+        version: 7.59.0(react@18.3.1)
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.17(ts-node@10.9.2(@types/node@24.0.4)(typescript@5.8.3))

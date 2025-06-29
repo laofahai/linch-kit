@@ -19,7 +19,8 @@ export default defineConfig({
     '@hookform/resolvers',
     '@linch-kit/core',
     '@linch-kit/crud',
-    '@linch-kit/schema'
+    '@linch-kit/schema',
+    'react-hook-form'  // 将 react-hook-form 也作为外部依赖
   ],
   treeshake: true,
   minify: false,
@@ -27,6 +28,12 @@ export default defineConfig({
   esbuildOptions(options) {
     options.banner = {
       js: '"use client"'
+    }
+  },
+  // 确保 ESM 输出格式正确
+  outExtension({ format }) {
+    return {
+      js: format === 'esm' ? '.mjs' : '.js'
     }
   }
 })

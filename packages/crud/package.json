@@ -24,16 +24,16 @@
     "@linch-kit/core": "workspace:*",
     "@linch-kit/schema": "workspace:*",
     "@linch-kit/auth": "workspace:*",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.10.1",
     "zod": "^3.25.67",
-    "ioredis": "^5.4.2",
-    "lru-cache": "^10.4.3"
+    "ioredis": "^5.6.1",
+    "lru-cache": "^11.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.25",
+    "@types/node": "^24.0.7",
     "typescript": "^5.8.3",
-    "vitest": "^2.0.0",
-    "@vitest/coverage-v8": "^2.0.0",
+    "vitest": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4",
     "tsup": "^8.5.0"
   },
   "files": [

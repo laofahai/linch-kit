@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   },
 
   // 转译包
-  transpilePackages: ['@linch-kit/ui'],
+  transpilePackages: ['@linch-kit/ui', 'react-hook-form'],
 
   // 服务端外部包
   serverExternalPackages: ['@prisma/client', 'prom-client', '@linch-kit/core', '@linch-kit/console'],
@@ -131,6 +131,9 @@ const nextConfig: NextConfig = {
         perf_hooks: false,
         inspector: false,
       }
+      
+      // 忽略 fsevents
+      config.externals = [...(config.externals || []), 'fsevents']
     }
 
     // 优化依赖
@@ -140,6 +143,12 @@ const nextConfig: NextConfig = {
         '@prisma/client': '@prisma/client',
       }
     }
+
+    // 确保 react-hook-form 正确解析
+    config.resolve.extensions = [...(config.resolve.extensions || []), '.mjs', '.js', '.jsx', '.ts', '.tsx']
+    
+    // 处理 ESM 模块
+    config.resolve.mainFields = ['browser', 'module', 'main']
 
     return config
   },

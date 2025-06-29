@@ -5,7 +5,7 @@
  */
 
 import React from 'react'
-import { Control, Controller } from 'react-hook-form'
+import { Control, Controller } from './form-wrapper'
 import type { FieldDefinition } from '@linch-kit/schema'
 
 import { Input } from '../components/ui/input'
