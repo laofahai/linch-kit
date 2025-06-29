@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * @fileoverview Schema驱动的表单组件 - 基于react-hook-form和LinchKit Schema
  */

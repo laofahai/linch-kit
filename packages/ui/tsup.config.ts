@@ -15,9 +15,18 @@ export default defineConfig({
   clean: true,
   external: [
     'react',
-    'react-dom'
+    'react-dom',
+    '@hookform/resolvers',
+    '@linch-kit/core',
+    '@linch-kit/crud',
+    '@linch-kit/schema'
   ],
   treeshake: true,
   minify: false,
-  target: 'es2020'
+  target: 'es2020',
+  esbuildOptions(options) {
+    options.banner = {
+      js: '"use client"'
+    }
+  }
 })

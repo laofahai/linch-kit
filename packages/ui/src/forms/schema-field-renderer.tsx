@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * @fileoverview Schema字段渲染器 - 基于字段类型渲染对应的表单控件
  */
