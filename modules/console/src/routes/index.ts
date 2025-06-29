@@ -271,3 +271,7 @@ export function createConsoleRouter(config?: ConsoleConfig): ConsoleRouter {
 // 导出类型和配置
 export * from './types'
 export * from './config'
+
+// 导出 tRPC 路由器
+export * from './console.router'
+export * from './tenant.router'

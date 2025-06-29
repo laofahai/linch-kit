@@ -68,7 +68,7 @@ pnpm validate   # 完整验证
 🎯 **决策指南**: 参考 `ai-context/zh/current/build-vs-buy-decisions.md`
 
 ## 🎯 开发工作流
-1. 查看 `ai-context/zh/current/unified-development-progress.md`
+1. 查看 `ai-context/zh/current/development-status.md`
 2. 按架构层次顺序开发
 3. 严格遵循 `ai-context/zh/current/development-constraints.md`
 4. 运行验证命令
@@ -77,7 +77,7 @@ pnpm validate   # 完整验证
 
 ## 💡 AI 开发模式
 当用户说"继续开发"时：
-1. 读取 `ai-context/zh/current/unified-development-progress.md`
+1. 读取 `ai-context/zh/current/development-status.md`
 2. 确定下一个开发任务
 3. 参考 `ai-context/zh/system-design/architecture.md`
 4. 严格遵循 `ai-context/zh/current/development-constraints.md`

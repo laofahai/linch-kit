@@ -52,7 +52,13 @@
 - **必须使用 .env + dotenv-safe 管理环境变量**
 - **定期运行 `pnpm audit` 检查依赖安全**
 
-### 7. 模块化开发强制要求
+### 7. UI 组件强制要求
+- **所有 shadcn/ui 组件必须使用 `pnpm dlx shadcn@latest add [component-name]` 安装**
+- **禁止手动创建 shadcn 组件文件**，防止版本不一致
+- **组件安装后自动放置在 `packages/ui/src/components/ui/` 目录**
+- **必须在 `packages/ui/src/components/index.ts` 中导出新添加的组件**
+
+### 8. 模块化开发强制要求
 - **模块定位**: modules/ 作为业务模块，plugins/ 作为功能插件
 - **独立发布**: 所有模块都作为独立 npm 包发布
 - **不重复实现**: 模块只能组合和扩展 packages/* 的功能

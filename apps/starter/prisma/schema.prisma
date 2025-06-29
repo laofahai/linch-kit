@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,10 +15,12 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
-  role      String   @default("user")
+  role      String   @default("USER") // USER, ADMIN, SUPER_ADMIN
   tenantId  String?
+  status    String   @default("active") // active, inactive, suspended
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime?
 
   // 关联租户
   tenant Tenant? @relation(fields: [tenantId], references: [id])
@@ -26,21 +28,28 @@ model User {
   @@map("users")
 }
 
-// 租户表
+// 租户表 - 基于 Console 模块的实体定义
 model Tenant {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  status      String   @default("active")
-  plan        String   @default("basic")
-  quota       Int      @default(100)
-  description String?
-  settings    String?  // JSON
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  domain        String?  @unique
+  slug          String   @unique
+  description   String?
+  status        String   @default("active") // active, suspended, deleted, pending
+  plan          String   @default("free")   // free, starter, professional, enterprise
+  billingCycle  String?  // monthly, yearly
+  maxUsers      Int      @default(10)
+  maxStorage    BigInt   @default(1073741824) // 1GB in bytes
+  settings      String?  // JSON - TenantSettings
+  metadata      String?  // JSON - TenantMetadata
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
 
-  // 关联用户
-  users User[]
+  // 关联
+  users   User[]
+  quotas  TenantQuotas?
+  plugins TenantPlugin[]
 
   @@map("tenants")
 }
@@ -56,8 +65,51 @@ model Plugin {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // 关联
+  tenants TenantPlugin[]
+
   @@unique([name, version])
   @@map("plugins")
+}
+
+// 租户插件关联表
+model TenantPlugin {
+  id       String @id @default(cuid())
+  tenantId String
+  pluginId String
+  status   String @default("inactive") // active, inactive
+  config   String? // JSON - 租户特定配置  
+  installedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plugin Plugin @relation(fields: [pluginId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, pluginId])
+  @@map("tenant_plugins")
+}
+
+// 租户配额表
+model TenantQuotas {
+  id               String   @id @default(cuid())
+  tenantId         String   @unique
+  maxUsers         Int      @default(10)
+  currentUsers     Int      @default(0)
+  maxStorage       BigInt   @default(1073741824) // 1GB
+  currentStorage   BigInt   @default(0)
+  maxApiCalls      Int      @default(10000)
+  currentApiCalls  Int      @default(0)
+  apiResetAt       DateTime?
+  maxPlugins       Int      @default(5)
+  currentPlugins   Int      @default(0)
+  maxSchemas       Int      @default(10)
+  currentSchemas   Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_quotas")
 }
 
 // 监控数据表

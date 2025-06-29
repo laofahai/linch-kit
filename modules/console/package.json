@@ -40,6 +40,14 @@
     "./api": {
       "types": "./dist/api/index.d.ts",
       "import": "./dist/api/index.js"
+    },
+    "./routes": {
+      "types": "./dist/routes/index.d.ts",
+      "import": "./dist/routes/index.js"
+    },
+    "./routes/tenant.router": {
+      "types": "./dist/routes/tenant.router.d.ts",
+      "import": "./dist/routes/tenant.router.js"
     }
   },
   "files": [

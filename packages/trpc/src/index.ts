@@ -158,7 +158,7 @@ export function createLinchKitContext(options: {
     }
   }
 }) {
-  return async (opts: { req: unknown; res?: unknown }) => {
+  return async (_opts: { req: unknown; res?: unknown }) => {
     // 简化的上下文创建 - 实际应用中可以扩展
     return {
       user: undefined, // 在具体应用中实现认证逻辑
@@ -166,6 +166,24 @@ export function createLinchKitContext(options: {
     }
   }
 }
+
+/**
+ * 默认的上下文创建函数
+ * 供 starter 应用使用
+ */
+export const createTRPCContext = createLinchKitContext({
+  services: {
+    logger: {
+      debug: (message: string, meta?: Record<string, unknown>) => console.debug(message, meta),
+      info: (message: string, meta?: Record<string, unknown>) => console.info(message, meta),
+      warn: (message: string, meta?: Record<string, unknown>) => console.warn(message, meta),
+      error: (message: string, meta?: Record<string, unknown>) => console.error(message, meta),
+    },
+    config: {
+      get: (key: string) => process.env[key]
+    }
+  }
+})
 
 // 导出类型
 export type AppRouter = typeof appRouter

@@ -7,8 +7,11 @@ import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
 import superjson from 'superjson'
 import { AuthProvider } from '@linch-kit/auth'
-import { ConsoleProvider } from '@linch-kit/console'
+// import { ConsoleProvider } from '@linch-kit/console' // 暂时禁用避免 Node.js 模块冲突
 import type { AppRouter } from '@/server/routers/app'
+
+// 确保 Console 服务已初始化
+import '@/lib/console-setup'
 
 export const trpc = createTRPCReact<AppRouter>()
 
@@ -40,14 +43,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <ConsoleProvider
-            permissions={['console:access', 'console:admin', 'tenant:create', 'user:manage', 'plugin:manage', 'monitoring:view']}
-            apiUrl="/api/trpc"
-            language="zh-CN"
-          >
-            {children}
-            <ReactQueryDevtools initialIsOpen={false} />
-          </ConsoleProvider>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
         </AuthProvider>
       </QueryClientProvider>
     </trpc.Provider>

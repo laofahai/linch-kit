@@ -9,8 +9,11 @@ const nextConfig: NextConfig = {
     },
   },
 
+  // 转译包
+  transpilePackages: ['@linch-kit/ui'],
+
   // 服务端外部包
-  serverExternalPackages: ['@prisma/client', 'prom-client'],
+  serverExternalPackages: ['@prisma/client', 'prom-client', '@linch-kit/core', '@linch-kit/console'],
 
   // TypeScript 配置
   typescript: {

@@ -10,6 +10,14 @@
 // 服务层 (纯JavaScript，无客户端依赖)
 export * from './services'
 
+// tRPC 路由器
+export { consoleRouter } from './routes/console.router'
+export type { ConsoleRouter } from './routes/console.router'
+
+// 导出租户路由器及其配置函数
+export { tenantRouter, setTenantService } from './routes/tenant.router'
+export type { TenantRouter } from './routes/tenant.router'
+
 // Provider和上下文 (已标记为客户端组件)
 export { ConsoleProvider } from './providers/ConsoleProvider'
 
@@ -20,13 +28,15 @@ export * from './i18n'
 // 1. 首先启用Dashboard页面
 export { Dashboard } from './pages/Dashboard'
 
-// 2. 基础组件 (暂时禁用复杂组件)
+// 2. 基础组件 (暂时禁用以解决构建问题)
 // export * from './components'
 
-// 其他功能等依赖稳定后再启用
-// export { TenantCreate } from './pages/tenants/TenantCreate'  
-// export { TenantList } from './pages/tenants/TenantList'
-// export { TenantDetail } from './pages/tenants/TenantDetail'
+// 3. 租户管理页面 (暂时禁用以解决构建问题)
+// export { default as TenantList } from './pages/tenants/TenantList'
+// export { default as TenantCreate } from './pages/tenants/TenantCreate'  
+// export { default as TenantDetail } from './pages/tenants/TenantDetail'
+
+// 4. Hooks (暂时禁用以解决构建问题)
 // export * from './hooks'
 
 // 默认导出已在上面包含ConsoleProvider，不需要重复导出

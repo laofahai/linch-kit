@@ -204,3 +204,17 @@ export type TenantUpdate = z.infer<typeof TenantEntity.updateSchema>
 export type TenantQuotas = z.infer<typeof TenantQuotasEntity.zodSchema>
 export type TenantQuotasInput = z.infer<typeof TenantQuotasEntity.createSchema>
 export type TenantQuotasUpdate = z.infer<typeof TenantQuotasEntity.updateSchema>
+
+// 导出 schemas 供路由使用
+export const tenantCreateSchema = TenantEntity.createSchema
+export const tenantUpdateSchema = TenantEntity.updateSchema
+export const tenantQuerySchema = z.object({
+  page: z.number().int().positive().default(1),
+  pageSize: z.number().int().positive().max(100).default(10),
+  search: z.string().optional(),
+  status: z.enum(['active', 'suspended', 'deleted', 'pending']).optional(),
+  plan: z.enum(['free', 'starter', 'professional', 'enterprise']).optional(),
+  tenantId: z.string().optional(),
+  sortBy: z.string().optional(),
+  sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
+})
