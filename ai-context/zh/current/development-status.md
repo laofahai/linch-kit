@@ -82,9 +82,19 @@
    - ✅ 移除所有 any 类型，完整类型安全
 
 ### 🚨 当前阻塞问题
-- **react-hook-form 构建错误**: 虽然已按照所有最佳实践配置，Next.js 15.3.4 构建时仍然报告无法从 react-hook-form 导入 FormProvider/Controller 等
+- **react-hook-form ESM 导入错误**: Next.js 15.3.4 构建时报告无法从 react-hook-form 导入 FormProvider/Controller/useForm 等
+- **问题分析**: UI 包的 ESM 构建中，react-hook-form 的命名导入在 Next.js 中无法正确解析
 - **已尝试的解决方案**: 直接依赖、版本统一、transpilePackages、正确导入语法
-- **下一步**: 需要进一步调研 Next.js 15 与 react-hook-form 的兼容性问题
+- **下一步**: 需要调整 UI 包的构建配置，确保 react-hook-form 在 ESM 环境下正确导出
+
+### 🔄 下一个会话任务
+1. **调研 Next.js 15 与 react-hook-form 的 ESM 兼容性问题**
+2. **尝试以下解决方案**:
+   - 修改 tsup 配置的 format 和 dts 选项
+   - 使用 react-hook-form 的默认导入而非命名导入
+   - 配置 Next.js 的 webpack 解析规则
+   - 考虑使用 react-hook-form 的 v7.x 版本的 ESM 构建
+3. **验证解决方案**: 确保 Starter 应用能够成功构建并运行
 
 ### 核心功能规划
 1. **多租户管理** - 租户生命周期、资源配额、数据隔离
