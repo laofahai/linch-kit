@@ -1,5 +1,6 @@
 import { router } from '@linch-kit/trpc'
 import { tenantRouter } from './tenant.router'
+import { userRouter } from './user.router'
 
 /**
  * Console 模块主路由器
@@ -7,10 +8,10 @@ import { tenantRouter } from './tenant.router'
  */
 export const consoleRouter = router({
   tenant: tenantRouter,
+  user: userRouter,
   // TODO: 添加其他路由
   // plugin: pluginRouter,
   // monitoring: monitoringRouter,
-  // user: userRouter,
 })
 
 export type ConsoleRouter = typeof consoleRouter
