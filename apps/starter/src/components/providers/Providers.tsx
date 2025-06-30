@@ -6,7 +6,7 @@ import { httpBatchLink, createTRPCProxyClient } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
 import superjson from 'superjson'
-import { AuthProvider } from '@linch-kit/auth'
+import { SessionProvider } from 'next-auth/react'
 
 import type { AppRouter } from '@/server/routers/app'
 import { ThemeProvider } from './ThemeProvider'
@@ -41,18 +41,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
   })
 
   return (
-    <ThemeProvider 
-      attribute="class" 
-      defaultTheme="system" 
-      enableSystem
-      disableTransitionOnChange
-    >
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+    <SessionProvider>
+      <ThemeProvider 
+        attribute="class" 
+        defaultTheme="system" 
+        enableSystem
+        disableTransitionOnChange
+      >
+        <QueryClientProvider client={queryClient}>
           {children}
           <ReactQueryDevtools initialIsOpen={false} />
-        </AuthProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+        </QueryClientProvider>
+      </ThemeProvider>
+    </SessionProvider>
   )
 }

@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages } from 'next-intl/server'
 
 import { Providers } from '@/components/providers/Providers'
 import './globals.css'
@@ -8,8 +10,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'LinchKit Starter',
-  description: 'AI-First 全栈开发框架 - 生产级应用',
-  keywords: ['LinchKit', 'AI-First', 'Full-Stack', 'TypeScript', 'Next.js'],
+  description: 'AI-First 全栈开发框架 - 企业级生产应用',
+  keywords: ['LinchKit', 'AI-First', 'Full-Stack', 'TypeScript', 'Next.js', 'Enterprise'],
   authors: [{ name: 'LinchKit Team' }],
   manifest: '/manifest.json',
   icons: {
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'LinchKit Starter',
-    description: 'AI-First 全栈开发框架',
+    description: 'AI-First 全栈开发框架 - 企业级生产应用',
     type: 'website',
     locale: 'zh_CN',
     siteName: 'LinchKit',
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'LinchKit Starter',
-    description: 'AI-First 全栈开发框架',
+    description: 'AI-First 全栈开发框架 - 企业级生产应用',
   },
 }
 
@@ -36,17 +38,21 @@ export const viewport: Viewport = {
   themeColor: '#3b82f6',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const messages = await getMessages()
+  
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
-        <Providers>
-          {children}
-        </Providers>
+        <NextIntlClientProvider messages={messages}>
+          <Providers>
+            {children}
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

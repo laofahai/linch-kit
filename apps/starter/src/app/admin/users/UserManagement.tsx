@@ -17,7 +17,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Badge,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -32,16 +31,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from '@linch-kit/ui/components'
-import { Plus, Search, Edit, Trash2, Users, Mail, UserCheck, UserX, Shield } from 'lucide-react'
+import { Plus, Users, UserCheck, Shield } from 'lucide-react'
 
-import { trpc as _trpc } from '@/components/providers/Providers'
+import { UserTable } from '@/components/admin/UserTable'
 
 // 创建用户表单schema
 const createUserSchema = z.object({
@@ -92,9 +85,8 @@ const mockUsers = [
 ]
 
 export function UserManagement() {
-  const [searchTerm, setSearchTerm] = useState('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  // const [selectedUser, setSelectedUser] = useState<any>(null)
+  const [selectedUser, setSelectedUser] = useState<any>(null)
 
   const form = useForm<CreateUserForm>({
     resolver: zodResolver(createUserSchema),
@@ -107,13 +99,6 @@ export function UserManagement() {
     },
   })
 
-  // 过滤用户
-  const filteredUsers = mockUsers.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.tenantName.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
   const handleCreateUser = (data: CreateUserForm) => {
     console.log('Creating user:', data)
     // TODO: 实现创建用户逻辑
@@ -121,36 +106,27 @@ export function UserManagement() {
     form.reset()
   }
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge variant="secondary" className="bg-green-100 text-green-800"><UserCheck className="w-3 h-3 mr-1" />活跃</Badge>
-      case 'inactive':
-        return <Badge variant="secondary" className="bg-gray-100 text-gray-800"><UserX className="w-3 h-3 mr-1" />停用</Badge>
-      case 'pending':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Users className="w-3 h-3 mr-1" />待激活</Badge>
-      default:
-        return <Badge variant="outline">{status}</Badge>
-    }
-  }
-
-  const getRoleBadges = (roles: string[]) => {
-    return roles.map(role => (
-      <Badge key={role} variant="outline" className="mr-1">
-        {role === 'admin' && <Shield className="w-3 h-3 mr-1" />}
-        {role}
-      </Badge>
-    ))
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+  const handleUserEdit = (user: any) => {
+    setSelectedUser(user)
+    setIsCreateDialogOpen(true)
+    // 填充表单数据
+    form.reset({
+      email: user.email,
+      name: user.name,
+      roles: user.roles,
+      tenantId: user.tenantId,
     })
+  }
+
+  const handleUserDelete = (userId: string) => {
+    console.log('Deleting user:', userId)
+    // TODO: 实现删除用户逻辑
+  }
+
+  const handleUserCreate = () => {
+    setSelectedUser(null)
+    setIsCreateDialogOpen(true)
+    form.reset()
   }
 
   return (
@@ -207,61 +183,56 @@ export function UserManagement() {
         </Card>
       </div>
 
-      {/* 操作栏 */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="搜索用户..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8 w-64"
-            />
-          </div>
-        </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              添加用户
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>添加新用户</DialogTitle>
-              <DialogDescription>
-                创建新的用户账户。用户创建后将收到邮件通知。
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleCreateUser)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>姓名</FormLabel>
-                      <FormControl>
-                        <Input placeholder="请输入用户姓名" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>邮箱</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="user@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+      {/* 用户表格 */}
+      <UserTable 
+        onUserEdit={handleUserEdit}
+        onUserDelete={handleUserDelete}
+        onUserCreate={handleUserCreate}
+      />
+
+      {/* 创建/编辑用户对话框 */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedUser ? '编辑用户' : '添加新用户'}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedUser 
+                ? '修改用户信息。保存后用户将收到通知。' 
+                : '创建新的用户账户。用户创建后将收到邮件通知。'
+              }
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleCreateUser)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>姓名</FormLabel>
+                    <FormControl>
+                      <Input placeholder="请输入用户姓名" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>邮箱</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="user@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {!selectedUser && (
                 <FormField
                   control={form.control}
                   name="password"
@@ -278,107 +249,40 @@ export function UserManagement() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="tenantId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>所属租户</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="选择租户" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="tenant-1">示例企业</SelectItem>
-                          <SelectItem value="tenant-2">演示公司</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                    取消
-                  </Button>
-                  <Button type="submit">创建用户</Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* 用户列表 */}
-      <Card>
-        <CardHeader>
-          <CardTitle>用户列表</CardTitle>
-          <CardDescription>
-            显示了 {filteredUsers.length} 个用户，共 {mockUsers.length} 个
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>用户</TableHead>
-                <TableHead>所属租户</TableHead>
-                <TableHead>角色</TableHead>
-                <TableHead>状态</TableHead>
-                <TableHead>最后登录</TableHead>
-                <TableHead className="text-right">操作</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                        {user.name.charAt(0)}
-                      </div>
-                      <div>
-                        <div className="font-medium">{user.name}</div>
-                        <div className="text-sm text-muted-foreground flex items-center">
-                          <Mail className="w-3 h-3 mr-1" />
-                          {user.email}
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{user.tenantName}</div>
-                    <div className="text-sm text-muted-foreground">{user.tenantId}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {getRoleBadges(user.roles)}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {getStatusBadge(user.status)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">{formatDate(user.lastLogin)}</div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end space-x-2">
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              )}
+              <FormField
+                control={form.control}
+                name="tenantId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>所属租户</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="选择租户" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="tenant-1">示例企业</SelectItem>
+                        <SelectItem value="tenant-2">演示公司</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                  取消
+                </Button>
+                <Button type="submit">
+                  {selectedUser ? '保存更改' : '创建用户'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

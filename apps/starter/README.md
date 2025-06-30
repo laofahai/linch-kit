@@ -1,30 +1,37 @@
-# LinchKit Starter
+# LinchKit Starter - AI-First 企业级应用
 
-生产级 AI-First 全栈开发框架 Starter 应用
+> 基于 LinchKit 框架构建的生产级 AI-First 全栈应用
 
-## 🚀 特性
+## 🚀 项目概述
 
-- ✅ **完整的 LinchKit 生态集成**
-- ✅ **企业级管理控制台** (Console)
-- ✅ **Schema 驱动开发**
-- ✅ **类型安全的 API 层** (tRPC)
-- ✅ **现代化 UI 组件库**
-- ✅ **多租户架构支持**
-- ✅ **细粒度权限控制**
-- ✅ **国际化支持**
+LinchKit Starter 是一个完整的企业级应用实现，展示了 LinchKit 框架的全部能力。它集成了现代化的 AI Dashboard、管理控制台、认证系统和国际化支持。
 
-## 🏗️ 架构
+### ✅ 核心特性
 
+- **🧠 AI-First 架构** - 原生 AI 集成和智能数据分析
+- **🔐 完整认证系统** - NextAuth.js + 多种登录方式
+- **🌍 国际化支持** - 中英文无缝切换
+- **📊 实时 Dashboard** - AI 洞察和性能监控
+- **👥 用户管理** - 完整的 CRUD 和权限控制
+- **🎨 现代化 UI** - shadcn/ui + Tailwind CSS
+- **📱 响应式设计** - 移动端友好
+
+## 🏗️ 技术架构
+
+### 应用层级
 ```
-LinchKit Starter
-├── @linch-kit/core      - 基础设施
-├── @linch-kit/schema    - Schema 引擎
-├── @linch-kit/auth      - 认证授权
-├── @linch-kit/crud      - CRUD 操作
-├── @linch-kit/trpc      - API 层
-├── @linch-kit/ui        - UI 组件
-└── @linch-kit/console   - 管理控制台
+apps/starter (应用层)    - 布局、环境配置、页面路由
+modules/console (模块层) - 企业管理功能、UI组件
+packages/* (包层)       - 基础功能库、API、认证
 ```
+
+### 核心依赖
+- **框架**: Next.js 15 + React 19
+- **样式**: Tailwind CSS + shadcn/ui
+- **状态管理**: TanStack Query + tRPC
+- **认证**: NextAuth.js v5 + Prisma
+- **国际化**: next-intl
+- **类型安全**: TypeScript + Zod
 
 ## 🛠️ 开发
 

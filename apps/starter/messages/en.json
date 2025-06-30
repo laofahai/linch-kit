@@ -1,0 +1,95 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "search": "Search",
+    "refresh": "Refresh",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "AI Dashboard",
+    "admin": "Admin",
+    "docs": "Docs",
+    "examples": "Examples",
+    "signin": "Sign In",
+    "signup": "Sign Up",
+    "logout": "Logout"
+  },
+  "auth": {
+    "signin": {
+      "title": "Sign In",
+      "subtitle": "Welcome back to LinchKit",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "forgot": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "toSignup": "Sign up now"
+    },
+    "signup": {
+      "title": "Sign Up",
+      "subtitle": "Join the LinchKit community",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Sign Up",
+      "hasAccount": "Already have an account?",
+      "toSignin": "Sign in now"
+    }
+  },
+  "dashboard": {
+    "title": "AI Analytics Dashboard",
+    "subtitle": "Real-time insights powered by artificial intelligence",
+    "metrics": {
+      "aiRequests": "AI Requests",
+      "activeUsers": "Active Users",
+      "performance": "Performance",
+      "systemLoad": "System Load"
+    },
+    "charts": {
+      "aiTrends": "AI Usage Trends",
+      "usageMetrics": "Usage Metrics",
+      "performance": "Performance Analytics",
+      "systemHealth": "System Health"
+    }
+  },
+  "admin": {
+    "title": "Admin Console",
+    "nav": {
+      "overview": "Smart Overview",
+      "tenants": "Tenant Management",
+      "users": "User Management",
+      "monitoring": "Smart Monitoring",
+      "settings": "System Settings"
+    },
+    "tenants": {
+      "title": "Tenant Management",
+      "create": "Create Tenant",
+      "edit": "Edit Tenant",
+      "name": "Tenant Name",
+      "domain": "Domain",
+      "status": "Status",
+      "users": "Users",
+      "plan": "Plan"
+    },
+    "users": {
+      "title": "User Management",
+      "create": "Create User",
+      "edit": "Edit User",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "lastLogin": "Last Login"
+    }
+  }
+}
