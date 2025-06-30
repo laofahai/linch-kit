@@ -52,15 +52,15 @@ export function DashboardView() {
   }, [metrics])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="p-8">
+    <div className="min-h-screen bg-background">
+      <div className="p-6">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-bold text-foreground">
               AI Analytics Dashboard
             </h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-muted-foreground">
               Real-time insights powered by artificial intelligence
             </p>
           </div>
@@ -122,42 +122,42 @@ export function DashboardView() {
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div className="bg-card rounded-lg border shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-card-foreground">
                 AI Usage Trends
               </h2>
-              <Activity className="w-5 h-5 text-gray-500" />
+              <Activity className="w-5 h-5 text-muted-foreground" />
             </div>
             <AITrendChart />
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div className="bg-card rounded-lg border shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-card-foreground">
                 Usage Metrics
               </h2>
-              <TrendingUp className="w-5 h-5 text-gray-500" />
+              <TrendingUp className="w-5 h-5 text-muted-foreground" />
             </div>
             <UsageMetricsChart />
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div className="bg-card rounded-lg border shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-card-foreground">
                 Performance Analytics
               </h2>
-              <Zap className="w-5 h-5 text-gray-500" />
+              <Zap className="w-5 h-5 text-muted-foreground" />
             </div>
             <PerformanceChart />
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div className="bg-card rounded-lg border shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-card-foreground">
                 System Health
               </h2>
-              <Server className="w-5 h-5 text-gray-500" />
+              <Server className="w-5 h-5 text-muted-foreground" />
             </div>
             <SystemHealthChart />
           </div>
