@@ -1,41 +1,7 @@
 /**
- * 网络工具函数
- * @module utils/network
+ * 客户端安全的网络工具函数
+ * @module utils/network-client
  */
-
-import { createServer } from 'http'
-import { networkInterfaces } from 'os'
-
-/**
- * 检查端口是否可用
- */
-export async function isPortAvailable(port: number, host = '127.0.0.1'): Promise<boolean> {
-  return new Promise((resolve) => {
-    const server = createServer()
-    
-    server.listen(port, host, () => {
-      server.close(() => resolve(true))
-    })
-    
-    server.on('error', () => resolve(false))
-  })
-}
-
-/**
- * 查找可用端口
- */
-export async function findAvailablePort(
-  startPort: number, 
-  endPort = startPort + 100, 
-  host = '127.0.0.1'
-): Promise<number | null> {
-  for (let port = startPort; port <= endPort; port++) {
-    if (await isPortAvailable(port, host)) {
-      return port
-    }
-  }
-  return null
-}
 
 /**
  * 检查URL是否可访问
@@ -55,24 +21,6 @@ export async function isUrlAccessible(url: string, timeout = 5000): Promise<bool
   } catch {
     return false
   }
-}
-
-/**
- * 获取本机IP地址
- */
-export function getLocalIpAddress(): string {
-  const nets = networkInterfaces()
-  
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name]!) {
-      // IPv4 && 非内部地址 && 非loopback
-      if (net.family === 'IPv4' && !net.internal) {
-        return net.address
-      }
-    }
-  }
-  
-  return '127.0.0.1'
 }
 
 /**

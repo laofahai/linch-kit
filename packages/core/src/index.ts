@@ -36,11 +36,11 @@ export * from './i18n'
 
 // Note: CLI system has been moved to './server.ts' for server-side only usage
 
-// 工具函数
-export * from './utils'
+// 工具函数 - 客户端安全
+export * from './utils/index-client'
 
 // 默认实例导出
 export { PluginSystem } from './plugin'
 export { ConfigManager } from './config'
 // export { metrics as Metrics } from './observability/metrics-client-safe'
-export { logger as Logger } from './logger-client'
+export { logger as Logger, createLogger } from './logger-client'

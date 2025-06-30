@@ -43,5 +43,12 @@ class ClientLogger implements ILogger {
   }
 }
 
+/**
+ * 客户端安全的 createLogger 函数
+ */
+export function createLogger(config: { name?: string } = {}): ILogger {
+  return new ClientLogger()
+}
+
 export const logger = new ClientLogger()
 export const Logger = logger

@@ -3,7 +3,14 @@
   "private": true,
   "type": "module",
   "description": "AI-First 全栈开发工具包",
-  "keywords": ["linch-kit", "ai-first", "typescript", "monorepo", "trpc", "full-stack"],
+  "keywords": [
+    "linch-kit",
+    "ai-first",
+    "typescript",
+    "monorepo",
+    "trpc",
+    "full-stack"
+  ],
   "author": "Linch Tech",
   "license": "MIT",
   "homepage": "https://github.com/linch-tech/linch-kit",
@@ -83,6 +90,20 @@
   "pnpm": {
     "patchedDependencies": {
       "react-hook-form@7.59.0": "patches/react-hook-form@7.59.0.patch"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "@tailwindcss/oxide",
+      "contentlayer",
+      "core-js-pure",
+      "esbuild",
+      "msw",
+      "node",
+      "prisma",
+      "protobufjs",
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }

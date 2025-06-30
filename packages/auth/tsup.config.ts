@@ -14,6 +14,8 @@ export default defineConfig({
     '@linch-kit/schema',
     '@linch-kit/trpc',
     'next-auth',
-    'next-auth/react'
+    'next-auth/react',
+    'react',
+    'react/jsx-runtime'
   ]
 })

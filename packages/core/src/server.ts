@@ -24,3 +24,6 @@ export { FileAuditStore, type FileStoreConfig } from './audit/stores/file-store'
 
 // 审计工厂函数 - 服务端专用
 export { createSimpleFileAuditManager, createFileAuditManager } from './audit/server-factory'
+
+// 网络工具 - 服务端专用 (使用 Node.js http/os 模块)
+export * from './utils/network'

@@ -4,6 +4,7 @@
  */
 
 import pino, { Logger as PinoLogger } from 'pino'
+import { hostname } from 'os'
 
 import type { Logger, LogLevel } from '../types'
 
@@ -81,7 +82,7 @@ export function createLogger(config: LoggerConfig = {}): Logger {
     destination,
     redact = ['password', 'token', 'secret', 'authorization'],
     serializers,
-    base = { pid: process.pid, hostname: require('os').hostname() }
+    base = { pid: process.pid, hostname: hostname() }
   } = config
 
   // 配置 Pino 选项
