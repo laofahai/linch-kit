@@ -7,6 +7,7 @@ import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
 import superjson from 'superjson'
 import { AuthProvider } from '@linch-kit/auth'
+import { ThemeProvider } from './ThemeProvider'
 
 // import { ConsoleProvider } from '@linch-kit/console' // 暂时禁用避免 Node.js 模块冲突
 import type { AppRouter } from '@/server/routers/app'
@@ -41,11 +42,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
   })
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {children}
-        <ReactQueryDevtools initialIsOpen={false} />
-      </AuthProvider>
-    </QueryClientProvider>
+    <ThemeProvider 
+      attribute="class" 
+      defaultTheme="system" 
+      enableSystem
+      disableTransitionOnChange
+    >
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }

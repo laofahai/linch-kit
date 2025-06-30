@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 
 import { Providers } from '@/components/providers/Providers'
@@ -11,8 +11,6 @@ export const metadata: Metadata = {
   description: 'AI-First 全栈开发框架 - 生产级应用',
   keywords: ['LinchKit', 'AI-First', 'Full-Stack', 'TypeScript', 'Next.js'],
   authors: [{ name: 'LinchKit Team' }],
-  viewport: 'width=device-width, initial-scale=1',
-  themeColor: '#3b82f6',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
@@ -30,6 +28,12 @@ export const metadata: Metadata = {
     title: 'LinchKit Starter',
     description: 'AI-First 全栈开发框架',
   },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#3b82f6',
 }
 
 export default function RootLayout({
