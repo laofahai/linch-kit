@@ -43,6 +43,18 @@ export { MFAManager } from './extensions/mfa'
  */
 export type * from './types'
 
+// ==================== React组件导出 ====================
+/**
+ * React认证组件
+ */
+export { AuthProvider } from './components/AuthProvider'
+
+// ==================== tRPC路由工厂导出 ====================
+/**
+ * tRPC路由工厂函数 - 避免循环依赖
+ */
+export { createAuthRouter } from './trpc/router-factory'
+
 // ==================== 版本信息 ====================
 /**
  * 包版本信息

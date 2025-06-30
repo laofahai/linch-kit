@@ -79,5 +79,10 @@
   },
   "dependencies": {
     "dayjs": "^1.11.13"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "react-hook-form@7.59.0": "patches/react-hook-form@7.59.0.patch"
+    }
   }
 }

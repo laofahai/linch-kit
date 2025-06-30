@@ -10,7 +10,7 @@ import {
   type ControllerProps,
   type FieldPath,
   type FieldValues,
-} from "react-hook-form"
+} from "../../forms/form-wrapper"
 
 import { cn } from "../../utils/index"
 import { Label } from "./label"

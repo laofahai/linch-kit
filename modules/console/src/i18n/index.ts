@@ -394,6 +394,15 @@ export const useConsoleTranslation = (userT?: TranslationFunction) =>
   consoleI18n.getTranslation(userT)
 
 /**
+ * Console 国际化资源 (用于模块导出)
+ */
+export const consoleI18nResource = {
+  namespace: 'console',
+  defaultLocale: 'zh-CN',
+  messages: defaultMessages
+}
+
+/**
  * 导出类型
  */
 export type { TranslationFunction } from '@linch-kit/core'

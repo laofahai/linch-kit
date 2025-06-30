@@ -10,6 +10,7 @@ export default defineConfig({
     '@linch-kit/core',
     '@linch-kit/schema',
     '@linch-kit/auth',
+    '@linch-kit/trpc',
     '@prisma/client',
     'zod',
     'ioredis',

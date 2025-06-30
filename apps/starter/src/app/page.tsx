@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Button } from '@linch-kit/ui'
+
 import { HomeHero } from '@/components/home/HomeHero'
 import { FeatureSection } from '@/components/home/FeatureSection'
 
@@ -27,12 +27,18 @@ export default function HomePage() {
               </Link>
             </nav>
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/auth/sign-in">登录</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/auth/sign-up">注册</Link>
-              </Button>
+              <Link 
+                href="/auth/sign-in"
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-3"
+              >
+                登录
+              </Link>
+              <Link 
+                href="/auth/sign-up"
+                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4"
+              >
+                注册
+              </Link>
             </div>
           </div>
         </div>

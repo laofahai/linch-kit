@@ -144,11 +144,15 @@ const nextConfig: NextConfig = {
       }
     }
 
-    // 确保 react-hook-form 正确解析
+    // 确保 react-hook-form 正确解析 - 避免使用 react-server 导出
+    config.resolve.conditionNames = isServer 
+      ? ['node', 'import', 'require'] 
+      : ['browser', 'import', 'require']
+    
     config.resolve.extensions = [...(config.resolve.extensions || []), '.mjs', '.js', '.jsx', '.ts', '.tsx']
     
-    // 处理 ESM 模块
-    config.resolve.mainFields = ['browser', 'module', 'main']
+    // 处理 ESM 模块 - 确保正确的字段优先级
+    config.resolve.mainFields = isServer ? ['main', 'module'] : ['browser', 'module', 'main']
 
     return config
   },

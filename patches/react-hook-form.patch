@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index 8ed3ba3ecf13339d3b4fc912945597bca64fb2b6..fa20d3307d7db8ea82c3c634265f0c1046a4fbe3 100644
+--- a/package.json
++++ b/package.json
+@@ -19,7 +19,6 @@
+     "./package.json": "./package.json",
+     ".": {
+       "types": "./dist/index.d.ts",
+-      "react-server": "./dist/react-server.esm.mjs",
+       "import": "./dist/index.esm.mjs",
+       "require": "./dist/index.cjs.js"
+     }

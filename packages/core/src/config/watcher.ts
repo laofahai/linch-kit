@@ -7,7 +7,7 @@
 
 import { existsSync } from 'fs'
 
-import chokidar from 'chokidar'
+import chokidar, { type FSWatcher } from 'chokidar'
 import { EventEmitter } from 'eventemitter3'
 
 import type { TranslationFunction } from '../i18n'
@@ -59,7 +59,7 @@ export interface ConfigWatcherEvents {
  * @description 基于chokidar的高级配置文件监听器，支持防抖和批量变更
  */
 export class ConfigWatcher extends EventEmitter {
-  private watchers = new Map<string, chokidar.FSWatcher>()
+  private watchers = new Map<string, FSWatcher>()
   private debounceTimers = new Map<string, NodeJS.Timeout>()
   private t: TranslationFunction
 
@@ -204,7 +204,7 @@ export class ConfigWatcher extends EventEmitter {
     const paths: string[] = []
     
     for (const [dir, files] of Object.entries(watched)) {
-      for (const file of files) {
+      for (const file of files as string[]) {
         paths.push(`${dir}/${file}`)
       }
     }
@@ -220,22 +220,22 @@ export class ConfigWatcher extends EventEmitter {
    * @private
    */
   private setupWatcherEvents(
-    watcher: chokidar.FSWatcher,
+    watcher: FSWatcher,
     watcherId: string,
     debounceDelay: number
   ): void {
     // 文件添加事件
-    watcher.on('add', (path) => {
+    watcher.on('add', (path: string) => {
       this.handleFileEvent('add', path, watcherId, debounceDelay)
     })
 
     // 文件变更事件
-    watcher.on('change', (path) => {
+    watcher.on('change', (path: string) => {
       this.handleFileEvent('change', path, watcherId, debounceDelay)
     })
 
     // 文件删除事件
-    watcher.on('unlink', (path) => {
+    watcher.on('unlink', (path: string) => {
       this.handleFileEvent('unlink', path, watcherId, debounceDelay)
     })
 
@@ -246,7 +246,7 @@ export class ConfigWatcher extends EventEmitter {
     })
 
     // 错误事件
-    watcher.on('error', (error) => {
+    watcher.on('error', (error: unknown) => {
       this.emit('watcher:error', { watcherId, error })
     })
   }

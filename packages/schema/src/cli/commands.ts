@@ -5,7 +5,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join, resolve } from 'path'
 
-import type { CLICommand } from '@linch-kit/core'
+import type { CLICommand } from '@linch-kit/core/server'
 
 import { CodeGenerator, GeneratorRegistry } from '../generators'
 import type { Entity } from '../types'
@@ -72,7 +72,7 @@ export const generateSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async context => {
+  handler: async (context: any) => {
     const { options } = context
     const t = useSchemaTranslation()
 
@@ -195,7 +195,7 @@ export const validateSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async context => {
+  handler: async (context: any) => {
     const { options } = context
     const t = useSchemaTranslation()
 
@@ -266,7 +266,7 @@ export const initSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async context => {
+  handler: async (context: any) => {
     const { options } = context
     const t = useSchemaTranslation()
 
@@ -349,7 +349,7 @@ export const infoSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async context => {
+  handler: async (context: any) => {
     const { options } = context
     const t = useSchemaTranslation()
 

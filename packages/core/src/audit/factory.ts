@@ -8,7 +8,7 @@ import type { Logger, MetricCollector } from '../types/observability'
 import type { AuditConfig, AuditManager, AuditPolicy } from './types'
 import { DefaultAuditManager } from './audit-manager'
 import { DatabaseAuditStore } from './stores/database-store'
-import { FileAuditStore } from './stores/file-store'
+// 注意：FileAuditStore 相关功能已移至 server.ts
 
 /**
  * 创建审计管理器
@@ -40,12 +40,9 @@ export function createAuditManager(
   }
 
   if (config?.stores?.file?.enabled && config.stores.file.filePath) {
-    const fileStore = new FileAuditStore({
-      filePath: config.stores.file.filePath,
-      maxFileSize: config.stores.file.maxFileSize,
-      rotationPolicy: config.stores.file.rotationPolicy
-    })
-    auditManager.addStore(fileStore)
+    // 文件存储配置已找到，但 FileAuditStore 仅在服务端可用
+    // 请从 '@linch-kit/core/server' 导入 createFileAuditManager
+    throw new Error('File audit store requires server environment. Use createFileAuditManager from @linch-kit/core/server')
   }
 
   // 添加告警规则
@@ -58,28 +55,7 @@ export function createAuditManager(
   return auditManager
 }
 
-/**
- * 创建简单的文件审计管理器
- */
-export function createSimpleFileAuditManager(
-  logger: Logger,
-  metrics: MetricCollector,
-  filePath: string,
-  policy?: Partial<AuditPolicy>
-): AuditManager {
-  const auditManager = new DefaultAuditManager(logger, metrics, policy)
-  
-  const fileStore = new FileAuditStore({
-    filePath,
-    maxFileSize: 50 * 1024 * 1024, // 50MB
-    rotationPolicy: 'daily',
-    compression: true,
-    backupCount: 7
-  })
-  
-  auditManager.addStore(fileStore)
-  return auditManager
-}
+// 注意：createSimpleFileAuditManager 已移至 @linch-kit/core/server
 
 /**
  * 创建数据库审计管理器

@@ -23,17 +23,10 @@ export {
   type TenantConfig as SimpleTenantConfig,
   type TenantConfigEvents
 } from './config/simple-tenant-manager'
-export {
-  createConfigWatcher,
-  createSimpleConfigWatcher,
-  ConfigWatcher,
-  type ConfigWatchOptions as WatcherOptions,
-  type ConfigChangeEvent as FileChangeEvent,
-  type ConfigWatcherEvents
-} from './config/watcher'
+// Note: ConfigWatcher has been moved to './server.ts' for server-side only usage
 
-// 可观测性
-export * from './observability'
+// 可观测性 - 移至 server.ts 以避免客户端加载
+// export * from './observability'
 
 // 审计系统
 export * from './audit'
@@ -41,8 +34,7 @@ export * from './audit'
 // 国际化
 export * from './i18n'
 
-// CLI系统
-export * from './cli'
+// Note: CLI system has been moved to './server.ts' for server-side only usage
 
 // 工具函数
 export * from './utils'
@@ -50,5 +42,5 @@ export * from './utils'
 // 默认实例导出
 export { PluginSystem } from './plugin'
 export { ConfigManager } from './config'
-export { metrics as Metrics } from './observability/metrics-client-safe'
-export { logger as Logger } from './observability/logger'
+// export { metrics as Metrics } from './observability/metrics-client-safe'
+export { logger as Logger } from './logger-client'

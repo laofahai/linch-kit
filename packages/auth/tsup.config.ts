@@ -11,6 +11,9 @@ export default defineConfig({
   target: 'es2022',
   external: [
     '@linch-kit/core',
-    '@linch-kit/schema'
+    '@linch-kit/schema',
+    '@linch-kit/trpc',
+    'next-auth',
+    'next-auth/react'
   ]
 })

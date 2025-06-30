@@ -36,3 +36,6 @@ export { createCrudManager, createQueryBuilder } from './factory'
 // 插件相关
 export type { CrudPlugin, CrudPluginHooks } from './plugins/types'
 export { BaseCrudPlugin } from './plugins/base-plugin'
+
+// tRPC路由工厂
+export { createCrudRouter } from './trpc/router-factory'

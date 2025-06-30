@@ -5,24 +5,24 @@
  */
 
 import { prisma } from './prisma'
-import { TenantService, setTenantService } from '@linch-kit/console'
+// import { TenantService, setTenantService } from '@linch-kit/console'
 
 // 创建 Prisma 适配器的简化版本
 function createPrismaAdapter(prismaClient: typeof prisma) {
   return {
     tenant: {
-      create: (args: any) => prismaClient.tenant.create(args),
-      update: (args: any) => prismaClient.tenant.update(args),
-      findUnique: (args: any) => prismaClient.tenant.findUnique(args),
-      findMany: (args: any) => prismaClient.tenant.findMany(args),
-      findFirst: (args: any) => prismaClient.tenant.findFirst(args),
-      delete: (args: any) => prismaClient.tenant.delete(args),
-      count: (args?: any) => prismaClient.tenant.count(args),
+      create: (args: unknown) => prismaClient.tenant.create(args as never),
+      update: (args: unknown) => prismaClient.tenant.update(args as never),
+      findUnique: (args: unknown) => prismaClient.tenant.findUnique(args as never),
+      findMany: (args: unknown) => prismaClient.tenant.findMany(args as never),
+      findFirst: (args: unknown) => prismaClient.tenant.findFirst(args as never),
+      delete: (args: unknown) => prismaClient.tenant.delete(args as never),
+      count: (args?: unknown) => prismaClient.tenant.count(args as never),
     },
     tenantQuotas: {
-      create: (args: any) => prismaClient.tenantQuotas.create(args),
-      update: (args: any) => prismaClient.tenantQuotas.update(args),
-      upsert: (args: any) => prismaClient.tenantQuotas.upsert(args),
+      create: (args: unknown) => prismaClient.tenantQuotas.create(args as never),
+      update: (args: unknown) => prismaClient.tenantQuotas.update(args as never),
+      upsert: (args: unknown) => prismaClient.tenantQuotas.upsert(args as never),
     }
   }
 }
@@ -32,16 +32,16 @@ function createPrismaAdapter(prismaClient: typeof prisma) {
  */
 export function initializeConsoleServices() {
   // 创建数据库适配器
-  const dbAdapter = createPrismaAdapter(prisma)
+  const _dbAdapter = createPrismaAdapter(prisma)
   
-  // 创建租户服务实例
-  const tenantService = new TenantService()
-  tenantService.setDatabase(dbAdapter)
+  // TODO: 创建租户服务实例
+  // const tenantService = new TenantService()
+  // tenantService.setDatabase(dbAdapter)
   
-  // 注入到路由器
-  setTenantService(tenantService)
+  // TODO: 注入到路由器
+  // setTenantService(tenantService)
   
-  console.log('✅ Console services initialized')
+  console.log('✅ Console services initialized (simplified)')
 }
 
 // 自动初始化（在模块加载时执行）

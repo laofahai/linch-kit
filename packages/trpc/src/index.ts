@@ -12,6 +12,7 @@ export type { CreateTRPCClientOptions } from '@trpc/client'
 // 基础 tRPC 实例
 import { initTRPC } from '@trpc/server'
 import { z } from 'zod'
+import superjson from 'superjson'
 
 /**
  * 创建基础 tRPC 实例
@@ -34,7 +35,7 @@ const t = initTRPC.context<{
     }
   }
 }>().create({
-  transformer: undefined // 可以在具体应用中配置 superjson
+  transformer: superjson
 })
 
 /**
@@ -204,4 +205,14 @@ export type LinchKitContext = {
       get: (key: string) => unknown
     }
   }
+}
+
+/**
+ * tRPC 路由器工厂参数类型
+ */
+export type TRPCRouterFactory = {
+  router: typeof router
+  publicProcedure: typeof publicProcedure
+  protectedProcedure: typeof protectedProcedure
+  adminProcedure: typeof adminProcedure
 }

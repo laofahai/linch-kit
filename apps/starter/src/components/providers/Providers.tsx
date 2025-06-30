@@ -2,11 +2,12 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { httpBatchLink } from '@trpc/client'
+import { httpBatchLink, createTRPCProxyClient } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
 import superjson from 'superjson'
 import { AuthProvider } from '@linch-kit/auth'
+
 // import { ConsoleProvider } from '@linch-kit/console' // 暂时禁用避免 Node.js 模块冲突
 import type { AppRouter } from '@/server/routers/app'
 
@@ -28,8 +29,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       })
   )
 
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
+  const [_trpcClient] = useState(() => {
+    return createTRPCProxyClient<AppRouter>({
       links: [
         httpBatchLink({
           url: '/api/trpc',
@@ -37,16 +38,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
         }),
       ],
     })
-  )
+  })
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          {children}
-          <ReactQueryDevtools initialIsOpen={false} />
-        </AuthProvider>
-      </QueryClientProvider>
-    </trpc.Provider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        {children}
+        <ReactQueryDevtools initialIsOpen={false} />
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }

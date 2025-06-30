@@ -2,12 +2,12 @@
  * @fileoverview UI包基础设施 - 集成LinchKit Core功能
  */
 
-import { createLogger, createPackageI18n, useTranslation as coreUseTranslation } from '@linch-kit/core'
+import { Logger, createPackageI18n, useTranslation as coreUseTranslation } from '@linch-kit/core'
 
 /**
  * UI包专用日志记录器
  */
-const uiLogger = createLogger({ name: '@linch-kit/ui' })
+const uiLogger = Logger
 
 /**
  * UI包日志接口 - 避免类型导出问题

@@ -2,7 +2,16 @@
   "name": "@linch-kit/auth",
   "version": "0.1.0",
   "description": "LinchKit认证权限包 - 企业级认证和权限管理",
-  "keywords": ["linchkit", "auth", "authentication", "authorization", "rbac", "abac", "passport", "casl"],
+  "keywords": [
+    "linchkit",
+    "auth",
+    "authentication",
+    "authorization",
+    "rbac",
+    "abac",
+    "passport",
+    "casl"
+  ],
   "homepage": "https://github.com/laofahai/linch-kit/tree/main/packages/auth",
   "repository": {
     "type": "git",
@@ -44,8 +53,10 @@
   "devDependencies": {
     "@linch-kit/core": "workspace:*",
     "@linch-kit/schema": "workspace:*",
-    "typescript": "^5.8.3",
+    "@types/react": "^19.1.8",
+    "react": "^19.1.0",
     "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {

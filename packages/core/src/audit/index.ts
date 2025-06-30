@@ -10,9 +10,10 @@ export * from './types'
 export { DefaultAuditManager } from './audit-manager'
 export { DefaultDataMasker } from './data-masker'
 
-// 存储适配器
+// 存储适配器 (通用)
 export { DatabaseAuditStore } from './stores/database-store'
-export { FileAuditStore, type FileStoreConfig } from './stores/file-store'
+
+// 注意：FileAuditStore 已移至 './server.ts' 用于服务端专用
 
 // 便捷创建函数
 export { createAuditManager } from './factory'

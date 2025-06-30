@@ -34,6 +34,9 @@ ignoredBuiltDependencies:
 
 link-workspace-packages: true
 
+patchedDependencies:
+  react-hook-form: patches/react-hook-form.patch
+
 prefer-workspace-packages: true
 
 public-hoist-pattern:

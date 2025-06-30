@@ -10,13 +10,15 @@
 // 服务层 (纯JavaScript，无客户端依赖)
 export * from './services'
 
-// tRPC 路由器
-export { consoleRouter } from './routes/console.router'
-export type { ConsoleRouter } from './routes/console.router'
+// tRPC 路由器工厂
+export { createConsoleRouter } from './trpc/router-factory'
 
-// 导出租户路由器及其配置函数
-export { tenantRouter, setTenantService } from './routes/tenant.router'
-export type { TenantRouter } from './routes/tenant.router'
+// 暂时注释旧的路由导出以避免构建错误
+// export { consoleRouter } from './routes/console.router'
+// export type { ConsoleRouter } from './routes/console.router'
+
+// export { tenantRouter, setTenantService } from './routes/tenant.router'  
+// export type { TenantRouter } from './routes/tenant.router'
 
 // Provider和上下文 (已标记为客户端组件)
 export { ConsoleProvider } from './providers/ConsoleProvider'
@@ -41,6 +43,11 @@ export { Dashboard } from './pages/Dashboard'
 
 // 默认导出已在上面包含ConsoleProvider，不需要重复导出
 
+// 导入需要的模块
+import { ConsoleProvider } from './providers/ConsoleProvider'
+import { consoleServices } from './services'
+import { consoleI18nResource } from './i18n'
+
 /**
  * Console 模块信息
  */
@@ -49,25 +56,14 @@ export const ConsoleModule = {
   version: '0.1.0',
   description: 'LinchKit 企业级管理控制台',
   
-  // 主要导出 (暂时只保留Provider)
-  // Router: require('./routes/ConsoleRoutes').default,
-  Provider: require('./providers/ConsoleProvider').ConsoleProvider,
-  
-  // 创建路由配置 (暂时禁用)
-  // createRoutes: require('./routes').createConsoleRoutes,
-  // createRouter: require('./routes').createConsoleRouter,
-  
-  // 实体集合 (暂时禁用)
-  // entities: require('./entities').ConsoleEntities,
-  
-  // 验证器 (暂时禁用) 
-  // validators: require('./validation').consoleValidators,
+  // 主要导出
+  Provider: ConsoleProvider,
   
   // 服务
-  services: require('./services').consoleServices,
+  services: consoleServices,
   
   // 国际化资源
-  i18n: require('./i18n').consoleI18nResource
+  i18n: consoleI18nResource
 } as const
 
 export default ConsoleModule

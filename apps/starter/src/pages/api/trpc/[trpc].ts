@@ -1,5 +1,6 @@
 import { createNextApiHandler } from '@trpc/server/adapters/next'
 import { createTRPCContext } from '@linch-kit/trpc'
+
 import { appRouter } from '@/server/routers/app'
 
 export default createNextApiHandler({

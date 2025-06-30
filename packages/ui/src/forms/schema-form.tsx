@@ -5,7 +5,7 @@
  */
 
 import React from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm } from './form-wrapper'
 import { defineEntity } from '@linch-kit/schema'
 
 // import type { UIEntityDefinition } from '../types' // 临时移除未使用导入
