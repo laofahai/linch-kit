@@ -149,23 +149,32 @@ export class ConfigManager extends EventEmitter implements IConfigManager {
 
   private async loadFromFile(filePath: string): Promise<Record<string, ConfigValue>> {
     try {
-      // 动态导入以支持不同文件格式
+      // 使用静态导入避免构建警告
+      const fs = await import('fs/promises')
+      
       if (filePath.endsWith('.json')) {
-        const fs = await import('fs/promises')
         const content = await fs.readFile(filePath, 'utf-8')
         return JSON.parse(content)
       } 
       
       if (filePath.endsWith('.yaml') || filePath.endsWith('.yml')) {
-        const fs = await import('fs/promises')
         const yaml = await import('yaml')
         const content = await fs.readFile(filePath, 'utf-8')
         return yaml.parse(content)
       }
       
       if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
-        const config = await import(filePath)
-        return config.default || config
+        // 为了避免动态 import 警告，我们在 Node.js 环境中使用 require
+        // 在浏览器环境中，这个功能将不可用
+        if (typeof require !== 'undefined') {
+          // Node.js 环境
+          delete require.cache[filePath] // 清除缓存以确保获取最新配置
+          const config = require(filePath)
+          return config.default || config
+        } else {
+          // 浏览器环境不支持加载 JS 配置文件
+          throw new Error('Loading JavaScript config files is not supported in browser environment')
+        }
       }
       
       throw new Error(`Unsupported file format: ${filePath}`)

@@ -8,7 +8,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
   Button,
@@ -49,17 +48,11 @@ const createUserSchema = z.object({
   email: z.string().email('请输入有效的邮箱地址'),
   name: z.string().min(2, '姓名至少2个字符'),
   password: z.string().min(8, '密码至少8个字符').optional(),
-  roles: z.array(z.string()).default([]),
+  roles: z.array(z.string()),
   tenantId: z.string().optional(),
 })
 
-type CreateUserForm = {
-  email: string
-  name: string
-  password?: string
-  roles: string[]
-  tenantId?: string
-}
+type CreateUserForm = z.infer<typeof createUserSchema>
 
 // 模拟用户数据
 const mockUsers = [
@@ -101,7 +94,7 @@ const mockUsers = [
 export function UserManagement() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<any>(null)
+  // const [selectedUser, setSelectedUser] = useState<any>(null)
 
   const form = useForm<CreateUserForm>({
     resolver: zodResolver(createUserSchema),
@@ -109,7 +102,7 @@ export function UserManagement() {
       email: '',
       name: '',
       password: '',
-      roles: [] as string[],
+      roles: [],
       tenantId: '',
     },
   })

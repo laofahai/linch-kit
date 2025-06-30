@@ -15,7 +15,10 @@ export function HomeHero() {
         </p>
         <div className="space-x-4">
           <Button size="lg" asChild>
-            <Link href="/admin">进入管理后台</Link>
+            <Link href="/dashboard">AI Dashboard</Link>
+          </Button>
+          <Button variant="outline" size="lg" asChild>
+            <Link href="/admin">管理后台</Link>
           </Button>
           <Button variant="outline" size="lg" asChild>
             <Link href="/docs">查看文档</Link>

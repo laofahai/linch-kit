@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
   Button,
-  Badge,
   Progress,
 } from '@linch-kit/ui/components'
 import {
@@ -23,7 +22,6 @@ import {
   Cpu,
   HardDrive,
   ArrowUpRight,
-  ArrowDownRight,
 } from 'lucide-react'
 
 export function Dashboard() {

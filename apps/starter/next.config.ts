@@ -83,76 +83,17 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // Webpack 配置
+  // 简化的 Webpack 配置
   webpack: (config, { dev, isServer }) => {
-    // 使用轮询模式解决 EMFILE 问题
-    if (dev) {
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-        ignored: [
-          '**/node_modules/**',
-          '**/.next/**',
-          '**/.git/**',
-          '**/dist/**',
-          '**/build/**',
-          '**/coverage/**',
-          '**/.turbo/**'
-        ]
-      }
-    }
-
-    // 客户端构建时排除 Node.js 特定模块
+    // 基本的 fallback 配置
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
         path: false,
-        os: false,
         crypto: false,
-        stream: false,
-        assert: false,
-        http: false,
-        https: false,
-        url: false,
-        zlib: false,
-        cluster: false,
-        child_process: false,
-        tty: false,
-        net: false,
-        tls: false,
-        dns: false,
-        dgram: false,
-        readline: false,
-        repl: false,
-        vm: false,
-        worker_threads: false,
-        v8: false,
-        perf_hooks: false,
-        inspector: false,
-      }
-      
-      // 忽略 fsevents
-      config.externals = [...(config.externals || []), 'fsevents']
-    }
-
-    // 优化依赖
-    if (!dev && !isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@prisma/client': '@prisma/client',
       }
     }
-
-    // 确保 react-hook-form 正确解析 - 避免使用 react-server 导出
-    config.resolve.conditionNames = isServer 
-      ? ['node', 'import', 'require'] 
-      : ['browser', 'import', 'require']
-    
-    config.resolve.extensions = [...(config.resolve.extensions || []), '.mjs', '.js', '.jsx', '.ts', '.tsx']
-    
-    // 处理 ESM 模块 - 确保正确的字段优先级
-    config.resolve.mainFields = isServer ? ['main', 'module'] : ['browser', 'module', 'main']
 
     return config
   },

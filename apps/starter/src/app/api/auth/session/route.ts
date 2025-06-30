@@ -15,7 +15,7 @@ export async function GET() {
     }
 
     return NextResponse.json(session)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to get session' },
       { status: 500 }

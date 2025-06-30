@@ -7,10 +7,9 @@ import { createTRPCReact } from '@trpc/react-query'
 import { useState } from 'react'
 import superjson from 'superjson'
 import { AuthProvider } from '@linch-kit/auth'
-import { ThemeProvider } from './ThemeProvider'
 
-// import { ConsoleProvider } from '@linch-kit/console' // 暂时禁用避免 Node.js 模块冲突
 import type { AppRouter } from '@/server/routers/app'
+import { ThemeProvider } from './ThemeProvider'
 
 // 确保 Console 服务已初始化
 import '@/lib/console-setup'

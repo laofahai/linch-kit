@@ -22,6 +22,9 @@ export default function HomePage() {
               <Link href="/examples" className="text-sm font-medium">
                 示例
               </Link>
+              <Link href="/dashboard" className="text-sm font-medium">
+                AI Dashboard
+              </Link>
               <Link href="/admin" className="text-sm font-medium">
                 管理后台
               </Link>

@@ -19,6 +19,7 @@ export * from './ui/table'
 export * from './ui/textarea'
 export * from './ui/toast'
 export * from './ui/toaster'
+export * from './ui/separator'
 
 // Hooks
 export * from '../hooks/use-toast'

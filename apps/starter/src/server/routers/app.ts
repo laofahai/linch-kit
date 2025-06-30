@@ -1,4 +1,4 @@
-import { router, publicProcedure, protectedProcedure } from '@linch-kit/trpc'
+import { router, publicProcedure, protectedProcedure } from '@linch-kit/trpc/server'
 import { createAuthRouter } from '@linch-kit/auth'
 import { createCrudRouter } from '@linch-kit/crud'
 import { createConsoleRouter } from '@linch-kit/console'

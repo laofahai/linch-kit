@@ -5,7 +5,6 @@ import { Button } from '@linch-kit/ui/components'
 import { Input } from '@linch-kit/ui/components'
 import { Badge } from '@linch-kit/ui/components'
 import { Separator } from '@linch-kit/ui/components'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { 
   LayoutDashboard, 
   Users, 
@@ -24,6 +23,8 @@ import {
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 export default function AdminLayout({
   children,
