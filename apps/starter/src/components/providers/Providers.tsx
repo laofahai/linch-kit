@@ -11,8 +11,7 @@ import { AuthProvider } from '@linch-kit/auth'
 import type { AppRouter } from '@/server/routers/app'
 import { ThemeProvider } from './ThemeProvider'
 
-// 确保 Console 服务已初始化
-import '@/lib/console-setup'
+// Console 服务初始化移至服务端（避免客户端加载服务端代码）
 
 export const trpc = createTRPCReact<AppRouter>()
 

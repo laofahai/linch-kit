@@ -1,13 +1,14 @@
-import { notFound } from 'next/navigation'
 import { getRequestConfig } from 'next-intl/server'
 
-const locales = ['zh', 'en'] as const
-
 export default getRequestConfig(async ({ locale }) => {
-  // 验证 locale 是否在支持的语言列表中
-  if (!locales.includes(locale as never)) notFound()
-
+  // 如果没有传入 locale 或无效，使用默认的 'zh'
+  const resolvedLocale = locale || 'zh'
+  
+  console.log('i18n config - input locale:', locale, 'resolved locale:', resolvedLocale)
+  
   return {
-    messages: (await import(`../messages/${locale}.json`)).default
+    locale: resolvedLocale,  // 明确返回 locale
+    messages: (await import(`../messages/zh.json`)).default,
+    timeZone: 'Asia/Shanghai'
   }
 })
