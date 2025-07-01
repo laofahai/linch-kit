@@ -6,6 +6,9 @@
  * 客户端代码不应该导入这个文件
  */
 
+// 配置管理器 (使用 fs，仅限服务端)
+export { ConfigManager } from './config'
+
 // 配置文件监听器 (使用 chokidar，仅限服务端)
 export {
   createConfigWatcher,

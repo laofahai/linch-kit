@@ -39,8 +39,9 @@ export * from './generators'
 /**
  * Schema相关的命令行工具
  * 集成到Core的CLI系统
+ * 注意：CLI功能已移至 ./server.ts 以避免客户端加载服务端代码
  */
-export * from './cli'
+// export * from './cli' // 移至 server.ts
 
 // ==================== 验证系统导出 ====================
 /**

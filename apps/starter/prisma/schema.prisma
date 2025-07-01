@@ -1,125 +1,150 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// LinchKit Starter Database Schema
+// 基于 @linch-kit/schema 和企业级需求设计
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// 用户表 - 扩展基础用户模型
+// 用户表 - 支持多角色认证
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  role      String   @default("USER") // USER, ADMIN, SUPER_ADMIN
-  tenantId  String?
-  status    String   @default("active") // active, inactive, suspended
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  deletedAt DateTime?
-
-  // 关联租户
-  tenant Tenant? @relation(fields: [tenantId], references: [id])
-
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  password      String?  // 可选，支持第三方登录
+  avatar        String?
+  role          UserRole @default(USER)
+  status        UserStatus @default(ACTIVE)
+  
+  // 认证相关
+  emailVerified DateTime?
+  lastLoginAt   DateTime?
+  
+  // 时间戳
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // 关联关系
+  posts         Post[]
+  sessions      Session[]
+  
   @@map("users")
 }
 
-// 租户表 - 基于 Console 模块的实体定义
-model Tenant {
-  id            String   @id @default(cuid())
-  name          String
-  domain        String?  @unique
-  slug          String   @unique
-  description   String?
-  status        String   @default("active") // active, suspended, deleted, pending
-  plan          String   @default("free")   // free, starter, professional, enterprise
-  billingCycle  String?  // monthly, yearly
-  maxUsers      Int      @default(10)
-  maxStorage    BigInt   @default(1073741824) // 1GB in bytes
-  settings      String?  // JSON - TenantSettings
-  metadata      String?  // JSON - TenantMetadata
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  deletedAt     DateTime?
-
-  // 关联
-  users   User[]
-  quotas  TenantQuotas?
-  plugins TenantPlugin[]
-
-  @@map("tenants")
-}
-
-// 插件表
-model Plugin {
-  id          String   @id @default(cuid())
-  name        String
-  version     String
-  status      String   @default("inactive")
-  config      String?  // JSON
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // 关联
-  tenants TenantPlugin[]
-
-  @@unique([name, version])
-  @@map("plugins")
-}
-
-// 租户插件关联表
-model TenantPlugin {
-  id       String @id @default(cuid())
-  tenantId String
-  pluginId String
-  status   String @default("inactive") // active, inactive
-  config   String? // JSON - 租户特定配置  
-  installedAt DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  plugin Plugin @relation(fields: [pluginId], references: [id], onDelete: Cascade)
-
-  @@unique([tenantId, pluginId])
-  @@map("tenant_plugins")
-}
-
-// 租户配额表
-model TenantQuotas {
-  id               String   @id @default(cuid())
-  tenantId         String   @unique
-  maxUsers         Int      @default(10)
-  currentUsers     Int      @default(0)
-  maxStorage       BigInt   @default(1073741824) // 1GB
-  currentStorage   BigInt   @default(0)
-  maxApiCalls      Int      @default(10000)
-  currentApiCalls  Int      @default(0)
-  apiResetAt       DateTime?
-  maxPlugins       Int      @default(5)
-  currentPlugins   Int      @default(0)
-  maxSchemas       Int      @default(10)
-  currentSchemas   Int      @default(0)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  @@map("tenant_quotas")
-}
-
-// 监控数据表
-model MonitoringData {
+// 会话表 - JWT 和 session 管理
+model Session {
   id        String   @id @default(cuid())
-  metric    String
-  value     Float
-  tags      String?  // JSON
-  timestamp DateTime @default(now())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  
+  // 设备和位置信息
+  userAgent String?
+  ipAddress String?
+  
+  // 时间戳
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // 关联
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
+}
 
-  @@map("monitoring_data")
+// 文章表 - 内容管理
+model Post {
+  id          String     @id @default(cuid())
+  title       String
+  content     String
+  excerpt     String?
+  authorId    String
+  tags        String[]   @default([])
+  status      PostStatus @default(DRAFT)
+  
+  // 统计信息
+  viewCount   Int        @default(0)
+  likeCount   Int        @default(0)
+  
+  // 发布时间
+  publishedAt DateTime?
+  
+  // 时间戳
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  // 关联
+  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  @@map("posts")
+}
+
+// 系统配置表 - 应用配置管理
+model Config {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      ConfigType @default(STRING)
+  
+  // 配置元信息
+  category  String?
+  description String?
+  isPublic  Boolean  @default(false)
+  
+  // 时间戳
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("configs")
+}
+
+// 审计日志表 - 操作记录
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  resource  String
+  resourceId String?
+  
+  // 操作详情
+  details   Json?
+  ipAddress String?
+  userAgent String?
+  
+  // 时间戳
+  createdAt DateTime @default(now())
+  
+  @@map("audit_logs")
+}
+
+// 枚举定义
+enum UserRole {
+  USER         // 普通用户
+  TENANT_ADMIN // 租户管理员  
+  SUPER_ADMIN  // 超级管理员
+}
+
+enum UserStatus {
+  ACTIVE    // 激活
+  INACTIVE  // 未激活
+  SUSPENDED // 暂停
+  DELETED   // 已删除
+}
+
+enum PostStatus {
+  DRAFT     // 草稿
+  PUBLISHED // 已发布
+  ARCHIVED  // 已归档
+}
+
+enum ConfigType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
 }
