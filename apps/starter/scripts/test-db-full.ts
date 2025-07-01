@@ -1,5 +1,5 @@
 import { config } from 'dotenv'
-import { prisma } from '../src/lib/prisma.js'
+import { schemaClient } from '../src/lib/schema-client.js'
 
 // 加载环境变量
 config({ path: '.env' })
@@ -10,19 +10,19 @@ async function testFullDatabaseFunctionality() {
   try {
     // 1. 测试基本连接
     console.log('\n1. 测试数据库连接...')
-    await prisma.$connect()
+    await schemaClient.$connect()
     console.log('✅ 数据库连接成功!')
 
     // 2. 测试查询数据库版本
     console.log('\n2. 获取数据库信息...')
-    const result = await prisma.$queryRaw`SELECT version()` as any[]
+    const result = await schemaClient.$queryRaw`SELECT version()` as any[]
     console.log('✅ 数据库版本:', result[0]?.version?.substring(0, 50) + '...')
 
     // 3. 测试基本查询
     console.log('\n3. 测试基本查询...')
-    const userCount = await prisma.user.count()
-    const tenantCount = await prisma.tenant.count()
-    const pluginCount = await prisma.plugin.count()
+    const userCount = await schemaClient.user.count()
+    const tenantCount = await schemaClient.tenant.count()
+    const pluginCount = await schemaClient.plugin.count()
     console.log(`✅ 数据表状态:`)
     console.log(`  - 用户表: ${userCount} 条记录`)
     console.log(`  - 租户表: ${tenantCount} 条记录`)
@@ -30,7 +30,7 @@ async function testFullDatabaseFunctionality() {
 
     // 4. 测试创建租户
     console.log('\n4. 测试创建租户...')
-    const testTenant = await prisma.tenant.create({
+    const testTenant = await schemaClient.tenant.create({
       data: {
         name: `Test Tenant ${Date.now()}`,
         slug: `test-tenant-${Date.now()}`,
@@ -48,7 +48,7 @@ async function testFullDatabaseFunctionality() {
 
     // 5. 测试创建用户并关联租户
     console.log('\n5. 测试创建用户并关联租户...')
-    const testUser = await prisma.user.create({
+    const testUser = await schemaClient.user.create({
       data: {
         email: `test-user-${Date.now()}@example.com`,
         name: 'Test User',
@@ -67,7 +67,7 @@ async function testFullDatabaseFunctionality() {
 
     // 6. 测试创建租户配额
     console.log('\n6. 测试创建租户配额...')
-    const testQuotas = await prisma.tenantQuotas.create({
+    const testQuotas = await schemaClient.tenantQuotas.create({
       data: {
         tenantId: testTenant.id,
         maxUsers: 50,
@@ -91,7 +91,7 @@ async function testFullDatabaseFunctionality() {
 
     // 7. 测试创建插件
     console.log('\n7. 测试创建插件...')
-    const testPlugin = await prisma.plugin.create({
+    const testPlugin = await schemaClient.plugin.create({
       data: {
         name: 'test-plugin',
         version: '1.0.0',
@@ -109,7 +109,7 @@ async function testFullDatabaseFunctionality() {
 
     // 8. 测试租户插件关联
     console.log('\n8. 测试租户插件关联...')
-    const tenantPlugin = await prisma.tenantPlugin.create({
+    const tenantPlugin = await schemaClient.tenantPlugin.create({
       data: {
         tenantId: testTenant.id,
         pluginId: testPlugin.id,
@@ -126,7 +126,7 @@ async function testFullDatabaseFunctionality() {
 
     // 9. 测试监控数据
     console.log('\n9. 测试监控数据...')
-    const monitoringData = await prisma.monitoringData.create({
+    const monitoringData = await schemaClient.monitoringData.create({
       data: {
         metric: 'test_metric',
         value: 42.5,
@@ -141,7 +141,7 @@ async function testFullDatabaseFunctionality() {
 
     // 10. 测试关联查询
     console.log('\n10. 测试关联查询...')
-    const tenantWithUsers = await prisma.tenant.findUnique({
+    const tenantWithUsers = await schemaClient.tenant.findUnique({
       where: { id: testTenant.id },
       include: {
         users: true,
@@ -162,7 +162,7 @@ async function testFullDatabaseFunctionality() {
 
     // 11. 测试事务
     console.log('\n11. 测试数据库事务...')
-    const [secondTenant, secondUser] = await prisma.$transaction(async (tx) => {
+    const [secondTenant, secondUser] = await schemaClient.$transaction(async (tx) => {
       const newTenant = await tx.tenant.create({
         data: {
           name: `Transaction Tenant ${Date.now()}`,
@@ -190,14 +190,14 @@ async function testFullDatabaseFunctionality() {
 
     // 12. 清理测试数据
     console.log('\n12. 清理测试数据...')
-    await prisma.tenantPlugin.delete({ where: { id: tenantPlugin.id } })
-    await prisma.tenantQuotas.delete({ where: { id: testQuotas.id } })
-    await prisma.user.delete({ where: { id: testUser.id } })
-    await prisma.user.delete({ where: { id: secondUser.id } })
-    await prisma.tenant.delete({ where: { id: testTenant.id } })
-    await prisma.tenant.delete({ where: { id: secondTenant.id } })
-    await prisma.plugin.delete({ where: { id: testPlugin.id } })
-    await prisma.monitoringData.delete({ where: { id: monitoringData.id } })
+    await schemaClient.tenantPlugin.delete({ where: { id: tenantPlugin.id } })
+    await schemaClient.tenantQuotas.delete({ where: { id: testQuotas.id } })
+    await schemaClient.user.delete({ where: { id: testUser.id } })
+    await schemaClient.user.delete({ where: { id: secondUser.id } })
+    await schemaClient.tenant.delete({ where: { id: testTenant.id } })
+    await schemaClient.tenant.delete({ where: { id: secondTenant.id } })
+    await schemaClient.plugin.delete({ where: { id: testPlugin.id } })
+    await schemaClient.monitoringData.delete({ where: { id: monitoringData.id } })
     console.log('✅ 测试数据清理完成!')
 
     console.log('\n🎉 完整数据库功能测试全部通过!')
@@ -224,7 +224,7 @@ async function testFullDatabaseFunctionality() {
     console.error('4. 网络连接是否正常')
     process.exit(1)
   } finally {
-    await prisma.$disconnect()
+    await schemaClient.$disconnect()
     console.log('\n👋 数据库连接已关闭')
   }
 }

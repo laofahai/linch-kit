@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
 import { Eye, EyeOff, Brain, Loader2, Github, Mail, Sparkles } from 'lucide-react'
-import { signIn } from 'next-auth/react'
+import { signIn } from '@linch-kit/auth'
 
 import { Button } from '@linch-kit/ui/components'
 import { Input } from '@linch-kit/ui/components'

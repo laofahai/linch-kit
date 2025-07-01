@@ -1,13 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+/**
+ * @deprecated 此文件已被 schema-client.ts 替代
+ * 请使用 import { schemaClient } from '@/lib/schema-client' 代替
+ */
 
-declare global {
-   
-  var __prisma: PrismaClient | undefined
-}
+import { prisma, schemaClient } from './schema-client'
 
-// PrismaClient 单例，避免开发环境中的多实例问题
-export const prisma = globalThis.__prisma || new PrismaClient()
-
-if (process.env.NODE_ENV === 'development') {
-  globalThis.__prisma = prisma
-}
+// 向后兼容导出
+export { prisma, schemaClient }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession, signOut } from '@linch-kit/auth'
 import { User, LogOut } from 'lucide-react'
 
 import { HomeHero } from './HomeHero'

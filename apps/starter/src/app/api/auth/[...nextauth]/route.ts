@@ -1,28 +1,20 @@
-import NextAuth, { NextAuthConfig } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
-import GitHubProvider from 'next-auth/providers/github'
-import GoogleProvider from 'next-auth/providers/google'
+import { NextAuth, createLinchKitAuthConfig } from '@linch-kit/auth'
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from '@/lib/prisma'
 
-const authConfig: NextAuthConfig = {
-  adapter: PrismaAdapter(prisma),
-  providers: [
-    GitHubProvider({
+// 使用 LinchKit 认证适配器创建配置
+const authConfig = createLinchKitAuthConfig({
+  providers: {
+    github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
-    GoogleProvider({
+    },
+    google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    CredentialsProvider({
-      name: 'credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
-      },
-      async authorize(credentials) {
+    },
+    credentials: {
+      authorize: async (credentials) => {
         if (!credentials?.email || !credentials?.password) {
           return null
         }
@@ -37,7 +29,7 @@ const authConfig: NextAuthConfig = {
           return null
         }
 
-        // 在实际应用中，这里应该验证密码哈希
+        // TODO: 在实际应用中，这里应该验证密码哈希
         // const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
         // if (!isPasswordValid) {
         //   return null
@@ -50,40 +42,50 @@ const authConfig: NextAuthConfig = {
           image: null, // User model doesn't have image field
         }
       }
-    })
-  ],
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    }
   },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string
-      }
-      return session
-    },
-    async redirect({ url, baseUrl }) {
-      // 允许相对回调URL
-      if (url.startsWith("/")) return `${baseUrl}${url}`
-      // 允许来自相同原点的回调URL
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
-    },
+  session: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: '/auth/sign-in',
     error: '/auth/error',
   },
+  callbacks: {
+    extendSession: async (session, token) => {
+      // LinchKit 企业级会话扩展
+      if (token.sub && session.user) {
+        (session.user as any).id = token.sub
+      }
+      return session
+    },
+    extendJWT: async (token, user) => {
+      // LinchKit 企业级 JWT 扩展
+      if (user?.id) {
+        token.sub = user.id
+      }
+      return token
+    }
+  },
+  events: {
+    onSignIn: async ({ user, account, profile }) => {
+      // LinchKit 企业级登录事件
+      console.log('User signed in:', { userId: user.id, provider: account?.provider })
+    },
+    onSignOut: async ({ session, token }) => {
+      // LinchKit 企业级登出事件
+      console.log('User signed out:', { userId: session?.user?.id || token?.sub })
+    }
+  },
   debug: process.env.NODE_ENV === 'development',
+})
+
+// 添加 Prisma 适配器
+const configWithAdapter = {
+  ...authConfig,
+  adapter: PrismaAdapter(prisma),
 }
 
-const handler = NextAuth(authConfig)
+const handler = NextAuth(configWithAdapter)
 
 export { handler as GET, handler as POST }
