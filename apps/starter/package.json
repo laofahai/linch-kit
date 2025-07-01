@@ -13,7 +13,7 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "dev:quiet": "next dev 2>/dev/null",
     "build": "next build",
     "start": "next start",
