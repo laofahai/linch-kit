@@ -1,14 +1,14 @@
 import { getRequestConfig } from 'next-intl/server'
 
-export default getRequestConfig(async ({ locale }) => {
-  // 如果没有传入 locale 或无效，使用默认的 'zh'
-  const resolvedLocale = locale || 'zh'
+export default getRequestConfig(async ({ requestLocale }) => {
+  // 根据文档，requestLocale 可能是 Promise，需要 await
+  const locale = (await requestLocale) || 'zh'
   
-  console.log('i18n config - input locale:', locale, 'resolved locale:', resolvedLocale)
+  console.log('i18n config - resolved locale:', locale)
   
   return {
-    locale: resolvedLocale,  // 明确返回 locale
-    messages: (await import(`../messages/zh.json`)).default,
+    locale,
+    messages: (await import(`../messages/${locale}.json`)).default,
     timeZone: 'Asia/Shanghai'
   }
 })
