@@ -14,16 +14,15 @@ import { consoleServices } from '@linch-kit/console'
 export function initializeConsoleServices() {
   try {
     // 使用 Console 模块的服务初始化
-    if (consoleServices.tenant) {
-      // 设置数据库客户端（如果支持的话）
+    if (consoleServices?.tenant) {
       console.log('✅ Console 租户服务已就绪')
     }
     
-    if (consoleServices.user) {
+    if (consoleServices?.user) {
       console.log('✅ Console 用户服务已就绪')
     }
     
-    if (consoleServices.plugin) {
+    if (consoleServices?.plugin) {
       console.log('✅ Console 插件服务已就绪')
     }
     
