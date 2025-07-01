@@ -305,7 +305,7 @@ export function UserTable({ onUserEdit, onUserDelete, onUserCreate }: UserTableP
             <DialogHeader>
               <DialogTitle>确认删除用户</DialogTitle>
               <DialogDescription>
-                您确定要删除用户 "{selectedUser?.name}" 吗？此操作不可撤销。
+                您确定要删除用户 &ldquo;{selectedUser?.name}&rdquo; 吗？此操作不可撤销。
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
