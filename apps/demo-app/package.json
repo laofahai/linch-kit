@@ -24,15 +24,16 @@
   "dependencies": {
     "@linch-kit/auth": "workspace:*",
     "@linch-kit/core": "workspace:*",
-    "@linch-kit/schema": "workspace:*",
     "@linch-kit/crud": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
     "@linch-kit/trpc": "workspace:*",
+    "@linch-kit/ui": "workspace:*",
     "@prisma/client": "^6.10.1",
+    "@tanstack/react-query": "^5.81.5",
     "@trpc/client": "^11.4.3",
-    "@trpc/server": "^11.4.3",
     "@trpc/next": "^11.4.3",
     "@trpc/react-query": "^11.4.3",
-    "@tanstack/react-query": "^5.81.5",
+    "@trpc/server": "^11.4.3",
     "date-fns": "^4.1.0",
     "next": "^15.3.4",
     "react": "^19.1.0",
@@ -41,17 +42,13 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.5",
     "@types/node": "^24.0.7",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "autoprefixer": "^10.4.21",
-
     "eslint": "^9.30.0",
     "eslint-config-next": "^15.3.4",
-    "postcss": "^8.5.6",
     "prisma": "^6.10.1",
-    "tailwindcss": "^4.1.11",
-
     "typescript": "^5.8.3"
   }
 }
