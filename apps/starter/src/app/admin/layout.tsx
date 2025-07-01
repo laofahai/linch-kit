@@ -1,6 +1,6 @@
 'use client'
 
-import { ConsoleProvider } from '@linch-kit/console'
+import { ConsoleProvider } from '@linch-kit/console/client'
 import { 
   Sidebar, 
   SidebarContent, 

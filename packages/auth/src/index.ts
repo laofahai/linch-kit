@@ -16,6 +16,12 @@
 export { default as NextAuth } from 'next-auth'
 export type { NextAuthConfig, Session, User } from 'next-auth'
 
+// ==================== NextAuth.js React hooks 导出 ====================
+/**
+ * NextAuth.js React hooks - 用于客户端认证状态管理
+ */
+export { useSession, signIn, signOut, getSession } from 'next-auth/react'
+
 // ==================== LinchKit 适配器导出 ====================
 /**
  * LinchKit 认证适配器 - 在 NextAuth.js 基础上添加企业级特性

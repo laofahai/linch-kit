@@ -21,6 +21,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
     "./entities": {
       "types": "./dist/entities/index.d.ts",
       "import": "./dist/entities/index.js"
