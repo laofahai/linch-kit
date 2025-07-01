@@ -11,6 +11,15 @@ import {
   Badge,
   Separator
 } from '@linch-kit/ui'
+import { 
+  ConsoleProvider, 
+  useConsolePermission, 
+  PermissionGuard,
+  useConsoleContext 
+} from '@linch-kit/console'
+import { useSession, signOut } from 'next-auth/react'
+import { redirect } from 'next/navigation'
+import { LoadingOverlay } from '@/components/loading-overlay'
 
 // 系统管理导航菜单项定义
 type AdminNavItem = {
@@ -19,17 +28,18 @@ type AdminNavItem = {
   href: string
   isActive?: boolean
   description: string
+  permission?: string
 }
 
 const adminNavItems: AdminNavItem[] = [
   { title: '系统总览', icon: '🖥️', href: '/admin', isActive: true, description: '系统运行状态和关键指标' },
-  { title: '多租户管理', icon: '🏢', href: '/admin/tenants', description: '租户创建、配置和管理' },
-  { title: '系统配置', icon: '⚙️', href: '/admin/config', description: '全局参数和系统设置' },
-  { title: '用户权限', icon: '👤', href: '/admin/users', description: '系统用户和权限管理' },
-  { title: '日志管理', icon: '📋', href: '/admin/logs', description: '系统日志和审计追踪' },
-  { title: '安全中心', icon: '🔒', href: '/admin/security', description: '安全策略和访问控制' },
-  { title: '系统监控', icon: '📈', href: '/admin/monitoring', description: '性能监控和告警管理' },
-  { title: '备份恢复', icon: '💾', href: '/admin/backup', description: '数据备份和恢复策略' }
+  { title: '多租户管理', icon: '🏢', href: '/admin/tenants', description: '租户创建、配置和管理', permission: 'console:admin' },
+  { title: '系统配置', icon: '⚙️', href: '/admin/config', description: '全局参数和系统设置', permission: 'system:admin' },
+  { title: '用户权限', icon: '👤', href: '/admin/users', description: '系统用户和权限管理', permission: 'console:admin' },
+  { title: '日志管理', icon: '📋', href: '/admin/logs', description: '系统日志和审计追踪', permission: 'console:admin' },
+  { title: '安全中心', icon: '🔒', href: '/admin/security', description: '安全策略和访问控制', permission: 'system:admin' },
+  { title: '系统监控', icon: '📈', href: '/admin/monitoring', description: '性能监控和告警管理', permission: 'console:admin' },
+  { title: '备份恢复', icon: '💾', href: '/admin/backup', description: '数据备份和恢复策略', permission: 'system:admin' }
 ]
 
 // 系统管理 KPI 指标类型
@@ -124,8 +134,18 @@ const systemActivities: SystemActivity[] = [
   }
 ]
 
-export default function AdminPage() {
+// Admin page content component
+function AdminPageContent() {
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const { data: session } = useSession()
+  const { permissions, isAdmin, isSystemAdmin } = useConsoleContext()
+  const hasAdminAccess = useConsolePermission('console:admin')
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    await signOut({ callbackUrl: '/sign-in' })
+  }
 
   useEffect(() => {
     const initializeAdmin = async () => {
@@ -148,6 +168,25 @@ export default function AdminPage() {
     initializeAdmin()
   }, [])
 
+  // Check admin permissions
+  if (!hasAdminAccess) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle>访问被拒绝</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              您没有访问系统管理控制台的权限。请联系管理员获取相应权限。
+            </p>
+            <Button onClick={() => window.history.back()}>返回</Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -162,21 +201,37 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <LoadingOverlay isVisible={isLoggingOut} message="正在退出" />
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center px-6">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold">LinchKit 系统管理</h1>
-            <Badge>Admin</Badge>
+            {isSystemAdmin ? (
+              <Badge variant="destructive">超级管理员</Badge>
+            ) : isAdmin ? (
+              <Badge variant="secondary">管理员</Badge>
+            ) : (
+              <Badge variant="outline">用户</Badge>
+            )}
           </div>
           <div className="ml-auto flex items-center space-x-4">
             <Button variant="ghost" size="sm">
               <span className="mr-2">🔔</span>
               通知
             </Button>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleLogout}
+            >
+              <span className="mr-2">🚪</span>
+              退出
+            </Button>
             <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-              AD
+              {session?.user?.name?.charAt(0) || 'U'}
             </div>
           </div>
         </div>
@@ -187,25 +242,39 @@ export default function AdminPage() {
         <aside className="w-64 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex h-full flex-col">
             <div className="p-6">
-              <h2 className="text-lg font-semibold mb-4">系统管理</h2>
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold">系统管理</h2>
+                <div className="flex items-center space-x-2 mt-2">
+                  {isSystemAdmin && <Badge variant="destructive">超级管理员</Badge>}
+                  {isAdmin && !isSystemAdmin && <Badge variant="secondary">管理员</Badge>}
+                  <Badge variant="outline" className="text-xs">
+                    {permissions.length} 项权限
+                  </Badge>
+                </div>
+              </div>
               <nav className="space-y-1">
                 {adminNavItems.map((item) => (
-                  <Button
+                  <PermissionGuard
                     key={item.href}
-                    variant={item.isActive ? "secondary" : "ghost"}
-                    className="w-full justify-start h-auto p-3"
-                    size="sm"
+                    permission={item.permission}
+                    fallback={null}
                   >
-                    <div className="flex items-start space-x-3">
-                      <span className="text-lg">{item.icon}</span>
-                      <div className="flex-1 text-left">
-                        <div className="font-medium">{item.title}</div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          {item.description}
+                    <Button
+                      variant={item.isActive ? "secondary" : "ghost"}
+                      className="w-full justify-start h-auto p-3"
+                      size="sm"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <span className="text-lg">{item.icon}</span>
+                        <div className="flex-1 text-left">
+                          <div className="font-medium">{item.title}</div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {item.description}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Button>
+                    </Button>
+                  </PermissionGuard>
                 ))}
               </nav>
             </div>
@@ -359,54 +428,110 @@ export default function AdminPage() {
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <span className="text-2xl">🏢</span>
-                    <h5 className="font-medium">多租户管理</h5>
+                <PermissionGuard permission="console:admin">
+                  <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <span className="text-2xl">🏢</span>
+                      <h5 className="font-medium">多租户管理</h5>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      创建、配置和管理租户
+                    </p>
+                    <Badge variant="outline">47 个租户</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    创建、配置和管理租户
-                  </p>
-                  <Badge variant="outline">47 个租户</Badge>
-                </div>
+                </PermissionGuard>
 
-                <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <span className="text-2xl">⚙️</span>
-                    <h5 className="font-medium">系统配置</h5>
+                <PermissionGuard permission="system:admin">
+                  <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <span className="text-2xl">⚙️</span>
+                      <h5 className="font-medium">系统配置</h5>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      全局参数和功能设置
+                    </p>
+                    <Badge variant="outline">12 项配置</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    全局参数和功能设置
-                  </p>
-                  <Badge variant="outline">12 项配置</Badge>
-                </div>
+                </PermissionGuard>
 
-                <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <span className="text-2xl">📋</span>
-                    <h5 className="font-medium">日志管理</h5>
+                <PermissionGuard permission="console:admin">
+                  <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <span className="text-2xl">📋</span>
+                      <h5 className="font-medium">日志管理</h5>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      系统日志和审计追踪
+                    </p>
+                    <Badge variant="outline">实时监控</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    系统日志和审计追踪
-                  </p>
-                  <Badge variant="outline">实时监控</Badge>
-                </div>
+                </PermissionGuard>
 
-                <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <span className="text-2xl">🔒</span>
-                    <h5 className="font-medium">安全中心</h5>
+                <PermissionGuard permission="system:admin">
+                  <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <span className="text-2xl">🔒</span>
+                      <h5 className="font-medium">安全中心</h5>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      访问控制和安全策略
+                    </p>
+                    <Badge variant="secondary">需要关注</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    访问控制和安全策略
-                  </p>
-                  <Badge variant="secondary">需要关注</Badge>
-                </div>
+                </PermissionGuard>
               </div>
             </CardContent>
           </Card>
         </main>
       </div>
-    </div>
+      </div>
+    </>
+  )
+}
+
+// Main component with Console Provider integration
+export default function AdminPage() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">正在加载...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'unauthenticated') {
+    redirect('/sign-in?redirect=/admin')
+  }
+
+  // Extract user role and permissions from session
+  const userRole = (session as unknown as { roles?: string[] })?.roles?.[0] || 'USER'
+  const permissions = [
+    'console:access',
+    ...(userRole === 'TENANT_ADMIN' || userRole === 'SUPER_ADMIN' ? ['console:admin'] : []),
+    ...(userRole === 'SUPER_ADMIN' ? ['system:admin'] : [])
+  ]
+
+  return (
+    <ConsoleProvider
+      permissions={permissions}
+      tenantId={undefined}
+      config={{
+        basePath: '/admin',
+        features: ['dashboard', 'tenants', 'users', 'permissions', 'plugins', 'monitoring', 'schemas', 'settings'],
+        theme: {
+          primary: '#3b82f6',
+          darkMode: false
+        }
+      }}
+    >
+      <AdminPageContent />
+    </ConsoleProvider>
   )
 }

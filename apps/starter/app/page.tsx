@@ -29,7 +29,7 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-primary/10 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -106,24 +106,24 @@ export default function Home() {
         <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto mt-12">
           <a
             href="/dashboard"
-            className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-blue-200 dark:border-blue-800"
+            className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-primary/20 dark:border-primary/30"
           >
-            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+            <h3 className="text-lg font-semibold text-primary dark:text-primary mb-2">
               📊 业务 Dashboard
             </h3>
-            <p className="text-blue-600 dark:text-blue-300 text-sm">
+            <p className="text-primary/80 dark:text-primary/80 text-sm">
               查看用户数据、文章内容等业务指标
             </p>
           </a>
           
           <a
             href="/admin"
-            className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-purple-200 dark:border-purple-800"
+            className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-primary/20 dark:border-primary/30"
           >
-            <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-2">
+            <h3 className="text-lg font-semibold text-primary dark:text-primary mb-2">
               ⚙️ 管理控制台
             </h3>
-            <p className="text-purple-600 dark:text-purple-300 text-sm">
+            <p className="text-primary/80 dark:text-primary/80 text-sm">
               企业级管理功能，基于 Console 模块
             </p>
           </a>

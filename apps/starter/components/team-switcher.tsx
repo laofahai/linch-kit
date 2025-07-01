@@ -16,7 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { CaretSortIcon, PlusIcon } from "@radix-ui/react-icons"
+import { ChevronsUpDown, Plus } from "lucide-react"
 
 export function TeamSwitcher({
   teams,
@@ -50,7 +50,7 @@ export function TeamSwitcher({
                 <span className="truncate font-medium">{activeTeam.name}</span>
                 <span className="truncate text-xs">{activeTeam.plan}</span>
               </div>
-              <CaretSortIcon className="ml-auto" />
+              <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -78,7 +78,7 @@ export function TeamSwitcher({
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2">
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                <PlusIcon className="size-4" />
+                <Plus className="size-4" />
               </div>
               <div className="text-muted-foreground font-medium">Add team</div>
             </DropdownMenuItem>

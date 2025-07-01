@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { DataService } from '@/lib/services/data'
 import { Logger } from '@linch-kit/core'
 import { requireAuth } from '@/lib/auth'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // 验证用户登录状态
     await requireAuth()

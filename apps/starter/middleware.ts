@@ -1,22 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// 使用简单的 JWT 解码（不验证签名）来获取基本信息
-// 这样可以避免在 Edge Runtime 中使用 jsonwebtoken
-function decodeJwt(token: string) {
-  try {
-    const base64Url = token.split('.')[1]
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    )
-    return JSON.parse(jsonPayload)
-  } catch {
-    return null
-  }
-}
+import { getToken } from 'next-auth/jwt'
 
 // 需要认证的路径
 const PROTECTED_PATHS = [
@@ -37,11 +20,14 @@ const AUTH_PATHS = [
   '/forgot-password'
 ]
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
-  // 获取 token
-  const token = request.cookies.get('auth-token')?.value
+  // 使用 NextAuth.js 获取 token
+  const token = await getToken({ 
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET 
+  })
   
   // 检查是否是需要保护的路径
   const isProtectedPath = PROTECTED_PATHS.some(path => pathname.startsWith(path))
@@ -50,10 +36,7 @@ export function middleware(request: NextRequest) {
   
   // 如果是认证页面且已登录，重定向到首页
   if (isAuthPath && token) {
-    const decoded = decodeJwt(token)
-    if (decoded && decoded.exp * 1000 > Date.now()) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
   
   // 如果访问受保护的路径但没有 token，重定向到登录页
@@ -63,47 +46,32 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl)
   }
   
-  // 如果有 token，验证有效性
+  // 如果有 token，验证权限
   if (token) {
-    const decoded = decodeJwt(token)
-    
-    if (decoded && decoded.exp * 1000 > Date.now()) {
-      // Token 有效
-      
-      // 检查管理员权限
-      if (isAdminPath) {
-        const isAdmin = decoded.role === 'TENANT_ADMIN' || decoded.role === 'SUPER_ADMIN'
-        if (!isAdmin) {
-          return NextResponse.redirect(new URL('/dashboard?error=access_denied', request.url))
-        }
-      }
-      
-      // 在请求头中添加用户信息，供后续处理使用
-      const requestHeaders = new Headers(request.headers)
-      requestHeaders.set('x-user-id', decoded.userId)
-      requestHeaders.set('x-user-email', decoded.email)
-      requestHeaders.set('x-user-role', decoded.role)
-      // 对中文用户名进行 Base64 编码以避免 HTTP 头部编码问题
-      requestHeaders.set('x-user-name', btoa(encodeURIComponent(decoded.name)))
-      
-      return NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        },
-      })
-    } else {
-      // Token 过期或无效
-      if (isProtectedPath) {
-        const signInUrl = new URL('/sign-in', request.url)
-        signInUrl.searchParams.set('redirect', pathname)
-        signInUrl.searchParams.set('error', 'token_expired')
-        
-        // 清除无效的 token
-        const response = NextResponse.redirect(signInUrl)
-        response.cookies.delete('auth-token')
-        return response
+    // 检查管理员权限
+    if (isAdminPath) {
+      const userRole = token.role as string || 'USER'
+      const isAdmin = userRole === 'TENANT_ADMIN' || userRole === 'SUPER_ADMIN'
+      if (!isAdmin) {
+        return NextResponse.redirect(new URL('/dashboard?error=access_denied', request.url))
       }
     }
+    
+    // 在请求头中添加用户信息，供后续处理使用
+    const requestHeaders = new Headers(request.headers)
+    if (token.sub) requestHeaders.set('x-user-id', token.sub)
+    if (token.email) requestHeaders.set('x-user-email', token.email)
+    if (token.role) requestHeaders.set('x-user-role', token.role as string)
+    if (token.name) {
+      // 对中文用户名进行 Base64 编码以避免 HTTP 头部编码问题
+      requestHeaders.set('x-user-name', btoa(encodeURIComponent(token.name)))
+    }
+    
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    })
   }
   
   return NextResponse.next()

@@ -38,7 +38,8 @@
       "types": "./dist/utils/index.d.ts",
       "import": "./dist/utils/index.mjs",
       "require": "./dist/utils/index.js"
-    }
+    },
+    "./styles/globals.css": "./dist/styles/globals.css"
   },
   "files": [
     "dist/**/*",
@@ -79,7 +80,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.525.0",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss-animate": "^1.0.7",
+    "tw-animate-css": "^1.0.1",
     "vaul": "^1.1.2",
     "zod": "^3.25.67"
   },

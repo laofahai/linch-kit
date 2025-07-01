@@ -1,11 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import {
   BadgeCheck,
   Bell,
   LogOut,
   Sparkles,
 } from "lucide-react"
+import { signOut } from "next-auth/react"
+import { LoadingOverlay } from "./loading-overlay"
 
 import {
   Avatar,
@@ -27,7 +30,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { CaretSortIcon, ComponentPlaceholderIcon } from "@radix-ui/react-icons"
+import { ChevronsUpDown, User } from "lucide-react"
 
 export function NavUser({
   user,
@@ -39,10 +42,18 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    await signOut({ callbackUrl: '/sign-in' })
+  }
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
+    <>
+      <LoadingOverlay isVisible={isLoggingOut} message="正在退出" />
+      <SidebarMenu>
+        <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
@@ -57,7 +68,7 @@ export function NavUser({
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
-              <CaretSortIcon className="ml-auto size-4" />
+              <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -92,7 +103,7 @@ export function NavUser({
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <ComponentPlaceholderIcon />
+                <User />
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
@@ -101,13 +112,14 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </>
   )
 }

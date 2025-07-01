@@ -6,10 +6,11 @@
 
 ## ⚠️ 重要：开发前必读
 
-**每个新的开发 session 必须执行以下操作：**
-1. **阅读开发进度**: `ai-context/zh/current/development-status.md` - 了解项目当前状态
-2. **理解开发约束**: `ai-context/zh/current/development-constraints.md` - 掌握核心开发规范
-3. **设置环境**: `export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"`
+**⚠️ 每个新的开发 session 强制要求：**
+1. **设置环境**: `export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"`
+2. **阅读开发进度**: `ai-context/zh/current/development-status.md` - 了解项目当前状态
+3. **理解开发约束**: `ai-context/zh/current/development-constraints.md` - 掌握核心开发规范
+4. **完成 Session 检查清单** - 确保环境和约束理解到位
 
 ## 🚀 项目概述
 

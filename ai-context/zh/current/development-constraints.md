@@ -1,8 +1,31 @@
-# LinchKit 开发约束
+# LinchKit 开发约束 - Session 持久化指南
 
-**版本**: v4.0  
-**更新**: 2025-06-30  
-**状态**: 生产级约束
+**版本**: v5.0  
+**更新**: 2025-07-01  
+**状态**: Session 级强制约束  
+**重要性**: ⚠️ **必须在每个 session 开始时阅读**
+
+---
+
+## 🔴 SESSION 级强制要求
+
+### ⚠️ 每次新 session 必须执行
+```bash
+# 1. 环境设置（必须）
+export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"
+
+# 2. 阅读当前状态（必须）
+cat ai-context/zh/current/development-status.md
+
+# 3. 理解开发约束（本文档）
+cat ai-context/zh/current/development-constraints.md
+```
+
+### 📋 Session 检查清单
+- [ ] ✅ 已设置正确的 Node.js 环境路径？
+- [ ] ✅ 已阅读最新开发状态文档？  
+- [ ] ✅ 理解当前项目阶段和任务？
+- [ ] ✅ 确认要使用的技术约束？
 
 ---
 
@@ -35,6 +58,13 @@ core → schema → auth → crud → trpc → ui → console
 ### 5. UI 组件规范
 - **shadcn/ui 组件** 使用 `pnpm dlx shadcn@latest add [component]`
 - **必须导出** 到 `@linch-kit/ui/components`
+
+### 6. Tailwind CSS 4 规范
+- **统一配置源**: 所有样式从 `@linch-kit/ui/src/styles/globals.css` 引用
+- **CSS-first 配置**: 使用 `@import "tailwindcss"` 和 `@theme` 指令
+- **禁用 tailwind.config.js**: 使用 CSS 文件配置主题
+- **动画库**: 使用 `tw-animate-css` 替代 `tailwindcss-animate`
+- **主题变量**: 使用 `hsl()` 包装所有颜色变量
 
 ---
 

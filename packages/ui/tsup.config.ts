@@ -1,4 +1,6 @@
 import { defineConfig } from 'tsup'
+import { copyFileSync, mkdirSync } from 'fs'
+import { dirname } from 'path'
 
 export default defineConfig({
   entry: [
@@ -35,5 +37,12 @@ export default defineConfig({
     return {
       js: format === 'esm' ? '.mjs' : '.js'
     }
+  },
+  // 复制CSS文件到dist目录
+  onSuccess: async () => {
+    const stylesDir = 'dist/styles'
+    mkdirSync(stylesDir, { recursive: true })
+    copyFileSync('src/styles/globals.css', 'dist/styles/globals.css')
+    console.log('CSS files copied to dist/styles/')
   }
 })

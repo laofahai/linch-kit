@@ -21,7 +21,17 @@ export { createConsoleRouter } from './trpc/router-factory'
 // export type { TenantRouter } from './routes/tenant.router'
 
 // Provider和上下文 (已标记为客户端组件)
-export { ConsoleProvider } from './providers/ConsoleProvider'
+export { 
+  ConsoleProvider,
+  useConsoleContext,
+  useConsolePermission,
+  useConsolePermissions,
+  useConsoleTheme,
+  useConsoleConfiguration,
+  useConsoleTenant,
+  PermissionGuard,
+  FeatureGuard
+} from './providers/ConsoleProvider'
 
 // 国际化 (纯JavaScript)
 export * from './i18n'
