@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.2
+
+### Patch Changes
+
+- [`83f9489`](https://github.com/laofahai/linch-kit/commit/83f9489f807e36fa2ae5031e1e8da6caa7c26f00) Thanks [@laofahai](https://github.com/laofahai)! - 修复发布问题：包含 dist 目录，修复 bin 文件缺失问题，改用 pnpm changeset publish
+
 ## 2.0.1
 
 ### Patch Changes
