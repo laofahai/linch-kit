@@ -15,8 +15,8 @@ import type { PluginManager as CorePluginManager } from '@linch-kit/core'
 // 定义类型，避免运行时依赖
 interface PrismaClient {
   [key: string]: unknown
-  $transaction: (callback: (tx: PrismaClient) => Promise<unknown>) => Promise<unknown>
-  $queryRaw: (query: TemplateStringsArray | string, ...values: unknown[]) => Promise<unknown>
+  $transaction: <T>(callback: (tx: PrismaClient) => Promise<T>, options?: { timeout?: number; isolationLevel?: string }) => Promise<T>
+  $queryRaw: <T = unknown>(query: TemplateStringsArray | string, ...values: unknown[]) => Promise<T>
 }
 
 interface PluginRegistration {
@@ -412,7 +412,7 @@ export class CrudManager {
     callback: (tx: PrismaClient) => Promise<T>,
     options?: { timeout?: number; isolationLevel?: string }
   ): Promise<T> {
-    return await this.prisma.$transaction(callback, options)
+    return await this.prisma.$transaction<T>(callback, options)
   }
 
   /**
@@ -422,7 +422,7 @@ export class CrudManager {
     sql: string,
     ..._params: unknown[]
   ): Promise<T[]> {
-    return await this.prisma.$queryRaw<T[]>`${sql}` as T[]
+    return await this.prisma.$queryRaw<T[]>(`${sql}`) as T[]
   }
 
   // 私有辅助方法
@@ -527,7 +527,7 @@ export class CrudManager {
     const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.beforeCreate) {
-        processed = await plugin.plugin.hooks.beforeCreate(entityName, processed, options)
+        processed = await plugin.plugin.hooks.beforeCreate(entityName, processed as Record<string, unknown>, (options || {}) as Record<string, unknown>) as CreateInput<T>
       }
     }
     
@@ -542,7 +542,7 @@ export class CrudManager {
     const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.afterCreate) {
-        await plugin.plugin.hooks.afterCreate(entityName, result, options)
+        await plugin.plugin.hooks.afterCreate(entityName, result as Record<string, unknown>, (options || {}) as Record<string, unknown>)
       }
     }
   }
@@ -559,7 +559,7 @@ export class CrudManager {
     const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.beforeUpdate) {
-        processed = await plugin.plugin.hooks.beforeUpdate(entityName, id, processed, existing, options)
+        processed = await plugin.plugin.hooks.beforeUpdate(entityName, id as string | number, processed as Record<string, unknown>, existing as Record<string, unknown>, (options || {}) as Record<string, unknown>) as UpdateInput<T>
       }
     }
     
@@ -575,7 +575,7 @@ export class CrudManager {
     const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.afterUpdate) {
-        await plugin.plugin.hooks.afterUpdate(entityName, result, existing, options)
+        await plugin.plugin.hooks.afterUpdate(entityName, result as Record<string, unknown>, existing as Record<string, unknown>, (options || {}) as Record<string, unknown>)
       }
     }
   }
@@ -589,7 +589,7 @@ export class CrudManager {
     const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.beforeDelete) {
-        await plugin.plugin.hooks.beforeDelete(entityName, id, existing, options)
+        await plugin.plugin.hooks.beforeDelete(entityName, id as string | number, existing as Record<string, unknown>, (options || {}) as Record<string, unknown>)
       }
     }
   }
@@ -602,7 +602,7 @@ export class CrudManager {
     const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.afterDelete) {
-        await plugin.plugin.hooks.afterDelete(entityName, existing, options)
+        await plugin.plugin.hooks.afterDelete(entityName, existing as Record<string, unknown>, (options || {}) as Record<string, unknown>)
       }
     }
   }
@@ -617,7 +617,7 @@ export class CrudManager {
     const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.beforeQuery) {
-        processed = await plugin.plugin.hooks.beforeQuery(entityName, processed, options)
+        processed = await plugin.plugin.hooks.beforeQuery(entityName, processed as Record<string, unknown>, (options || {}) as Record<string, unknown>) as Record<string, unknown>
       }
     }
     

@@ -217,10 +217,10 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
 
   private getRelationEntity(relationName: string): Entity | null {
     const field = Object.values(this.entity.fields).find(
-      field => field.type === 'relation' && (field as Record<string, unknown>).target === relationName
+      field => field.type === 'relation' && (field as unknown as Record<string, unknown>).target === relationName
     )
 
-    if ((field as Record<string, unknown>)?.target) {
+    if ((field as unknown as Record<string, unknown>)?.target) {
       // 简化实现，返回 null
       return null
     }

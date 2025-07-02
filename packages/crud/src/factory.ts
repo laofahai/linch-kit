@@ -11,8 +11,8 @@ import { PrismaQueryBuilder } from './core/query-builder/prisma-query-builder'
 // 简化的 PrismaClient 类型定义 - 避免运行时依赖
 interface PrismaClient {
   [key: string]: unknown
-  $transaction: (callback: (tx: PrismaClient) => Promise<unknown>) => Promise<unknown>
-  $queryRaw: (query: TemplateStringsArray | string, ...values: unknown[]) => Promise<unknown>
+  $transaction: <T>(callback: (tx: PrismaClient) => Promise<T>, options?: { timeout?: number; isolationLevel?: string }) => Promise<T>
+  $queryRaw: <T = unknown>(query: TemplateStringsArray | string, ...values: unknown[]) => Promise<T>
 }
 
 /**

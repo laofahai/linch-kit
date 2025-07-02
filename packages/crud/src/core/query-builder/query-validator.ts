@@ -60,28 +60,28 @@ export class QueryValidator {
 
     // 验证WHERE条件
     if (query.where) {
-      const whereValidation = this.validateWhere(query.where, entity);
+      const whereValidation = this.validateWhere(query.where as Record<string, unknown>, entity);
       errors.push(...whereValidation.errors);
       warnings.push(...whereValidation.warnings);
     }
 
     // 验证ORDER BY
     if (query.orderBy) {
-      const orderValidation = this.validateOrderBy(query.orderBy, entity);
+      const orderValidation = this.validateOrderBy(query.orderBy as Record<string, unknown>, entity);
       errors.push(...orderValidation.errors);
       warnings.push(...orderValidation.warnings);
     }
 
     // 验证包含关系
     if (query.include) {
-      const includeValidation = this.validateInclude(query.include, entity);
+      const includeValidation = this.validateInclude(query.include as Record<string, unknown>, entity);
       errors.push(...includeValidation.errors);
       warnings.push(...includeValidation.warnings);
     }
 
     // 验证字段选择
     if (query.select) {
-      const selectValidation = this.validateSelect(query.select, entity);
+      const selectValidation = this.validateSelect(query.select as Record<string, unknown>, entity);
       errors.push(...selectValidation.errors);
       warnings.push(...selectValidation.warnings);
     }
@@ -160,7 +160,7 @@ export class QueryValidator {
       }
 
       if (where.NOT) {
-        const result = this.validateWhere(where.NOT, entity, depth + 1);
+        const result = this.validateWhere(where.NOT as Record<string, unknown>, entity, depth + 1);
         errors.push(...result.errors);
         warnings.push(...result.warnings);
       }
@@ -188,7 +188,7 @@ export class QueryValidator {
       }
 
       // 验证条件类型
-      this.validateCondition(field, condition, fieldDef, errors, warnings);
+      this.validateCondition(field, condition, fieldDef as unknown as Record<string, unknown>, errors, warnings);
     }
 
     return { errors, warnings };
@@ -238,7 +238,7 @@ export class QueryValidator {
         }
 
         if (['lt', 'lte', 'gt', 'gte'].includes(op) && 
-            !['number', 'integer', 'float', 'date', 'datetime'].includes(fieldDef.type)) {
+            !['number', 'integer', 'float', 'date', 'datetime'].includes((fieldDef as Record<string, unknown>).type as string)) {
           errors.push({
             field,
             message: `Comparison operator '${op}' used on non-comparable field '${field}'`,
@@ -248,7 +248,7 @@ export class QueryValidator {
         }
 
         // 验证IN操作符的值
-        if ((op === 'in' || op === 'notIn') && !Array.isArray(condition[op])) {
+        if ((op === 'in' || op === 'notIn') && !Array.isArray((condition as Record<string, unknown>)[op])) {
           errors.push({
             field,
             message: `Operator '${op}' requires an array value`,
@@ -438,24 +438,25 @@ export class QueryValidator {
 
     // WHERE条件复杂度
     if (query.where) {
-      complexity += this.calculateWhereComplexity(query.where);
+      complexity += this.calculateWhereComplexity(query.where as Record<string, unknown>);
     }
 
     // 包含关系复杂度
     if (query.include) {
-      complexity += Object.keys(query.include).length * 10;
+      complexity += Object.keys(query.include as Record<string, unknown>).length * 10;
     }
 
     // 排序复杂度
     if (query.orderBy) {
-      const fields = Array.isArray(query.orderBy)
-        ? query.orderBy.length
-        : Object.keys(query.orderBy).length;
+      const orderBy = query.orderBy as Record<string, unknown> | unknown[];
+      const fields = Array.isArray(orderBy)
+        ? orderBy.length
+        : Object.keys(orderBy).length;
       complexity += fields * 2;
     }
 
     // 分页复杂度
-    if (query.skip) {
+    if (query.skip && typeof query.skip === 'number') {
       complexity += Math.log10(query.skip + 1);
     }
 
@@ -466,7 +467,7 @@ export class QueryValidator {
    * 计算WHERE条件复杂度
    */
   private calculateWhereComplexity(where: Record<string, unknown>, depth = 0): number {
-    let complexity = depth;
+    let complexity = depth as number;
 
     for (const [key, value] of Object.entries(where)) {
       if (key === 'AND' && Array.isArray(value)) {
@@ -476,7 +477,7 @@ export class QueryValidator {
         complexity += value.reduce((sum, cond) => 
           sum + this.calculateWhereComplexity(cond, depth + 1), 0) * 2;
       } else if (key === 'NOT') {
-        complexity += this.calculateWhereComplexity(value, depth + 1) * 1.5;
+        complexity += this.calculateWhereComplexity(value as Record<string, unknown>, depth + 1) * 1.5;
       } else {
         complexity += 1;
       }

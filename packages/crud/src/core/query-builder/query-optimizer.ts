@@ -45,7 +45,7 @@ export class QueryOptimizer {
 
     // 分析WHERE条件
     if (query.where) {
-      const whereOptimization = this.optimizeWhere(query.where, entity);
+      const whereOptimization = this.optimizeWhere(query.where as Record<string, unknown>, entity);
       hints.push(...whereOptimization.hints);
       optimizedQuery.where = whereOptimization.optimizedWhere;
       estimatedCost += whereOptimization.cost;
@@ -53,14 +53,14 @@ export class QueryOptimizer {
 
     // 分析ORDER BY
     if (query.orderBy) {
-      const orderOptimization = this.optimizeOrderBy(query.orderBy, entity);
+      const orderOptimization = this.optimizeOrderBy(query.orderBy as Record<string, unknown>, entity);
       hints.push(...orderOptimization.hints);
       estimatedCost += orderOptimization.cost;
     }
 
     // 分析关联查询
     if (query.include) {
-      const includeOptimization = this.optimizeInclude(query.include, entity);
+      const includeOptimization = this.optimizeInclude(query.include as Record<string, unknown>, entity);
       hints.push(...includeOptimization.hints);
       optimizedQuery.include = includeOptimization.optimizedInclude;
       estimatedCost += includeOptimization.cost;
@@ -75,7 +75,7 @@ export class QueryOptimizer {
 
     // 分析字段选择
     if (query.select) {
-      const selectOptimization = this.optimizeSelect(query.select, entity);
+      const selectOptimization = this.optimizeSelect(query.select as Record<string, unknown>, entity);
       hints.push(...selectOptimization.hints);
       estimatedCost += selectOptimization.cost;
     }
@@ -268,7 +268,7 @@ export class QueryOptimizer {
     const hints: QueryOptimizationHint[] = [];
     let cost = 0;
 
-    if (query.skip && query.skip > 10000) {
+    if (query.skip && typeof query.skip === 'number' && query.skip > 10000) {
       hints.push({
         type: 'limit',
         suggestion: `Large offset (${query.skip}) may be inefficient. Consider cursor-based pagination`,
@@ -277,7 +277,7 @@ export class QueryOptimizer {
       cost += query.skip * 0.001;
     }
 
-    if (query.take && query.take > 1000) {
+    if (query.take && typeof query.take === 'number' && query.take > 1000) {
       hints.push({
         type: 'limit',
         suggestion: `Large limit (${query.take}) may impact memory usage`,
@@ -339,7 +339,7 @@ export class QueryOptimizer {
 
     for (const value of Object.values(include)) {
       if (typeof value === 'object' && value !== null && 'include' in value) {
-        const nestedDepth = this.getIncludeDepth(value.include, depth + 1);
+        const nestedDepth = this.getIncludeDepth((value as Record<string, unknown>).include as Record<string, unknown>, depth + 1);
         maxDepth = Math.max(maxDepth, nestedDepth);
       }
     }
@@ -357,7 +357,7 @@ export class QueryOptimizer {
       if (value === true) {
         count++;
       } else if (typeof value === 'object' && value !== null && 'select' in value) {
-        count += this.countSelectedFields(value.select);
+        count += this.countSelectedFields((value as Record<string, unknown>).select as Record<string, unknown>);
       }
     }
 

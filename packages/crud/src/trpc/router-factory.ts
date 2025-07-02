@@ -30,7 +30,7 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
         take: z.number().optional(),
         skip: z.number().optional()
       }))
-      .query(async ({ input: _input, ctx: _ctx }: { input: Record<string, unknown>; ctx: Record<string, unknown> }) => {
+      .query(async ({ input: _input, ctx: _ctx }: { input?: Record<string, unknown>; ctx: Record<string, unknown> }) => {
         // TODO: 集成CRUD管理器
         return []
       }),
@@ -41,7 +41,7 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
         model: z.string(),
         data: z.record(z.unknown())
       }))
-      .mutation(async ({ input: _input, ctx: _ctx }: { input: Record<string, unknown>; ctx: Record<string, unknown> }) => {
+      .mutation(async ({ input: _input, ctx: _ctx }: { input?: Record<string, unknown>; ctx: Record<string, unknown> }) => {
         // TODO: 集成CRUD管理器
         return {}
       }),
@@ -53,7 +53,7 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
         where: z.record(z.unknown()),
         data: z.record(z.unknown())
       }))
-      .mutation(async ({ input: _input, ctx: _ctx }: { input: Record<string, unknown>; ctx: Record<string, unknown> }) => {
+      .mutation(async ({ input: _input, ctx: _ctx }: { input?: Record<string, unknown>; ctx: Record<string, unknown> }) => {
         // TODO: 集成CRUD管理器
         return {}
       }),
@@ -64,7 +64,7 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
         model: z.string(),
         where: z.record(z.unknown())
       }))
-      .mutation(async ({ input: _input, ctx: _ctx }: { input: Record<string, unknown>; ctx: Record<string, unknown> }) => {
+      .mutation(async ({ input: _input, ctx: _ctx }: { input?: Record<string, unknown>; ctx: Record<string, unknown> }) => {
         // TODO: 集成CRUD管理器
         return {}
       }),
@@ -75,7 +75,7 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
         model: z.string(),
         where: z.record(z.unknown()).optional()
       }))
-      .query(async ({ input: _input, ctx: _ctx }: { input: Record<string, unknown>; ctx: Record<string, unknown> }) => {
+      .query(async ({ input: _input, ctx: _ctx }: { input?: Record<string, unknown>; ctx: Record<string, unknown> }) => {
         // TODO: 集成CRUD管理器
         return 0
       })

@@ -375,7 +375,7 @@ export class PermissionChecker implements IPermissionChecker {
       const plugin = registration.plugin
       
       // 检查插件是否有对应的钩子
-      const hook = (plugin as Record<string, unknown>)[hookName]
+      const hook = (plugin as unknown as Record<string, unknown>)[hookName]
       if (typeof hook === 'function') {
         try {
           const hookResult = await hook.call(plugin, context)
