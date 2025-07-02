@@ -197,7 +197,7 @@ export class PermissionChecker implements IPermissionChecker {
         )
         
         if (accessibleResources && Array.isArray(accessibleResources)) {
-          filters.id = { in: accessibleResources.map((r: any) => r.id) }
+          filters.id = { in: accessibleResources.map((r: Record<string, unknown>) => r.id) }
         }
       } catch (error) {
         this.logger.warn('Failed to get accessible resources from auth', 
@@ -375,7 +375,7 @@ export class PermissionChecker implements IPermissionChecker {
       const plugin = registration.plugin
       
       // 检查插件是否有对应的钩子
-      const hook = (plugin as any)[hookName]
+      const hook = (plugin as Record<string, unknown>)[hookName]
       if (typeof hook === 'function') {
         try {
           const hookResult = await hook.call(plugin, context)

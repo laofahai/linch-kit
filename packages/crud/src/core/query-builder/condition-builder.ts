@@ -86,7 +86,7 @@ class ArrayStrategy implements ConditionStrategy {
     return { [field]: { [operator]: value } }
   }
 
-  validate(field: string, value: unknown, entity: Entity): void {
+  validate(field: string, value: unknown, _entity: Entity): void {
     if (!Array.isArray(value)) {
       throw new Error(`Array operator requires array value for field '${field}'`)
     }

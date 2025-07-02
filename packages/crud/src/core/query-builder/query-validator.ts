@@ -54,7 +54,7 @@ export class QueryValidator {
   /**
    * 验证查询
    */
-  validate(query: any, entity: Entity): QueryValidationResult {
+  validate(query: Record<string, unknown>, entity: Entity): QueryValidationResult {
     const errors: QueryValidationError[] = [];
     const warnings: QueryValidationError[] = [];
 
@@ -125,7 +125,7 @@ export class QueryValidator {
   /**
    * 验证WHERE条件
    */
-  private validateWhere(where: any, entity: Entity, depth = 0): {
+  private validateWhere(where: Record<string, unknown>, entity: Entity, depth = 0): {
     errors: QueryValidationError[];
     warnings: QueryValidationError[];
   } {
@@ -199,8 +199,8 @@ export class QueryValidator {
    */
   private validateCondition(
     field: string,
-    condition: any,
-    fieldDef: any,
+    condition: unknown,
+    fieldDef: Record<string, unknown>,
     errors: QueryValidationError[],
     warnings: QueryValidationError[]
   ): void {
@@ -263,7 +263,7 @@ export class QueryValidator {
   /**
    * 验证ORDER BY
    */
-  private validateOrderBy(orderBy: any, entity: Entity): {
+  private validateOrderBy(orderBy: Record<string, unknown>, entity: Entity): {
     errors: QueryValidationError[];
     warnings: QueryValidationError[];
   } {
@@ -297,7 +297,7 @@ export class QueryValidator {
   /**
    * 验证包含关系
    */
-  private validateInclude(include: any, entity: Entity, depth = 0): {
+  private validateInclude(include: Record<string, unknown>, entity: Entity, depth = 0): {
     errors: QueryValidationError[];
     warnings: QueryValidationError[];
   } {
@@ -347,7 +347,7 @@ export class QueryValidator {
   /**
    * 验证字段选择
    */
-  private validateSelect(select: any, entity: Entity): {
+  private validateSelect(select: Record<string, unknown>, entity: Entity): {
     errors: QueryValidationError[];
     warnings: QueryValidationError[];
   } {
@@ -377,7 +377,7 @@ export class QueryValidator {
   /**
    * 验证分页参数
    */
-  private validatePagination(query: any): {
+  private validatePagination(query: Record<string, unknown>): {
     errors: QueryValidationError[];
     warnings: QueryValidationError[];
   } {
@@ -433,7 +433,7 @@ export class QueryValidator {
   /**
    * 计算查询复杂度
    */
-  private calculateComplexity(query: any): number {
+  private calculateComplexity(query: Record<string, unknown>): number {
     let complexity = 1;
 
     // WHERE条件复杂度
@@ -465,7 +465,7 @@ export class QueryValidator {
   /**
    * 计算WHERE条件复杂度
    */
-  private calculateWhereComplexity(where: any, depth = 0): number {
+  private calculateWhereComplexity(where: Record<string, unknown>, depth = 0): number {
     let complexity = depth;
 
     for (const [key, value] of Object.entries(where)) {
