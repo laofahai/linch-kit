@@ -213,12 +213,30 @@ on:
     tags: ['v*']
 ```
 
-### 发布流程
+### 自动化发布流程 ⚠️
+**严格禁止手动发布！所有发布必须通过 CI/CD 完成**
+
 1. **推送标签** → 触发发布 Action
 2. **构建包** → 生成 dist 文件
 3. **运行测试** → 确保质量
 4. **发布 NPM** → 自动发布到 NPM
 5. **GitHub Release** → 创建 Release 页面
+
+### Changeset 发布流程
+```bash
+# 1. 创建 changeset
+pnpm changeset
+
+# 2. 版本更新 (可选，CI 也可以做)
+pnpm changeset version
+
+# 3. 提交并推送
+git add .
+git commit -m "chore: release packages"
+git push origin main
+
+# 4. GitHub Actions 自动发布到 NPM
+```
 
 ---
 

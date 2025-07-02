@@ -1,10 +1,11 @@
 import path from 'path'
+import { execSync } from 'child_process'
+
 import fs from 'fs-extra'
 import degit from 'degit'
 import chalk from 'chalk'
 import ora from 'ora'
 import prompts from 'prompts'
-import { execSync } from 'child_process'
 
 interface CreateOptions {
   template?: string
@@ -15,7 +16,7 @@ interface CreateOptions {
 const TEMPLATE_REPO = 'laofahai/linch-kit/apps/starter'
 
 export async function createProject(projectName?: string, options: CreateOptions = {}) {
-  let targetDir = projectName
+  let targetDir: string = projectName || ''
 
   // 如果没有提供项目名，询问用户
   if (!targetDir) {
@@ -174,7 +175,7 @@ async function installDependencies(targetPath: string) {
     })
     
     spinner.succeed(`依赖安装完成 (${packageManager})`)
-  } catch (error) {
+  } catch {
     spinner.fail('依赖安装失败')
     console.log(chalk.yellow('请手动运行 npm install 安装依赖'))
   }
