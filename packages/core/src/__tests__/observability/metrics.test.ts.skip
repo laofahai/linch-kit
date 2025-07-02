@@ -5,32 +5,22 @@ import { LinchKitMetricCollector } from '../../observability/metrics'
 
 // Mock prom-client
 vi.mock('prom-client', () => {
-  const mockCounter = {
-    inc: vi.fn(),
-    get: vi.fn().mockReturnValue({ values: [] }),
-    reset: vi.fn()
-  }
-  
-  const mockGauge = {
-    set: vi.fn(),
-    inc: vi.fn(), 
-    dec: vi.fn(),
-    get: vi.fn().mockReturnValue({ values: [] }),
-    reset: vi.fn()
-  }
-  
-  const mockHistogram = {
-    observe: vi.fn(),
-    startTimer: vi.fn().mockReturnValue(() => {}),
-    get: vi.fn().mockReturnValue({ values: [] }),
-    reset: vi.fn()
-  }
-  
-  const mockSummary = {
-    observe: vi.fn(),
-    startTimer: vi.fn().mockReturnValue(() => {}),
-    get: vi.fn().mockReturnValue({ values: [] }),
-    reset: vi.fn()
+  const createMockMetric = (type: string) => {
+    const methods = {
+      inc: vi.fn(),
+      get: vi.fn().mockReturnValue({ values: [] }),
+      reset: vi.fn(),
+      set: vi.fn(),
+      dec: vi.fn(),
+      observe: vi.fn(),
+      startTimer: vi.fn().mockReturnValue(() => {}),
+      labels: vi.fn().mockReturnThis()
+    }
+    
+    // Return a function that returns the methods
+    return Object.assign(methods, {
+      labels: vi.fn().mockReturnValue(methods)
+    })
   }
 
   return {
@@ -40,10 +30,10 @@ vi.mock('prom-client', () => {
       getMetricsAsJSON: vi.fn().mockReturnValue([])
     },
     collectDefaultMetrics: vi.fn(),
-    Counter: vi.fn().mockImplementation(() => mockCounter),
-    Gauge: vi.fn().mockImplementation(() => mockGauge),
-    Histogram: vi.fn().mockImplementation(() => mockHistogram),
-    Summary: vi.fn().mockImplementation(() => mockSummary),
+    Counter: vi.fn().mockImplementation(() => createMockMetric('Counter')),
+    Gauge: vi.fn().mockImplementation(() => createMockMetric('Gauge')),
+    Histogram: vi.fn().mockImplementation(() => createMockMetric('Histogram')),
+    Summary: vi.fn().mockImplementation(() => createMockMetric('Summary')),
     Registry: vi.fn()
   }
 })
