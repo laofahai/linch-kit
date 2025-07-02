@@ -73,10 +73,10 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
-    "@linch-kit/core": "workspace:*",
-    "@linch-kit/schema": "workspace:*",
     "@linch-kit/auth": "workspace:*",
+    "@linch-kit/core": "workspace:*",
     "@linch-kit/crud": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
     "@linch-kit/trpc": "workspace:*",
     "@linch-kit/ui": "workspace:*",
     "react-hook-form": "^7.59.0",
@@ -85,6 +85,7 @@
   "devDependencies": {
     "@tanstack/react-query": "^5.81.5",
     "@tanstack/react-query-devtools": "^5.81.5",
+    "@testing-library/react": "^16.3.0",
     "@trpc/client": "^11.4.3",
     "@trpc/react-query": "^11.4.3",
     "@trpc/server": "^11.4.3",

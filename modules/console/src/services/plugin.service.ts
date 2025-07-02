@@ -43,7 +43,7 @@ export class PluginService {
   /**
    * 安装插件
    */
-  async installPlugin(input: InstallPluginInput): Promise<Record<string, unknown>> {
+  async installPlugin(input: InstallPluginInputType): Promise<Record<string, unknown>> {
     // TODO: 实现真实的插件安装逻辑
     return { id: 'install-' + Date.now(), ...input }
   }

@@ -52,7 +52,7 @@ export interface ConsoleProviderProps {
   /** 用户权限 */
   permissions?: string[]
   /** API 基础 URL */
-  apiUrl?: string
+  _apiUrl?: string
   /** 初始语言 */
   language?: string
   /** 是否显示开发工具 */
@@ -67,7 +67,7 @@ export function ConsoleProvider({
   config = {},
   tenantId,
   permissions = [],
-  apiUrl = '/api/trpc',
+  _apiUrl = '/api/trpc',
   language = 'zh-CN',
   devtools = process.env.NODE_ENV === 'development'
 }: ConsoleProviderProps) {
