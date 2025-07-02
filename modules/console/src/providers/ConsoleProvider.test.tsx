@@ -1,6 +1,7 @@
-import { renderHook } from '@testing-library/react';
-import { ConsoleProvider, useConsoleContext } from '../providers/ConsoleProvider';
 import React from 'react';
+import { renderHook } from '@testing-library/react';
+
+import { ConsoleProvider, useConsoleContext } from '../providers/ConsoleProvider';
 
 describe('useConsoleContext', () => {
   it('should throw error when used outside ConsoleProvider', () => {
