@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+
 import { createMinimalCrudManager } from './factory';
 import { CrudManager } from './core/crud-manager';
 

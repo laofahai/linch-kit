@@ -1,6 +1,6 @@
 {
   "name": "@linch-kit/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "LinchKit 基础设施包 - 插件系统、配置管理、可观测性",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

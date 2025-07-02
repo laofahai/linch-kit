@@ -1,6 +1,6 @@
 {
   "name": "@linch-kit/crud",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "类型安全的 CRUD 操作包，支持复杂查询、权限集成、事务管理、缓存优化",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",

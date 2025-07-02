@@ -1,5 +1,27 @@
 # @linch-kit/crud
 
+## 1.0.1
+
+### Patch Changes
+
+- 修复 CI/CD 和发布流程问题
+  - 修复 TypeScript 配置和 lint 错误
+  - 修复 ES 模块兼容性问题
+  - 修复 UI 包的 ESLint 配置
+  - 准备生产就绪的发布流程
+
+- 修复 TypeScript 配置和 lint 错误
+  - 修复 UI 包和 console 包的 tsconfig.json 包含测试文件
+  - 修复 console 包测试文件的 import 顺序
+  - 确保所有包的 lint 检查通过
+  - 验证构建、lint 和测试全部成功
+  - 为 CI/CD 发布流程做准备
+
+- Updated dependencies []:
+  - @linch-kit/core@1.0.1
+  - @linch-kit/schema@1.0.1
+  - @linch-kit/auth@1.0.1
+
 ## 1.0.0
 
 ### Minor Changes
