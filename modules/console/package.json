@@ -1,6 +1,6 @@
 {
   "name": "@linch-kit/console",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "LinchKit 企业级管理控制台功能库 - 多租户管理、权限控制、插件市场、系统监控",
   "keywords": [
     "linch-kit",

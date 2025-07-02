@@ -1,5 +1,16 @@
 # @linch-kit/crud
 
+## 1.0.2
+
+### Patch Changes
+
+- [`1e6cf4c`](https://github.com/laofahai/linch-kit/commit/1e6cf4c0fc9e036ba06f8243d772ac12753a147f) Thanks [@laofahai](https://github.com/laofahai)! - 发布 LinchKit v1.0.2 - 修复 NPM token 配置和发布流程
+
+- Updated dependencies [[`1e6cf4c`](https://github.com/laofahai/linch-kit/commit/1e6cf4c0fc9e036ba06f8243d772ac12753a147f)]:
+  - @linch-kit/core@1.0.2
+  - @linch-kit/schema@1.0.2
+  - @linch-kit/auth@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes
