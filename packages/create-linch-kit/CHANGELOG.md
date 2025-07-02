@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.3
+
+### Patch Changes
+
+- [`ddc6df6`](https://github.com/laofahai/linch-kit/commit/ddc6df6a79442e6f4be7f60823966917a1f78010) Thanks [@laofahai](https://github.com/laofahai)! - 添加 prepublishOnly 脚本确保发布前自动构建，修复 dist 目录缺失问题
+
 ## 2.0.2
 
 ### Patch Changes
