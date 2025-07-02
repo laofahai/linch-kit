@@ -9,7 +9,7 @@
   "commit": false,
   "fixed": [],
   "linked": [
-    ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth", "@linch-kit/crud", "@linch-kit/trpc", "@linch-kit/ui", "@linch-kit/console"]
+    ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth", "@linch-kit/crud", "@linch-kit/trpc", "@linch-kit/ui", "@linch-kit/console", "create-linch-kit"]
   ],
   "access": "public",
   "baseBranch": "main",
