@@ -8,7 +8,7 @@
  * - 条件权限解析
  */
 
-import type { Entity, FieldDefinition } from '@linch-kit/schema'
+import type { Entity, FieldDefinition as _FieldDefinition } from '@linch-kit/schema'
 import type { LinchKitUser, IPermissionChecker as AuthPermissionChecker, PermissionAction, PermissionSubject } from '@linch-kit/auth'
 import type { PluginManager } from '@linch-kit/core'
 
@@ -152,7 +152,7 @@ export class PermissionChecker implements IPermissionChecker {
         const filteredItem: Partial<T> = {}
 
         for (const [fieldName, fieldValue] of Object.entries(item as Record<string, unknown>)) {
-          const field = entity.fields[fieldName]
+          const _field = entity.fields[fieldName]
 
           // 检查字段权限
           if (await this.checkFieldPermission(entity, user, fieldName, operation, item)) {
@@ -218,7 +218,7 @@ export class PermissionChecker implements IPermissionChecker {
       filters
     })
 
-    return { ...filters, ...pluginFilters }
+    return { ...filters, ...(pluginFilters as Record<string, unknown> || {}) }
   }
 
   /**
@@ -363,7 +363,7 @@ export class PermissionChecker implements IPermissionChecker {
   private async runPluginHooks(
     hookName: string,
     context: Record<string, unknown>
-  ): Promise<any> {
+  ): Promise<unknown> {
     if (!this.pluginManager) {
       return
     }

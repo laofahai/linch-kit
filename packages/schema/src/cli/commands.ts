@@ -10,6 +10,11 @@ import type { CLICommand } from '@linch-kit/core/server'
 import { CodeGenerator, GeneratorRegistry } from '../generators'
 import type { Entity } from '../types'
 
+// CLI 上下文类型
+interface CLIContext {
+  options: Record<string, unknown>
+}
+
 // 临时翻译函数，替代基础设施中的翻译功能
 const useSchemaTranslation = () => (key: string, params?: Record<string, unknown>) => {
   // 简单的英文消息，实际项目中应该使用完整的国际化系统
@@ -72,7 +77,7 @@ export const generateSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async (context: unknown) => {
+  handler: async (context: CLIContext) => {
     const { options } = context
     const t = useSchemaTranslation()
 
@@ -195,7 +200,7 @@ export const validateSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async (context: unknown) => {
+  handler: async (context: CLIContext) => {
     const { options } = context
     const t = useSchemaTranslation()
 
@@ -266,7 +271,7 @@ export const initSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async (context: unknown) => {
+  handler: async (context: CLIContext) => {
     const { options } = context
     const t = useSchemaTranslation()
 
@@ -349,7 +354,7 @@ export const infoSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async (context: unknown) => {
+  handler: async (context: CLIContext) => {
     const { options } = context
     const t = useSchemaTranslation()
 

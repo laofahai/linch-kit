@@ -3,7 +3,7 @@
  * CRUD操作相关的tRPC路由定义
  */
 
-import { router, publicProcedure, protectedProcedure } from '@linch-kit/trpc'
+import { router, protectedProcedure } from '@linch-kit/trpc'
 import { z } from 'zod'
 
 export const crudRouter = router({
@@ -11,12 +11,12 @@ export const crudRouter = router({
   findMany: protectedProcedure
     .input(z.object({
       model: z.string(),
-      where: z.record(z.any()).optional(),
-      orderBy: z.record(z.any()).optional(),
+      where: z.record(z.unknown()).optional(),
+      orderBy: z.record(z.unknown()).optional(),
       take: z.number().optional(),
       skip: z.number().optional()
     }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用查询逻辑
       return []
     }),
@@ -25,9 +25,9 @@ export const crudRouter = router({
   create: protectedProcedure
     .input(z.object({
       model: z.string(),
-      data: z.record(z.any())
+      data: z.record(z.unknown())
     }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用创建逻辑
       return {}
     }),
@@ -36,10 +36,10 @@ export const crudRouter = router({
   update: protectedProcedure
     .input(z.object({
       model: z.string(),
-      where: z.record(z.any()),
-      data: z.record(z.any())
+      where: z.record(z.unknown()),
+      data: z.record(z.unknown())
     }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用更新逻辑
       return {}
     }),
@@ -48,9 +48,9 @@ export const crudRouter = router({
   delete: protectedProcedure
     .input(z.object({
       model: z.string(),
-      where: z.record(z.any())
+      where: z.record(z.unknown())
     }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用删除逻辑
       return {}
     }),
@@ -59,9 +59,9 @@ export const crudRouter = router({
   count: protectedProcedure
     .input(z.object({
       model: z.string(),
-      where: z.record(z.any()).optional()
+      where: z.record(z.unknown()).optional()
     }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现统计查询逻辑
       return 0
     })

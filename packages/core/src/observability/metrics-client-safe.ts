@@ -17,29 +17,29 @@ import type {
  */
 class ClientMetricStub implements Counter, Gauge, Histogram, Summary {
   // Counter methods
-  inc(value = 1, labels?: Record<string, string>): void {
+  inc(_value = 1, _labels?: Record<string, string>): void {
     // No-op on client side
   }
 
   // Gauge methods
-  set(value: number, labels?: Record<string, string>): void {
+  set(_value: number, _labels?: Record<string, string>): void {
     // No-op on client side
   }
 
-  dec(value = 1, labels?: Record<string, string>): void {
+  dec(_value = 1, _labels?: Record<string, string>): void {
     // No-op on client side
   }
 
   // Histogram methods
-  observe(value: number, labels?: Record<string, string>): void {
+  observe(_value: number, _labels?: Record<string, string>): void {
     // No-op on client side
   }
 
-  startTimer(labels?: Record<string, string>): () => void {
+  startTimer(_labels?: Record<string, string>): () => void {
     return () => {} // No-op on client side
   }
 
-  get(labels?: Record<string, string>): any {
+  get(_labels?: Record<string, string>): unknown {
     return { buckets: {}, count: 0, sum: 0, quantiles: {}, value: 0 }
   }
 
@@ -52,19 +52,19 @@ class ClientMetricStub implements Counter, Gauge, Histogram, Summary {
  * Client-side metric collector stub
  */
 class ClientMetricCollector implements MetricCollector {
-  createCounter(config: MetricConfig): Counter {
+  createCounter(_config: MetricConfig): Counter {
     return new ClientMetricStub()
   }
 
-  createGauge(config: MetricConfig): Gauge {
+  createGauge(_config: MetricConfig): Gauge {
     return new ClientMetricStub()
   }
 
-  createHistogram(config: MetricConfig): Histogram {
+  createHistogram(_config: MetricConfig): Histogram {
     return new ClientMetricStub()
   }
 
-  createSummary(config: MetricConfig): Summary {
+  createSummary(_config: MetricConfig): Summary {
     return new ClientMetricStub()
   }
 
@@ -103,11 +103,11 @@ async function loadServerMetrics() {
 /**
  * Create metric collector (server-side implementation or client stub)
  */
-export async function createMetricCollector(config: any = {}): Promise<MetricCollector> {
+export async function createMetricCollector(_config: unknown = {}): Promise<MetricCollector> {
   if (isServerSide()) {
     const serverMetrics = await loadServerMetrics()
     if (serverMetrics) {
-      return serverMetrics.createMetricCollector(config)
+      return serverMetrics.createMetricCollector(_config)
     }
   }
   

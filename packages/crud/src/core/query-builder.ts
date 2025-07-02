@@ -15,7 +15,7 @@ import type {
   IQueryBuilder,
   Operator,
   PaginatedResult,
-  FindOptions,
+  FindOptions as _FindOptions,
   PerformanceMetrics
 } from '../types'
 import { PermissionChecker } from '../permissions/permission-checker'

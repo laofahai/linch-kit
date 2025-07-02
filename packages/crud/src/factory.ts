@@ -11,6 +11,8 @@ import { PrismaQueryBuilder } from './core/query-builder/prisma-query-builder'
 // 简化的 PrismaClient 类型定义 - 避免运行时依赖
 interface PrismaClient {
   [key: string]: any
+  $transaction: any
+  $queryRaw: any
 }
 
 /**

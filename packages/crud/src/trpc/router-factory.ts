@@ -25,12 +25,12 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
     findMany: protectedProcedure
       .input(z.object({
         model: z.string(),
-        where: z.record(z.any()).optional(),
-        orderBy: z.record(z.any()).optional(),
+        where: z.record(z.unknown()).optional(),
+        orderBy: z.record(z.unknown()).optional(),
         take: z.number().optional(),
         skip: z.number().optional()
       }))
-      .query(async ({ input, ctx }: any) => {
+      .query(async ({ input: _input, ctx: _ctx }: any) => {
         // TODO: 集成CRUD管理器
         return []
       }),
@@ -39,9 +39,9 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
     create: protectedProcedure
       .input(z.object({
         model: z.string(),
-        data: z.record(z.any())
+        data: z.record(z.unknown())
       }))
-      .mutation(async ({ input, ctx }: any) => {
+      .mutation(async ({ input: _input, ctx: _ctx }: any) => {
         // TODO: 集成CRUD管理器
         return {}
       }),
@@ -50,10 +50,10 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
     update: protectedProcedure
       .input(z.object({
         model: z.string(),
-        where: z.record(z.any()),
-        data: z.record(z.any())
+        where: z.record(z.unknown()),
+        data: z.record(z.unknown())
       }))
-      .mutation(async ({ input, ctx }: any) => {
+      .mutation(async ({ input: _input, ctx: _ctx }: any) => {
         // TODO: 集成CRUD管理器
         return {}
       }),
@@ -62,9 +62,9 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
     delete: protectedProcedure
       .input(z.object({
         model: z.string(),
-        where: z.record(z.any())
+        where: z.record(z.unknown())
       }))
-      .mutation(async ({ input, ctx }: any) => {
+      .mutation(async ({ input: _input, ctx: _ctx }: any) => {
         // TODO: 集成CRUD管理器
         return {}
       }),
@@ -73,9 +73,9 @@ export function createCrudRouter(trpc: TRPCRouterBuilder) {
     count: protectedProcedure
       .input(z.object({
         model: z.string(),
-        where: z.record(z.any()).optional()
+        where: z.record(z.unknown()).optional()
       }))
-      .query(async ({ input, ctx }: any) => {
+      .query(async ({ input: _input, ctx: _ctx }: any) => {
         // TODO: 集成CRUD管理器
         return 0
       })

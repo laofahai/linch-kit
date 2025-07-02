@@ -224,7 +224,7 @@ export class QueryOptimizer {
   /**
    * 优化关联查询
    */
-  private optimizeInclude(include: any, entity: Entity): {
+  private optimizeInclude(include: any, _entity: Entity): {
     optimizedInclude: any;
     hints: QueryOptimizationHint[];
     cost: number;
@@ -261,7 +261,7 @@ export class QueryOptimizer {
   /**
    * 优化分页
    */
-  private optimizePagination(query: any, entity: Entity): {
+  private optimizePagination(query: any, _entity: Entity): {
     hints: QueryOptimizationHint[];
     cost: number;
   } {

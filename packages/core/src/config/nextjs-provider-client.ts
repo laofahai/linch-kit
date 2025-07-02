@@ -82,7 +82,7 @@ export class NextjsClientEnvProvider {
 
     return {
       publicVars,
-      nodeEnv: (allVars.NODE_ENV as any) || 'development'
+      nodeEnv: (allVars.NODE_ENV as 'development' | 'production' | 'test') || 'development'
     }
   }
 }

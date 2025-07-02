@@ -10,7 +10,7 @@
 
 import type { PrismaClient } from '@prisma/client'
 import type { Entity, SchemaRegistry } from '@linch-kit/schema'
-import type { User } from '@linch-kit/auth'
+import type { User as _User } from '@linch-kit/auth'
 import type { Logger } from '@linch-kit/core'
 
 import type {
@@ -23,7 +23,7 @@ import type {
   PaginatedResult,
   WhereClause,
   ValidationError,
-  PermissionError,
+  PermissionError as _PermissionError,
   AuditLogEntry,
   PerformanceMetrics
 } from '../types'

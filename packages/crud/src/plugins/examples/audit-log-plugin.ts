@@ -8,14 +8,14 @@
  * - 记录状态变更（如订单状态变化）
  */
 
-import type { Logger } from '@linch-kit/core'
+import type { Logger as _Logger } from '@linch-kit/core'
 
 import type { 
   CrudPluginHooks, 
   HookContext, 
   FieldChange,
-  CreateInput,
-  UpdateInput
+  CreateInput as _CreateInput,
+  UpdateInput as _UpdateInput
 } from '../types'
 import { BaseCrudPlugin } from '../base-plugin'
 
@@ -144,7 +144,7 @@ export class AuditLogPlugin extends BaseCrudPlugin {
       },
 
       // 钩子优先级 - 审计日志应该最后执行
-      getHookPriority: (hookName: string, entityName: string): number => {
+      getHookPriority: (_hookName: string, _entityName: string): number => {
         return 1000 // 低优先级，最后执行
       }
     }

@@ -17,14 +17,14 @@ import type {
   FieldChange,
   CreateInput,
   UpdateInput,
-  CrudOptions,
-  FindOptions
+  CrudOptions as _CrudOptions,
+  FindOptions as _FindOptions
 } from './types'
 
 /**
  * 钩子执行结果
  */
-interface HookExecutionResult<T = unknown> {
+interface _HookExecutionResult<T = unknown> {
   success: boolean
   result?: T
   error?: Error

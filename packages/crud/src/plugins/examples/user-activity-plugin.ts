@@ -8,13 +8,14 @@
  * - 处理用户关联关系变更
  */
 
-import type { Logger } from '@linch-kit/core'
+import type { Logger as _Logger } from '@linch-kit/core'
+
 import type { 
   CrudPluginHooks, 
   HookContext, 
   FieldChange,
-  CreateInput,
-  UpdateInput
+  CreateInput as _CreateInput,
+  UpdateInput as _UpdateInput
 } from '../types'
 import { BaseCrudPlugin } from '../base-plugin'
 
@@ -132,7 +133,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
       shouldExecuteHook: async (
         hookName: string,
         entityName: string,
-        context: HookContext
+        _context: HookContext
       ): Promise<boolean> => {
         // 仅处理 User 实体相关的钩子
         return entityName === 'User'
@@ -212,7 +213,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
   /**
    * 处理用户删除
    */
-  private async handleUserDeletion(user: unknown, context: HookContext): Promise<void> => {
+  private async handleUserDeletion(user: unknown, context: HookContext): Promise<void> {
     const userId = this.extractUserId(user)
     if (!userId) return
 
@@ -242,7 +243,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     newValue: unknown,
     operation: 'create' | 'update',
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     const userId = this.extractUserId(context.user) || this.extractUserIdFromContext(context)
     if (!userId) return
 
@@ -275,7 +276,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     newStatus: string,
     user: T,
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     // 记录状态变更活动
     await this.recordUserActivity(userId, 'STATUS_CHANGED', context, {
       oldStatus,
@@ -311,7 +312,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     relatedIds: string[],
     user: T,
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     // 记录关联变更活动
     await this.recordUserActivity(userId, 'RELATION_CHANGED', context, {
       relationName,
@@ -371,7 +372,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     oldEmail: string,
     newEmail: string,
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     await this.recordUserActivity(userId, 'EMAIL_CHANGED', context, {
       oldEmail: this.maskEmail(oldEmail),
       newEmail: this.maskEmail(newEmail)
@@ -386,7 +387,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     oldAvatar: string,
     newAvatar: string,
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     await this.recordUserActivity(userId, 'AVATAR_CHANGED', context, {
       hasOldAvatar: !!oldAvatar,
       hasNewAvatar: !!newAvatar
@@ -401,7 +402,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     oldPreferences: unknown,
     newPreferences: unknown,
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     await this.recordUserActivity(userId, 'PREFERENCES_CHANGED', context, {
       preferencesCount: Object.keys(newPreferences as Record<string, unknown> || {}).length
     })
@@ -410,7 +411,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
   /**
    * 处理用户暂停
    */
-  private async handleUserSuspension(userId: string, context: HookContext): Promise<void> => {
+  private async handleUserSuspension(userId: string, context: HookContext): Promise<void> {
     await this.recordUserActivity(userId, 'USER_SUSPENDED', context, {
       suspensionReason: context.metadata?.suspensionReason,
       suspendedBy: context.user
@@ -420,7 +421,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
   /**
    * 处理用户重新激活
    */
-  private async handleUserReactivation(userId: string, context: HookContext): Promise<void> => {
+  private async handleUserReactivation(userId: string, context: HookContext): Promise<void> {
     await this.recordUserActivity(userId, 'USER_REACTIVATED', context, {
       reactivatedBy: context.user
     })
@@ -434,7 +435,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     changeType: 'connect' | 'disconnect' | 'set',
     roleIds: string[],
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     await this.recordUserActivity(userId, 'ROLES_CHANGED', context, {
       changeType,
       roleIds,
@@ -450,7 +451,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     changeType: 'connect' | 'disconnect' | 'set',
     teamIds: string[],
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     await this.recordUserActivity(userId, 'TEAMS_CHANGED', context, {
       changeType,
       teamIds,
@@ -466,7 +467,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     changeType: 'connect' | 'disconnect' | 'set',
     permissionIds: string[],
     context: HookContext
-  ): Promise<void> => {
+  ): Promise<void> {
     await this.recordUserActivity(userId, 'PERMISSIONS_CHANGED', context, {
       changeType,
       permissionIds,

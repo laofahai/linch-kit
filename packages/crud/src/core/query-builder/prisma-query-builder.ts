@@ -10,7 +10,7 @@ import type { PluginManager } from '@linch-kit/core'
 import type { PaginatedResult, SchemaRegistry, Logger } from '../../types'
 
 import { BaseQueryBuilder } from './base-query-builder'
-import { QueryExecutorFactory } from './query-executor'
+import { QueryExecutorFactory as _QueryExecutorFactory } from './query-executor'
 
 // 简化的 PrismaClient 类型定义
 interface PrismaClient {
@@ -24,7 +24,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   constructor(
     entityName: string,
     prisma: PrismaClient,
-    schemaRegistry: any, // 简化类型
+    schemaRegistry: SchemaRegistry,
     logger: Logger,
     pluginManager?: PluginManager
   ) {
@@ -37,7 +37,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   static create<T>(
     entityName: string,
     prisma: PrismaClient,
-    schemaRegistry: any, // 简化类型
+    schemaRegistry: SchemaRegistry,
     logger: Logger,
     pluginManager?: PluginManager
   ): PrismaQueryBuilder<T> {

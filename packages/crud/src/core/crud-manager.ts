@@ -8,13 +8,15 @@
  * - 插件扩展支持
  */
 
-import type { Entity } from '@linch-kit/schema'
+import type { Entity as _Entity } from '@linch-kit/schema'
 import type { LinchKitUser, IPermissionChecker as AuthPermissionChecker } from '@linch-kit/auth'
 import type { PluginManager as CorePluginManager } from '@linch-kit/core'
 
 // 定义类型，避免运行时依赖
 interface PrismaClient {
   [key: string]: any
+  $transaction: any
+  $queryRaw: any
 }
 
 interface PluginRegistration {
@@ -418,7 +420,7 @@ export class CrudManager {
    */
   async queryRaw<T = unknown>(
     sql: string,
-    ...params: unknown[]
+    ..._params: unknown[]
   ): Promise<T[]> {
     return await this.prisma.$queryRaw<T[]>`${sql}` as T[]
   }

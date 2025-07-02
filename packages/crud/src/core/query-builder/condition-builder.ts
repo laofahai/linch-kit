@@ -47,7 +47,7 @@ class ComparisonStrategy implements ConditionStrategy {
     return { [field]: { [this.operator]: value } }
   }
 
-  validate(field: string, value: unknown, entity: Entity): void {
+  validate(field: string, _value: unknown, entity: Entity): void {
     const fieldDef = entity.fields[field]
     if (fieldDef && !['number', 'integer', 'float', 'date', 'datetime'].includes(fieldDef.type)) {
       throw new Error(`Comparison operator ${this.operator} not compatible with field type ${fieldDef.type}`)
@@ -99,13 +99,13 @@ class ArrayStrategy implements ConditionStrategy {
 class NullStrategy implements ConditionStrategy {
   constructor(private readonly isNegated: boolean = false) {}
 
-  build(field: string, value: unknown): Record<string, unknown> {
+  build(field: string, _value: unknown): Record<string, unknown> {
     return this.isNegated 
       ? { [field]: { not: null } }
       : { [field]: null }
   }
 
-  validate(field: string, value: unknown, entity: Entity): void {
+  validate(_field: string, _value: unknown, entity: Entity): void {
     // NULL 操作不需要值验证
   }
 }

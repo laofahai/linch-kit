@@ -2,7 +2,7 @@
  * CRUD 插件系统类型定义
  */
 
-import type { CreateInput, UpdateInput, CrudOptions, FindOptions } from '../types'
+import type { CreateInput, UpdateInput, CrudOptions as _CrudOptions, FindOptions as _FindOptions } from '../types'
 
 /**
  * 钩子上下文 - 提供操作的详细上下文信息

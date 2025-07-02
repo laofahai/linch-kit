@@ -30,8 +30,8 @@ export function createAuthRouter(trpc: TRPCRouterBuilder) {
 
     // 获取用户信息
     getUser: protectedProcedure
-      .query(async ({ ctx }: any) => {
-        return ctx.user
+      .query(async ({ ctx: _ctx }: any) => {
+        return _ctx.user
       }),
 
     // 用户登录状态检查
@@ -42,7 +42,7 @@ export function createAuthRouter(trpc: TRPCRouterBuilder) {
 
     // 获取用户权限
     getPermissions: protectedProcedure
-      .query(async ({ ctx }: any) => {
+      .query(async ({ ctx: _ctx }: any) => {
         // TODO: 集成权限引擎
         return []
       }),
@@ -53,7 +53,7 @@ export function createAuthRouter(trpc: TRPCRouterBuilder) {
         action: z.string(),
         resource: z.string()
       }))
-      .query(async ({ input, ctx }: any) => {
+      .query(async ({ input: _input, ctx: _ctx }: any) => {
         // TODO: 集成权限引擎
         return false
       })

@@ -196,7 +196,7 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
     const optimizedResult = this.optimizer.optimize(this.query, this.entity)
 
     // 3. 应用插件
-    return await this.applyPlugins(optimizedResult.query)
+    return await this.applyPlugins(optimizedResult.query as Record<string, unknown>)
   }
 
   /**
@@ -211,7 +211,7 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
     const plugins = this.pluginManager.getAll().map(reg => reg.plugin)
     let processedQuery = query
 
-    for (const plugin of plugins) {
+    for (const _plugin of plugins) {
       // TODO: Add query plugin hooks support
       // if (plugin.hooks?.beforeExecute) {
       //   processedQuery = await plugin.hooks.beforeExecute(processedQuery, this.entity)
@@ -237,7 +237,7 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
       // 应用指标插件
       if (this.pluginManager) {
         const plugins = this.pluginManager.getAll().map(reg => reg.plugin)
-        for (const plugin of plugins) {
+        for (const _plugin of plugins) {
           // TODO: Add metrics plugin hooks support
           // if (plugin.hooks?.recordMetrics) {
           //   await plugin.hooks.recordMetrics(metrics)

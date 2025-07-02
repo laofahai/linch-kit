@@ -30,7 +30,7 @@ export const authRouter = {
 
   // 获取用户权限
   getPermissions: {
-    query: async ({ ctx }: { ctx: any }) => {
+    query: async ({ ctx: _ctx }: { ctx: any }) => {
       // TODO: 实现权限获取逻辑
       return []
     }
@@ -42,7 +42,7 @@ export const authRouter = {
       action: z.string(),
       resource: z.string()
     }),
-    query: async ({ input, ctx }: { input: any, ctx: any }) => {
+    query: async ({ input: _input, ctx: _ctx }: { input: any, ctx: any }) => {
       // TODO: 实现权限检查逻辑
       return false
     }

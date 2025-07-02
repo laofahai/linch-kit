@@ -354,7 +354,7 @@ export class QueryValidator {
     const errors: QueryValidationError[] = [];
     const warnings: QueryValidationError[] = [];
 
-    for (const [field, value] of Object.entries(select)) {
+    for (const [field, _value] of Object.entries(select)) {
       if (!entity.fields[field]) {
         const error: QueryValidationError = {
           field,
