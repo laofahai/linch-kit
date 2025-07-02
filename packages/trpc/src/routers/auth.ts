@@ -4,6 +4,7 @@
  */
 
 import { z } from 'zod'
+
 import { router, publicProcedure, protectedProcedure } from '../index'
 
 export const authRouter = router({
@@ -27,7 +28,7 @@ export const authRouter = router({
 
   // 获取用户权限
   getPermissions: protectedProcedure
-    .query(async ({ ctx }) => {
+    .query(async ({ ctx: _ctx }) => {
       // TODO: 实现权限获取逻辑
       return []
     }),
@@ -38,7 +39,7 @@ export const authRouter = router({
       action: z.string(),
       resource: z.string()
     }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现权限检查逻辑
       return false
     })

@@ -72,7 +72,7 @@ export const generateSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async (context: any) => {
+  handler: async (context: unknown) => {
     const { options } = context
     const t = useSchemaTranslation()
 
@@ -195,7 +195,7 @@ export const validateSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async (context: any) => {
+  handler: async (context: unknown) => {
     const { options } = context
     const t = useSchemaTranslation()
 
@@ -266,7 +266,7 @@ export const initSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async (context: any) => {
+  handler: async (context: unknown) => {
     const { options } = context
     const t = useSchemaTranslation()
 
@@ -349,7 +349,7 @@ export const infoSchemaCommand: CLICommand = {
       type: 'boolean',
     },
   ],
-  handler: async (context: any) => {
+  handler: async (context: unknown) => {
     const { options } = context
     const t = useSchemaTranslation()
 

@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 class DependencyGraph {
   constructor() {
@@ -136,7 +139,7 @@ class DependencyGraph {
 }
 
 // 如果作为脚本直接运行
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   const graph = new DependencyGraph();
   graph.analyze().then(result => {
     console.log('=== LinchKit 依赖分析报告 ===');
@@ -158,4 +161,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { DependencyGraph };
+export { DependencyGraph };

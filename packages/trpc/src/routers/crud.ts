@@ -4,6 +4,7 @@
  */
 
 import { z } from 'zod'
+
 import { router, protectedProcedure } from '../index'
 
 export const crudRouter = router({
@@ -16,7 +17,7 @@ export const crudRouter = router({
       take: z.number().optional(),
       skip: z.number().optional()
     }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用查询逻辑
       return []
     }),
@@ -27,7 +28,7 @@ export const crudRouter = router({
       model: z.string(),
       data: z.record(z.any())
     }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用创建逻辑
       return {}
     }),
@@ -39,7 +40,7 @@ export const crudRouter = router({
       where: z.record(z.any()),
       data: z.record(z.any())
     }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用更新逻辑
       return {}
     }),
@@ -50,7 +51,7 @@ export const crudRouter = router({
       model: z.string(),
       where: z.record(z.any())
     }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用删除逻辑
       return {}
     }),
@@ -61,7 +62,7 @@ export const crudRouter = router({
       model: z.string(),
       where: z.record(z.any()).optional()
     }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现统计查询逻辑
       return 0
     })

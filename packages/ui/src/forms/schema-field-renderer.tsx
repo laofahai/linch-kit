@@ -5,12 +5,13 @@
  */
 
 import React from 'react'
-import { Control, Controller } from './form-wrapper'
 import type { FieldDefinition } from '@linch-kit/schema'
 
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { cn } from '../utils'
+
+import { Control, Controller } from './form-wrapper'
 
 interface SchemaFieldRendererProps {
   name: string

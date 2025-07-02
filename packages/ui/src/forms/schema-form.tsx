@@ -5,7 +5,6 @@
  */
 
 import React from 'react'
-import { useForm } from './form-wrapper'
 import { defineEntity } from '@linch-kit/schema'
 
 // import type { UIEntityDefinition } from '../types' // 临时移除未使用导入
@@ -14,6 +13,7 @@ import type { SchemaFormProps } from '../types'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/card'
 
+import { useForm } from './form-wrapper'
 import { SchemaFieldRenderer } from './schema-field-renderer'
 
 /**

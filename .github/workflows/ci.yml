@@ -44,9 +44,11 @@ jobs:
         run: |
           node scripts/deps-graph.js > deps-analysis.txt
           echo "build-order=$(node -e "
-            const { DependencyGraph } = require('./scripts/deps-graph.js');
-            const graph = new DependencyGraph();
-            graph.analyze().then(result => {
+            import('./scripts/deps-graph.js').then(module => {
+              const { DependencyGraph } = module;
+              const graph = new DependencyGraph();
+              return graph.analyze();
+            }).then(result => {
               console.log(JSON.stringify(result.buildOrder));
             });
           ")" >> $GITHUB_OUTPUT

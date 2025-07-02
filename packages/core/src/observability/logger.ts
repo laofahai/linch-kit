@@ -3,8 +3,9 @@
  * @module observability/logger
  */
 
-import pino, { Logger as PinoLogger } from 'pino'
 import { hostname } from 'os'
+
+import pino, { Logger as PinoLogger } from 'pino'
 
 import type { Logger, LogLevel } from '../types'
 
