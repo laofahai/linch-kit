@@ -7,25 +7,19 @@
 
 ---
 
-## 🔴 SESSION 级强制要求
+## 🔴 技术约束强制要求
 
-### ⚠️ 每次新 session 必须执行
+### ⚠️ 开发环境要求
 ```bash
-# 1. 环境设置（必须）
+# Node.js 环境路径（每次 session 需要设置）
 export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"
-
-# 2. 阅读当前状态（必须）
-cat ai-context/zh/current/development-status.md
-
-# 3. 理解开发约束（本文档）
-cat ai-context/zh/current/development-constraints.md
 ```
 
-### 📋 Session 检查清单
-- [ ] ✅ 已设置正确的 Node.js 环境路径？
-- [ ] ✅ 已阅读最新开发状态文档？  
-- [ ] ✅ 理解当前项目阶段和任务？
-- [ ] ✅ 确认要使用的技术约束？
+### 📋 技术实现检查清单
+- [ ] ✅ 使用正确的包管理工具（pnpm）？
+- [ ] ✅ 遵循架构依赖顺序？  
+- [ ] ✅ 使用 LinchKit 内部包功能？
+- [ ] ✅ 符合代码质量标准？
 
 ---
 
@@ -78,60 +72,6 @@ core → schema → auth → crud → trpc → ui → console
 - **扩展接口**: 为未来高级功能预留扩展点
 - **商业化考虑**: 基础版满足中小企业需求，高级版作为商业扩展
 
----
-
-## 🌳 分支管理规范
-
-### 分支策略
-- **主分支**: `main` - 生产就绪代码，受保护
-- **功能分支**: `feature/xxx` - 新功能开发
-- **修复分支**: `fix/xxx` - Bug 修复
-- **发布分支**: `release/vx.x.x` - 版本发布准备
-
-### 分支命名约定
-```bash
-# 功能开发
-feature/create-cli-tool
-feature/add-auth-system
-
-# Bug 修复
-fix/login-validation-error
-fix/build-failure
-
-# 发布准备
-release/v1.0.3
-release/v2.0.0
-```
-
-### 工作流程约束
-1. **禁止直接推送到 main** - 所有变更必须通过 PR
-2. **分支同步** - 开发前从 main 拉取最新代码
-3. **功能完成** - 合并前必须通过所有测试
-4. **清理分支** - 合并后删除功能分支
-
-### PR (Pull Request) 规范
-- **标题格式**: `feat|fix|docs|refactor: 简短描述`
-- **必须包含**:
-  - 变更说明
-  - 测试验证 
-  - 相关 issue 链接
-- **合并要求**:
-  - 通过 CI/CD 检查
-  - 代码审查通过
-  - 无冲突
-
-### CI/CD 触发条件
-```yaml
-# 自动触发构建和测试
-push:
-  branches: [main, release/*]
-pull_request:
-  branches: [main]
-
-# 自动发布到 NPM  
-push:
-  tags: [v*]
-```
 
 ---
 
@@ -149,6 +89,7 @@ pnpm test
 # 完整验证
 pnpm validate
 ```
+
 
 ### 代码规范
 - **JSDoc 注释** 所有公共 API
@@ -182,35 +123,6 @@ chore:    构建/工具
 - **使用环境变量** 管理配置
 - **定期安全检查** `pnpm audit`
 
-## 🚀 发布流程强制要求
-
-### ⚠️ 禁止手动发布
-- **绝对禁止** 手动运行 `npm publish` 或 `pnpm publish`
-- **必须使用** 自动化 CI/CD 流程发布
-- **所有发布** 必须通过 GitHub Actions 完成
-
-### 自动化发布流程
-1. **创建 changeset**: `pnpm changeset`
-2. **版本更新**: `pnpm changeset version` (本地或CI)
-3. **推送代码**: `git push origin main`
-4. **自动发布**: GitHub Actions 自动检测并发布
-
-### 发布触发条件
-- **主分支推送** - 自动运行测试和构建
-- **标签推送** - 自动发布到 NPM
-- **Changeset 检测** - 自动版本管理
-
-### 发布验证要求
-- ✅ 所有测试必须通过
-- ✅ 构建必须成功 
-- ✅ 代码检查必须通过
-- ✅ 类型检查必须通过
-
-### 紧急发布例外
-仅在生产环境紧急情况下，经团队负责人批准后可临时手动发布，但必须：
-1. 记录发布原因和时间
-2. 事后补充正确的 changeset
-3. 确保 CI/CD 流程同步
 
 ---
 
@@ -232,18 +144,24 @@ chore:    构建/工具
 
 ---
 
-## 📖 文档查询规范
+## 📖 Context7 文档查询规范
 
-### Context7 使用
-开发前必须查询相关技术文档：
-1. **框架文档优先** - Next.js、React、Vue 等使用 Context7
-2. **调用流程**:
-   - 先调用 `resolve-library-id` 获取库ID
-   - 再调用 `get-library-docs` 获取文档
-3. **最佳实践** - 实现功能前先了解官方推荐做法
+### 🎯 优先查询的核心库
+使用以下技术时建议查询 Context7 文档：
+- **Next.js** - 框架配置、路由、API 等
+- **React** - 组件、Hooks、状态管理
+- **TypeScript** - 类型定义和最佳实践
+- **Tailwind CSS** - 样式和主题配置
+- **Prisma** - 数据库操作和 Schema
+- **tRPC** - API 设计和类型安全
+- **Zod** - Schema 验证和转换
+- **shadcn/ui** - UI 组件使用
+- **NextAuth.js** - 认证配置
 
-### 文档驱动开发
-- 查询文档 → 理解最佳实践 → 设计实现 → 编写代码
+### 文档驱动开发流程
+```
+文档查询 → 理解最佳实践 → 设计架构 → 编写代码 → 验证合规性
+```
 
 ---
 
