@@ -12,8 +12,9 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 // TODO: Implement tRPC client integration
 // import { createTRPCProxyClient, httpBatchLink } from '@linch-kit/trpc'
 import { useState } from 'react'
+
 // import { Toaster } from '@linch-kit/ui' // TODO: Add Toaster component to UI package
-import { useConsoleTranslation } from '../i18n'
+// import { useConsoleTranslation } from '../i18n'
 import type { ConsoleConfig } from '../routes/types'
 
 // Console 上下文类型
@@ -91,9 +92,9 @@ export function ConsoleProvider({
     defaultOptions: {
       queries: {
         staleTime: 5 * 60 * 1000, // 5分钟
-        retry: (failureCount, error: any) => {
+        retry: (failureCount, error: Error) => {
           // 权限错误不重试
-          if (error?.status === 403) return false
+          if ((error as unknown as { status?: number })?.status === 403) return false
           // 最多重试2次
           return failureCount < 2
         }
@@ -236,7 +237,7 @@ export function useConsoleConfiguration() {
     disabledRoutes: config.disabledRoutes || [],
     
     // 便捷方法
-    hasFeature: (feature: string) => config.features?.includes(feature as any) || false,
+    hasFeature: (feature: string) => config.features?.includes(feature as 'dashboard' | 'tenants' | 'users' | 'permissions' | 'plugins' | 'monitoring' | 'schemas' | 'settings') || false,
     isRouteDisabled: (route: string) => config.disabledRoutes?.includes(route) || false
   }
 }

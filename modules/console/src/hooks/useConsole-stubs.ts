@@ -222,7 +222,7 @@ export function useNotifications(userId?: string) {
 /**
  * 获取审计日志 (Stub)
  */
-export function useAuditLogs(filters?: any) {
+export function useAuditLogs(filters?: Record<string, unknown>) {
   return useQuery({
     queryKey: [...consoleKeys.auditLogs, filters],
     queryFn: async () => {
@@ -340,7 +340,7 @@ export function useCreateNotification() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: async (notification: any) => {
+    mutationFn: async (notification: Record<string, unknown>) => {
       await new Promise(resolve => setTimeout(resolve, 500))
       return { id: Date.now().toString(), ...notification }
     },
@@ -390,7 +390,7 @@ export function useConsoleConfig() {
   })
   
   const updateConfig = useMutation({
-    mutationFn: async (updates: Record<string, any>) => {
+    mutationFn: async (updates: Record<string, unknown>) => {
       await new Promise(resolve => setTimeout(resolve, 600))
       return { ...config, ...updates }
     },
@@ -412,7 +412,7 @@ export function useConsoleConfig() {
 
 export function useExportData() {
   return useMutation({
-    mutationFn: async ({ type, format, filters }: any) => {
+    mutationFn: async ({ type, format, filters }: Record<string, unknown>) => {
       await new Promise(resolve => setTimeout(resolve, 2000))
       const mockData = JSON.stringify({ type, format, filters, data: [] })
       return {
@@ -439,7 +439,7 @@ export function useExportData() {
   })
 }
 
-export function useRealtimeData(subscriptions: string[] = []) {
+export function useRealtimeData(_subscriptions: string[] = []) {
   const subscribe = useCallback((subscription: string) => {
     console.log(`订阅实时数据: ${subscription}`)
   }, [])

@@ -92,7 +92,7 @@ export function createConsoleRouter(trpc: TRPCRouterBuilder) {
           id: z.string()
         }))
         .mutation(async (opts: unknown) => {
-          const { input } = opts as { input: DeleteInput }
+          const { input: _input } = opts as { input: DeleteInput }
           // TODO: 实现租户删除
           return { success: true }
         })

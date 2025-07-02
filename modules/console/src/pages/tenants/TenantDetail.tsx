@@ -27,17 +27,11 @@ import {
   DialogHeader,
   DialogTitle
 } from '@linch-kit/ui'
-import { DataTable } from '../../components/shared/DataTable'
-import { StatCard } from '../../components/shared/StatCard'
-import { useTenant, useTenantQuotas, useTenantOperations } from '../../hooks/useTenants'
-import { useConsoleTranslation } from '../../i18n'
-import { useConsolePermission } from '../../providers/ConsoleProvider'
 import { 
   Building2,
   Users,
   Puzzle,
   Database,
-  Globe,
   Calendar,
   Edit,
   Trash2,
@@ -45,12 +39,17 @@ import {
   Play,
   Settings,
   BarChart3,
-  Shield,
   Download,
   RefreshCw
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
+
+// import { DataTable } from '../../components/shared/DataTable'
+import { StatCard } from '../../components/shared/StatCard'
+import { useTenant, useTenantQuotas, useTenantOperations } from '../../hooks/useTenants'
+import { useConsoleTranslation } from '../../i18n'
+import { useConsolePermission } from '../../providers/ConsoleProvider'
 
 /**
  * 租户详情主页面
@@ -72,7 +71,7 @@ export function TenantDetail() {
   
   // 数据获取
   const { data: tenant, isLoading: tenantLoading } = useTenant(tenantId)
-  const { data: quotas, isLoading: quotasLoading } = useTenantQuotas(tenantId)
+  const { data: quotas } = useTenantQuotas(tenantId)
   
   // 操作hooks
   const { deleteTenant, suspendTenant, activateTenant } = useTenantOperations()
@@ -352,7 +351,7 @@ export function TenantDetail() {
             <CardContent>
               {tenant.recentActivities?.length > 0 ? (
                 <div className="space-y-3">
-                  {tenant.recentActivities.slice(0, 5).map((activity: any, index: number) => (
+                  {tenant.recentActivities.slice(0, 5).map((activity: Record<string, unknown>, index: number) => (
                     <div key={index} className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-primary rounded-full mt-2" />
                       <div className="flex-1 min-w-0">
@@ -453,9 +452,9 @@ export function TenantDetail() {
 /**
  * 配额管理组件
  */
-function QuotaManagement({ tenantId, quotas, canManage }: {
+function QuotaManagement({ tenantId: _tenantId, quotas, canManage: _canManage }: {
   tenantId: string
-  quotas: any
+  quotas: Record<string, unknown>
   canManage: boolean
 }) {
   if (!quotas) {
@@ -534,7 +533,7 @@ function QuotaManagement({ tenantId, quotas, canManage }: {
 /**
  * 租户用户管理组件
  */
-function TenantUserManagement({ tenantId }: { tenantId: string }) {
+function TenantUserManagement({ tenantId: _tenantId }: { tenantId: string }) {
   // 这里应该获取租户的用户列表
   return (
     <Card>
@@ -553,7 +552,7 @@ function TenantUserManagement({ tenantId }: { tenantId: string }) {
 /**
  * 租户插件管理组件
  */
-function TenantPluginManagement({ tenantId }: { tenantId: string }) {
+function TenantPluginManagement({ tenantId: _tenantId }: { tenantId: string }) {
   return (
     <Card>
       <CardHeader>
@@ -571,7 +570,7 @@ function TenantPluginManagement({ tenantId }: { tenantId: string }) {
 /**
  * 租户设置组件
  */
-function TenantSettings({ tenantId, tenant }: { tenantId: string; tenant: any }) {
+function TenantSettings({ tenantId: _tenantId, tenant: _tenant }: { tenantId: string; tenant: Record<string, unknown> }) {
   return (
     <Card>
       <CardHeader>
@@ -589,7 +588,7 @@ function TenantSettings({ tenantId, tenant }: { tenantId: string; tenant: any })
 /**
  * 租户审计日志组件
  */
-function TenantAuditLogs({ tenantId }: { tenantId: string }) {
+function TenantAuditLogs({ tenantId: _tenantId }: { tenantId: string }) {
   return (
     <Card>
       <CardHeader>

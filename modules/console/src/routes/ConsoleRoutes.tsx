@@ -8,9 +8,11 @@
 
 import { Suspense, useMemo } from 'react'
 import { notFound } from 'next/navigation'
+
+import { useConsoleTranslation } from '../i18n'
+
 import { createConsoleRouter, type ConsoleConfig } from './index'
 // TODO: import { LoadingSpinner } from '@linch-kit/ui'
-import { useConsoleTranslation } from '../i18n'
 
 export interface ConsoleRoutesProps {
   /** Console 配置 */

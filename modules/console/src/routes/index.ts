@@ -4,6 +4,8 @@
  * 提供路由配置和导航生成功能，供 Starter 应用集成使用
  */
 
+import { useConsoleTranslation } from '../i18n'
+
 import type { 
   ConsoleConfig, 
   ConsoleRoute, 
@@ -12,7 +14,6 @@ import type {
   ConsoleFeature 
 } from './types'
 import { defaultRoutes, defaultFeatures, permissionMap } from './config'
-import { useConsoleTranslation } from '../i18n'
 
 /**
  * 创建 Console 路由配置
@@ -21,7 +22,7 @@ export function createConsoleRoutes(config?: ConsoleConfig): ConsoleRouteConfig 
   const {
     basePath = '/admin',
     features = defaultFeatures,
-    permissions = {},
+    _permissions = {},
     customRoutes = [],
     disabledRoutes = []
   } = config || {}

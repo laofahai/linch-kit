@@ -15,7 +15,7 @@ import {
 /**
  * 基于实体内置 Zod schemas 的验证器
  */
-function createEntityValidators<T>(entity: any) {
+function createEntityValidators(entity: Record<string, unknown>) {
   return {
     create: entity.createSchema,
     update: entity.updateSchema,
@@ -78,11 +78,11 @@ export function validatePluginInput(data: unknown) {
  * 批量验证函数
  */
 export function validateBatch<T>(
-  validator: (data: unknown) => { success: boolean; data?: T; error?: any },
+  validator: (data: unknown) => { success: boolean; data?: T; error?: unknown },
   dataList: unknown[]
-): { valid: T[]; invalid: { data: unknown; error: any }[] } {
+): { valid: T[]; invalid: { data: unknown; error: unknown }[] } {
   const valid: T[] = []
-  const invalid: { data: unknown; error: any }[] = []
+  const invalid: { data: unknown; error: unknown }[] = []
   
   dataList.forEach(data => {
     const result = validator(data)

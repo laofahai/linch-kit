@@ -8,15 +8,16 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { trpc } from '@linch-kit/trpc/client'
-import { useConsoleTranslation } from '../i18n'
 import { toast } from '@linch-kit/ui'
-import type { Plugin, PluginInput, TenantPlugin } from '../entities'
+
+import { useConsoleTranslation } from '../i18n'
+import type { PluginInput, TenantPlugin } from '../entities'
 
 // 查询键
 export const pluginKeys = {
   all: ['plugins'] as const,
   marketplace: () => [...pluginKeys.all, 'marketplace'] as const,
-  marketplaceList: (filters?: any) => [...pluginKeys.marketplace(), filters] as const,
+  marketplaceList: (filters?: Record<string, unknown>) => [...pluginKeys.marketplace(), filters] as const,
   installed: () => [...pluginKeys.all, 'installed'] as const,
   installedList: (tenantId: string) => [...pluginKeys.installed(), tenantId] as const,
   details: () => [...pluginKeys.all, 'detail'] as const,
@@ -41,7 +42,7 @@ export function useMarketplacePlugins(filters?: {
     queryKey: pluginKeys.marketplaceList(filters),
     queryFn: () => trpc.console.plugin.marketplace.query(filters),
     staleTime: 10 * 60 * 1000, // 10分钟
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.plugin.loadFailed'))
     }
   })
@@ -58,7 +59,7 @@ export function usePlugin(id: string) {
     queryFn: () => trpc.console.plugin.get.query({ id }),
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.plugin.notFound'))
     }
   })
@@ -75,7 +76,7 @@ export function useInstalledPlugins(tenantId: string) {
     queryFn: () => trpc.console.plugin.installed.query({ tenantId }),
     enabled: !!tenantId,
     staleTime: 2 * 60 * 1000, // 2分钟
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.plugin.installedLoadFailed'))
     }
   })
@@ -103,13 +104,13 @@ export function useCreatePlugin() {
   return useMutation({
     mutationFn: (input: PluginInput) => 
       trpc.console.plugin.create.mutate(input),
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       queryClient.invalidateQueries({ queryKey: pluginKeys.marketplace() })
       queryClient.invalidateQueries({ queryKey: pluginKeys.stats() })
       
       toast.success(t('success.plugin.created'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.createFailed'))
     }
   })
@@ -132,7 +133,7 @@ export function usePublishPlugin() {
       
       toast.success(t('success.plugin.published'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.publishFailed'))
     }
   })
@@ -155,7 +156,7 @@ export function useInstallPlugin() {
       tenantId: string
       pluginId: string
       version?: string
-      config?: Record<string, any>
+      config?: Record<string, unknown>
     }) =>
       trpc.console.plugin.install.mutate({
         tenantId,
@@ -173,7 +174,7 @@ export function useInstallPlugin() {
       
       toast.success(t('success.plugin.installed'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.installFailed'))
     }
   })
@@ -205,7 +206,7 @@ export function useUninstallPlugin() {
       
       toast.success(t('success.plugin.uninstalled'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.uninstallFailed'))
     }
   })
@@ -237,7 +238,7 @@ export function useActivatePlugin() {
       
       toast.success(t('success.plugin.activated'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.activateFailed'))
     }
   })
@@ -269,7 +270,7 @@ export function useDeactivatePlugin() {
       
       toast.success(t('success.plugin.deactivated'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.deactivateFailed'))
     }
   })
@@ -290,7 +291,7 @@ export function useConfigurePlugin() {
     }: {
       tenantId: string
       pluginId: string
-      config: Record<string, any>
+      config: Record<string, unknown>
     }) =>
       trpc.console.plugin.configure.mutate({
         tenantId,
@@ -304,7 +305,7 @@ export function useConfigurePlugin() {
       
       toast.success(t('success.plugin.configured'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.configureFailed'))
     }
   })
@@ -370,7 +371,7 @@ export function usePluginStatus(tenantId: string, pluginId: string) {
 export function usePluginSearch() {
   const queryClient = useQueryClient()
   
-  const searchPlugins = (query: string, filters?: any) => {
+  const searchPlugins = (query: string, filters?: Record<string, unknown>) => {
     return queryClient.fetchQuery({
       queryKey: pluginKeys.marketplaceList({ search: query, ...filters }),
       queryFn: () => trpc.console.plugin.marketplace.query({ search: query, ...filters }),

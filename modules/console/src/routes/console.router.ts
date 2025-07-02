@@ -1,4 +1,5 @@
 import { router } from '@linch-kit/trpc'
+
 import { tenantRouter } from './tenant.router'
 import { userRouter } from './user.router'
 

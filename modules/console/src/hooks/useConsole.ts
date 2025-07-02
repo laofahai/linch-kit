@@ -110,7 +110,7 @@ export * from './useConsole-stubs'
 //     onSuccess: () => {
 //       queryClient.invalidateQueries({ queryKey: consoleKeys.notifications })
 //     },
-//     onError: (error: any) => {
+//     onError: (error: Record<string, unknown>) => {
 //       toast.error(t('error.notification.markReadFailed'))
 //     }
 //   })
@@ -137,7 +137,7 @@ export * from './useConsole-stubs'
 //       queryClient.invalidateQueries({ queryKey: consoleKeys.notifications })
 //       toast.success(t('success.notification.created'))
 //     },
-//     onError: (error: any) => {
+//     onError: (error: Record<string, unknown>) => {
 //       toast.error(t('error.notification.createFailed'))
 //     }
 //   })
@@ -201,7 +201,7 @@ export * from './useConsole-stubs'
 //       queryClient.clear()
 //       toast.success(t('success.tenant.switched'))
 //     },
-//     onError: (error: any) => {
+//     onError: (error: Record<string, unknown>) => {
 //       toast.error(t('error.tenant.switchFailed'))
 //     }
 //   })
@@ -299,7 +299,7 @@ export * from './useConsole-stubs'
 //       
 //       toast.success(t('success.export.completed'))
 //     },
-//     onError: (error: any) => {
+//     onError: (error: Record<string, unknown>) => {
 //       toast.error(t('error.export.failed'))
 //     }
 //   })

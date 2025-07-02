@@ -5,24 +5,23 @@
  * 集成权限控制和配额管理
  */
 
-import { z } from 'zod'
 
 // 注意：这里不能直接导入 PrismaClient，因为它是运行时依赖
 // 在实际使用时需要从外部注入
 export interface DatabaseClient {
   tenant: {
-    create: (args: any) => Promise<any>
-    update: (args: any) => Promise<any>
-    findUnique: (args: any) => Promise<any>
-    findFirst: (args: any) => Promise<any>
-    findMany: (args: any) => Promise<any>
-    delete: (args: any) => Promise<any>
-    count: (args?: any) => Promise<number>
+    create: (args: Record<string, unknown>) => Promise<Record<string, unknown>>
+    update: (args: Record<string, unknown>) => Promise<Record<string, unknown>>
+    findUnique: (args: Record<string, unknown>) => Promise<Record<string, unknown> | null>
+    findFirst: (args: Record<string, unknown>) => Promise<Record<string, unknown> | null>
+    findMany: (args: Record<string, unknown>) => Promise<Record<string, unknown>[]>
+    delete: (args: Record<string, unknown>) => Promise<Record<string, unknown>>
+    count: (args?: Record<string, unknown>) => Promise<number>
   }
   tenantQuotas: {
-    create: (args: any) => Promise<any>
-    update: (args: any) => Promise<any>
-    upsert: (args: any) => Promise<any>
+    create: (args: Record<string, unknown>) => Promise<Record<string, unknown>>
+    update: (args: Record<string, unknown>) => Promise<Record<string, unknown>>
+    upsert: (args: Record<string, unknown>) => Promise<Record<string, unknown>>
   }
 }
 
@@ -52,8 +51,8 @@ export interface TenantCreateParams {
   billingCycle?: 'monthly' | 'yearly'
   maxUsers?: number
   maxStorage?: bigint
-  settings?: Record<string, any>
-  metadata?: Record<string, any>
+  settings?: Record<string, unknown>
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -69,8 +68,8 @@ export interface TenantUpdateParams {
   billingCycle?: 'monthly' | 'yearly'
   maxUsers?: number
   maxStorage?: bigint
-  settings?: Record<string, any>
-  metadata?: Record<string, any>
+  settings?: Record<string, unknown>
+  metadata?: Record<string, unknown>
 }
 
 /**
@@ -103,7 +102,7 @@ export class TenantService {
   /**
    * 创建租户
    */
-  async create(input: TenantCreateParams): Promise<any> {
+  async create(input: TenantCreateParams): Promise<Record<string, unknown>> {
     const db = this.ensureDb()
     
     // 创建租户
@@ -145,10 +144,10 @@ export class TenantService {
   /**
    * 更新租户信息
    */
-  async update(tenantId: string, input: TenantUpdateParams): Promise<any> {
+  async update(tenantId: string, input: TenantUpdateParams): Promise<Record<string, unknown>> {
     const db = this.ensureDb()
     
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
     
     if (input.name !== undefined) updateData.name = input.name
     if (input.domain !== undefined) updateData.domain = input.domain
@@ -196,7 +195,7 @@ export class TenantService {
   /**
    * 获取租户详情
    */
-  async getById(tenantId: string): Promise<any> {
+  async getById(tenantId: string): Promise<Record<string, unknown> | null> {
     const db = this.ensureDb()
     
     return await db.tenant.findUnique({
@@ -226,7 +225,7 @@ export class TenantService {
    * 查询租户列表
    */
   async list(params: TenantQueryParams = {}): Promise<{
-    data: any[]
+    data: Record<string, unknown>[]
     total: number
     page: number
     pageSize: number
@@ -244,7 +243,7 @@ export class TenantService {
     } = params
 
     // 构建查询条件
-    const where: any = {}
+    const where: Record<string, unknown> = {}
     
     if (search) {
       where.OR = [
@@ -307,7 +306,7 @@ export class TenantService {
   /**
    * 软删除租户
    */
-  async delete(tenantId: string): Promise<any> {
+  async delete(tenantId: string): Promise<Record<string, unknown>> {
     const db = this.ensureDb()
     
     return await db.tenant.update({
@@ -325,7 +324,7 @@ export class TenantService {
   async count(filters: { status?: string } = {}): Promise<number> {
     const db = this.ensureDb()
     
-    const where: any = { deletedAt: null }
+    const where: Record<string, unknown> = { deletedAt: null }
     
     if (filters.status) {
       where.status = filters.status
@@ -340,7 +339,7 @@ export class TenantService {
   async isSlugAvailable(slug: string, excludeId?: string): Promise<boolean> {
     const db = this.ensureDb()
     
-    const where: any = { slug, deletedAt: null }
+    const where: Record<string, unknown> = { slug, deletedAt: null }
     
     if (excludeId) {
       where.id = { not: excludeId }
@@ -356,7 +355,7 @@ export class TenantService {
   async isDomainAvailable(domain: string, excludeId?: string): Promise<boolean> {
     const db = this.ensureDb()
     
-    const where: any = { domain, deletedAt: null }
+    const where: Record<string, unknown> = { domain, deletedAt: null }
     
     if (excludeId) {
       where.id = { not: excludeId }

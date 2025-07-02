@@ -33,15 +33,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@linch-kit/ui'
-import { DataTable } from '../../components/shared/DataTable'
-import { StatCard } from '../../components/shared/StatCard'
-import { useTenants, useTenantOperations } from '../../hooks/useTenants'
-import { useConsoleTranslation } from '../../i18n'
-import { useConsolePermission } from '../../providers/ConsoleProvider'
 import { 
   Plus, 
   Search, 
-  Filter, 
+ 
   MoreHorizontal,
   Edit,
   Trash2,
@@ -54,6 +49,12 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
+
+import { DataTable } from '../../components/shared/DataTable'
+import { StatCard } from '../../components/shared/StatCard'
+import { useTenants, useTenantOperations } from '../../hooks/useTenants'
+import { useConsoleTranslation } from '../../i18n'
+import { useConsolePermission } from '../../providers/ConsoleProvider'
 
 /**
  * 租户列表主页面
@@ -69,8 +70,8 @@ export function TenantList() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [planFilter, setPlanFilter] = useState<string>('all')
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; tenant?: any }>({ open: false })
-  const [suspendDialog, setSuspendDialog] = useState<{ open: boolean; tenant?: any }>({ open: false })
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; tenant?: Record<string, unknown> }>({ open: false })
+  const [suspendDialog, setSuspendDialog] = useState<{ open: boolean; tenant?: Record<string, unknown> }>({ open: false })
   
   // 数据获取
   const { 
@@ -146,7 +147,7 @@ export function TenantList() {
     {
       key: 'name',
       label: t('console.entities.tenant.fields.name'),
-      render: (tenant: any) => (
+      render: (tenant: Record<string, unknown>) => (
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
             <Building2 className="h-5 w-5 text-primary" />
@@ -173,7 +174,7 @@ export function TenantList() {
     {
       key: 'status',
       label: t('console.entities.tenant.fields.status'),
-      render: (tenant: any) => (
+      render: (tenant: Record<string, unknown>) => (
         <Badge variant={getStatusColor(tenant.status)}>
           {t(`console.entities.tenant.status.${tenant.status}`)}
         </Badge>
@@ -182,7 +183,7 @@ export function TenantList() {
     {
       key: 'plan',
       label: t('console.entities.tenant.fields.plan'),
-      render: (tenant: any) => (
+      render: (tenant: Record<string, unknown>) => (
         <Badge variant={getPlanColor(tenant.plan)}>
           {t(`console.entities.tenant.plan.${tenant.plan}`)}
         </Badge>
@@ -191,7 +192,7 @@ export function TenantList() {
     {
       key: 'users',
       label: '用户数',
-      render: (tenant: any) => (
+      render: (tenant: Record<string, unknown>) => (
         <div className="flex items-center space-x-2">
           <Users className="h-4 w-4 text-muted-foreground" />
           <span>{tenant.userCount || 0}</span>
@@ -204,7 +205,7 @@ export function TenantList() {
     {
       key: 'createdAt',
       label: t('console.entities.tenant.fields.createdAt'),
-      render: (tenant: any) => (
+      render: (tenant: Record<string, unknown>) => (
         <div className="flex items-center space-x-2">
           <Calendar className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm">
@@ -216,7 +217,7 @@ export function TenantList() {
     {
       key: 'actions',
       label: '操作',
-      render: (tenant: any) => (
+      render: (tenant: Record<string, unknown>) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">

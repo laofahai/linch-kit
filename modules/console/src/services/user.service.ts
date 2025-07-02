@@ -17,7 +17,7 @@ export const CreateUserInput = z.object({
   password: z.string().min(8).optional(),
   roles: z.array(z.string()).default([]),
   tenantId: z.string().optional(),
-  settings: z.record(z.any()).optional()
+  settings: z.record(z.unknown()).optional()
 })
 
 /**
@@ -25,8 +25,8 @@ export const CreateUserInput = z.object({
  */
 export const UpdateUserInput = CreateUserInput.partial()
 
-export type CreateUserInput = z.infer<typeof CreateUserInput>
-export type UpdateUserInput = z.infer<typeof UpdateUserInput>
+export type CreateUserInputType = z.infer<typeof CreateUserInput>
+export type UpdateUserInputType = z.infer<typeof UpdateUserInput>
 
 /**
  * 用户管理服务类 (简化存根实现)
@@ -35,7 +35,7 @@ export class UserService {
   /**
    * 创建用户
    */
-  async createUser(input: CreateUserInput): Promise<any> {
+  async createUser(input: CreateUserInputType): Promise<Record<string, unknown>> {
     // TODO: 实现真实的用户创建逻辑
     return { id: 'user-' + Date.now(), ...input }
   }
@@ -43,7 +43,7 @@ export class UserService {
   /**
    * 更新用户信息
    */
-  async updateUser(userId: string, input: UpdateUserInput): Promise<any> {
+  async updateUser(userId: string, input: UpdateUserInputType): Promise<Record<string, unknown>> {
     // TODO: 实现真实的用户更新逻辑
     return { id: userId, ...input }
   }
@@ -51,7 +51,7 @@ export class UserService {
   /**
    * 获取用户详情
    */
-  async getUser(userId: string): Promise<any> {
+  async getUser(userId: string): Promise<Record<string, unknown>> {
     // TODO: 实现真实的用户查询逻辑
     return { id: userId, name: 'Demo User' }
   }
@@ -59,7 +59,7 @@ export class UserService {
   /**
    * 查询用户列表
    */
-  async listUsers(): Promise<any[]> {
+  async listUsers(): Promise<Record<string, unknown>[]> {
     // TODO: 实现真实的用户列表查询逻辑
     return []
   }
@@ -67,7 +67,7 @@ export class UserService {
   /**
    * 删除用户
    */
-  async deleteUser(userId: string): Promise<any> {
+  async deleteUser(userId: string): Promise<Record<string, unknown>> {
     // TODO: 实现真实的用户删除逻辑
     return { id: userId, deleted: true }
   }

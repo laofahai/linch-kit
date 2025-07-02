@@ -1,6 +1,7 @@
 import { router, publicProcedure, protectedProcedure } from '@linch-kit/trpc'
 import { z } from 'zod'
-import { TenantService, type DatabaseClient, type TenantUpdateParams } from '../services/tenant.service'
+
+import { TenantService, type TenantUpdateParams } from '../services/tenant.service'
 import { 
   tenantCreateSchema, 
   tenantUpdateSchema, 
@@ -33,7 +34,7 @@ export const tenantRouter = router({
    */
   list: publicProcedure
     .input(tenantQuerySchema)
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input, ctx: _ctx }) => {
       // 暂时禁用认证检查进行测试
       // if (!ctx.user) {
       //   throw new Error('Unauthorized')
@@ -82,7 +83,7 @@ export const tenantRouter = router({
    */
   get: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input, ctx: _ctx }) => {
       if (!ctx.user) {
         throw new Error('Unauthorized')
       }
@@ -176,7 +177,7 @@ export const tenantRouter = router({
    */
   stats: protectedProcedure
     .input(z.object({ id: z.string().optional() }))
-    .query(async ({ input, ctx }) => {
+    .query(async ({ input, ctx: _ctx }) => {
       if (!ctx.user) {
         throw new Error('Unauthorized')
       }

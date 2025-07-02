@@ -8,7 +8,7 @@
 
 import { ReactNode } from 'react'
 import { cn } from '@linch-kit/ui/utils'
-import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui'
+import { Card, CardContent } from '@linch-kit/ui'
 
 export interface ConsoleLayoutProps {
   /** 页面标题 */
@@ -187,7 +187,7 @@ export function ConsoleSidebarLayout({
   children,
   sidebarWidth = 'md',
   sidebarPosition = 'left',
-  collapsible = false,
+  _collapsible = false,
   className
 }: ConsoleSidebarLayoutProps) {
   const sidebarWidthClasses = {

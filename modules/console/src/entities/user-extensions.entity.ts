@@ -5,7 +5,7 @@
  */
 
 import { defineEntity, defineField } from '@linch-kit/schema'
-import { UserEntity } from '@linch-kit/auth'
+// import { UserEntity } from '@linch-kit/auth'  // 暂时注释，等 Auth 包完善后启用
 import { z } from 'zod'
 
 // 定义用户偏好设置类型

@@ -5,6 +5,7 @@
  */
 
 import { lazy } from 'react'
+
 import type { ConsoleRoute, ConsoleFeature } from './types'
 
 // 懒加载页面组件 - 只包含已实现的

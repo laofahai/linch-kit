@@ -38,17 +38,17 @@ export type ConsoleServiceName = keyof ConsoleServices
  * 创建带有依赖注入的服务工厂
  */
 export interface ConsoleServiceConfig {
-  db?: any // Prisma 客户端实例
-  logger?: any // 日志实例
-  eventBus?: any // 事件总线实例
-  [key: string]: any
+  db?: Record<string, unknown> // Prisma 客户端实例
+  logger?: Record<string, unknown> // 日志实例
+  eventBus?: Record<string, unknown> // 事件总线实例
+  [key: string]: Record<string, unknown> | undefined
 }
 
 /**
  * 服务工厂函数
  * 用于在运行时根据配置创建服务实例
  */
-export function createConsoleServices(config: ConsoleServiceConfig) {
+export function createConsoleServices(_config: ConsoleServiceConfig) {
   return {
     tenant: tenantService,
     plugin: pluginService,

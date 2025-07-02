@@ -330,7 +330,16 @@ export const zhCN = {
         suspended: '租户暂停成功',
         activated: '租户激活成功',
         installed: '插件安装成功',
-        uninstalled: '插件卸载成功'
+        uninstalled: '插件卸载成功',
+        notification: {
+          created: '通知创建成功'
+        },
+        tenant: {
+          switched: '租户切换成功'
+        },
+        export: {
+          completed: '数据导出完成'
+        }
       },
       error: {
         createFailed: '创建{{entity}}失败',
@@ -348,17 +357,6 @@ export const zhCN = {
         },
         export: {
           failed: '数据导出失败'
-        }
-      },
-      success: {
-        notification: {
-          created: '通知创建成功'
-        },
-        tenant: {
-          switched: '租户切换成功'
-        },
-        export: {
-          completed: '数据导出完成'
         }
       },
       confirm: {

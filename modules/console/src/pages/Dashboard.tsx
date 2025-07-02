@@ -10,17 +10,12 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui'
 import { Button } from '@linch-kit/ui'
 import { Badge } from '@linch-kit/ui'
-import { StatGrid, StatCard } from '../components/shared/StatCard'
-import { DataTable } from '../components/shared/DataTable'
-import { useDashboard, useSystemStats, useSystemHealth } from '../hooks/useConsole'
-import { useConsoleTranslation } from '../i18n'
-import { useConsolePermission } from '../providers/ConsoleProvider'
 import { 
   Users, 
   Building2, 
   Puzzle, 
   Activity, 
-  TrendingUp, 
+ 
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -29,6 +24,12 @@ import {
   BarChart3,
   Shield
 } from 'lucide-react'
+
+import { StatCard } from '../components/shared/StatCard'
+import { DataTable } from '../components/shared/DataTable'
+import { useDashboard, useSystemStats, useSystemHealth } from '../hooks/useConsole'
+import { useConsoleTranslation } from '../i18n'
+import { useConsolePermission } from '../providers/ConsoleProvider'
 
 /**
  * Dashboard 主页面
@@ -145,7 +146,7 @@ export function Dashboard() {
 /**
  * 系统健康状态卡片
  */
-function SystemHealthCard({ health }: { health: any }) {
+function SystemHealthCard({ health }: { health: Record<string, unknown> }) {
   const t = useConsoleTranslation()
   
   const getStatusColor = (status: string) => {
@@ -193,7 +194,7 @@ function SystemHealthCard({ health }: { health: any }) {
         
         {health.issues && health.issues.length > 0 && (
           <div className="mt-3 space-y-1">
-            {health.issues.slice(0, 3).map((issue: any, index: number) => (
+            {health.issues.slice(0, 3).map((issue: Record<string, unknown>, index: number) => (
               <div key={index} className="text-sm text-muted-foreground">
                 • {issue.message}
               </div>
@@ -267,7 +268,7 @@ function QuickActionsCard({
 /**
  * 最近活动卡片
  */
-function RecentActivityCard({ activities }: { activities: any[] }) {
+function RecentActivityCard({ activities }: { activities: Record<string, unknown>[] }) {
   const t = useConsoleTranslation()
 
   return (
@@ -305,7 +306,7 @@ function RecentActivityCard({ activities }: { activities: any[] }) {
 /**
  * 系统资源使用卡片
  */
-function SystemResourcesCard({ stats }: { stats: any }) {
+function SystemResourcesCard({ stats }: { stats: Record<string, unknown> }) {
   const t = useConsoleTranslation()
 
   if (!stats) return null
@@ -362,7 +363,7 @@ function SystemResourcesCard({ stats }: { stats: any }) {
 /**
  * 租户概览卡片
  */
-function TenantOverviewCard({ tenants }: { tenants: any[] }) {
+function TenantOverviewCard({ tenants }: { tenants: Record<string, unknown>[] }) {
   const t = useConsoleTranslation()
 
   const columns = [
@@ -391,7 +392,7 @@ function TenantOverviewCard({ tenants }: { tenants: any[] }) {
 /**
  * 插件状态卡片
  */
-function PluginStatusCard({ plugins }: { plugins: any[] }) {
+function PluginStatusCard({ plugins }: { plugins: Record<string, unknown>[] }) {
   const t = useConsoleTranslation()
 
   return (
@@ -434,7 +435,7 @@ function PluginStatusCard({ plugins }: { plugins: any[] }) {
 /**
  * 最近告警卡片
  */
-function RecentAlertsCard({ alerts }: { alerts: any[] }) {
+function RecentAlertsCard({ alerts }: { alerts: Record<string, unknown>[] }) {
   const t = useConsoleTranslation()
 
   return (

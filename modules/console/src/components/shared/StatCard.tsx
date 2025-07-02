@@ -7,7 +7,7 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui'
+import { Card, CardContent } from '@linch-kit/ui'
 import { cn } from '@linch-kit/ui/utils'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 

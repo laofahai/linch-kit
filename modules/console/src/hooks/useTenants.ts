@@ -8,15 +8,16 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { trpc } from '@linch-kit/trpc/client'
-import { useConsoleTranslation } from '../i18n'
 import { toast } from '@linch-kit/ui'
-import type { Tenant, TenantInput, TenantUpdate, TenantQuotas } from '../entities'
+
+import { useConsoleTranslation } from '../i18n'
+import type { TenantInput, TenantUpdate, TenantQuotas } from '../entities'
 
 // 查询键
 export const tenantKeys = {
   all: ['tenants'] as const,
   lists: () => [...tenantKeys.all, 'list'] as const,
-  list: (filters?: any) => [...tenantKeys.lists(), filters] as const,
+  list: (filters?: Record<string, unknown>) => [...tenantKeys.lists(), filters] as const,
   details: () => [...tenantKeys.all, 'detail'] as const,
   detail: (id: string) => [...tenantKeys.details(), id] as const,
   quotas: (id: string) => [...tenantKeys.detail(id), 'quotas'] as const,
@@ -38,7 +39,7 @@ export function useTenants(filters?: {
     queryKey: tenantKeys.list(filters),
     queryFn: () => trpc.console.tenant.list.query(filters),
     staleTime: 5 * 60 * 1000, // 5分钟
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.tenant.loadFailed'))
     }
   })
@@ -55,7 +56,7 @@ export function useTenant(id: string) {
     queryFn: () => trpc.console.tenant.get.query({ id }),
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.tenant.notFound'))
     }
   })
@@ -72,7 +73,7 @@ export function useTenantQuotas(tenantId: string) {
     queryFn: () => trpc.console.tenant.getQuotas.query({ tenantId }),
     enabled: !!tenantId,
     staleTime: 2 * 60 * 1000, // 2分钟
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.tenant.quotasLoadFailed'))
     }
   })
@@ -100,14 +101,14 @@ export function useCreateTenant() {
   return useMutation({
     mutationFn: (input: TenantInput) => 
       trpc.console.tenant.create.mutate(input),
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       // 更新相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
       queryClient.invalidateQueries({ queryKey: tenantKeys.stats() })
       
       toast.success(t('success.tenant.created'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.createFailed'))
     }
   })
@@ -130,7 +131,7 @@ export function useUpdateTenant() {
       
       toast.success(t('success.tenant.updated'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.updateFailed'))
     }
   })
@@ -154,7 +155,7 @@ export function useDeleteTenant() {
       
       toast.success(t('success.tenant.deleted'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.deleteFailed'))
     }
   })
@@ -178,7 +179,7 @@ export function useSuspendTenant() {
       
       toast.success(t('success.tenant.suspended'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.suspendFailed'))
     }
   })
@@ -202,7 +203,7 @@ export function useActivateTenant() {
       
       toast.success(t('success.tenant.activated'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.activateFailed'))
     }
   })
@@ -225,7 +226,7 @@ export function useUpdateTenantQuotas() {
       
       toast.success(t('success.tenant.quotasUpdated'))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.quotasUpdateFailed'))
     }
   })
@@ -246,7 +247,7 @@ export function useBatchTenantOperation() {
     }: { 
       operation: 'suspend' | 'activate' | 'delete'
       tenantIds: string[]
-      data?: any 
+      data?: Record<string, unknown> 
     }) => {
       switch (operation) {
         case 'suspend':
@@ -275,7 +276,7 @@ export function useBatchTenantOperation() {
       
       toast.success(t(`success.tenant.batch${variables.operation}`))
     },
-    onError: (error: any) => {
+    onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.batchOperationFailed'))
     }
   })

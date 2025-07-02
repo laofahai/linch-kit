@@ -7,13 +7,14 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { SchemaTable, type SchemaTableProps } from '@linch-kit/ui'
+import { SchemaTable } from '@linch-kit/ui'
 import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@linch-kit/ui'
 import { cn } from '@linch-kit/ui/utils'
-import { Search, Filter, Download, Plus, MoreHorizontal } from 'lucide-react'
+import { Search, MoreHorizontal } from 'lucide-react'
+
 import { useConsoleTranslation } from '../../i18n'
 
-export interface DataTableColumn<T = any> {
+export interface DataTableColumn<T = Record<string, unknown>> {
   /** 列标识 */
   key: string
   /** 列标题 */
@@ -21,7 +22,7 @@ export interface DataTableColumn<T = any> {
   /** 数据字段 */
   dataIndex?: string
   /** 自定义渲染 */
-  render?: (value: any, record: T, index: number) => React.ReactNode
+  render?: (value: Record<string, unknown>, record: T, index: number) => React.ReactNode
   /** 是否可排序 */
   sortable?: boolean
   /** 是否可搜索 */
@@ -34,7 +35,7 @@ export interface DataTableColumn<T = any> {
   fixed?: 'left' | 'right'
 }
 
-export interface DataTableAction<T = any> {
+export interface DataTableAction<T = Record<string, unknown>> {
   /** 操作标识 */
   key: string
   /** 操作标题 */
@@ -51,7 +52,7 @@ export interface DataTableAction<T = any> {
   permissions?: string[]
 }
 
-export interface DataTableProps<T = any> {
+export interface DataTableProps<T = Record<string, unknown>> {
   /** 数据源 */
   data: T[]
   /** 列配置 */
@@ -116,7 +117,7 @@ export interface DataTableProps<T = any> {
 /**
  * Console 数据表格
  */
-export function DataTable<T = any>({
+export function DataTable<T = Record<string, unknown>>({
   data,
   columns,
   actions,
@@ -179,7 +180,7 @@ export function DataTable<T = any>({
         title: t('common.actions'),
         width: 120,
         align: 'center' as const,
-        render: (_: any, record: T, index: number) => (
+        render: (_: Record<string, unknown>, record: T, index: number) => (
           <div className="flex items-center justify-center space-x-2">
             {actions.map(action => (
               <Button
@@ -298,7 +299,7 @@ export function DataTable<T = any>({
 /**
  * 简单数据表格
  */
-export interface SimpleDataTableProps<T = any> {
+export interface SimpleDataTableProps<T = Record<string, unknown>> {
   /** 数据源 */
   data: T[]
   /** 列配置 */
@@ -311,7 +312,7 @@ export interface SimpleDataTableProps<T = any> {
   className?: string
 }
 
-export function SimpleDataTable<T = any>({
+export function SimpleDataTable<T = Record<string, unknown>>({
   data,
   columns,
   loading = false,

@@ -30,10 +30,11 @@ import {
   Alert,
   AlertDescription
 } from '@linch-kit/ui'
-import { useTenantOperations } from '../../hooks/useTenants'
-import { useConsoleTranslation } from '../../i18n'
 import { Building2, ArrowLeft, Save, X } from 'lucide-react'
 import Link from 'next/link'
+
+import { useTenantOperations } from '../../hooks/useTenants'
+import { useConsoleTranslation } from '../../i18n'
 
 // 表单验证Schema
 const createTenantSchema = z.object({
@@ -61,7 +62,7 @@ type CreateTenantForm = z.infer<typeof createTenantSchema>
  */
 export function TenantCreate() {
   const router = useRouter()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
   const { createTenant } = useTenantOperations()
   
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -151,7 +152,7 @@ export function TenantCreate() {
       
       // 跳转到租户详情页
       router.push(`/admin/tenants/${tenant.id}`)
-    } catch (error: any) {
+    } catch (error: Record<string, unknown>) {
       setSubmitError(error.message || '创建租户失败')
     }
   }
@@ -253,7 +254,7 @@ export function TenantCreate() {
                 <Label htmlFor="plan">订阅计划 *</Label>
                 <Select 
                   value={watch('plan')} 
-                  onValueChange={(value) => setValue('plan', value as any)}
+                  onValueChange={(value) => setValue('plan', value as 'free' | 'starter' | 'professional' | 'enterprise')}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="选择订阅计划" />
@@ -271,7 +272,7 @@ export function TenantCreate() {
                 <Label htmlFor="billingCycle">计费周期</Label>
                 <Select 
                   value={watch('billingCycle') || 'monthly'} 
-                  onValueChange={(value) => setValue('billingCycle', value as any)}
+                  onValueChange={(value) => setValue('billingCycle', value as 'monthly' | 'yearly')}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="选择计费周期" />

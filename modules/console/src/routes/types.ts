@@ -11,7 +11,7 @@ export interface ConsoleRoute {
   /** 路由路径 */
   path: string
   /** 页面组件 */
-  component: ComponentType<any> | LazyExoticComponent<ComponentType<any>>
+  component: ComponentType<Record<string, unknown>> | LazyExoticComponent<ComponentType<Record<string, unknown>>>
   /** 路由元数据 */
   meta?: {
     /** 页面标题 */
@@ -29,7 +29,7 @@ export interface ConsoleRoute {
     /** 父级路由路径 */
     parent?: string
     /** 自定义 props */
-    props?: Record<string, any>
+    props?: Record<string, unknown>
   }
   /** 子路由 */
   children?: ConsoleRoute[]

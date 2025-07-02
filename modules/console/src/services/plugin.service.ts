@@ -14,11 +14,11 @@ import { z } from 'zod'
 export const InstallPluginInput = z.object({
   pluginId: z.string(),
   version: z.string().optional(),
-  config: z.record(z.any()).optional(),
+  config: z.record(z.unknown()).optional(),
   tenantId: z.string().optional()
 })
 
-export type InstallPluginInput = z.infer<typeof InstallPluginInput>
+export type InstallPluginInputType = z.infer<typeof InstallPluginInput>
 
 /**
  * 插件管理服务类 (简化存根实现)
@@ -27,7 +27,7 @@ export class PluginService {
   /**
    * 获取可用插件列表
    */
-  async getAvailablePlugins(): Promise<any[]> {
+  async getAvailablePlugins(): Promise<Record<string, unknown>[]> {
     // TODO: 实现真实的插件列表查询逻辑
     return []
   }
@@ -35,7 +35,7 @@ export class PluginService {
   /**
    * 获取已安装插件列表
    */
-  async getInstalledPlugins(tenantId?: string): Promise<any[]> {
+  async getInstalledPlugins(_tenantId?: string): Promise<Record<string, unknown>[]> {
     // TODO: 实现真实的已安装插件查询逻辑
     return []
   }
@@ -43,7 +43,7 @@ export class PluginService {
   /**
    * 安装插件
    */
-  async installPlugin(input: InstallPluginInput): Promise<any> {
+  async installPlugin(input: InstallPluginInput): Promise<Record<string, unknown>> {
     // TODO: 实现真实的插件安装逻辑
     return { id: 'install-' + Date.now(), ...input }
   }
@@ -51,7 +51,7 @@ export class PluginService {
   /**
    * 卸载插件
    */
-  async uninstallPlugin(pluginId: string, tenantId?: string): Promise<any> {
+  async uninstallPlugin(pluginId: string, _tenantId?: string): Promise<Record<string, unknown>> {
     // TODO: 实现真实的插件卸载逻辑
     return { pluginId, status: 'uninstalled' }
   }
@@ -59,7 +59,7 @@ export class PluginService {
   /**
    * 更新插件
    */
-  async updatePlugin(pluginId: string, version: string, tenantId?: string): Promise<any> {
+  async updatePlugin(pluginId: string, version: string, _tenantId?: string): Promise<Record<string, unknown>> {
     // TODO: 实现真实的插件更新逻辑
     return { pluginId, version, status: 'updated' }
   }
@@ -67,7 +67,7 @@ export class PluginService {
   /**
    * 获取插件配置
    */
-  async getPluginConfig(pluginId: string, tenantId?: string): Promise<any> {
+  async getPluginConfig(_pluginId: string, _tenantId?: string): Promise<Record<string, unknown>> {
     // TODO: 实现真实的插件配置查询逻辑
     return {}
   }
@@ -75,7 +75,7 @@ export class PluginService {
   /**
    * 更新插件配置
    */
-  async updatePluginConfig(pluginId: string, config: any, tenantId?: string): Promise<any> {
+  async updatePluginConfig(pluginId: string, config: Record<string, unknown>, _tenantId?: string): Promise<Record<string, unknown>> {
     // TODO: 实现真实的插件配置更新逻辑
     return { pluginId, config }
   }
