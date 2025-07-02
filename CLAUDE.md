@@ -10,7 +10,8 @@
 1. **任务状态**: 使用 TodoRead 检查待办事项
 2. **阅读状态**: `ai-context/zh/current/development-status.md`
 3. **理解约束**: `ai-context/zh/current/development-constraints.md`
-4. **分支检查**: 确保不在 main 分支上工作
+4. **分支检查**: 如在 main 分支则创建功能分支
+5. **确认完成**: 确保所有初始化步骤完成
 
 ## 🚀 项目概览
 
@@ -119,7 +120,7 @@ pnpm validate   # 完整验证
 ## 📖 Context7 文档查询
 
 ### 🎯 优先查询的库
-使用第三方技术时建议查询 Context7 文档：
+使用第三方技术时必须优先查询 Context7 文档：
 - **Next.js** - 框架配置、路由、API 等
 - **React** - Hooks、组件、状态管理等
 - **TypeScript** - 类型定义、最佳实践等
@@ -142,6 +143,11 @@ pnpm validate   # 完整验证
 
 ### 🛠️ Context7 使用方式
 在任何第三方库开发任务中添加 "use context7" 关键词即可自动获取最新官方文档。
+
+**使用示例**：
+- "配置 Next.js 15 App Router 路由。use context7"
+- "使用 Prisma 创建用户模型。use context7"
+- "集成 tRPC 与 React Query。use context7"
 
 ## ⚠️ 开发原则
 
@@ -227,7 +233,7 @@ pnpm validate   # 完整验证
 ### 🐛 问题排查流程
 1. **错误定位** - 分析错误日志和堆栈信息
 2. **依赖检查** - 确认包版本和依赖关系
-3. **文档查询** - 查询官方文档确认正确用法
+3. **文档查询** - 强制使用 Context7 查询官方文档确认正确用法
 4. **方案实施** - 使用 LinchKit 内部功能解决问题
 5. **预防措施** - 更新约束文档防止重复问题
 
