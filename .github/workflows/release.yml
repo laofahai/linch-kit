@@ -199,14 +199,16 @@ jobs:
           destination_dir: demo
           cname: demo.linch-kit.com  # 可选：如果有自定义域名
 
-      - name: Deploy to Vercel (Alternative)
-        if: success()
+      - name: Deploy to Vercel
+        if: success() && env.VERCEL_TOKEN != ''
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.ORG_ID }}
-          vercel-project-id: ${{ secrets.PROJECT_ID }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./apps/demo-app
           alias-domains: |
             demo-linch-kit.vercel.app
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
