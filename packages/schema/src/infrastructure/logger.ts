@@ -13,8 +13,7 @@ import { createLogger } from '@linch-kit/core'
  * 使用Core包的日志系统
  */
 export const logger = createLogger({
-  name: 'schema',
-  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info'
+  name: 'schema'
 })
 
 /**
