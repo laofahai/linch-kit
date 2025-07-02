@@ -65,15 +65,22 @@ jobs:
 
       - name: Create GitHub Release
         if: steps.changesets.outputs.published == 'true'
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.changesets.outputs.publishedPackages[0].version }}
-          release_name: Release ${{ steps.changesets.outputs.publishedPackages[0].version }}
+          tag_name: v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}
+          name: Release v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}
           body: |
             ## Released Packages
+            
             ${{ steps.changesets.outputs.publishedPackages }}
+            
+            ## What's Changed
+            
+            This release includes updates to the LinchKit packages with bug fixes and enhancements.
+            
+            See the [changelog](https://github.com/laofahai/linch-kit/blob/main/CHANGELOG.md) for detailed information.
           draft: false
           prerelease: false
 
@@ -115,50 +122,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
 
-  # 更新文档
-  update-docs:
-    name: Update Documentation
-    runs-on: ubuntu-latest
-    needs: [release]
-    if: needs.release.outputs.published == 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.12.4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate dependency graph
-        run: |
-          node scripts/deps-graph.js > docs/dependency-graph.md
-          
-      - name: Update API documentation
-        run: |
-          pnpm turbo build:docs --filter='./apps/docs'
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-          publish_dir: ./apps/docs/dist
-
-  # 部署 Demo App
-  deploy-demo:
-    name: Deploy Demo App
+  # 部署到 Vercel (Demo 和 Starter 应用)
+  deploy-vercel:
+    name: Deploy to Vercel
     runs-on: ubuntu-latest
     needs: [release]
     if: needs.release.outputs.published == 'true' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        app: [demo-app, starter]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -172,35 +144,16 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 10.12.4
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build packages (for demo-app dependencies)
-        run: pnpm build:packages
+      - name: Build packages
+        run: pnpm turbo build --filter='./packages/*'
 
-      - name: Build demo-app
-        run: |
-          cd apps/demo-app
-          # 设置环境变量用于静态导出
-          echo "NEXT_OUTPUT=export" >> .env.local
-          echo "NEXT_TRAILINGSLASH=true" >> .env.local
-          echo "NEXT_IMAGES_UNOPTIMIZED=true" >> .env.local
-          pnpm build
-        continue-on-error: true
-
-      - name: Deploy to GitHub Pages (Demo)
-        if: success()
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-          publish_dir: ./apps/demo-app/out
-          destination_dir: demo
-          cname: demo.linch-kit.com  # 可选：如果有自定义域名
-
-      - name: Deploy to Vercel
-        if: success() && env.VERCEL_TOKEN != ''
+      - name: Deploy to Vercel (Demo App)
+        if: matrix.app == 'demo-app' && secrets.VERCEL_TOKEN != ''
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -209,6 +162,16 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./apps/demo-app
           alias-domains: |
-            demo-linch-kit.vercel.app
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+            demo.linch-kit.com
+
+      - name: Deploy to Vercel (Starter App)
+        if: matrix.app == 'starter' && secrets.VERCEL_STARTER_PROJECT_ID != ''
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_STARTER_PROJECT_ID }}
+          working-directory: ./apps/starter
+          alias-domains: |
+            starter.linch-kit.com

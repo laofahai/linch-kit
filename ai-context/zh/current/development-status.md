@@ -69,36 +69,60 @@ L4: modules/console      ✅ 管理平台 (100%) → 多租户管理扩展点
 
 ---
 
-## 🎉 当前里程碑: create-linch-kit 脚手架工具发布完成
+## 🎉 当前里程碑: Phase 10.2 增强权限系统开发进行中
 
 ### ✅ 完成状态: create-linch-kit 脚手架工具
-**目标**: 让用户能够 `npx create-linch-kit my-app` 快速创建项目
+**状态**: 已发布到 NPM (v2.0.3)
+- **验证完成**: `npx create-linch-kit@2.0.3` 工作正常
+- **用户体验**: 模板下载、项目创建、Git 初始化均正常
 
-#### 包功能完成
-- **`apps/starter`** - 完整的 LinchKit 应用模板 ✅
-- **`create-linch-kit`** - NPM 发布的脚手架 CLI 工具 ✅
-- **模板来源** - 使用 degit 从 GitHub 下载 `apps/starter` ✅
+### 🚧 进行中: Phase 10.2 增强 @linch-kit/auth
+**目标**: 企业级权限管理扩展
 
-#### 实施完成情况
-1. ✅ **文档更新** - 明确包定位和用户体验
-2. ✅ **创建包** - 开发 create-linch-kit 包完成
-3. ✅ **实现逻辑** - degit + 配置替换 + 依赖安装
-4. ✅ **测试验证** - 本地测试完整流程通过
-5. ✅ **NPM 发布** - 已推送触发自动发布流程
+#### 已完成功能
+1. ✅ **数据模型更新** - 在 Prisma schema 中添加权限相关模型
+   - Role（支持角色继承）
+   - Permission（字段级权限）
+   - RolePermission（权限覆盖）
+   - UserRoleAssignment（时间范围和作用域）
+   - ResourcePermission（行级权限）
+   - PermissionCache（性能优化）
 
-#### 🚀 发布状态
-- **提交哈希**: 041cf55
-- **发布触发**: GitHub Actions 自动发布中
-- **预期版本**: create-linch-kit@1.0.3 (patch 更新)
+2. ✅ **增强权限引擎** - EnhancedPermissionEngine
+   - 继承自 CASLPermissionEngine
+   - 支持角色继承和权限聚合
+   - 字段级权限控制
+   - 行级权限过滤
+   - 运行时权限计算
+
+3. ✅ **权限服务** - BasePermissionService
+   - 角色管理 CRUD
+   - 权限管理 CRUD
+   - 角色权限分配
+   - 用户角色分配
+   - 资源权限管理
+   - 缓存管理
+
+4. ✅ **权限中间件** - PermissionMiddleware
+   - Express/Connect 风格中间件
+   - 装饰器风格（tRPC）
+   - React Hook 风格
+   - 字段级权限检查
+
+5. ✅ **类型更新**
+   - 移除了 Post 相关引用
+   - 更新了 PermissionSubject 类型
+   - 添加了 parentRoleId 和字段权限属性
 
 ### 🎯 下一个 Session 任务指导
 
-**优先级**: 监控发布状态 → 开始 Phase 10.2 权限系统扩展
+**优先级**: 完成 Phase 10.2 剩余任务 → 开始 Phase 10.3
 
 #### 立即任务
-1. **验证发布状态** - 检查 GitHub Actions 和 NPM 发布结果
-2. **测试用户体验** - 验证 `npx create-linch-kit` 全流程
-3. **开始 Phase 10.2** - 增强 @linch-kit/auth 权限管理系统
+1. **PostgreSQL RLS 集成** - 实现敏感数据的行级安全
+2. **创建权限初始化脚本** - 生成默认角色和权限数据
+3. **更新 demo-app** - 集成新的权限系统
+4. **编写测试用例** - 覆盖新的权限功能
 
 #### Session 启动检查清单
 ```bash
