@@ -1,0 +1,51 @@
+{
+  "name": "create-linch-kit",
+  "version": "1.0.0",
+  "description": "Create LinchKit apps instantly - AI-First 全栈开发框架脚手架",
+  "keywords": [
+    "linch-kit",
+    "ai-first",
+    "full-stack",
+    "scaffold",
+    "cli",
+    "create-app"
+  ],
+  "author": "LinchKit Team",
+  "license": "MIT",
+  "homepage": "https://github.com/laofahai/linch-kit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/laofahai/linch-kit.git",
+    "directory": "packages/create-linch-kit"
+  },
+  "bin": {
+    "create-linch-kit": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/",
+    "validate": "pnpm build && pnpm lint && pnpm type-check"
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "degit": "^2.8.4",
+    "chalk": "^5.3.0",
+    "ora": "^8.1.1",
+    "prompts": "^2.4.2",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/prompts": "^2.4.9",
+    "tsup": "^8.3.5",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
