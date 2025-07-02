@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod'
-import { router, publicProcedure, protectedProcedure } from '@linch-kit/trpc'
+import { router, publicProcedure, protectedProcedure } from '@linch-kit/trpc/server'
 
 /**
  * 用户Schema定义

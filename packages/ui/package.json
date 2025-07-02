@@ -1,6 +1,6 @@
 {
   "name": "@linch-kit/ui",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "LinchKit UI组件库 - Schema驱动的企业级React组件",
   "keywords": [
     "linchkit",

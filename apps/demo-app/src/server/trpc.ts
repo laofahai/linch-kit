@@ -9,7 +9,7 @@ import {
   publicProcedure,
   protectedProcedure,
   adminProcedure
-} from '@linch-kit/trpc'
+} from '@linch-kit/trpc/server'
 import { logger } from '@linch-kit/core'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
@@ -39,7 +39,7 @@ export {
 }
 
 // 导出类型
-export type { AppRouter } from '@linch-kit/trpc'
+export type { AppRouter } from '@linch-kit/trpc/server'
 
 /**
  * Starter App 专用路由器扩展
