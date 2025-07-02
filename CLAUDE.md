@@ -7,11 +7,10 @@
 ## ⚠️ Session 启动检查清单
 
 **每次新 session 必须完成：**
-1. **环境设置**: `export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"`
-2. **任务状态**: 使用 TodoRead 检查待办事项
-3. **阅读状态**: `ai-context/zh/current/development-status.md`
-4. **理解约束**: `ai-context/zh/current/development-constraints.md`
-5. **分支检查**: 确保不在 main 分支上工作
+1. **任务状态**: 使用 TodoRead 检查待办事项
+2. **阅读状态**: `ai-context/zh/current/development-status.md`
+3. **理解约束**: `ai-context/zh/current/development-constraints.md`
+4. **分支检查**: 确保不在 main 分支上工作
 
 ## 🚀 项目概览
 
@@ -38,9 +37,6 @@ L4: @linch-kit/ai        ⏳ AI集成（规划中）
 
 ### 🛠️ 开发命令
 ```bash
-# 环境设置（每次必须）
-export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"
-
 # 开发流程
 pnpm dev        # 开发模式
 pnpm build      # 构建验证
@@ -120,10 +116,10 @@ pnpm validate   # 完整验证
 - **企业功能** - 多租户、权限管理、审计日志
 - **文档平台** - apps/website Nextra 4 + i18n + 主题切换
 
-## 📖 第三方文档查询
+## 📖 Context7 文档查询
 
 ### 🎯 优先查询的库
-使用第三方技术时建议查询官方文档：
+使用第三方技术时建议查询 Context7 文档：
 - **Next.js** - 框架配置、路由、API 等
 - **React** - Hooks、组件、状态管理等
 - **TypeScript** - 类型定义、最佳实践等
@@ -133,31 +129,19 @@ pnpm validate   # 完整验证
 - **Zod** - Schema 验证、类型推导等
 
 ### 🔄 自动查询触发条件
-- **新技术使用** - 首次使用某个第三方库时
-- **配置问题** - 遇到框架配置相关错误时
-- **最佳实践** - 需要确认官方推荐做法时
-- **版本更新** - 使用新版本特性时
+- **新技术使用** - 首次使用某个第三方库时，务必添加 "use context7"
+- **配置问题** - 遇到框架配置相关错误时，优先使用 Context7
+- **最佳实践** - 需要确认官方推荐做法时，强制使用 Context7
+- **版本更新** - 使用新版本特性时，必须通过 Context7 获取最新文档
 
 ### 查询流程
 1. **识别需求** - 判断是否需要查询第三方库文档
-2. **WebSearch 搜索** - 使用 `WebSearch` 工具搜索官方文档
-3. **WebFetch 获取** - 使用 `WebFetch` 工具获取具体文档内容
+2. **使用 Context7** - 在提示中添加 "use context7" 关键词
+3. **获取实时文档** - Context7 自动获取最新官方文档
 4. **基于文档实现** - 按照官方最佳实践进行开发
 
-### 🛠️ 文档查询工具使用
-```typescript
-// 搜索官方文档
-WebSearch({
-  query: "Next.js 15 app router site:nextjs.org",
-  allowed_domains: ["nextjs.org"]
-});
-
-// 获取具体文档页面
-WebFetch({
-  url: "https://nextjs.org/docs/app/building-your-application",
-  prompt: "Extract configuration and best practices"
-});
-```
+### 🛠️ Context7 使用方式
+在任何第三方库开发任务中添加 "use context7" 关键词即可自动获取最新官方文档。
 
 ## ⚠️ 开发原则
 
@@ -179,12 +163,11 @@ WebFetch({
 
 ### 🔴 Session 初始化
 每次新 session 自动执行：
-1. **环境设置**: `export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"`
-2. **任务状态**: 使用 TodoRead 检查待办事项
-3. **阅读状态**: `ai-context/zh/current/development-status.md`
-4. **理解约束**: `ai-context/zh/current/development-constraints.md`
-5. **分支检查**: 如在 main 分支则创建功能分支
-6. **确认完成**: 确保所有初始化步骤完成
+1. **任务状态**: 使用 TodoRead 检查待办事项
+2. **阅读状态**: `ai-context/zh/current/development-status.md`
+3. **理解约束**: `ai-context/zh/current/development-constraints.md`
+4. **分支检查**: 如在 main 分支则创建功能分支
+5. **确认完成**: 确保所有初始化步骤完成
 
 ### 🌳 分支管理
 - **禁止 main 分支工作** - 发现在 main 分支立即创建新分支
@@ -218,11 +201,11 @@ WebFetch({
 - 运行 `pnpm audit` 检查依赖安全
 - 验证环境变量使用
 
-### 📖 Web 文档自动查询
-- **检测触发** - 使用第三方库时自动触发文档查询
-- **工具选择** - 优先使用 WebSearch，必要时使用 WebFetch
-- **官方优先** - 确保查询官方文档（allowed_domains 限制）
-- **最佳实践** - 确保实现符合官方推荐方式
+### 📖 Context7 强制优先
+- **强制使用** - 第三方库开发必须优先使用 Context7
+- **自动触发** - 检测到技术栈关键词自动提醒使用 "use context7"
+- **实时文档** - 获取最新版本的官方文档，避免过时信息
+- **标准实现** - 严格按照 Context7 提供的最新最佳实践执行
 
 ### ⚠️ 违规处理和错误恢复
 - **立即停止** - 发现违规立即停止当前操作
@@ -236,7 +219,7 @@ WebFetch({
 ### 📋 新功能开发流程
 1. **需求分析** - 使用 TodoWrite 分解功能需求
 2. **架构设计** - 确定使用的 LinchKit 包和依赖顺序
-3. **查询文档** - 使用 WebSearch/WebFetch 查询官方技术文档
+3. **查询文档** - 优先使用 Context7（添加 "use context7"），备用 WebSearch/WebFetch
 4. **编码实现** - 严格遵循约束和复用原则
 5. **测试验证** - 运行 `pnpm validate` 确保质量
 6. **文档更新** - 同步更新 ai-context 和 website 文档
@@ -251,7 +234,7 @@ WebFetch({
 ### 🔧 配置问题处理
 1. **配置对比** - 参考 demo-app 和 starter 的正确配置
 2. **版本检查** - 确认技术栈版本匹配
-3. **官方文档** - 使用 WebSearch/WebFetch 获取最新配置方式
+3. **官方文档** - 查询 Context7 或使用 WebSearch/WebFetch 获取最新配置方式
 4. **测试验证** - 确保配置更改不影响现有功能
 
 ## 🤝 Gemini 协作模式
