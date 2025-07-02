@@ -224,9 +224,9 @@ export default function TRPCDemo() {
                 <div>
                   <strong>特性:</strong>
                   <ul className="list-disc list-inside mt-1">
-                    {starterHello.data?.features.map((feature, index) => (
+                    {starterHello.data?.features?.map((feature, index) => (
                       <li key={index}>{feature}</li>
-                    ))}
+                    )) || <li>暂无特性数据</li>}
                   </ul>
                 </div>
               </div>
