@@ -1,6 +1,6 @@
 {
   "name": "@linch-kit/trpc",
-  "version": "0.4.2",
+  "version": "1.0.0",
   "description": "LinchKit tRPC API layer - End-to-end type-safe API development",
   "type": "module",
   "main": "./dist/index.cjs",

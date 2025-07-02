@@ -1,5 +1,62 @@
 # @linch-kit/ui
 
+## 1.0.0
+
+### Minor Changes
+
+- # LinchKit v0.5.0 - 完善发布流程和 CI/CD 自动化
+
+  ## 🔧 CI/CD 改进
+
+  ### GitHub Actions 优化
+  - **修复 pnpm 版本冲突**: 统一使用 pnpm@10.12.4
+  - **修复安装顺序**: pnpm 安装在 Node.js setup 之前
+  - **添加缺失脚本**: deps-graph.js 和 dev-tools.js
+
+  ### 发布流程完善
+  - **双轨发布策略**: CI 验证 + Release 发布分离
+  - **自动化发布**: changeset 驱动的版本管理
+  - **统一版本管理**: 所有包版本同步更新
+
+  ## 📚 文档完善
+
+  ### 新增文档
+  - **发布流程文档**: docs/RELEASE_PROCESS.md
+  - **详细 CI/CD 说明**: 自动化流程介绍
+  - **故障排除指南**: 常见问题解决方案
+
+  ### 开发工具
+  - **依赖分析**: scripts/deps-graph.js
+  - **开发环境**: scripts/dev-tools.js
+  - **发布脚本**: scripts/release.js
+
+  ## 🚀 基础设施升级
+
+  ### 工作流程优化
+  - **持续集成**: 每次推送验证代码质量
+  - **版本发布**: changeset 触发自动发布到 NPM
+  - **多平台发布**: NPM Registry + GitHub Packages
+
+  ### 质量保证
+  - **构建验证**: 所有包构建成功
+  - **测试覆盖**: 自动化测试执行
+  - **安全审计**: 依赖安全检查
+
+  ## 📦 发布特性
+  - **生产就绪**: 7个核心包全部完成
+  - **类型安全**: 端到端 TypeScript 严格模式
+  - **现代化架构**: React 19 + Next.js 15 + Tailwind CSS v4
+  - **企业级功能**: 完整的认证、权限、CRUD 系统
+
+  这个版本标志着 LinchKit 发布流程的完全自动化，为后续持续交付奠定了坚实基础。
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @linch-kit/core@1.0.0
+  - @linch-kit/crud@1.0.0
+  - @linch-kit/schema@1.0.0
+
 ## 0.4.2
 
 ### Major Changes
