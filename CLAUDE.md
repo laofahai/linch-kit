@@ -8,8 +8,8 @@
 
 **每次新 session 必须完成：**
 1. **任务状态**: 使用 TodoRead 检查待办事项
-2. **阅读状态**: `ai-context/zh/current/development-status.md`
-3. **理解约束**: `ai-context/zh/current/development-constraints.md`
+2. **阅读状态**: `ai-context/development-status.md`
+3. **理解约束**: `ai-context/development-constraints.md`
 4. **分支检查**: 如在 main 分支则创建功能分支
 5. **确认完成**: 确保所有初始化步骤完成
 
@@ -63,19 +63,17 @@ pnpm validate   # 完整验证
 ## 📚 核心文档
 
 ### 必读文档
-- **🔄 开发进度**: `ai-context/zh/current/development-status.md` - 项目最新状态和待办事项
-- **🔒 开发约束**: `ai-context/zh/current/development-constraints.md` - 核心规范和质量标准
-- **🏗️ 模块架构**: `ai-context/zh/current/module-architecture-design.md` - 系统架构设计
-- **📖 API参考**: `ai-context/zh/current/packages-api-reference.md` - 包功能速查
+- **🔄 开发进度**: `ai-context/development-status.md` - 项目最新状态和待办事项
+- **🔒 开发约束**: `ai-context/development-constraints.md` - 核心规范和质量标准
+- **📖 API参考**: `ai-context/packages-api-reference.md` - 包功能速查
 
 ### 其他文档
-- **历史记录**: `ai-context/zh/archive/development-history-complete.md`
-- **AI包设计**: `ai-context/zh/planning/ai-package-design.md`
-- **系统架构**: `ai-context/zh/system-design/architecture.md`
+- **历史记录**: `ai-context/development-history.md`
+- **AI包设计**: `ai-context/ai-package-design.md`
 
 ## 🔒 基础约束
 
-必须严格遵守以下约束（详见 `ai-context/zh/current/development-constraints.md`）：
+必须严格遵守以下约束（详见 `ai-context/development-constraints.md`）：
 
 1. **TypeScript 严格模式** - 禁止使用 `any`，使用 `unknown` 替代
 2. **包管理规范** - 仅使用 pnpm，禁止 npm/yarn
@@ -87,8 +85,8 @@ pnpm validate   # 完整验证
 
 ### 开发流程
 当用户开始新任务时：
-1. **阅读状态** - 检查 `development-status.md` 了解当前进度
-2. **理解约束** - 确认 `development-constraints.md` 中的规范
+1. **阅读状态** - 检查 `ai-context/development-status.md` 了解当前进度
+2. **理解约束** - 确认 `ai-context/development-constraints.md` 中的规范
 3. **规划任务** - 使用 TodoWrite 工具制定详细任务计划
 4. **实施开发** - 严格遵循架构和约束
 5. **验证结果** - 运行测试和构建
@@ -170,8 +168,8 @@ pnpm validate   # 完整验证
 ### 🔴 Session 初始化
 每次新 session 自动执行：
 1. **任务状态**: 使用 TodoRead 检查待办事项
-2. **阅读状态**: `ai-context/zh/current/development-status.md`
-3. **理解约束**: `ai-context/zh/current/development-constraints.md`
+2. **阅读状态**: `ai-context/development-status.md`
+3. **理解约束**: `ai-context/development-constraints.md`
 4. **分支检查**: 如在 main 分支则创建功能分支
 5. **确认完成**: 确保所有初始化步骤完成
 
@@ -192,14 +190,14 @@ pnpm validate   # 完整验证
 
 ### 📝 文档同步
 功能开发完成时自动提醒更新：
-- **ai-context 文档** - development-status.md, packages-api-reference.md
+- **ai-context 文档** - `ai-context/development-status.md`, `ai-context/packages-api-reference.md`
 - **website 文档** - apps/website 下的用户文档（中英文）
 - **同步更新网站** - 确保 website 文档与 ai-context 保持一致
 - **生成模板** - 为新功能生成文档模板和示例代码
 
 ### 🎯 Session 连续性管理
 - **状态保持** - 使用 TodoRead 开始新 session 时检查待办事项
-- **上下文继承** - 基于 development-status.md 了解项目当前状态
+- **上下文继承** - 基于 `ai-context/development-status.md` 了解项目当前状态
 - **任务优先级** - 从高优先级任务开始继续工作
 - **进度同步** - 及时更新文档和任务状态
 

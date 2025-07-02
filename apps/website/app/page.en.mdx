@@ -1,53 +1,184 @@
-# LinchKit
+"use client"
 
-Welcome to LinchKit - AI-First Full-Stack Development Framework.
+import { Button } from "@linch-kit/ui"
 
-<div className="bg-primary text-primary-foreground p-4 rounded-lg my-6">
-  <strong>( Enterprise-grade AI-First Development Framework</strong>
-  <p className="mt-2 text-sm opacity-90">
-    Schema-driven architecture with end-to-end type safety, designed for the AI era.
-  </p>
+<div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+  {/* Hero Section */}
+  <section className="relative py-20 md:py-32">
+    <div className="container mx-auto px-4">
+      <div className="text-center max-w-4xl mx-auto">
+        <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
+          <span className="w-2 h-2 bg-primary rounded-full mr-2"></span>
+          AI-First Full-Stack Framework
+        </div>
+        
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+          <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+            LinchKit
+          </span>
+        </h1>
+        
+        <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
+          Enterprise-grade AI-First Full-Stack Framework<br />
+          <span className="text-lg">Schema-driven ‚Ä¢ End-to-end Type Safety ‚Ä¢ Production Ready</span>
+        </p>
+        
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <Button size="lg" className="text-lg px-8 py-6">
+            Get Started
+          </Button>
+          <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+            View Docs
+          </Button>
+        </div>
+        
+        <div className="bg-card border border-border rounded-2xl p-6 shadow-lg">
+          <div className="text-sm text-muted-foreground mb-3">Quick Start</div>
+          <code className="text-primary font-mono text-lg">
+            npm create linch-kit@latest my-app
+          </code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Features Section */}
+  <section className="py-20 bg-muted/30">
+    <div className="container mx-auto px-4">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose LinchKit?</h2>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          Built on modern tech stack, designed for AI era development needs
+        </p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="bg-card border border-border rounded-xl p-8 hover:shadow-lg transition-shadow">
+          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+            <span className="text-2xl">üéØ</span>
+          </div>
+          <h3 className="text-xl font-semibold mb-3">Schema Driven</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Single source of truth with Zod Schema, auto-generating types, APIs, and UI components
+          </p>
+        </div>
+        
+        <div className="bg-card border border-border rounded-xl p-8 hover:shadow-lg transition-shadow">
+          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+            <span className="text-2xl">üîí</span>
+          </div>
+          <h3 className="text-xl font-semibold mb-3">End-to-end Type Safety</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Complete TypeScript type chain from database to frontend, zero runtime type issues
+          </p>
+        </div>
+        
+        <div className="bg-card border border-border rounded-xl p-8 hover:shadow-lg transition-shadow">
+          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+            <span className="text-2xl">ü§ñ</span>
+          </div>
+          <h3 className="text-xl font-semibold mb-3">AI-First Design</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Architecture and APIs designed with AI understanding and processing in mind
+          </p>
+        </div>
+        
+        <div className="bg-card border border-border rounded-xl p-8 hover:shadow-lg transition-shadow">
+          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+            <span className="text-2xl">üè¢</span>
+          </div>
+          <h3 className="text-xl font-semibold mb-3">Enterprise Features</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Built-in multi-tenancy, RBAC permissions, audit logs, monitoring - ready out of the box
+          </p>
+        </div>
+        
+        <div className="bg-card border border-border rounded-xl p-8 hover:shadow-lg transition-shadow">
+          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+            <span className="text-2xl">‚ö°</span>
+          </div>
+          <h3 className="text-xl font-semibold mb-3">Developer Experience</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Modular architecture, hot reload, intelligent completion, one-click deployment
+          </p>
+        </div>
+        
+        <div className="bg-card border border-border rounded-xl p-8 hover:shadow-lg transition-shadow">
+          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6">
+            <span className="text-2xl">üöÄ</span>
+          </div>
+          <h3 className="text-xl font-semibold mb-3">Production Ready</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Battle-tested in real projects, supports high concurrency and horizontal scaling
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Architecture Section */}
+  <section className="py-20">
+    <div className="container mx-auto px-4">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">Tech Stack</h2>
+        <p className="text-xl text-muted-foreground">
+          Modern technology stack with modular design and progressive adoption
+        </p>
+      </div>
+      
+      <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="text-center">
+            <div className="text-lg font-semibold mb-4 text-primary">Frontend Stack</div>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <div>Next.js 15 + React 19</div>
+              <div>TypeScript 5.8</div>
+              <div>Tailwind CSS 4</div>
+              <div>shadcn/ui Components</div>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <div className="text-lg font-semibold mb-4 text-primary">Backend Stack</div>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <div>tRPC + Zod Schema</div>
+              <div>Prisma + PostgreSQL</div>
+              <div>NextAuth.js Auth</div>
+              <div>CASL Permissions</div>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <div className="text-lg font-semibold mb-4 text-primary">DevOps Tools</div>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <div>Docker + K8s</div>
+              <div>OpenTelemetry</div>
+              <div>Changesets</div>
+              <div>Vitest Testing</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* CTA Section */}
+  <section className="py-20 bg-primary text-primary-foreground">
+    <div className="container mx-auto px-4 text-center">
+      <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        Ready to Build Your Next Project?
+      </h2>
+      <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
+        Experience LinchKit today and build more powerful apps with less code
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Button variant="secondary" size="lg" className="text-lg px-8 py-6">
+          View Examples
+        </Button>
+        <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+          Read Docs
+        </Button>
+      </div>
+    </div>
+  </section>
 </div>
-
-## ( Core Features
-
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-  <div className="border border-border rounded-lg p-4">
-    <h3 className="font-semibold text-foreground mb-2"><Ø Schema Driven</h3>
-    <p className="text-muted-foreground text-sm">Single source of truth with Zod Schema driving the entire system</p>
-  </div>
-  <div className="border border-border rounded-lg p-4">
-    <h3 className="font-semibold text-foreground mb-2">= Type Safe</h3>
-    <p className="text-muted-foreground text-sm">End-to-end TypeScript type safety guarantee</p>
-  </div>
-  <div className="border border-border rounded-lg p-4">
-    <h3 className="font-semibold text-foreground mb-2">> AI-First</h3>
-    <p className="text-muted-foreground text-sm">All designs prioritize AI understanding and processing capabilities</p>
-  </div>
-  <div className="border border-border rounded-lg p-4">
-    <h3 className="font-semibold text-foreground mb-2"><‚ Enterprise Ready</h3>
-    <p className="text-muted-foreground text-sm">Multi-tenant, permissions, audit logs and other enterprise features</p>
-  </div>
-</div>
-
-## =Ä Quick Start
-
-```bash
-npm create linch-kit@latest my-app
-cd my-app
-npm run dev
-```
-
-<div className="bg-muted border border-border rounded-lg p-4 my-6">
-  <p className="text-sm text-muted-foreground">
-    =° <strong>Tip:</strong> LinchKit provides complete enterprise-grade features including authentication, 
-    permissions, multi-tenancy, etc., allowing you to focus on business logic development.
-  </p>
-</div>
-
-## =⁄ Documentation
-
-- [Getting Started](/docs/getting-started) - Get up and running with LinchKit in 5 minutes
-- [Architecture](/docs/architecture) - Understanding Schema-driven architecture  
-- [API Reference](/docs/api) - Complete API documentation
-- [Best Practices](/docs/best-practices) - Enterprise development guidelines
