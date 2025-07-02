@@ -4,7 +4,6 @@
 
 import { createTRPCNext } from '@trpc/next'
 import { httpBatchLink, loggerLink } from '@trpc/client'
-import { transformer } from '@trpc/server'
 import superjson from 'superjson'
 import type { AppRouter } from '@linch-kit/trpc'
 

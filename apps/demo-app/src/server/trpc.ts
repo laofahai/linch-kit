@@ -10,8 +10,9 @@ import {
   protectedProcedure,
   adminProcedure
 } from '@linch-kit/trpc/server'
-import { logger } from '@linch-kit/core'
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { z } from 'zod'
+
+import { userRouter } from './user-router'
 
 /**
  * 创建 LinchKit tRPC 上下文
@@ -25,7 +26,7 @@ export const createContext = createLinchKitContext({
       debug: (message: string, meta?: Record<string, unknown>) => console.debug(`[DEBUG] ${message}`, meta)
     },
     config: {
-      get: (key: string) => undefined
+      get: (_key: string) => undefined
     }
   }
 })
@@ -44,8 +45,6 @@ export type { AppRouter } from '@linch-kit/trpc/server'
 /**
  * Starter App 专用路由器扩展
  */
-import { z } from 'zod'
-import { userRouter } from './user-router'
 
 const starterRouter = router({
   hello: router({

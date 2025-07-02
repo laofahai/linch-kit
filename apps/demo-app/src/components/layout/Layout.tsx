@@ -1,7 +1,8 @@
 import { ReactNode } from 'react'
 
-import { Navigation } from './Navigation'
 import { TRPCProvider } from '../providers/TRPCProvider'
+
+import { Navigation } from './Navigation'
 
 interface LayoutProps {
   children: ReactNode

@@ -21,7 +21,7 @@ export function LoginForm() {
 
     try {
       await signIn(email, password)
-    } catch (_err) {
+    } catch {
       setError('登录失败，请重试')
     }
   }
@@ -29,7 +29,7 @@ export function LoginForm() {
   const handleSignOut = async () => {
     try {
       await signOut()
-    } catch (_err) {
+    } catch {
       setError('注销失败，请重试')
     }
   }
