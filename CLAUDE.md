@@ -32,6 +32,7 @@ L2: @linch-kit/crud      ✅ CRUD操作 (100%)
 L3: @linch-kit/trpc      ✅ API层 (100%)
 L3: @linch-kit/ui        ✅ UI组件 (100%)
 L4: modules/console      ✅ 管理平台 (100%)
+L4: apps/website         ✅ 文档平台 (100%)
 L4: @linch-kit/ai        ⏳ AI集成（规划中）
 ```
 
@@ -119,10 +120,10 @@ pnpm validate   # 完整验证
 - **企业功能** - 多租户、权限管理、审计日志
 - **文档平台** - apps/website Nextra 4 + i18n + 主题切换
 
-## 📖 Context7 文档查询
+## 📖 第三方文档查询
 
 ### 🎯 优先查询的库
-使用第三方技术时建议查询 Context7 文档：
+使用第三方技术时建议查询官方文档：
 - **Next.js** - 框架配置、路由、API 等
 - **React** - Hooks、组件、状态管理等
 - **TypeScript** - 类型定义、最佳实践等
@@ -139,9 +140,24 @@ pnpm validate   # 完整验证
 
 ### 查询流程
 1. **识别需求** - 判断是否需要查询第三方库文档
-2. **调用 resolve-library-id** - 获取 Context7 兼容的库ID
-3. **调用 get-library-docs** - 获取最新官方文档
+2. **WebSearch 搜索** - 使用 `WebSearch` 工具搜索官方文档
+3. **WebFetch 获取** - 使用 `WebFetch` 工具获取具体文档内容
 4. **基于文档实现** - 按照官方最佳实践进行开发
+
+### 🛠️ 文档查询工具使用
+```typescript
+// 搜索官方文档
+WebSearch({
+  query: "Next.js 15 app router site:nextjs.org",
+  allowed_domains: ["nextjs.org"]
+});
+
+// 获取具体文档页面
+WebFetch({
+  url: "https://nextjs.org/docs/app/building-your-application",
+  prompt: "Extract configuration and best practices"
+});
+```
 
 ## ⚠️ 开发原则
 
@@ -163,14 +179,22 @@ pnpm validate   # 完整验证
 
 ### 🔴 Session 初始化
 每次新 session 自动执行：
-1. 环境路径设置和文档阅读
-2. Git 分支检查，如在 main 分支则创建功能分支
-3. 确认初始化步骤完成
+1. **环境设置**: `export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"`
+2. **任务状态**: 使用 TodoRead 检查待办事项
+3. **阅读状态**: `ai-context/zh/current/development-status.md`
+4. **理解约束**: `ai-context/zh/current/development-constraints.md`
+5. **分支检查**: 如在 main 分支则创建功能分支
+6. **确认完成**: 确保所有初始化步骤完成
 
 ### 🌳 分支管理
-- 禁止在 main 分支上工作
-- 自动创建功能分支（`feature/`, `fix/`, `release/` 前缀）
-- 功能完成时提醒创建 PR
+- **禁止 main 分支工作** - 发现在 main 分支立即创建新分支
+- **自动创建分支**:
+  ```bash
+  git checkout -b feature/task-description
+  git checkout -b fix/issue-description  
+  git checkout -b release/version-number
+  ```
+- **功能完成提醒** - 完成开发时提醒创建 PR
 
 ### 🚀 发布安全
 - 阻止手动发布命令（`npm publish`, `pnpm publish`）
@@ -194,9 +218,11 @@ pnpm validate   # 完整验证
 - 运行 `pnpm audit` 检查依赖安全
 - 验证环境变量使用
 
-### 📖 Context7 自动查询
-- 检测第三方库使用时自动触发文档查询
-- 确保实现符合官方最佳实践
+### 📖 Web 文档自动查询
+- **检测触发** - 使用第三方库时自动触发文档查询
+- **工具选择** - 优先使用 WebSearch，必要时使用 WebFetch
+- **官方优先** - 确保查询官方文档（allowed_domains 限制）
+- **最佳实践** - 确保实现符合官方推荐方式
 
 ### ⚠️ 违规处理和错误恢复
 - **立即停止** - 发现违规立即停止当前操作
@@ -210,7 +236,7 @@ pnpm validate   # 完整验证
 ### 📋 新功能开发流程
 1. **需求分析** - 使用 TodoWrite 分解功能需求
 2. **架构设计** - 确定使用的 LinchKit 包和依赖顺序
-3. **查询文档** - 使用 Context7 查询相关技术文档
+3. **查询文档** - 使用 WebSearch/WebFetch 查询官方技术文档
 4. **编码实现** - 严格遵循约束和复用原则
 5. **测试验证** - 运行 `pnpm validate` 确保质量
 6. **文档更新** - 同步更新 ai-context 和 website 文档
@@ -225,7 +251,7 @@ pnpm validate   # 完整验证
 ### 🔧 配置问题处理
 1. **配置对比** - 参考 demo-app 和 starter 的正确配置
 2. **版本检查** - 确认技术栈版本匹配
-3. **官方文档** - 查询 Context7 获取最新配置方式
+3. **官方文档** - 使用 WebSearch/WebFetch 获取最新配置方式
 4. **测试验证** - 确保配置更改不影响现有功能
 
 ## 🤝 Gemini 协作模式
