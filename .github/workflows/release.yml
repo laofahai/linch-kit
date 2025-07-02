@@ -122,15 +122,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
 
-  # 部署到 Vercel (Demo 和 Starter 应用)
-  deploy-vercel:
-    name: Deploy to Vercel
+  # 部署到 Vercel (仅 Demo 应用)
+  deploy-demo:
+    name: Deploy Demo to Vercel
     runs-on: ubuntu-latest
     needs: [release]
     if: needs.release.outputs.published == 'true' || github.event_name == 'workflow_dispatch'
-    strategy:
-      matrix:
-        app: [demo-app, starter]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -153,7 +150,7 @@ jobs:
         run: pnpm turbo build --filter='./packages/*'
 
       - name: Deploy to Vercel (Demo App)
-        if: matrix.app == 'demo-app' && secrets.VERCEL_TOKEN != ''
+        if: secrets.VERCEL_TOKEN != ''
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -161,17 +158,3 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./apps/demo-app
-          alias-domains: |
-            demo.linch-kit.com
-
-      - name: Deploy to Vercel (Starter App)
-        if: matrix.app == 'starter' && secrets.VERCEL_STARTER_PROJECT_ID != ''
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_STARTER_PROJECT_ID }}
-          working-directory: ./apps/starter
-          alias-domains: |
-            starter.linch-kit.com
