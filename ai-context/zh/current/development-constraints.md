@@ -80,6 +80,61 @@ core → schema → auth → crud → trpc → ui → console
 
 ---
 
+## 🌳 分支管理规范
+
+### 分支策略
+- **主分支**: `main` - 生产就绪代码，受保护
+- **功能分支**: `feature/xxx` - 新功能开发
+- **修复分支**: `fix/xxx` - Bug 修复
+- **发布分支**: `release/vx.x.x` - 版本发布准备
+
+### 分支命名约定
+```bash
+# 功能开发
+feature/create-cli-tool
+feature/add-auth-system
+
+# Bug 修复
+fix/login-validation-error
+fix/build-failure
+
+# 发布准备
+release/v1.0.3
+release/v2.0.0
+```
+
+### 工作流程约束
+1. **禁止直接推送到 main** - 所有变更必须通过 PR
+2. **分支同步** - 开发前从 main 拉取最新代码
+3. **功能完成** - 合并前必须通过所有测试
+4. **清理分支** - 合并后删除功能分支
+
+### PR (Pull Request) 规范
+- **标题格式**: `feat|fix|docs|refactor: 简短描述`
+- **必须包含**:
+  - 变更说明
+  - 测试验证 
+  - 相关 issue 链接
+- **合并要求**:
+  - 通过 CI/CD 检查
+  - 代码审查通过
+  - 无冲突
+
+### CI/CD 触发条件
+```yaml
+# 自动触发构建和测试
+push:
+  branches: [main, release/*]
+pull_request:
+  branches: [main]
+
+# 自动发布到 NPM  
+push:
+  tags: [v*]
+```
+
+---
+
 ## 🛠️ 开发流程
 
 ### 必须命令
@@ -99,6 +154,25 @@ pnpm validate
 - **JSDoc 注释** 所有公共 API
 - **修改后运行** ESLint 自动修复
 - **类型安全** 优先于代码简洁
+
+### Git 提交规范
+```bash
+# 提交格式
+git commit -m "type(scope): description
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+# 类型说明
+feat:     新功能
+fix:      Bug 修复
+docs:     文档更新
+style:    代码格式
+refactor: 重构
+test:     测试相关
+chore:    构建/工具
+```
 
 ---
 
