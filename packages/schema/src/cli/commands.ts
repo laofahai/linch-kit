@@ -5,7 +5,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join, resolve } from 'path'
 
-import type { CLICommand } from '@linch-kit/core/server'
+import type { CLICommand } from '@linch-kit/core'
 
 import { CodeGenerator, GeneratorRegistry } from '../generators'
 import type { Entity } from '../types'
