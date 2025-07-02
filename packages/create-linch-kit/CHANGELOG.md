@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.1
+
+### Patch Changes
+
+- [`041cf55`](https://github.com/laofahai/linch-kit/commit/041cf55958880e37630ab651035f422757145674) Thanks [@laofahai](https://github.com/laofahai)! - 完善 create-linch-kit 脚手架工具，修复类型错误和 lint 问题，支持从 GitHub 下载模板并自动配置项目
+
 ## [1.0.2] - 2025-07-02
 
 ### Added
