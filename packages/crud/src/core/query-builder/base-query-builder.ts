@@ -20,7 +20,7 @@ import type {
 
 // 简化的 PrismaClient 类型定义
 interface PrismaClient {
-  [key: string]: any
+  [key: string]: unknown
 }
 import { QueryConditionBuilder } from './condition-builder'
 import { QueryExecutor } from './query-executor'

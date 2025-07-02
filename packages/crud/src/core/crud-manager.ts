@@ -14,14 +14,14 @@ import type { PluginManager as CorePluginManager } from '@linch-kit/core'
 
 // 定义类型，避免运行时依赖
 interface PrismaClient {
-  [key: string]: any
-  $transaction: any
-  $queryRaw: any
+  [key: string]: unknown
+  $transaction: (callback: (tx: PrismaClient) => Promise<unknown>) => Promise<unknown>
+  $queryRaw: (query: TemplateStringsArray | string, ...values: unknown[]) => Promise<unknown>
 }
 
 interface PluginRegistration {
   plugin: Plugin
-  config: any
+  config: Record<string, unknown>
   status: string
   registeredAt: number
 }
@@ -32,18 +32,18 @@ interface Plugin {
     name: string
     version: string
   }
-  init?: (config: any) => Promise<void> | void
+  init?: (config: Record<string, unknown>) => Promise<void> | void
   hooks?: CrudPluginHooks
 }
 
 interface CrudPluginHooks {
-  beforeCreate?: (entityName: string, data: any, options: any) => Promise<any> | any
-  afterCreate?: (entityName: string, result: any, options: any) => Promise<void> | void
-  beforeUpdate?: (entityName: string, id: any, data: any, existing: any, options: any) => Promise<any> | any
-  afterUpdate?: (entityName: string, result: any, existing: any, options: any) => Promise<void> | void
-  beforeDelete?: (entityName: string, id: any, existing: any, options: any) => Promise<void> | void
-  afterDelete?: (entityName: string, existing: any, options: any) => Promise<void> | void
-  beforeQuery?: (entityName: string, query: any, options: any) => Promise<any> | any
+  beforeCreate?: (entityName: string, data: Record<string, unknown>, options: Record<string, unknown>) => Promise<Record<string, unknown>> | Record<string, unknown>
+  afterCreate?: (entityName: string, result: Record<string, unknown>, options: Record<string, unknown>) => Promise<void> | void
+  beforeUpdate?: (entityName: string, id: string | number, data: Record<string, unknown>, existing: Record<string, unknown>, options: Record<string, unknown>) => Promise<Record<string, unknown>> | Record<string, unknown>
+  afterUpdate?: (entityName: string, result: Record<string, unknown>, existing: Record<string, unknown>, options: Record<string, unknown>) => Promise<void> | void
+  beforeDelete?: (entityName: string, id: string | number, existing: Record<string, unknown>, options: Record<string, unknown>) => Promise<void> | void
+  afterDelete?: (entityName: string, existing: Record<string, unknown>, options: Record<string, unknown>) => Promise<void> | void
+  beforeQuery?: (entityName: string, query: Record<string, unknown>, options: Record<string, unknown>) => Promise<Record<string, unknown>> | Record<string, unknown>
 }
 
 interface PluginManager {
@@ -702,7 +702,7 @@ export class CrudManager {
       throw new Error(`Entity '${entityName}' not found`)
     }
 
-    const rowFilter = await this.permissionChecker.buildRowFilter(entity, user, operation as any)
+    const rowFilter = await this.permissionChecker.buildRowFilter(entity, user, operation as 'read' | 'write' | 'delete')
     return { ...query, ...rowFilter }
   }
 
@@ -719,7 +719,7 @@ export class CrudManager {
       throw new Error(`Entity '${entityName}' not found`)
     }
 
-    const filteredData = await this.permissionChecker.filterFields(entity, user, data, operation as any)
+    const filteredData = await this.permissionChecker.filterFields(entity, user, data, operation as 'read' | 'write')
     return filteredData as T[]
   }
 }

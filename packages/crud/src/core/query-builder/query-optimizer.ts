@@ -20,7 +20,7 @@ export interface QueryOptimizationHint {
 }
 
 export interface OptimizedQuery {
-  query: any;
+  query: Record<string, unknown>;
   hints: QueryOptimizationHint[];
   estimatedCost: number;
 }
@@ -38,7 +38,7 @@ export class QueryOptimizer {
   /**
    * 优化查询
    */
-  optimize(query: any, entity: Entity): OptimizedQuery {
+  optimize(query: Record<string, unknown>, entity: Entity): OptimizedQuery {
     const hints: QueryOptimizationHint[] = [];
     let optimizedQuery = { ...query };
     let estimatedCost = 0;
@@ -97,8 +97,8 @@ export class QueryOptimizer {
   /**
    * 优化WHERE条件
    */
-  private optimizeWhere(where: any, entity: Entity): {
-    optimizedWhere: any;
+  private optimizeWhere(where: Record<string, unknown>, entity: Entity): {
+    optimizedWhere: Record<string, unknown>;
     hints: QueryOptimizationHint[];
     cost: number;
   } {
@@ -184,7 +184,7 @@ export class QueryOptimizer {
   /**
    * 优化ORDER BY
    */
-  private optimizeOrderBy(orderBy: any, entity: Entity): {
+  private optimizeOrderBy(orderBy: Record<string, unknown>, entity: Entity): {
     hints: QueryOptimizationHint[];
     cost: number;
   } {
@@ -224,8 +224,8 @@ export class QueryOptimizer {
   /**
    * 优化关联查询
    */
-  private optimizeInclude(include: any, _entity: Entity): {
-    optimizedInclude: any;
+  private optimizeInclude(include: Record<string, unknown>, _entity: Entity): {
+    optimizedInclude: Record<string, unknown>;
     hints: QueryOptimizationHint[];
     cost: number;
   } {
@@ -261,7 +261,7 @@ export class QueryOptimizer {
   /**
    * 优化分页
    */
-  private optimizePagination(query: any, _entity: Entity): {
+  private optimizePagination(query: Record<string, unknown>, _entity: Entity): {
     hints: QueryOptimizationHint[];
     cost: number;
   } {
@@ -300,7 +300,7 @@ export class QueryOptimizer {
   /**
    * 优化字段选择
    */
-  private optimizeSelect(select: any, entity: Entity): {
+  private optimizeSelect(select: Record<string, unknown>, entity: Entity): {
     hints: QueryOptimizationHint[];
     cost: number;
   } {
@@ -334,7 +334,7 @@ export class QueryOptimizer {
   /**
    * 计算Include的最大深度
    */
-  private getIncludeDepth(include: any, depth = 1): number {
+  private getIncludeDepth(include: Record<string, unknown>, depth = 1): number {
     let maxDepth = depth;
 
     for (const value of Object.values(include)) {
@@ -350,7 +350,7 @@ export class QueryOptimizer {
   /**
    * 计算选择的字段数量
    */
-  private countSelectedFields(select: any): number {
+  private countSelectedFields(select: Record<string, unknown>): number {
     let count = 0;
 
     for (const value of Object.values(select)) {
@@ -367,7 +367,7 @@ export class QueryOptimizer {
   /**
    * 批量优化查询
    */
-  batchOptimize(queries: Array<{ query: any; entity: Entity }>): Array<OptimizedQuery> {
+  batchOptimize(queries: Array<{ query: Record<string, unknown>; entity: Entity }>): Array<OptimizedQuery> {
     const optimizedQueries: OptimizedQuery[] = [];
     const batchHints: QueryOptimizationHint[] = [];
 
@@ -394,7 +394,7 @@ export class QueryOptimizer {
   /**
    * 查找相似查询
    */
-  private findSimilarQueries(queries: Array<{ query: any; entity: Entity }>): number[] {
+  private findSimilarQueries(queries: Array<{ query: Record<string, unknown>; entity: Entity }>): number[] {
     const similar: number[] = [];
     
     // 简单的相似性检查（可以扩展）

@@ -29,7 +29,7 @@ class EqualityStrategy implements ConditionStrategy {
       : { [field]: value }
   }
 
-  validate(field: string, value: unknown, entity: Entity): void {
+  validate(field: string, value: unknown, _entity: Entity): void {
     // 基础验证
     if (value === undefined) {
       throw new Error(`Value for field '${field}' cannot be undefined`)
@@ -47,8 +47,8 @@ class ComparisonStrategy implements ConditionStrategy {
     return { [field]: { [this.operator]: value } }
   }
 
-  validate(field: string, _value: unknown, entity: Entity): void {
-    const fieldDef = entity.fields[field]
+  validate(field: string, _value: unknown, _entity: Entity): void {
+    const fieldDef = _entity.fields[field]
     if (fieldDef && !['number', 'integer', 'float', 'date', 'datetime'].includes(fieldDef.type)) {
       throw new Error(`Comparison operator ${this.operator} not compatible with field type ${fieldDef.type}`)
     }
@@ -68,7 +68,7 @@ class LikeStrategy implements ConditionStrategy {
     }
   }
 
-  validate(field: string, value: unknown, entity: Entity): void {
+  validate(field: string, value: unknown, _entity: Entity): void {
     if (typeof value !== 'string') {
       throw new Error(`Like operator requires string value for field '${field}'`)
     }
@@ -105,7 +105,7 @@ class NullStrategy implements ConditionStrategy {
       : { [field]: null }
   }
 
-  validate(_field: string, _value: unknown, entity: Entity): void {
+  validate(_field: string, _value: unknown, _entity: Entity): void {
     // NULL 操作不需要值验证
   }
 }

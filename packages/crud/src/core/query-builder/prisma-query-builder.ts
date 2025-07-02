@@ -14,7 +14,7 @@ import { QueryExecutorFactory as _QueryExecutorFactory } from './query-executor'
 
 // 简化的 PrismaClient 类型定义
 interface PrismaClient {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 /**
@@ -217,10 +217,10 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
 
   private getRelationEntity(relationName: string): Entity | null {
     const field = Object.values(this.entity.fields).find(
-      field => field.type === 'relation' && (field as any).target === relationName
+      field => field.type === 'relation' && (field as Record<string, unknown>).target === relationName
     )
 
-    if ((field as any)?.target) {
+    if ((field as Record<string, unknown>)?.target) {
       // 简化实现，返回 null
       return null
     }
