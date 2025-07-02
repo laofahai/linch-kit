@@ -47,7 +47,20 @@ L4: @linch-kit/console   管理平台 (多租户、权限管理)
 
 ## 🚀 快速开始
 
-### 安装
+### 方式一：使用脚手架（推荐）
+
+```bash
+# 一键创建 LinchKit 项目
+npx create-linch-kit my-app
+
+# 进入项目目录
+cd my-app
+
+# 启动开发服务器
+pnpm dev
+```
+
+### 方式二：手动安装
 
 ```bash
 # 创建新项目
@@ -59,7 +72,18 @@ cd my-app
 npm install @linch-kit/core @linch-kit/schema @linch-kit/auth @linch-kit/crud @linch-kit/trpc @linch-kit/ui
 ```
 
-### 基础配置
+### 配置说明
+
+使用 `create-linch-kit` 创建的项目已包含完整配置：
+
+- ✅ **认证系统** - NextAuth.js 5.0 + 权限管理
+- ✅ **数据库** - Prisma + PostgreSQL Schema
+- ✅ **API 层** - tRPC 路由和类型安全
+- ✅ **UI 组件** - shadcn/ui + 企业级组件
+- ✅ **管理界面** - 多租户管理平台
+- ✅ **开发工具** - ESLint、TypeScript、测试配置
+
+### 手动配置（仅手动安装需要）
 
 ```typescript
 // lib/linch-kit.ts
