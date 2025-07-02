@@ -47,6 +47,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "build:packages": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",

@@ -38,6 +38,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "build:packages": "tsup",
     "dev": "tsup --watch",
     "test": "vitest",
     "test:watch": "vitest --watch",

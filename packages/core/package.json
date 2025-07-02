@@ -27,6 +27,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "build:packages": "tsup",
     "dev": "tsup --watch",
     "test": "vitest",
     "test:coverage": "vitest --coverage",

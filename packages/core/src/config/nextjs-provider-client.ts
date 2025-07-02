@@ -47,7 +47,7 @@ export class NextjsClientEnvProvider {
     const config: Record<string, ConfigValue> = {}
     
     // 仅在浏览器环境中提取公共环境变量
-    if (typeof window !== 'undefined') {
+    if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
       Object.keys(process.env).forEach(key => {
         if (key.startsWith('NEXT_PUBLIC_')) {
           const value = process.env[key]
