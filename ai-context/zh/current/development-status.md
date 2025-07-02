@@ -114,6 +114,18 @@ L4: modules/console      ✅ 管理平台 (100%) → 多租户管理扩展点
    - 更新了 PermissionSubject 类型
    - 添加了 parentRoleId 和字段权限属性
 
+### 🌐 域名和部署架构
+
+**域名规划**:
+- **linch.tech** - 公司/组织官网
+- **kit.linch.tech** - LinchKit 项目主站 + 文档（待开发）
+- **demo.linch.tech** - Demo 应用（Vercel 部署）
+
+**部署状态**:
+- ✅ **GitHub Actions** - 修复了发布流程中的 tag_name 问题
+- ✅ **Demo 部署** - 配置了 Vercel 自动部署
+- ❌ **官网** - 技术栈和架构待确定
+
 ### 🎯 下一个 Session 任务指导
 
 **优先级**: 完成 Phase 10.2 剩余任务 → 开始 Phase 10.3
@@ -121,7 +133,7 @@ L4: modules/console      ✅ 管理平台 (100%) → 多租户管理扩展点
 #### 立即任务
 1. **PostgreSQL RLS 集成** - 实现敏感数据的行级安全
 2. **创建权限初始化脚本** - 生成默认角色和权限数据
-3. **更新 demo-app** - 集成新的权限系统
+3. **完善 starter 应用** - 集成新的权限系统，确保所有基础功能完备
 4. **编写测试用例** - 覆盖新的权限功能
 
 #### Session 启动检查清单
