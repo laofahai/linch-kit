@@ -1,6 +1,6 @@
 {
   "name": "@linch-kit/auth",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "LinchKit认证权限包 - 企业级认证和权限管理",
   "keywords": [
     "linchkit",

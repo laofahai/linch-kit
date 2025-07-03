@@ -1,6 +1,6 @@
 {
   "name": "@linch-kit/schema",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "type": "module",
   "description": "Schema-driven development engine for LinchKit",
   "main": "./dist/index.cjs",
