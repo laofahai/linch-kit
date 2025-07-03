@@ -16,7 +16,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@linch-kit/ui"
 
 // LinchKit 工作台数据
 interface LinchKitSidebarProps {
