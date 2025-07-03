@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
-// 需要认证的路径
-const PROTECTED_PATHS = [
-  '/dashboard',
-  '/admin',
-  '/api/protected'
+// 不需要认证的路径（公开路径）
+const PUBLIC_PATHS = [
+  '/',  // 首页
+  '/sign-in',
+  '/sign-up', 
+  '/forgot-password'
 ]
 
 // 只有管理员能访问的路径
@@ -29,30 +30,20 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET 
   })
   
-  // 检查是否是需要保护的路径
-  const isProtectedPath = PROTECTED_PATHS.some(path => pathname.startsWith(path))
+  // 检查路径类型
+  const isPublicPath = PUBLIC_PATHS.some(path => pathname === path || pathname.startsWith(path + '/'))
   const isAdminPath = ADMIN_PATHS.some(path => pathname.startsWith(path))
   const isAuthPath = AUTH_PATHS.some(path => pathname.startsWith(path))
+  const isProtectedPath = !isPublicPath && !pathname.startsWith('/api/auth')
   
   // 如果是认证页面且已登录，重定向到首页
   if (isAuthPath && token) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
   
-  // 临时绕过认证 - 仅用于测试sidebar问题
+  // 如果访问受保护路径但未登录，重定向到登录页
   if (isProtectedPath && !token) {
-    // 模拟一个简单的token用于测试
-    const requestHeaders = new Headers(request.headers)
-    requestHeaders.set('x-user-id', 'test-user-id')
-    requestHeaders.set('x-user-email', 'test@linchkit.dev')
-    requestHeaders.set('x-user-role', 'TENANT_ADMIN')
-    requestHeaders.set('x-user-name', btoa(encodeURIComponent('测试用户')))
-    
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    })
+    return NextResponse.redirect(new URL('/sign-in', request.url))
   }
   
   // 如果有 token，验证权限

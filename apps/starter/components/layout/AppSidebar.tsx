@@ -7,7 +7,7 @@
 
 'use client'
 
-import React, { ReactNode, useState, useEffect } from 'react'
+import React, { ReactNode, useState, useEffect, useCallback } from 'react'
 import { cn } from '@linch-kit/ui/utils'
 import { 
   Button, 
@@ -18,6 +18,7 @@ import {
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -35,8 +36,11 @@ import {
   ChevronDown,
   Zap,
   CircleUser,
-  LogOut
+  LogOut,
+  Globe
 } from 'lucide-react'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { useSession, signOut } from 'next-auth/react'
 
 export interface AppSidebarLayoutProps {
   /** 页面内容 */
@@ -129,18 +133,19 @@ function NavMenuItem({
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             className={cn(
-              'group flex items-center justify-center w-full p-2 mx-1 rounded-lg text-sm font-medium transition-all duration-200',
-              'hover:bg-gray-100 dark:hover:bg-gray-800',
+              'h-10 w-full p-0 text-sm font-medium rounded-none',
               item.active 
-                ? 'bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black' 
-                : 'text-gray-600 dark:text-gray-300'
+                ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground' 
+                : 'text-muted-foreground'
             )}
             title={item.label}
           >
-            <Icon className="w-5 h-5" />
-          </button>
+            <Icon className="w-4 h-4" />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="right" className="w-48">
           <DropdownMenuItem>
@@ -165,53 +170,70 @@ function NavMenuItem({
     )
   }
 
+  if (isCollapsed) {
+    return (
+      <div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => window.location.href = item.href}
+          className={cn(
+            'h-10 w-full p-0 text-sm font-medium rounded-none',
+            item.active 
+              ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground' 
+              : 'text-muted-foreground'
+          )}
+          title={item.label}
+        >
+          <Icon className="w-4 h-4" />
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div>
       <a
         href={item.href}
-        onClick={hasChildren && !isCollapsed ? (e) => { e.preventDefault(); toggleExpanded(); } : undefined}
+        onClick={hasChildren ? (e) => { e.preventDefault(); toggleExpanded(); } : undefined}
         className={cn(
-          'group flex items-center gap-3 px-2 py-2 mx-1 rounded-lg text-sm font-medium transition-all duration-200',
-          'hover:bg-gray-100 dark:hover:bg-gray-800',
+          'group flex items-center gap-3 px-2 py-1.5 mx-1 rounded-lg text-sm font-medium transition-all duration-100',
+          'hover:bg-accent/30 dark:hover:bg-accent/40 active:bg-accent/50 dark:active:bg-accent/60',
           item.active 
-            ? 'bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black' 
-            : 'text-gray-600 dark:text-gray-300',
-          isCollapsed && 'justify-center px-2',
+            ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground' 
+            : 'text-muted-foreground',
           level > 0 && 'ml-4'
         )}
-        title={isCollapsed ? item.label : undefined}
       >
         <Icon className={cn(
-          'flex-shrink-0 transition-colors w-5 h-5',
-          item.active ? 'text-white dark:text-black' : 'text-gray-500 group-hover:text-gray-700'
+          'flex-shrink-0 transition-colors w-4 h-4',
+          item.active ? 'text-accent-foreground' : 'text-muted-foreground group-hover:text-accent-foreground'
         )} />
         
-        {!isCollapsed && (
-          <div className="flex items-center justify-between flex-1 min-w-0">
-            <span className="truncate">{item.label}</span>
-            <div className="flex items-center gap-2">
-              {item.badge && (
-                <Badge 
-                  variant="secondary" 
-                  className={cn(
-                    'text-xs px-1.5 py-0.5 h-5 border-0',
-                    item.active 
-                      ? 'bg-white/20 text-white' 
-                      : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
-                  )}
-                >
-                  {item.badge}
-                </Badge>
-              )}
-              {hasChildren && (
-                <ChevronDown className={cn(
-                  'w-4 h-4 transition-transform duration-200',
-                  isExpanded && 'rotate-180'
-                )} />
-              )}
-            </div>
+        <div className="flex items-center justify-between flex-1 min-w-0">
+          <span className="truncate">{item.label}</span>
+          <div className="flex items-center gap-2">
+            {item.badge && (
+              <Badge 
+                variant="secondary" 
+                className={cn(
+                  'text-xs px-1.5 py-0.5 h-5 border-0',
+                  item.active 
+                    ? 'bg-accent/30 text-accent-foreground' 
+                    : 'bg-accent/10 text-muted-foreground'
+                )}
+              >
+                {item.badge}
+              </Badge>
+            )}
+            {hasChildren && (
+              <ChevronDown className={cn(
+                'w-4 h-4 transition-transform duration-100',
+                isExpanded && 'rotate-180'
+              )} />
+            )}
           </div>
-        )}
+        </div>
       </a>
       
       {/* Submenu */}
@@ -235,34 +257,53 @@ function NavMenuItem({
  * Vercel-style Desktop Sidebar Component
  */
 function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onToggle: () => void }) {
+  const { data: session } = useSession()
+  
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/sign-in' })
+  }
+  
+  const getUserInitials = (name: string | null | undefined) => {
+    if (!name) return 'U'
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .substring(0, 2)
+  }
+  
   return (
     <div className={cn(
-      'hidden md:flex h-screen bg-white dark:bg-black transition-all duration-300 ease-out',
+      'hidden md:flex h-screen bg-white dark:bg-black transition-all duration-150 ease-out',
       'border-r border-gray-200 dark:border-gray-800 flex-col fixed',
       isCollapsed ? 'w-16' : 'w-64'
     )}>
       {/* Logo Section */}
       <div className="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-800">
-        {!isCollapsed ? (
-          <a href="/dashboard" className="flex items-center gap-3 transition-colors hover:opacity-80">
-            <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center">
-              <span className="text-white dark:text-black text-sm font-bold">L</span>
-            </div>
-            <div className="flex flex-col">
-              <div className="font-semibold text-gray-900 dark:text-white text-sm">LinchKit</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Starter</div>
-            </div>
-          </a>
-        ) : (
-          <a href="/dashboard" className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center mx-auto transition-colors hover:opacity-80">
+        <a href="/dashboard" className={cn(
+          "flex items-center transition-all duration-150 hover:opacity-80",
+          isCollapsed ? "justify-center w-full" : "gap-3"
+        )}>
+          <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center flex-shrink-0">
             <span className="text-white dark:text-black text-sm font-bold">L</span>
-          </a>
-        )}
+          </div>
+          <div className={cn(
+            "flex flex-col transition-all duration-150 overflow-hidden",
+            isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+          )}>
+            <div className="font-semibold text-gray-900 dark:text-white text-sm whitespace-nowrap">LinchKit</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Starter</div>
+          </div>
+        </a>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 py-4 overflow-y-auto">
-        <div className="space-y-1 px-2">
+        <div className={cn(
+          "space-y-1",
+          isCollapsed ? "px-0" : "px-2"
+        )}>
           {modernNavItems.map((item) => (
             <NavMenuItem 
               key={item.href} 
@@ -274,46 +315,156 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
       </nav>
 
       {/* User Section */}
-      <div className="border-t border-gray-200 dark:border-gray-800 p-3">
+      <div className={cn(
+        "border-t border-gray-200 dark:border-gray-800",
+        isCollapsed ? "p-0" : "p-3"
+      )}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            {!isCollapsed ? (
+              <Button variant="ghost" className="w-full justify-start gap-3 p-2 h-auto">
+                <div className="w-7 h-7 bg-accent/20 rounded-full flex items-center justify-center">
+                  {session?.user?.image ? (
+                    <img 
+                      src={session.user.image} 
+                      alt={session.user.name || 'User'} 
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm font-medium text-accent-foreground">
+                      {getUserInitials(session?.user?.name)}
+                    </span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="text-sm font-medium text-foreground truncate">
+                    {session?.user?.name || 'User'}
+                  </div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    {session?.user?.email || 'No email'}
+                  </div>
+                </div>
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" className="h-10 w-full p-0 rounded-none">
+                {session?.user?.image ? (
+                  <img 
+                    src={session.user.image} 
+                    alt={session.user.name || 'User'} 
+                    className="w-4 h-4 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xs font-medium text-accent-foreground">
+                    {getUserInitials(session?.user?.name)}
+                  </span>
+                )}
+              </Button>
+            )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align={isCollapsed ? "center" : "end"} side={isCollapsed ? "right" : "top"} className="w-56">
+            <div className="flex items-center gap-3 p-2">
+              <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
+                {session?.user?.image ? (
+                  <img 
+                    src={session.user.image} 
+                    alt={session.user.name || 'User'} 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="text-sm font-medium text-accent-foreground">
+                    {getUserInitials(session?.user?.name)}
+                  </span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-foreground">
+                  {session?.user?.name || 'User'}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {session?.user?.email || 'No email'}
+                </div>
+              </div>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <CircleUser className="w-4 h-4 mr-2" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-destructive" onClick={handleSignOut}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Quick Actions & Toggle */}
+      <div className={cn(
+        "border-t border-gray-200 dark:border-gray-800",
+        isCollapsed ? "p-0" : "p-3"
+      )}>
         {!isCollapsed ? (
-          <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-            <div className="w-7 h-7 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-              <CircleUser className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-gray-900 dark:text-white truncate">Demo User</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 truncate">demo@linchkit.com</div>
-            </div>
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-              <LogOut className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+            
+            {/* Language Switcher */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                  title="Language"
+                >
+                  <Globe className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="center">
+                <DropdownMenuItem>
+                  English
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  中文
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            {/* Collapse Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggle}
+              className="h-8 w-8 p-0 ml-auto text-muted-foreground hover:text-foreground"
+              title="Collapse sidebar"
+            >
+              <ChevronLeft className="w-4 h-4 transition-transform duration-100" />
             </Button>
           </div>
         ) : (
-          <div className="flex justify-center">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-              <CircleUser className="w-4 h-4" />
+          <div className="flex flex-col space-y-1">
+            {/* Theme Toggle - no extra wrapper button */}
+            <div className="flex items-center justify-center h-10 w-full">
+              <ThemeToggle className="h-10 w-full hover:bg-accent/30 dark:hover:bg-accent/40 active:bg-accent/50 dark:active:bg-accent/60 transition-colors rounded-none" />
+            </div>
+            
+            {/* Collapse Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggle}
+              className="h-10 w-full p-0 text-muted-foreground hover:text-foreground rounded-none"
+              title="Expand sidebar"
+            >
+              <ChevronLeft className="w-4 h-4 transition-transform duration-100 rotate-180" />
             </Button>
           </div>
         )}
-      </div>
-
-      {/* Collapse Toggle */}
-      <div className="border-t border-gray-200 dark:border-gray-800 p-3">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onToggle}
-          className={cn(
-            'w-full justify-center h-8 text-gray-500 hover:text-gray-900 dark:hover:text-white',
-            isCollapsed && 'w-8 p-0'
-          )}
-        >
-          <ChevronLeft className={cn(
-            'w-4 h-4 transition-transform duration-200',
-            isCollapsed && 'rotate-180'
-          )} />
-          {!isCollapsed && <span className="ml-2 text-xs">Collapse</span>}
-        </Button>
       </div>
     </div>
   )
@@ -323,6 +474,22 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
  * Premium Mobile Sidebar Component
  */
 function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: (open: boolean) => void }) {
+  const { data: session } = useSession()
+  
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/sign-in' })
+  }
+  
+  const getUserInitials = (name: string | null | undefined) => {
+    if (!name) return 'U'
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .substring(0, 2)
+  }
+  
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent side="left" className="w-80 p-0 bg-white dark:bg-black border-gray-200 dark:border-gray-800">
@@ -355,15 +522,29 @@ function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange
 
           {/* User Section */}
           <div className="border-t border-gray-200 dark:border-gray-800 p-4">
-            <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors cursor-pointer">
-              <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <CircleUser className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent/30 dark:hover:bg-accent/40 active:bg-accent/50 dark:active:bg-accent/60 transition-colors cursor-pointer">
+              <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
+                {session?.user?.image ? (
+                  <img 
+                    src={session.user.image} 
+                    alt={session.user.name || 'User'} 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="text-sm font-medium text-accent-foreground">
+                    {getUserInitials(session?.user?.name)}
+                  </span>
+                )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-900 dark:text-white truncate">Demo User</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 truncate">demo@linchkit.com</div>
+                <div className="text-sm font-medium text-foreground truncate">
+                  {session?.user?.name || 'User'}
+                </div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {session?.user?.email || 'No email'}
+                </div>
               </div>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4" />
               </Button>
             </div>
@@ -375,6 +556,30 @@ function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange
 }
 
 /**
+ * Custom hook for sidebar state persistence
+ */
+function useSidebarState() {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  
+  // Load state from localStorage on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('sidebar-collapsed')
+    if (savedState !== null) {
+      setIsCollapsed(JSON.parse(savedState))
+    }
+  }, [])
+  
+  // Save state to localStorage when changed
+  const toggleSidebar = useCallback(() => {
+    const newState = !isCollapsed
+    setIsCollapsed(newState)
+    localStorage.setItem('sidebar-collapsed', JSON.stringify(newState))
+  }, [isCollapsed])
+  
+  return { isCollapsed, toggleSidebar }
+}
+
+/**
  * Modern App Sidebar Layout
  */
 export function AppSidebarLayout({
@@ -383,12 +588,8 @@ export function AppSidebarLayout({
   breadcrumbs = [],
   className
 }: AppSidebarLayoutProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const { isCollapsed, toggleSidebar } = useSidebarState()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed)
-  }
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -405,7 +606,7 @@ export function AppSidebarLayout({
 
       {/* Main Content */}
       <div className={cn(
-        'flex-1 flex flex-col min-w-0 transition-all duration-300',
+        'flex-1 flex flex-col min-w-0 transition-all duration-150',
         'md:ml-64',
         isCollapsed && 'md:ml-16'
       )}>
@@ -446,7 +647,7 @@ export function AppSidebarLayout({
 
           {/* Header Actions */}
           <div className="ml-auto flex items-center gap-1">
-            <Button variant="ghost" size="sm" className="h-9 w-9 p-0 text-gray-500 hover:text-gray-900 dark:hover:text-white">
+            <Button variant="ghost" size="sm" className="h-9 w-9 p-0 text-muted-foreground hover:text-foreground">
               <Settings className="w-4 h-4" />
             </Button>
           </div>
