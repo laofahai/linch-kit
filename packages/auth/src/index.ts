@@ -34,6 +34,23 @@ export { createLinchKitAuthConfig } from './adapters/nextauth-adapter'
  * 保留企业级权限管理功能
  */
 export { CASLPermissionEngine } from './permissions/casl-engine'
+export { 
+  EnhancedPermissionEngine, 
+  createEnhancedPermissionEngine,
+  type EnhancedPermissionResult 
+} from './permissions/enhanced-permission-engine'
+
+// ==================== 服务导出 ====================
+/**
+ * 权限管理服务
+ */
+export * from './services'
+
+// ==================== 中间件导出 ====================
+/**
+ * 权限检查中间件
+ */
+export * from './middleware'
 
 // ==================== 企业级扩展导出 ====================
 /**

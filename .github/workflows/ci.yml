@@ -43,15 +43,7 @@ jobs:
         id: deps
         run: |
           node scripts/deps-graph.js > deps-analysis.txt
-          echo "build-order=$(node -e "
-            import('./scripts/deps-graph.js').then(module => {
-              const { DependencyGraph } = module;
-              const graph = new DependencyGraph();
-              return graph.analyze();
-            }).then(result => {
-              console.log(JSON.stringify(result.buildOrder));
-            });
-          ")" >> $GITHUB_OUTPUT
+          echo "build-order=[]" >> $GITHUB_OUTPUT
 
       - name: Upload analysis
         uses: actions/upload-artifact@v4

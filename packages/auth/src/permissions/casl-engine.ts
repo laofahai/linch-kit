@@ -153,42 +153,40 @@ export class CASLPermissionEngine implements IPermissionChecker {
     if (roles.includes('admin')) {
       can('manage', ['LinchKitUser', 'Role', 'Permission'])
       can('read', 'all')
-      can('create', ['Project', 'Post'])
-      can('update', ['Project', 'Post'])
-      can('delete', ['Project', 'Post'])
+      can('create', ['Category', 'Tag', 'Config'])
+      can('update', ['Category', 'Tag', 'Config'])
+      can('delete', ['Category', 'Tag'])
+      can('read', 'AuditLog')
     }
     
     // 项目经理权限
     if (roles.includes('project_manager')) {
-      can('manage', 'Project', { managerId: user.id })
-      can('read', 'Project', { teamMembers: { $in: [user.id] } })
-      can('update', 'LinchKitUser', { projectId: { $in: await this.getLinchKitUserManagedProjects(user.id) } })
-      can('create', ['Post', 'Comment'])
-      can('update', ['Post', 'Comment'], { authorId: user.id })
+      can('manage', 'Category', { createdBy: user.id })
+      can('read', 'Category')
+      can('create', ['Category', 'Tag'])
+      can('update', ['Category', 'Tag'], { createdBy: user.id })
+      can('read', 'Config', { tenantId: user.tenantId })
     }
     
     // 团队成员权限
     if (roles.includes('team_member')) {
-      can('read', 'Project', { teamMembers: { $in: [user.id] } })
-      can('update', 'Project', { teamMembers: { $in: [user.id] } }, ['status', 'progress'])
-      can('create', ['Post', 'Comment', 'File'])
-      can('update', ['Post', 'Comment', 'File'], { authorId: user.id })
-      can('delete', ['Comment', 'File'], { authorId: user.id })
+      can('read', ['Category', 'Tag'])
+      can('create', 'Tag')
+      can('update', 'Tag', { createdBy: user.id })
+      can('read', 'Config', { tenantId: user.tenantId })
     }
     
     // 普通用户权限
     if (roles.includes('user')) {
-      can('read', ['Post', 'Comment'], { published: true })
-      can('create', 'Comment')
-      can('update', 'Comment', { authorId: user.id })
-      can('delete', 'Comment', { authorId: user.id })
+      can('read', ['Category', 'Tag'])
+      can('read', 'Config', { tenantId: user.tenantId, public: true })
       can('update', 'LinchKitUser', { id: user.id }) // 只能编辑自己的信息
     }
     
     // 访客权限
     if (roles.includes('guest')) {
-      can('read', 'Post', { published: true, draft: false })
-      cannot('read', 'Post', { draft: true })
+      can('read', 'Category')
+      can('read', 'Tag')
       cannot('create', 'all')
       cannot('update', 'all')
       cannot('delete', 'all')
@@ -212,11 +210,12 @@ export class CASLPermissionEngine implements IPermissionChecker {
       if (userDepartment === 'hr') {
         can('read', 'LinchKitUser', ['salary', 'performance'])
         can('update', 'LinchKitUser', ['department', 'position'])
+        can('read', 'AuditLog', { category: 'SECURITY' })
       }
       
       if (userDepartment === 'finance') {
-        can('read', 'Project', ['budget', 'expenses'])
-        can('update', 'Project', { department: 'finance' })
+        can('read', 'Config', { category: 'finance' })
+        can('update', 'Config', { category: 'finance' })
       }
       
       if (userDepartment === 'it') {

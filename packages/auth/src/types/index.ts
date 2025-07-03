@@ -205,10 +205,10 @@ export type PermissionSubject =
   | 'User' 
   | 'Role' 
   | 'Permission'
-  | 'Project' 
-  | 'File' 
-  | 'Post' 
-  | 'Comment'
+  | 'Category'
+  | 'Tag'
+  | 'Config'
+  | 'AuditLog'
   | 'all'
   | string
 
@@ -220,6 +220,7 @@ export const RoleSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   permissions: z.array(z.string()),
+  parentRoleId: z.string().optional(), // 父角色ID
   inherits: z.array(z.string()).optional(), // 继承的角色
   isSystemRole: z.boolean().default(false),
   tenantId: z.string().optional(),
@@ -239,6 +240,8 @@ export const PermissionSchema = z.object({
   subject: z.string(),
   conditions: z.record(z.unknown()).optional(), // CASL条件
   fields: z.array(z.string()).optional(), // 字段级权限
+  allowedFields: z.array(z.string()).optional(), // 允许的字段
+  deniedFields: z.array(z.string()).optional(), // 拒绝的字段
   description: z.string().optional(),
   isSystemPermission: z.boolean().default(false),
   createdAt: z.date(),

@@ -31,7 +31,7 @@ model User {
   // 关系
   accounts Account[]
   sessions Session[]
-  posts    Post[]
+  userRoles UserRoleAssignment[]
   
   @@map("users")
 }
@@ -98,44 +98,6 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// 文章表 - 示例业务数据
-model Post {
-  id          String      @id @default(uuid())
-  title       String
-  content     String?     @db.Text
-  published   Boolean     @default(false)
-  status      PostStatus  @default(DRAFT)
-  
-  // 作者关系
-  authorId    String
-  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
-  // 分类关系
-  categoryId  String?
-  category    Category?   @relation(fields: [categoryId], references: [id])
-  
-  // 标签关系 (多对多)
-  tags        PostTag[]
-  
-  // 审计字段
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  deletedAt   DateTime?   // 软删除
-  publishedAt DateTime?
-  
-  @@map("posts")
-}
-
-// 文章状态枚举
-enum PostStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-  DELETED
-  
-  @@map("post_status")
-}
-
 // 分类表
 model Category {
   id          String   @id @default(uuid())
@@ -147,9 +109,6 @@ model Category {
   parentId    String?
   parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryHierarchy")
-  
-  // 文章关系
-  posts       Post[]
   
   // 审计字段
   createdAt   DateTime @default(now())
@@ -165,28 +124,12 @@ model Tag {
   name      String    @unique
   color     String?   // 标签颜色
   
-  // 文章关系 (多对多)
-  posts     PostTag[]
-  
   // 审计字段
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // 软删除
   
   @@map("tags")
-}
-
-// 文章标签关联表 (多对多中间表)
-model PostTag {
-  id     String @id @default(uuid())
-  postId String
-  tagId  String
-  
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
-  
-  @@unique([postId, tagId])
-  @@map("post_tags")
 }
 
 // 配置表 - 系统配置管理
@@ -261,4 +204,140 @@ enum AuditSeverity {
   CRITICAL
   
   @@map("audit_severities")
+}
+
+// ============================================================================
+// 增强型权限系统模型
+// ============================================================================
+
+// 角色表 - 支持角色继承
+model Role {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  description  String?
+  
+  // 角色继承
+  parentRoleId String?
+  parentRole   Role?   @relation("RoleHierarchy", fields: [parentRoleId], references: [id])
+  childRoles   Role[]  @relation("RoleHierarchy")
+  
+  // 系统角色标记
+  isSystemRole Boolean @default(false)
+  
+  // 多租户支持
+  tenantId     String? @default("default")
+  
+  // 审计字段
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // 关系
+  permissions  RolePermission[]
+  users        UserRoleAssignment[]
+  
+  @@index([tenantId])
+  @@map("roles")
+}
+
+// 权限表 - 定义系统权限
+model Permission {
+  id            String   @id @default(uuid())
+  name          String   @unique
+  action        String   // create, read, update, delete, manage, etc.
+  subject       String   // User, Category, all, etc.
+  
+  // 条件和字段级权限
+  conditions    String?  @db.Text // JSON格式的条件
+  allowedFields String[] // 允许访问的字段
+  deniedFields  String[] // 禁止访问的字段
+  
+  description   String?
+  isSystemPermission Boolean @default(false)
+  
+  // 审计字段
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // 关系
+  roles         RolePermission[]
+  
+  @@unique([action, subject])
+  @@map("permissions")
+}
+
+// 角色权限关联表
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  
+  // 权限覆盖 - 允许在角色级别覆盖权限的条件和字段
+  overrideConditions String? @db.Text // JSON格式的覆盖条件
+  overrideAllowedFields String[] // 覆盖允许的字段
+  overrideDeniedFields  String[] // 覆盖禁止的字段
+  
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// 用户角色分配表
+model UserRoleAssignment {
+  id        String   @id @default(uuid())
+  userId    String
+  roleId    String
+  
+  // 分配范围 - 支持在特定范围内分配角色
+  scope     String?  // 例如：项目ID、部门ID等
+  scopeType String?  // 例如：project、department等
+  
+  // 时间限制
+  validFrom DateTime @default(now())
+  validTo   DateTime?
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, roleId, scope, scopeType])
+  @@index([userId])
+  @@index([roleId])
+  @@map("user_role_assignments")
+}
+
+// 资源权限表 - 行级权限控制
+model ResourcePermission {
+  id           String   @id @default(uuid())
+  resourceType String   // User, Category, etc.
+  resourceId   String   // 具体资源ID
+  userId       String?  // 如果为null，则适用于角色
+  roleId       String?  // 如果为null，则适用于用户
+  
+  // 权限设置
+  actions      String[] // 允许的操作
+  conditions   String?  @db.Text // JSON格式的额外条件
+  
+  // 审计字段
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@unique([resourceType, resourceId, userId, roleId])
+  @@index([resourceType, resourceId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("resource_permissions")
+}
+
+// 权限缓存表 - 提高权限检查性能
+model PermissionCache {
+  id               String   @id @default(uuid())
+  userId           String
+  cacheKey         String
+  permissions      String   @db.Text // JSON格式的权限数据
+  expiresAt        DateTime
+  
+  @@unique([userId, cacheKey])
+  @@index([expiresAt])
+  @@map("permission_cache")
 }
