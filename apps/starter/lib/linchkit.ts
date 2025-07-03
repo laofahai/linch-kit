@@ -88,13 +88,13 @@ export async function initializeLinchKit() {
       },
       
       onError: (error) => {
-        Logger.error('LinchKit initialization failed:', error)
+        Logger.error('LinchKit initialization failed:', error as Error)
       }
     })
     
     return linchKitContext
   } catch (error) {
-    Logger.error('Failed to initialize LinchKit:', error)
+    Logger.error('Failed to initialize LinchKit:', error as Error)
     throw error
   }
 }
@@ -102,17 +102,17 @@ export async function initializeLinchKit() {
 /**
  * 获取 LinchKit 配置
  */
-export function getLinchKitConfig<T = any>(path: string): T | undefined {
+export function getLinchKitConfig<T = unknown>(path: string): T | undefined {
   if (!linchKitContext) {
     throw new Error('LinchKit not initialized')
   }
   
   const keys = path.split('.')
-  let value: any = linchKitContext.config
+  let value: unknown = linchKitContext.config
   
   for (const key of keys) {
     if (value && typeof value === 'object' && key in value) {
-      value = value[key]
+      value = (value as Record<string, unknown>)[key]
     } else {
       return undefined
     }

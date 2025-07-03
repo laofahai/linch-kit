@@ -73,7 +73,7 @@ async function main() {
     console.log('\n祝你使用愉快！🎉')
 
   } catch (error) {
-    Logger.error('初始化失败:', error)
+    Logger.error('初始化失败:', error as Error)
     process.exit(1)
   } finally {
     rl.close()

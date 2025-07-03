@@ -81,7 +81,7 @@ export interface CLICommand {
   /** 命令描述 */
   description: string
   /** 命令类别 */
-  category: 'core' | 'plugin' | 'config' | 'schema' | 'dev' | 'ops' | 'deploy' | 'util'
+  category: 'core' | 'plugin' | 'config' | 'schema' | 'dev' | 'ops' | 'deploy' | 'util' | 'trpc' | 'auth' | 'crud' | 'ui'
   /** 命令选项 */
   options?: CommandOption[]
   /** 命令执行器 */
@@ -446,7 +446,7 @@ export function registerCoreCLICommands(cliManager: CLIManager): void {
           console.log('===========================================\n')
 
           // 简化的初始化逻辑
-          console.log(t('cli.init.starting', 'LinchKit 项目初始化开始'))
+          console.log(t('cli.init.starting'))
           
           // 这里会调用实际的初始化逻辑
           // 暂时简化实现
@@ -470,8 +470,8 @@ export function registerCoreCLICommands(cliManager: CLIManager): void {
       description: '显示项目信息和状态',
       category: 'core',
       handler: async ({ t }) => {
-        console.log('LinchKit AI-First 全栈开发框架 v1.0.2')
-        console.log(t('cli.info.description', '企业级 Schema 驱动的全栈开发框架'))
+        console.log('LinchKit AI-First 全栈开发框架')
+        console.log(t('cli.info.description'))
         console.log('')
         console.log('📦 核心包:')
         console.log('  - @linch-kit/core      基础设施和日志')

@@ -6,7 +6,7 @@
  */
 
 import { Logger } from '../logger-client'
-import { PluginSystem } from '../plugin'
+import { PluginRegistry } from '../plugin'
 import type { Plugin } from '../types'
 
 export interface LinchKitInitOptions {
@@ -58,7 +58,7 @@ export interface LinchKitContext {
     environment: string
   }
   config: Record<string, unknown>
-  plugins: PluginSystem
+  plugins: PluginRegistry
   logger: typeof Logger
 }
 
@@ -81,7 +81,7 @@ export async function initLinchKit(options: LinchKitInitOptions): Promise<LinchK
     Logger.info(`Initializing ${options.appName} v${version} in ${environment} mode`)
     
     // 初始化插件系统
-    const pluginSystem = new PluginSystem()
+    const pluginSystem = new PluginRegistry()
     
     // 注册插件
     if (options.plugins) {

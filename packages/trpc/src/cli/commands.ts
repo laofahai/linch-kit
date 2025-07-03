@@ -178,7 +178,7 @@ export const generateTrpcCommand: CLICommand = {
 /**
  * 加载Schema实体
  */
-async function loadSchemaEntities(_schemaPath: string): Promise<Array<{ name: string; fields: Record<string, any> }>> {
+async function loadSchemaEntities(_schemaPath: string): Promise<Array<{ name: string; fields: Record<string, unknown> }>> {
   // 这里应该实现实际的Schema加载逻辑
   // 与 @linch-kit/schema 集成
   return []
@@ -188,7 +188,7 @@ async function loadSchemaEntities(_schemaPath: string): Promise<Array<{ name: st
  * 生成tRPC文件
  */
 async function generateTrpcFiles(config: {
-  entities: Array<{ name: string; fields: Record<string, any> }>
+  entities: Array<{ name: string; fields: Record<string, unknown> }>
   outputDir: string
   crud: boolean
   auth: boolean
@@ -257,7 +257,7 @@ async function generateTrpcFiles(config: {
  * 生成根路由器
  */
 function generateRootRouter(config: {
-  entities: Array<{ name: string; fields: Record<string, any> }>
+  entities: Array<{ name: string; fields: Record<string, unknown> }>
   auth: boolean
   permissions: boolean
 }): string {
@@ -301,7 +301,7 @@ export type AppRouter = typeof appRouter
  * 生成实体路由器
  */
 function generateEntityRouter(
-  entity: { name: string; fields: Record<string, any> },
+  entity: { name: string; fields: Record<string, unknown> },
   config: {
     crud: boolean
     auth: boolean
@@ -350,13 +350,13 @@ export const ${entity.name.toLowerCase()}Router = createTRPCRouter({
       },
     }),
 
-  findMany: createTRPCRouter()${middlewareChain}
+  findMunknown: createTRPCRouter()${middlewareChain}
     .query({
       input: z.object({
         // 根据Schema生成查询参数
       }).optional(),
       async resolve({ input, ctx }) {
-        return await ${entity.name.toLowerCase()}Crud.findMany(input, ctx)
+        return await ${entity.name.toLowerCase()}Crud.findMunknown(input, ctx)
       },
     }),
 
@@ -399,7 +399,7 @@ export const ${entity.name.toLowerCase()}Router = createTRPCRouter({
 /**
  * 生成认证中间件
  */
-function generateAuthMiddleware(_config: any): string {
+function generateAuthMiddleware(_config: unknown): string {
   return `import { TRPCError } from '@trpc/server'
 import { middleware } from '@linch-kit/trpc'
 
@@ -428,7 +428,7 @@ export const authMiddleware = middleware(async ({ ctx, next }) => {
 /**
  * 生成权限中间件
  */
-function generatePermissionsMiddleware(_config: any): string {
+function generatePermissionsMiddleware(_config: unknown): string {
   return `import { TRPCError } from '@trpc/server'
 import { middleware } from '@linch-kit/trpc'
 import { PermissionChecker } from '@linch-kit/crud/permissions'
@@ -462,7 +462,7 @@ export const permissionsMiddleware = middleware(async ({ ctx, next }) => {
  * 生成类型定义
  */
 function generateTrpcTypes(config: {
-  entities: Array<{ name: string; fields: Record<string, any> }>
+  entities: Array<{ name: string; fields: Record<string, unknown> }>
 }): string {
   const entityTypes = config.entities.map(entity => `
 export interface ${entity.name}CreateInput {
@@ -490,8 +490,8 @@ export interface ${entity.name}OrderByInput {
 ${entityTypes}
 
 export interface TRPCContext {
-  user?: any
-  permissions?: any
+  user?: unknown
+  permissions?: unknown
   // 其他上下文类型
 }
 `
@@ -500,7 +500,7 @@ export interface TRPCContext {
 /**
  * 生成OpenAPI规范
  */
-function generateOpenApiSpec(_config: any): string {
+function generateOpenApiSpec(_config: unknown): string {
   return `/**
  * OpenAPI规范生成
  * 自动生成，请勿手动修改
@@ -523,7 +523,7 @@ export const openApiSpec = {
 /**
  * 生成TypeScript客户端
  */
-function generateTrpcClient(_config: any): string {
+function generateTrpcClient(_config: unknown): string {
   return `/**
  * tRPC TypeScript客户端
  * 自动生成，请勿手动修改
