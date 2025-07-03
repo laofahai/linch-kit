@@ -272,7 +272,7 @@ export const seedCrudCommand: CLICommand = {
 /**
  * 加载Schema实体
  */
-async function loadSchemaEntities(_schemaPath: string): Promise<Array<{ name: string; fields: Record<string, any> }>> {
+async function loadSchemaEntities(_schemaPath: string): Promise<Array<{ name: string; fields: Record<string, unknown> }>> {
   // 这里应该实现实际的Schema加载逻辑
   // 与 @linch-kit/schema 集成
   return []
@@ -282,7 +282,7 @@ async function loadSchemaEntities(_schemaPath: string): Promise<Array<{ name: st
  * 生成CRUD文件
  */
 async function generateCrudFiles(
-  entities: Array<{ name: string; fields: Record<string, any> }>,
+  entities: Array<{ name: string; fields: Record<string, unknown> }>,
   options: {
     outputDir: string
     provider: string
@@ -332,7 +332,7 @@ async function generateCrudFiles(
  * 生成CRUD类
  */
 function generateCrudClass(
-  entity: { name: string; fields: Record<string, any> },
+  entity: { name: string; fields: Record<string, unknown> },
   options: {
     provider: string
     permissions: boolean
@@ -381,8 +381,8 @@ export const ${entity.name.toLowerCase()}Crud = new ${className}()
  * 生成路由文件
  */
 function generateRouterFile(
-  entity: { name: string; fields: Record<string, any> },
-  _options: any
+  entity: { name: string; fields: Record<string, unknown> },
+  _options: Record<string, unknown>
 ): string {
   return `import { createTRPCRouter } from '@linch-kit/trpc'
 import { ${entity.name.toLowerCase()}Crud } from './${entity.name.toLowerCase()}.crud'
@@ -408,8 +408,8 @@ export const ${entity.name.toLowerCase()}Router = createTRPCRouter({
  * 生成类型文件
  */
 function generateTypesFile(
-  entity: { name: string; fields: Record<string, any> },
-  _options: any
+  entity: { name: string; fields: Record<string, unknown> },
+  _options: Record<string, unknown>
 ): string {
   return `/**
  * ${entity.name} 类型定义

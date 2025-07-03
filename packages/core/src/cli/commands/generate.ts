@@ -13,7 +13,7 @@ const generateCommand: CLICommand = {
   description: '代码生成器',
   category: 'util',
   aliases: ['g'],
-  handler: async ({ t }) => {
+  handler: async ({ t: _t }) => {
     Logger.info('可用的生成命令:')
     Logger.info('')
     Logger.info('  linch generate:schema    - 从 Prisma 生成 Zod Schema (@linch-kit/schema)')

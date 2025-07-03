@@ -4,10 +4,13 @@
  * 提供 LinchKit 框架的所有 CLI 命令
  */
 
-import { createCLIManager, type CLIManager } from './index'
+import { Logger } from '../logger-client'
+
 import { CLIPluginManager } from './plugin'
 import { registerCoreCommands } from './commands/core'
-import { Logger } from '../logger-client'
+
+import { createCLIManager, type CLIManager } from './index'
+
 
 export class LinchKitCLI {
   private cli: CLIManager
@@ -20,7 +23,7 @@ export class LinchKitCLI {
 
   private async setupCLI() {
     // 修改程序信息
-    const program = (this.cli as any).program
+    const program = (this.cli as { program: unknown }).program
     program
       .name('linch')
       .description('LinchKit AI-First 全栈开发框架 CLI')
@@ -51,7 +54,7 @@ export class LinchKitCLI {
       await this.setupCLI()
 
       // 解析并执行命令
-      await (this.cli as any).parse(args)
+      await (this.cli as { parse: (args: string[]) => Promise<void> }).parse(args)
     } catch (error) {
       Logger.error('CLI execution failed:', error)
       process.exit(1)

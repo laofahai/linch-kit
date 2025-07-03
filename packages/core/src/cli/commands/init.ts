@@ -4,12 +4,13 @@
  * 初始化 LinchKit 项目
  */
 
-import { type CLIManager, type CLICommand } from '../index'
-import { Logger } from '../../logger-client'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
-import { join } from 'path'
+import { join as _join } from 'path'
 import { execSync } from 'child_process'
 import * as readline from 'readline'
+
+import { Logger } from '../../logger-client'
+import { type CLIManager, type CLICommand } from '../index'
 
 const rl = readline.createInterface({
   input: process.stdin,

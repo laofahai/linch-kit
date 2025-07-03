@@ -4,10 +4,11 @@
  * 显示系统信息和项目状态
  */
 
-import { type CLIManager, type CLICommand } from '../index'
-import { Logger } from '../../logger-client'
 import { existsSync, readFileSync } from 'fs'
 import { execSync } from 'child_process'
+
+import { type CLIManager, type CLICommand } from '../index'
+import { Logger } from '../../logger-client'
 
 const infoCommand: CLICommand = {
   name: 'info',

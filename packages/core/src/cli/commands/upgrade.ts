@@ -4,10 +4,11 @@
  * 框架升级迁移工具 - Gemini建议的增强命令
  */
 
-import { type CLIManager, type CLICommand } from '../index'
-import { Logger } from '../../logger-client'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { execSync } from 'child_process'
+
+import { type CLIManager, type CLICommand } from '../index'
+import { Logger } from '../../logger-client'
 
 const upgradeCommand: CLICommand = {
   name: 'upgrade',
@@ -125,7 +126,7 @@ interface ProjectInfo {
   name: string
   version: string
   linchKitPackages: Array<{ name: string; version: string }>
-  packageJson: any
+  packageJson: Record<string, unknown>
 }
 
 async function checkProject(): Promise<ProjectInfo> {
