@@ -1,5 +1,12 @@
 # @linch-kit/schema
 
+## 2.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`7ff4538`](https://github.com/laofahai/linch-kit/commit/7ff45383ce62fa740f19c09d87ba62dd1eb1383c)]:
+  - @linch-kit/core@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes

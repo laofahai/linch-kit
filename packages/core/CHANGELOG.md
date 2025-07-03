@@ -1,5 +1,17 @@
 # @linch-kit/core
 
+## 2.0.2
+
+### Patch Changes
+
+- [#6](https://github.com/laofahai/linch-kit/pull/6) [`7ff4538`](https://github.com/laofahai/linch-kit/commit/7ff45383ce62fa740f19c09d87ba62dd1eb1383c) Thanks [@laofahai](https://github.com/laofahai)! - fix: 修复TypeScript类型错误和lint问题
+
+  修复了所有包的TypeScript类型错误和ESLint问题：
+  - 替换所有any类型为具体类型定义
+  - 修复未使用变量和导入问题
+  - 规范错误处理方式
+  - 确保代码质量标准符合项目要求
+
 ## 2.0.1
 
 ### Patch Changes
