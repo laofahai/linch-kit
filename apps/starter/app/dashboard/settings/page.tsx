@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { 
   Button, 
   Card, 
@@ -21,11 +21,6 @@ import {
   TabsList,
   TabsTrigger,
   useToast,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Separator
 } from '@linch-kit/ui'
 import { Logger } from '@linch-kit/core'
@@ -67,10 +62,10 @@ export default function SettingsPage() {
   const [marketingEmails, setMarketingEmails] = useState(false)
 
   // 配置项列表（模拟从数据库加载）
-  const [configs, setConfigs] = useState<ConfigItem[]>([])
+  const [, setConfigs] = useState<ConfigItem[]>([])
 
   // 加载配置
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       setLoading(true)
       Logger.info('加载租户设置')
@@ -120,7 +115,7 @@ export default function SettingsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [appName, enableRegistration, maxLoginAttempts, toast])
 
   // 保存设置
   const saveSettings = async () => {
@@ -153,7 +148,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     loadSettings()
-  }, [])
+  }, [loadSettings])
 
   if (loading) {
     return (

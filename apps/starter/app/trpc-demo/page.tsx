@@ -5,241 +5,207 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { trpc } from '@/components/providers/trpc-provider'
+import { useEffect } from 'react'
+import { api as trpc } from '@/lib/trpc-client'
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui'
 import { Logger } from '@linch-kit/core'
 
 export default function TRPCDemoPage() {
-  const [healthData, setHealthData] = useState<{
-    ping: { message: string; timestamp: string; uptime: number }
-    status: { status: string; timestamp: string }
-  } | null>(null)
-  const [systemData, setSystemData] = useState<{
-    name: string; version: string; environment: string; nodeVersion: string
-  } | null>(null)
-  const [postsData, setPostsData] = useState<{
-    users: Array<{ 
-      id: string; 
-      name: string; 
-      email: string; 
-      role: string; 
-      status: string;
-      createdAt: Date;
-      lastLoginAt: Date | null;
-    }>
-    total: number
-  } | null>(null)
-  const [statsData, setStatsData] = useState<{
-    totalUsers: number; activeUsers: number; totalSessions: number; revenue: number
-  } | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  // 使用 tRPC hooks
+  const { data: pingData, isLoading: pingLoading, error: pingError, refetch: refetchPing } = trpc.health.ping.useQuery()
+  const { data: statusData, isLoading: statusLoading, error: statusError, refetch: refetchStatus } = trpc.health.status.useQuery()
+  const { data: systemData, isLoading: systemLoading, error: systemError, refetch: refetchSystem } = trpc.system.info.useQuery()
+  const { data: usersData, isLoading: usersLoading, error: usersError, refetch: refetchUsers } = trpc.user.list.useQuery({ limit: 5, offset: 0 })
+  const { data: statsData, isLoading: statsLoading, error: statsError, refetch: refetchStats } = trpc.stats.dashboard.useQuery()
 
-  // 获取健康检查数据
-  const fetchHealth = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const ping = await trpc.health.ping.query()
-      const status = await trpc.health.status.query()
-      setHealthData({ ping, status })
-      Logger.info('健康检查数据获取成功', { ping, status })
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error'
-      setError(message)
-      Logger.error('健康检查失败', new Error(message))
-    } finally {
-      setLoading(false)
-    }
-  }
+  const isLoading = pingLoading || statusLoading || systemLoading || usersLoading || statsLoading
+  const hasError = pingError || statusError || systemError || usersError || statsError
 
-  // 获取系统信息
-  const fetchSystemInfo = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const info = await trpc.system.info.query()
-      setSystemData(info)
-      Logger.info('系统信息获取成功', info)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error'
-      setError(message)
-      Logger.error('系统信息获取失败', new Error(message))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 获取用户列表 (需要管理员权限)
-  const fetchUsers = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const users = await trpc.user.list.query({ limit: 5, offset: 0 })
-      setPostsData(users) // 复用现有状态
-      Logger.info('用户列表获取成功', users)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error'
-      setError(message)
-      Logger.error('用户列表获取失败', new Error(message))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 获取统计数据
-  const fetchStats = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const stats = await trpc.stats.dashboard.query()
-      setStatsData(stats)
-      Logger.info('统计数据获取成功', stats)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error'
-      setError(message)
-      Logger.error('统计数据获取失败', new Error(message))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 页面加载时自动获取健康检查数据
   useEffect(() => {
-    fetchHealth()
-  }, [])
+    // 记录数据加载状态
+    if (pingData && statusData && systemData && statsData) {
+      Logger.info('tRPC 数据加载完成', { 
+        ping: pingData, 
+        status: statusData, 
+        system: systemData, 
+        stats: statsData 
+      })
+    }
+    if (hasError) {
+      Logger.error('tRPC 数据加载失败', hasError as unknown as Error)
+    }
+  }, [pingData, statusData, systemData, statsData, hasError])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            tRPC API 演示
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            展示 LinchKit tRPC 集成的各种 API 功能
-          </p>
-        </div>
+    <div className="container mx-auto p-6">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">tRPC API 演示</h1>
+        <p className="text-muted-foreground mt-2">
+          展示 tRPC 类型安全的 API 调用和实时数据获取
+        </p>
+      </div>
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            错误: {error}
+      {isLoading && (
+        <div className="flex items-center justify-center min-h-32">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">正在加载数据...</p>
           </div>
-        )}
+        </div>
+      )}
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-          {/* 健康检查 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>健康检查 API</CardTitle>
-              <CardDescription>测试服务器连接和状态</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={fetchHealth} disabled={loading} className="mb-4">
-                {loading ? '加载中...' : '检查服务器健康状态'}
-              </Button>
-              {healthData && (
-                <div className="space-y-2 text-sm">
-                  <div><strong>Ping:</strong> {healthData.ping.message}</div>
-                  <div><strong>状态:</strong> {healthData.status.status}</div>
-                  <div><strong>运行时间:</strong> {Math.round(healthData.ping.uptime)}s</div>
+      {hasError && (
+        <Card className="mb-6 border-red-200 bg-red-50">
+          <CardHeader>
+            <CardTitle className="text-red-800">错误信息</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-700">{hasError.message || '未知错误'}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* 健康检查 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>健康检查</CardTitle>
+            <CardDescription>系统健康状态和响应测试</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {pingData && (
+              <div>
+                <p className="text-sm font-medium">Ping 响应</p>
+                <p className="text-xs text-muted-foreground">{pingData.message}</p>
+                <p className="text-xs text-muted-foreground">运行时间: {pingData.uptime}s</p>
+              </div>
+            )}
+            {statusData && (
+              <div>
+                <p className="text-sm font-medium">系统状态</p>
+                <p className="text-xs text-muted-foreground">状态: {statusData.status}</p>
+                <p className="text-xs text-muted-foreground">时间: {statusData.timestamp}</p>
+              </div>
+            )}
+            <Button 
+              onClick={() => {
+                refetchPing()
+                refetchStatus()
+              }} 
+              size="sm"
+              disabled={pingLoading || statusLoading}
+            >
+              刷新健康检查
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* 系统信息 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>系统信息</CardTitle>
+            <CardDescription>服务器环境和版本信息</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {systemData && (
+              <>
+                <div>
+                  <p className="text-sm font-medium">应用版本</p>
+                  <p className="text-xs text-muted-foreground">{systemData.version}</p>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* 系统信息 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>系统信息 API</CardTitle>
-              <CardDescription>获取服务器系统信息</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={fetchSystemInfo} disabled={loading} className="mb-4">
-                {loading ? '加载中...' : '获取系统信息'}
-              </Button>
-              {systemData && (
-                <div className="space-y-2 text-sm">
-                  <div><strong>名称:</strong> {systemData.name}</div>
-                  <div><strong>版本:</strong> {systemData.version}</div>
-                  <div><strong>环境:</strong> {systemData.environment}</div>
-                  <div><strong>Node版本:</strong> {systemData.nodeVersion}</div>
+                <div>
+                  <p className="text-sm font-medium">环境</p>
+                  <p className="text-xs text-muted-foreground">{systemData.environment}</p>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                <div>
+                  <p className="text-sm font-medium">Node.js 版本</p>
+                  <p className="text-xs text-muted-foreground">{systemData.nodeVersion}</p>
+                </div>
+                <Button onClick={() => refetchSystem()} size="sm" disabled={systemLoading}>
+                  刷新系统信息
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
-          {/* 文章列表 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>用户列表 API</CardTitle>
-              <CardDescription>获取用户数据（管理员API）</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={fetchUsers} disabled={loading} className="mb-4">
-                {loading ? '加载中...' : '获取用户列表'}
-              </Button>
-              {postsData && (
-                <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
-                    总计: {postsData.total} 个用户
-                  </div>
-                  {postsData.users.map((user) => (
-                    <div key={user.id} className="border-l-4 border-blue-500 pl-3">
-                      <div className="font-medium">{user.name}</div>
-                      <div className="text-sm text-gray-600">
-                        邮箱: {user.email} | 角色: {user.role}
-                      </div>
+        {/* 统计数据 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>业务统计</CardTitle>
+            <CardDescription>实时业务数据统计</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {statsData && (
+              <>
+                <div>
+                  <p className="text-sm font-medium">总用户数</p>
+                  <p className="text-2xl font-bold">{statsData.totalUsers}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">活跃用户</p>
+                  <p className="text-2xl font-bold">{statsData.activeUsers}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">总收入</p>
+                  <p className="text-2xl font-bold">¥{statsData.revenue.toLocaleString()}</p>
+                </div>
+                <Button onClick={() => refetchStats()} size="sm" disabled={statsLoading}>
+                  刷新统计数据
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* 用户列表 */}
+        <Card className="md:col-span-2 lg:col-span-3">
+          <CardHeader>
+            <CardTitle>用户列表</CardTitle>
+            <CardDescription>最近注册的用户 (需要管理员权限)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {usersError ? (
+              <p className="text-red-600 text-sm">
+                无法获取用户列表 (可能需要管理员权限): {usersError.message}
+              </p>
+            ) : usersData && usersData.users.length > 0 ? (
+              <div className="space-y-2">
+                {usersData.users.map((user) => (
+                  <div key={user.id} className="flex justify-between items-center p-2 border rounded">
+                    <div>
+                      <p className="font-medium">{user.name || '未设置'}</p>
+                      <p className="text-sm text-muted-foreground">{user.email}</p>
                     </div>
-                  ))}
+                    <div className="text-right">
+                      <p className="text-sm">{user.role}</p>
+                      <p className="text-xs text-muted-foreground">{user.status}</p>
+                    </div>
+                  </div>
+                ))}
+                <div className="pt-4">
+                  <Button onClick={() => refetchUsers()} size="sm" disabled={usersLoading}>
+                    刷新用户列表
+                  </Button>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">暂无用户数据</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* 统计数据 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>统计数据 API</CardTitle>
-              <CardDescription>获取仪表板统计信息</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={fetchStats} disabled={loading} className="mb-4">
-                {loading ? '加载中...' : '获取统计数据'}
-              </Button>
-              {statsData && (
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <div className="font-medium text-blue-600">总用户数</div>
-                    <div className="text-xl">{statsData.totalUsers}</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-green-600">活跃用户</div>
-                    <div className="text-xl">{statsData.activeUsers}</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-purple-600">总会话数</div>
-                    <div className="text-xl">{statsData.totalSessions}</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-orange-600">收入</div>
-                    <div className="text-xl">¥{statsData.revenue}</div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="text-center mt-8">
-          <Button 
-            onClick={() => window.location.href = '/dashboard'} 
-            variant="outline"
-          >
-            返回 Dashboard
-          </Button>
-        </div>
+      <div className="mt-8 p-4 border rounded-lg bg-muted/50">
+        <h3 className="font-semibold mb-2">tRPC 特性演示</h3>
+        <ul className="text-sm text-muted-foreground space-y-1">
+          <li>✅ 类型安全的 API 调用</li>
+          <li>✅ 自动数据获取和缓存</li>
+          <li>✅ 实时错误处理</li>
+          <li>✅ 加载状态管理</li>
+          <li>✅ 数据刷新机制</li>
+          <li>✅ TypeScript 端到端类型推导</li>
+        </ul>
       </div>
     </div>
   )

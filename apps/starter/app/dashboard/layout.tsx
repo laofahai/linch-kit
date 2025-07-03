@@ -1,6 +1,7 @@
 "use client"
 
 import { AppSidebar } from "@/components/app-sidebar"
+import { usePathname } from "next/navigation"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,20 +20,31 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
+  
+  // 动态面包屑配置
+  const getBreadcrumbs = () => {
+    const paths = pathname.split('/').filter(Boolean)
+    const breadcrumbs = [
+      { title: 'LinchKit 工作台', href: '/dashboard' }
+    ]
+    
+    if (paths[1] === 'users') {
+      breadcrumbs.push({ title: '用户管理', href: '/dashboard/users' })
+    } else if (paths[1] === 'settings') {
+      breadcrumbs.push({ title: '租户设置', href: '/dashboard/settings' })
+    } else if (paths[1] === 'permissions') {
+      breadcrumbs.push({ title: '权限配置', href: '/dashboard/permissions' })
+    }
+    
+    return breadcrumbs
+  }
+  
+  const breadcrumbs = getBreadcrumbs()
+  
   return (
     <SidebarProvider>
-      <AppSidebar 
-        user={{
-          name: "租户管理员",
-          email: "admin@linchkit.dev", 
-          avatar: "/avatars/admin.jpg",
-          role: "TENANT_ADMIN"
-        }}
-        currentTenant={{
-          name: "企业客户A",
-          plan: "Enterprise"
-        }}
-      />
+      <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
@@ -40,15 +52,20 @@ export default function DashboardLayout({
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/dashboard">
-                    LinchKit 工作台
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>概览</BreadcrumbPage>
-                </BreadcrumbItem>
+                {breadcrumbs.map((crumb, index) => (
+                  <div key={crumb.href} className="flex items-center gap-2">
+                    {index > 0 && <BreadcrumbSeparator />}
+                    <BreadcrumbItem>
+                      {index === breadcrumbs.length - 1 ? (
+                        <BreadcrumbPage>{crumb.title}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink href={crumb.href}>
+                          {crumb.title}
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </div>
+                ))}
               </BreadcrumbList>
             </Breadcrumb>
           </div>

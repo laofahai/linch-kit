@@ -6,7 +6,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { trpc } from '@/components/providers/trpc-provider'
+import { api as trpc } from '@/lib/trpc-client'
 import { 
   Button, 
   Card, 
@@ -51,9 +51,6 @@ type User = {
 
 export default function UsersPage() {
   const { toast } = useToast()
-  const [users, setUsers] = useState<User[]>([])
-  const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState<string>('all')
   const [currentPage, setCurrentPage] = useState(1)
@@ -63,77 +60,52 @@ export default function UsersPage() {
   
   const limit = 10
 
-  // 获取用户列表
-  const fetchUsers = async () => {
-    try {
-      setLoading(true)
-      const result = await trpc.user.list.query({
-        limit,
-        offset: (currentPage - 1) * limit,
-        search: search || undefined,
-        role: roleFilter === 'all' ? undefined : roleFilter as User['role'],
-      })
-      
-      setUsers(result.users)
-      setTotal(result.total)
-      Logger.info('用户列表获取成功', { count: result.users.length, total: result.total })
-    } catch (error) {
-      Logger.error('用户列表获取失败', error as Error)
-      toast({
-        title: '获取用户列表失败',
-        description: '请检查您的权限或稍后重试',
-        variant: 'destructive',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
+  // 使用 tRPC hook 获取用户列表
+  const { data: userListData, isLoading: loading, refetch } = trpc.user.list.useQuery({
+    limit,
+    offset: (currentPage - 1) * limit,
+    search: search || undefined,
+    role: roleFilter === 'all' ? undefined : roleFilter as User['role'],
+  })
 
-  // 更新用户状态
-  const updateUserStatus = async () => {
-    if (!selectedUser) return
-    
-    try {
-      setLoading(true)
-      const result = await trpc.user.updateStatus.mutate({
-        userId: selectedUser.id,
-        status: newStatus,
-      })
-      
+  const users = userListData?.users || []
+  const total = userListData?.total || 0
+
+  // 更新用户状态 mutation
+  const updateStatusMutation = trpc.user.updateStatus.useMutation({
+    onSuccess: (result) => {
       if (result.success) {
         toast({
           title: '操作成功',
           description: result.message,
         })
         setShowStatusDialog(false)
-        fetchUsers() // 刷新列表
+        refetch() // 刷新列表
       }
-    } catch (error) {
-      Logger.error('更新用户状态失败', error as Error)
+    },
+    onError: (error) => {
+      Logger.error('更新用户状态失败', error as unknown as Error)
       toast({
         title: '操作失败',
         description: '更新用户状态时出错',
         variant: 'destructive',
       })
-    } finally {
-      setLoading(false)
-    }
+    },
+  })
+
+  const updateUserStatus = () => {
+    if (!selectedUser) return
+    
+    updateStatusMutation.mutate({
+      userId: selectedUser.id,
+      status: newStatus,
+    })
   }
 
-  // 监听搜索和筛选变化
+  // 当搜索或筛选变化时重置页码
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentPage(1)
-      fetchUsers()
-    }, 300)
-    
-    return () => clearTimeout(timer)
+    setCurrentPage(1)
   }, [search, roleFilter])
-
-  // 监听页码变化
-  useEffect(() => {
-    fetchUsers()
-  }, [currentPage])
 
   const totalPages = Math.ceil(total / limit)
 
