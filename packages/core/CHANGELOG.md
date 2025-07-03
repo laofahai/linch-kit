@@ -1,5 +1,17 @@
 # @linch-kit/core
 
+## 2.0.1
+
+### Patch Changes
+
+- [#4](https://github.com/laofahai/linch-kit/pull/4) [`3292090`](https://github.com/laofahai/linch-kit/commit/32920903564d896acf78461bdde992d68402b246) Thanks [@laofahai](https://github.com/laofahai)! - fix: 修复TypeScript类型错误和CLI功能
+  - 修复core包中i18n函数参数类型错误，确保类型安全
+  - 修复schema包中CLI命令导出错误，删除不存在的命令导出
+  - 修复trpc包中any类型警告，替换为unknown类型
+  - 修复starter包中TypeScript严格模式错误
+  - 删除文档中的硬编码版本号，便于维护
+  - 扩展CLI类别支持，添加trpc、auth、crud、ui类别
+
 ## 2.0.0
 
 ### Patch Changes
