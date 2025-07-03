@@ -439,7 +439,7 @@ export function registerCoreCLICommands(cliManager: CLIManager): void {
           defaultValue: false
         }
       ],
-      handler: async ({ options, t }) => {
+      handler: async ({ options: _options, t }) => {
         try {
           console.log('===========================================')
           console.log('🚀 LinchKit 项目初始化向导')

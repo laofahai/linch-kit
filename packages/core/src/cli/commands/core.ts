@@ -5,6 +5,7 @@
  */
 
 import { type CLIManager } from '../index'
+
 import { registerInitCommand } from './init'
 import { registerInfoCommand } from './info'
 import { registerHelpCommand } from './help'

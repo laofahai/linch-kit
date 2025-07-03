@@ -4,10 +4,11 @@
  * 启动开发服务器
  */
 
-import { type CLIManager, type CLICommand } from '../index'
-import { Logger } from '../../logger-client'
 import { spawn } from 'child_process'
 import { existsSync } from 'fs'
+
+import { type CLIManager, type CLICommand } from '../index'
+import { Logger } from '../../logger-client'
 
 const devCommand: CLICommand = {
   name: 'dev',

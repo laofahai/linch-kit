@@ -4,11 +4,12 @@
  * 开发环境诊断工具 - Gemini建议的增强命令
  */
 
-import { type CLIManager, type CLICommand } from '../index'
-import { Logger } from '../../logger-client'
 import { existsSync, readFileSync, statSync } from 'fs'
 import { execSync } from 'child_process'
-import { join } from 'path'
+import { join as _join } from 'path'
+
+import { Logger } from '../../logger-client'
+import { type CLIManager, type CLICommand } from '../index'
 
 const doctorCommand: CLICommand = {
   name: 'doctor',
@@ -569,7 +570,8 @@ async function autoFix(diagnostics: DiagnosticCategory[]): Promise<{ fixed: numb
           execSync(issue.command, { stdio: 'pipe' })
           console.log(`✓ 已修复: ${issue.message}`)
           fixed++
-        } catch (error) {
+        } catch {
+          // 忽略修复错误
           console.log(`✗ 修复失败: ${issue.message}`)
           failed++
         }

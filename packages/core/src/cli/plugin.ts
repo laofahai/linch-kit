@@ -4,8 +4,9 @@
  * 允许各个包动态注册自己的 CLI 命令
  */
 
-import { type CLIManager, type CLICommand } from './index'
 import { Logger } from '../logger-client'
+
+import { type CLIManager, type CLICommand } from './index'
 
 export interface CLIPlugin {
   /**
@@ -74,7 +75,8 @@ export class CLIPluginManager {
         if (module.cliPlugin) {
           await this.registerPlugin(module.cliPlugin)
         }
-      } catch (error) {
+      } catch {
+        // 包可能没有 CLI 插件，这是正常的
         // 包可能没有 CLI 插件，这是正常的
         Logger.debug(`No CLI plugin found for ${packageName}`)
       }

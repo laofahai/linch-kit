@@ -4,10 +4,11 @@
  * 构建生产版本
  */
 
-import { type CLIManager, type CLICommand } from '../index'
-import { Logger } from '../../logger-client'
 import { execSync } from 'child_process'
 import { existsSync } from 'fs'
+
+import { type CLIManager, type CLICommand } from '../index'
+import { Logger } from '../../logger-client'
 
 const buildCommand: CLICommand = {
   name: 'build',
@@ -45,7 +46,8 @@ const buildCommand: CLICommand = {
       Logger.info('运行类型检查...')
       try {
         execSync('tsc --noEmit', { stdio: 'inherit' })
-      } catch (error) {
+      } catch {
+        // 忽略类型检查错误
         Logger.error('类型检查失败，继续构建...')
       }
 
