@@ -2,11 +2,9 @@
 
 import { useTabsStore } from '@/lib/stores/tabs-store'
 import { TabItem } from './TabItem'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRef, useState, useEffect } from 'react'
-import { cn } from '@/lib/utils'
 
 export function TabsBar() {
   const { tabs, activeTabId, addTab } = useTabsStore()

@@ -5,6 +5,8 @@
  * Features: Mobile-first responsive design, smooth animations, modern aesthetics
  */
 
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import React, { ReactNode, useState, useEffect, useCallback } from 'react'
@@ -133,7 +135,7 @@ function NavMenuItem({
 
   const handleNavClick = (navItem: NavItem) => {
     // 映射图标组件到图标名称
-    const getIconName = (iconComponent: React.ComponentType<any>) => {
+    const getIconName = (iconComponent: React.ComponentType<{ className?: string }>) => {
       if (iconComponent === Home) return 'Home'
       if (iconComponent === Users) return 'Users'
       if (iconComponent === Settings) return 'Settings'

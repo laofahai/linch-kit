@@ -57,6 +57,7 @@
     "prisma": "^6.10.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-error-boundary": "^6.0.0",
     "recharts": "^3.0.2",
     "superjson": "^2.2.2",
     "tailwind-merge": "^3.3.1",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import { useTabsStore, type Tab } from '@/lib/stores/tabs-store'
