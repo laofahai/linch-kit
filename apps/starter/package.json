@@ -11,6 +11,8 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "validate": "pnpm build && pnpm lint && pnpm type-check",
+    "init": "tsx scripts/init.ts",
+    "init:project": "tsx scripts/init.ts",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",

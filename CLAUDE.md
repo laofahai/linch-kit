@@ -44,6 +44,8 @@ L4: modules/console      ✅ 管理平台 (100%)
 - **🔄 开发进度**: `ai-context/zh/current/development-status.md` - 项目最新状态和待办事项
 
 ### 📖 参考文档
+- **🌳 Git工作流**: `ai-context/zh/system-design/git-workflow.md` - 分支管理、提交规范、PR流程
+- **🚀 发布流程**: `ai-context/zh/system-design/release-process.md` - 完整发布流程和CI/CD
 - **🏗️ 模块架构**: `ai-context/zh/system-design/module-architecture-design.md` - 系统架构设计
 - **📖 API参考**: `ai-context/zh/current/packages-api-reference.md` - 包功能速查
 - **🏛️ 系统架构**: `ai-context/zh/system-design/architecture.md` - 详细架构设计

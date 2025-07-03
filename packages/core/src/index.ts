@@ -38,6 +38,9 @@ export * from './i18n'
 // 工具函数 - 客户端安全
 export * from './utils/index-client'
 
+// 初始化系统
+export * from './init'
+
 // 默认实例导出
 export { PluginSystem } from './plugin'
 // ConfigManager 已移至 server.ts (需要文件系统访问)

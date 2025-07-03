@@ -39,3 +39,6 @@ export { BaseCrudPlugin } from './plugins/base-plugin'
 
 // tRPC路由工厂
 export { createCrudRouter } from './trpc/router-factory'
+
+// CLI命令
+export { crudCommands } from './cli/commands'
