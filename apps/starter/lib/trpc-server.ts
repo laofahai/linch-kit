@@ -14,6 +14,7 @@ import {
 } from '@linch-kit/trpc/server'
 import { Logger } from '@linch-kit/core'
 import { z } from 'zod'
+import { db } from './db'
 
 /**
  * 用户相关路由
@@ -30,15 +31,26 @@ const userRouter = router({
     .query(async ({ ctx }) => {
       Logger.info('获取用户资料', { userId: ctx.user?.id })
       
-      // 这里应该从数据库获取用户信息
-      // 暂时返回模拟数据
-      return {
-        id: ctx.user?.id || 'unknown',
-        name: ctx.user?.name || '未知用户',
-        email: ctx.user?.email || null,
-        role: 'user',
-        createdAt: new Date(),
+      if (!ctx.user?.id) {
+        throw new Error('用户未登录')
       }
+
+      const user = await db.user.findUnique({
+        where: { id: ctx.user.id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+        },
+      })
+
+      if (!user) {
+        throw new Error('用户不存在')
+      }
+
+      return user
     }),
 
   updateProfile: protectedProcedure
@@ -53,84 +65,121 @@ const userRouter = router({
     .mutation(async ({ input, ctx }) => {
       Logger.info('更新用户资料', { userId: ctx.user?.id, input })
       
-      // 这里应该更新数据库中的用户信息
-      // 暂时返回成功响应
+      if (!ctx.user?.id) {
+        throw new Error('用户未登录')
+      }
+
+      // 检查邮箱是否已被其他用户使用
+      if (input.email) {
+        const existingUser = await db.user.findFirst({
+          where: {
+            email: input.email,
+            id: { not: ctx.user.id },
+          },
+        })
+
+        if (existingUser) {
+          return {
+            success: false,
+            message: '该邮箱已被其他用户使用',
+          }
+        }
+      }
+
+      await db.user.update({
+        where: { id: ctx.user.id },
+        data: {
+          ...(input.name && { name: input.name }),
+          ...(input.email && { email: input.email }),
+        },
+      })
+
       return {
         success: true,
         message: '用户资料更新成功',
       }
     }),
-})
 
-/**
- * 文章相关路由（示例业务逻辑）
- */
-const postRouter = router({
-  list: publicProcedure
+  // 获取用户列表（管理员权限）
+  list: adminProcedure
     .input(z.object({
       limit: z.number().min(1).max(100).default(10),
       offset: z.number().min(0).default(0),
+      search: z.string().optional(),
+      role: z.enum(['USER', 'TENANT_ADMIN', 'SUPER_ADMIN']).optional(),
     }))
     .output(z.object({
-      posts: z.array(z.object({
+      users: z.array(z.object({
         id: z.string(),
-        title: z.string(),
-        content: z.string(),
-        published: z.boolean(),
+        name: z.string(),
+        email: z.string(),
+        role: z.enum(['USER', 'TENANT_ADMIN', 'SUPER_ADMIN']),
+        status: z.enum(['ACTIVE', 'INACTIVE', 'SUSPENDED', 'DELETED']),
         createdAt: z.date(),
-        author: z.object({
-          id: z.string(),
-          name: z.string().nullable(),
-        }),
+        lastLoginAt: z.date().nullable(),
       })),
       total: z.number(),
     }))
     .query(async ({ input }) => {
-      Logger.info('获取文章列表', input)
-      
-      // 这里应该从数据库获取文章列表
-      // 暂时返回模拟数据
-      return {
-        posts: [
-          {
-            id: '1',
-            title: 'Welcome to LinchKit',
-            content: 'This is a sample post created with LinchKit framework.',
-            published: true,
-            createdAt: new Date(),
-            author: {
-              id: '1',
-              name: 'LinchKit Team',
-            },
-          },
-        ],
-        total: 1,
+      Logger.info('获取用户列表', input)
+
+      const where = {
+        ...(input.search && {
+          OR: [
+            { name: { contains: input.search, mode: 'insensitive' as const } },
+            { email: { contains: input.search, mode: 'insensitive' as const } },
+          ],
+        }),
+        ...(input.role && { role: input.role }),
       }
+
+      const [users, total] = await Promise.all([
+        db.user.findMany({
+          where,
+          take: input.limit,
+          skip: input.offset,
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            status: true,
+            createdAt: true,
+            lastLoginAt: true,
+          },
+        }),
+        db.user.count({ where }),
+      ])
+
+      return { users, total }
     }),
 
-  create: protectedProcedure
+  // 更新用户状态（管理员权限）
+  updateStatus: adminProcedure
     .input(z.object({
-      title: z.string().min(1),
-      content: z.string().min(1),
-      published: z.boolean().default(false),
+      userId: z.string(),
+      status: z.enum(['ACTIVE', 'INACTIVE', 'SUSPENDED', 'DELETED']),
     }))
     .output(z.object({
-      id: z.string(),
-      title: z.string(),
-      published: z.boolean(),
+      success: z.boolean(),
+      message: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      Logger.info('创建文章', { userId: ctx.user?.id, input })
-      
-      // 这里应该在数据库中创建文章
-      // 暂时返回模拟数据
+      Logger.info('更新用户状态', { adminId: ctx.user?.id, input })
+
+      await db.user.update({
+        where: { id: input.userId },
+        data: { status: input.status },
+      })
+
       return {
-        id: Math.random().toString(36).substring(7),
-        title: input.title,
-        published: input.published,
+        success: true,
+        message: '用户状态更新成功',
       }
     }),
 })
+
 
 /**
  * 统计数据路由
@@ -138,21 +187,41 @@ const postRouter = router({
 const statsRouter = router({
   dashboard: publicProcedure
     .output(z.object({
-      users: z.number(),
-      posts: z.number(),
+      totalUsers: z.number(),
       activeUsers: z.number(),
+      totalSessions: z.number(),
       revenue: z.number(),
     }))
     .query(async () => {
       Logger.info('获取仪表板统计数据')
       
-      // 这里应该从数据库获取真实统计数据
-      // 暂时返回模拟数据
+      const [
+        totalUsers,
+        activeUsers,
+        totalSessions,
+      ] = await Promise.all([
+        db.user.count(),
+        db.user.count({
+          where: {
+            lastLoginAt: {
+              gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30天内登录
+            },
+          },
+        }),
+        db.session.count({
+          where: {
+            expiresAt: {
+              gte: new Date(), // 有效会话
+            },
+          },
+        }),
+      ])
+
       return {
-        users: 1250,
-        posts: 89,
-        activeUsers: 340,
-        revenue: 15420,
+        totalUsers,
+        activeUsers,
+        totalSessions,
+        revenue: Math.floor(Math.random() * 50000) + 10000, // 模拟收入数据
       }
     }),
 
@@ -167,17 +236,48 @@ const statsRouter = router({
     .query(async ({ input }) => {
       Logger.info('获取用户增长数据', input)
       
-      // 模拟数据
-      const dates = Array.from({ length: 7 }, (_, i) => {
+      // 根据period计算日期范围
+      const days = input.period === 'day' ? 1 : input.period === 'week' ? 7 : 30
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - days)
+      
+      // 获取时间段内的用户数据
+      const users = await db.user.findMany({
+        where: {
+          createdAt: {
+            gte: startDate,
+          },
+        },
+        select: {
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      })
+      
+      // 按日期分组统计
+      const countsByDate = new Map<string, number>()
+      
+      // 初始化日期
+      for (let i = 0; i < days; i++) {
         const date = new Date()
         date.setDate(date.getDate() - i)
-        return date.toISOString().split('T')[0]
-      }).reverse()
+        const dateStr = date.toISOString().split('T')[0]
+        countsByDate.set(dateStr, 0)
+      }
       
-      return dates.map((date) => ({
-        date,
-        count: Math.floor(Math.random() * 50) + 10,
-      }))
+      // 统计用户数
+      users.forEach((user) => {
+        const dateStr = user.createdAt.toISOString().split('T')[0]
+        const currentCount = countsByDate.get(dateStr) || 0
+        countsByDate.set(dateStr, currentCount + 1)
+      })
+      
+      // 转换为数组并排序
+      return Array.from(countsByDate.entries())
+        .map(([date, count]) => ({ date, count }))
+        .sort((a, b) => a.date.localeCompare(b.date))
     }),
 })
 
@@ -192,7 +292,6 @@ export const appRouter = router({
   
   // 应用特定路由
   user: userRouter,
-  post: postRouter,
   stats: statsRouter,
 })
 

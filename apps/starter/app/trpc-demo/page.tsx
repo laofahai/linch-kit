@@ -19,11 +19,19 @@ export default function TRPCDemoPage() {
     name: string; version: string; environment: string; nodeVersion: string
   } | null>(null)
   const [postsData, setPostsData] = useState<{
-    posts: Array<{ id: string; title: string; author: { name: string | null } }>
+    users: Array<{ 
+      id: string; 
+      name: string; 
+      email: string; 
+      role: string; 
+      status: string;
+      createdAt: Date;
+      lastLoginAt: Date | null;
+    }>
     total: number
   } | null>(null)
   const [statsData, setStatsData] = useState<{
-    users: number; posts: number; activeUsers: number; revenue: number
+    totalUsers: number; activeUsers: number; totalSessions: number; revenue: number
   } | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -63,18 +71,18 @@ export default function TRPCDemoPage() {
     }
   }
 
-  // 获取文章列表
-  const fetchPosts = async () => {
+  // 获取用户列表 (需要管理员权限)
+  const fetchUsers = async () => {
     try {
       setLoading(true)
       setError(null)
-      const posts = await trpc.post.list.query({ limit: 5, offset: 0 })
-      setPostsData(posts)
-      Logger.info('文章列表获取成功', posts)
+      const users = await trpc.user.list.query({ limit: 5, offset: 0 })
+      setPostsData(users) // 复用现有状态
+      Logger.info('用户列表获取成功', users)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error'
       setError(message)
-      Logger.error('文章列表获取失败', new Error(message))
+      Logger.error('用户列表获取失败', new Error(message))
     } finally {
       setLoading(false)
     }
@@ -165,23 +173,23 @@ export default function TRPCDemoPage() {
           {/* 文章列表 */}
           <Card>
             <CardHeader>
-              <CardTitle>文章列表 API</CardTitle>
-              <CardDescription>获取文章数据（公开API）</CardDescription>
+              <CardTitle>用户列表 API</CardTitle>
+              <CardDescription>获取用户数据（管理员API）</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button onClick={fetchPosts} disabled={loading} className="mb-4">
-                {loading ? '加载中...' : '获取文章列表'}
+              <Button onClick={fetchUsers} disabled={loading} className="mb-4">
+                {loading ? '加载中...' : '获取用户列表'}
               </Button>
               {postsData && (
                 <div className="space-y-3">
                   <div className="text-sm text-gray-600">
-                    总计: {postsData.total} 篇文章
+                    总计: {postsData.total} 个用户
                   </div>
-                  {postsData.posts.map((post) => (
-                    <div key={post.id} className="border-l-4 border-blue-500 pl-3">
-                      <div className="font-medium">{post.title}</div>
+                  {postsData.users.map((user) => (
+                    <div key={user.id} className="border-l-4 border-blue-500 pl-3">
+                      <div className="font-medium">{user.name}</div>
                       <div className="text-sm text-gray-600">
-                        作者: {post.author.name}
+                        邮箱: {user.email} | 角色: {user.role}
                       </div>
                     </div>
                   ))}
@@ -203,16 +211,16 @@ export default function TRPCDemoPage() {
               {statsData && (
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <div className="font-medium text-blue-600">用户数</div>
-                    <div className="text-xl">{statsData.users}</div>
+                    <div className="font-medium text-blue-600">总用户数</div>
+                    <div className="text-xl">{statsData.totalUsers}</div>
                   </div>
                   <div>
-                    <div className="font-medium text-green-600">文章数</div>
-                    <div className="text-xl">{statsData.posts}</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-purple-600">活跃用户</div>
+                    <div className="font-medium text-green-600">活跃用户</div>
                     <div className="text-xl">{statsData.activeUsers}</div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-purple-600">总会话数</div>
+                    <div className="text-xl">{statsData.totalSessions}</div>
                   </div>
                   <div>
                     <div className="font-medium text-orange-600">收入</div>

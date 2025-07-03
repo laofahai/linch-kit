@@ -1,16 +1,43 @@
 import { NextResponse } from 'next/server'
-import { DataService } from '@/lib/services/data'
+import { db } from '@/lib/db'
 import { Logger } from '@linch-kit/core'
-import { requireAuth } from '@/lib/auth'
 
 export async function GET() {
   try {
-    // 验证用户登录状态
-    await requireAuth()
-    
     Logger.info('API: 开始获取仪表板统计数据')
     
-    const stats = await DataService.getStats()
+    const [
+      totalUsers,
+      activeUsers,
+      totalSessions,
+    ] = await Promise.all([
+      db.user.count(),
+      db.user.count({
+        where: {
+          lastLoginAt: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30天内登录
+          },
+        },
+      }),
+      db.session.count({
+        where: {
+          expiresAt: {
+            gte: new Date(), // 有效会话
+          },
+        },
+      }),
+    ])
+
+    const stats = {
+      totalUsers,
+      totalPosts: 0, // 保持兼容性，但设为0
+      publishedPosts: 0, // 保持兼容性，但设为0  
+      draftPosts: 0, // 保持兼容性，但设为0
+      lastUpdated: new Date().toISOString(),
+      // 新增统计字段
+      activeUsers,
+      totalSessions,
+    }
     
     Logger.info('API: 仪表板统计数据获取成功', stats)
     
