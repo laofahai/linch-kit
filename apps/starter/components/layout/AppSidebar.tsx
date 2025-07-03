@@ -41,6 +41,8 @@ import {
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useSession, signOut } from 'next-auth/react'
+import { TabsContainer } from './TabsContainer'
+import { useTabsStore } from '@/lib/stores/tabs-store'
 
 export interface AppSidebarLayoutProps {
   /** 页面内容 */
@@ -119,6 +121,7 @@ function NavMenuItem({
   level?: number
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const { addTab } = useTabsStore()
   const Icon = item.icon
   const hasChildren = item.children && item.children.length > 0
   
@@ -126,6 +129,25 @@ function NavMenuItem({
     if (hasChildren) {
       setIsExpanded(!isExpanded)
     }
+  }
+
+  const handleNavClick = (navItem: NavItem) => {
+    // 映射图标组件到图标名称
+    const getIconName = (iconComponent: React.ComponentType<any>) => {
+      if (iconComponent === Home) return 'Home'
+      if (iconComponent === Users) return 'Users'
+      if (iconComponent === Settings) return 'Settings'
+      if (iconComponent === BarChart3) return 'BarChart3'
+      if (iconComponent === Zap) return 'Zap'
+      return 'Home' // 默认图标
+    }
+
+    // 创建新的标签页
+    addTab({
+      title: navItem.label,
+      path: navItem.href,
+      icon: getIconName(navItem.icon),
+    })
   }
 
   // For collapsed state with children, use dropdown
@@ -148,20 +170,16 @@ function NavMenuItem({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="right" className="w-48">
-          <DropdownMenuItem>
-            <a href={item.href} className="flex items-center w-full">
-              <Icon className="w-4 h-4 mr-2" />
-              {item.label}
-            </a>
+          <DropdownMenuItem onClick={() => handleNavClick(item)}>
+            <Icon className="w-4 h-4 mr-2" />
+            {item.label}
           </DropdownMenuItem>
           {item.children!.map((childItem) => {
             const ChildIcon = childItem.icon
             return (
-              <DropdownMenuItem key={childItem.href}>
-                <a href={childItem.href} className="flex items-center w-full">
-                  <ChildIcon className="w-4 h-4 mr-2" />
-                  {childItem.label}
-                </a>
+              <DropdownMenuItem key={childItem.href} onClick={() => handleNavClick(childItem)}>
+                <ChildIcon className="w-4 h-4 mr-2" />
+                {childItem.label}
               </DropdownMenuItem>
             )
           })}
@@ -176,7 +194,7 @@ function NavMenuItem({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => window.location.href = item.href}
+          onClick={() => handleNavClick(item)}
           className={cn(
             'h-10 w-full p-0 text-sm font-medium rounded-none',
             item.active 
@@ -193,11 +211,10 @@ function NavMenuItem({
 
   return (
     <div>
-      <a
-        href={item.href}
-        onClick={hasChildren ? (e) => { e.preventDefault(); toggleExpanded(); } : undefined}
+      <div
+        onClick={hasChildren ? toggleExpanded : () => handleNavClick(item)}
         className={cn(
-          'group flex items-center gap-3 px-2 py-1.5 mx-1 rounded-lg text-sm font-medium transition-all duration-100',
+          'group flex items-center gap-3 px-2 py-1.5 mx-1 rounded-lg text-sm font-medium transition-all duration-100 cursor-pointer',
           'hover:bg-accent/30 dark:hover:bg-accent/40 active:bg-accent/50 dark:active:bg-accent/60',
           item.active 
             ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground' 
@@ -234,7 +251,7 @@ function NavMenuItem({
             )}
           </div>
         </div>
-      </a>
+      </div>
       
       {/* Submenu */}
       {hasChildren && isExpanded && !isCollapsed && (
@@ -653,11 +670,9 @@ export function AppSidebarLayout({
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-auto bg-gray-50/50 dark:bg-gray-950/50">
-          <div className="container max-w-7xl mx-auto p-6 md:p-8 lg:p-10">
-            {children}
-          </div>
+        {/* Page Content with Tabs */}
+        <main className="flex-1 overflow-hidden bg-gray-50/50 dark:bg-gray-950/50">
+          <TabsContainer />
         </main>
       </div>
     </div>
