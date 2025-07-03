@@ -52,3 +52,6 @@ export interface AppRouter {
     info: unknown
   }
 }
+
+// CLI命令
+export { trpcCommands } from './cli/commands'

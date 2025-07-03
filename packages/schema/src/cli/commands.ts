@@ -40,10 +40,10 @@ const useSchemaTranslation = () => (key: string, params?: Record<string, unknown
 }
 
 /**
- * Schema代码生成命令
+ * Schema代码生成命令 - 精简版
  */
 export const generateSchemaCommand: CLICommand = {
-  name: 'generate:schema',
+  name: 'schema:generate',
   description: 'Generate code from schema definitions',
   category: 'schema',
   options: [
@@ -184,7 +184,7 @@ export const generateSchemaCommand: CLICommand = {
  * Schema验证命令
  */
 export const validateSchemaCommand: CLICommand = {
-  name: 'validate:schema',
+  name: 'schema:validate',
   description: 'Validate schema definitions',
   category: 'schema',
   options: [
@@ -244,101 +244,11 @@ export const validateSchemaCommand: CLICommand = {
 }
 
 /**
- * Schema初始化命令
+ * Schema监听命令
  */
-export const initSchemaCommand: CLICommand = {
-  name: 'init:schema',
-  description: 'Initialize schema structure in current project',
-  category: 'schema',
-  options: [
-    {
-      name: '--typescript',
-      alias: '-ts',
-      description: 'Use TypeScript template',
-      type: 'boolean',
-      defaultValue: true,
-    },
-    {
-      name: '--decorators',
-      alias: '-d',
-      description: 'Use decorator-based schema definitions',
-      type: 'boolean',
-    },
-    {
-      name: '--examples',
-      alias: '-e',
-      description: 'Include example schema files',
-      type: 'boolean',
-    },
-  ],
-  handler: async (context: CLIContext) => {
-    const { options } = context
-    const t = useSchemaTranslation()
-
-    try {
-      const { typescript, decorators, examples } = options as {
-        typescript: boolean
-        decorators: boolean
-        examples: boolean
-      }
-
-      console.log(t('schema.init.starting'))
-
-      // 创建基础目录结构
-      const dirs = ['src/schema', 'src/schema/entities', 'generated']
-
-      const createdDirs: string[] = []
-      dirs.forEach(dir => {
-        if (!existsSync(dir)) {
-          mkdirSync(dir, { recursive: true })
-          console.log(t('schema.init.dirCreated', { dir }))
-          createdDirs.push(dir)
-        }
-      })
-
-      // 创建配置文件
-      await createSchemaConfig(typescript, decorators)
-      console.log(t('schema.init.configCreated'))
-
-      // 创建示例文件
-      const createdExamples: string[] = []
-      if (examples) {
-        await createExampleSchemas(decorators)
-        console.log(t('schema.init.examplesCreated'))
-        createdExamples.push('src/schema/entities/user.schema.ts')
-      }
-
-      // 创建生成脚本
-      await createGenerateScript()
-      console.log(t('schema.init.scriptsCreated'))
-
-      console.log(t('schema.init.completed'))
-      console.log(t('schema.init.nextSteps'))
-
-      return {
-        success: true,
-        createdDirs,
-        createdExamples,
-        configFile: 'linch.schema.json',
-        scriptFile: 'scripts/generate-schema.js',
-      }
-    } catch (error) {
-      console.error(
-        t('schema.init.error', {
-          message: error instanceof Error ? error.message : String(error),
-        })
-      )
-      return { success: false, error: error instanceof Error ? error.message : String(error) }
-    }
-  },
-}
-
-/**
- * Schema信息命令
- */
-export const infoSchemaCommand: CLICommand = {
-  name: 'info:schema',
-  description: 'Display schema information and statistics',
+export const watchSchemaCommand: CLICommand = {
+  name: 'schema:watch',
+  description: 'Watch schema changes and auto-generate code',
   category: 'schema',
   options: [
     {
@@ -348,10 +258,22 @@ export const infoSchemaCommand: CLICommand = {
       defaultValue: './src/schema',
     },
     {
-      name: '--detailed',
+      name: '--output',
+      alias: '-o',
+      description: 'Output directory for generated files',
+      defaultValue: './generated',
+    },
+    {
+      name: '--generators',
+      alias: '-g',
+      description: 'Comma-separated list of generators to run',
+      defaultValue: 'typescript,prisma',
+    },
+    {
+      name: '--debounce',
       alias: '-d',
-      description: 'Show detailed information',
-      type: 'boolean',
+      description: 'Debounce delay in milliseconds',
+      defaultValue: '500',
     },
   ],
   handler: async (context: CLIContext) => {
@@ -359,100 +281,31 @@ export const infoSchemaCommand: CLICommand = {
     const t = useSchemaTranslation()
 
     try {
-      const { input, detailed } = options as {
+      const { input, output, generators, debounce } = options as {
         input: string
-        detailed: boolean
+        output: string
+        generators: string
+        debounce: string
       }
 
-      const entities = await loadSchemaEntities(input)
+      console.log(t('schema.watch.starting', { input }))
 
-      if (entities.length === 0) {
-        console.warn(t('schema.info.noEntities', { input }))
-        return { success: true, entities: [], summary: null }
-      }
+      // 初始生成
+      await performGeneration(input, output, generators)
 
-      const fieldCount = entities.reduce(
-        (sum, entity) => sum + Object.keys(entity.fields).length,
-        0
-      )
+      // 开始监听
+      const debounceMs = parseInt(debounce) || 500
+      console.log(t('schema.watch.watching', { input, debounce: debounceMs }))
 
-      // 显示基本信息
-      console.log(
-        t('schema.info.summary', {
-          entityCount: entities.length,
-          fieldCount,
-        })
-      )
-
-      const entityInfos: Array<{
-        name: string
-        fieldCount: number
-        relationCount: number
-        fields: Array<{
-          name: string
-          type: string
-          required?: boolean
-          unique?: boolean
-        }>
-      }> = []
-
-      // 显示实体列表
-      entities.forEach(entity => {
-        const entityFieldCount = Object.keys(entity.fields).length
-        const relationCount = Object.values(entity.fields).filter(f => f.type === 'relation').length
-
-        console.log(`  📋 ${entity.name} (${entityFieldCount} fields, ${relationCount} relations)`)
-
-        const entityInfo = {
-          name: entity.name,
-          fieldCount: entityFieldCount,
-          relationCount,
-          fields: [] as Array<{
-            name: string
-            type: string
-            required?: boolean
-            unique?: boolean
-          }>,
-        }
-
-        if (detailed) {
-          Object.entries(entity.fields).forEach(([name, field]) => {
-            const required = field.required ? ' *' : ''
-            const unique = field.unique ? ' [unique]' : ''
-            const fieldInfo = `${name}: ${field.type}${required}${unique}`
-            console.log(`    - ${fieldInfo}`)
-            entityInfo.fields.push({
-              name,
-              type: field.type,
-              required: field.required,
-              unique: field.unique,
-            })
-          })
-        }
-
-        entityInfos.push(entityInfo)
+      await watchSchemaChanges(input, async () => {
+        console.log(t('schema.watch.regenerating'))
+        await performGeneration(input, output, generators)
       })
 
-      // 显示生成器信息
-      const availableGenerators = GeneratorRegistry.getRegisteredNames()
-      console.log(
-        t('schema.info.generators', {
-          generators: availableGenerators.join(', '),
-        })
-      )
-
-      return {
-        success: true,
-        entities: entityInfos,
-        summary: {
-          entityCount: entities.length,
-          fieldCount,
-          availableGenerators,
-        },
-      }
+      return { success: true }
     } catch (error) {
       console.error(
-        t('schema.info.error', {
+        t('schema.watch.error', {
           message: error instanceof Error ? error.message : String(error),
         })
       )
@@ -462,6 +315,44 @@ export const infoSchemaCommand: CLICommand = {
 }
 
 // 辅助函数
+
+/**
+ * 执行生成
+ */
+async function performGeneration(input: string, output: string, generators: string): Promise<void> {
+  const entities = await loadSchemaEntities(input)
+  
+  if (entities.length === 0) {
+    console.warn(`No entities found in ${input}`)
+    return
+  }
+
+  // 确保输出目录存在
+  if (!existsSync(output)) {
+    mkdirSync(output, { recursive: true })
+  }
+
+  // 创建代码生成器
+  const generator = new CodeGenerator({
+    entities,
+    outputDir: output,
+  })
+
+  // 注册生成器
+  const generatorNames = generators.split(',').map(g => g.trim())
+  generatorNames.forEach(name => {
+    const gen = GeneratorRegistry.create(name)
+    generator.registerGenerator(gen)
+  })
+
+  // 执行生成
+  const files = await generator.generate()
+
+  // 写入文件
+  await writeGeneratedFiles(files, output)
+  
+  console.log(`Generated ${files.length} files from ${entities.length} entities`)
+}
 
 /**
  * 加载Schema实体
@@ -552,7 +443,7 @@ async function watchSchemaChanges(_input: string, _callback: () => Promise<void>
 /**
  * 创建Schema配置
  */
-async function createSchemaConfig(typescript: boolean, decorators: boolean): Promise<void> {
+async function _createSchemaConfig(typescript: boolean, decorators: boolean): Promise<void> {
   const config = {
     input: './src/schema',
     output: './generated',
@@ -567,7 +458,7 @@ async function createSchemaConfig(typescript: boolean, decorators: boolean): Pro
 /**
  * 创建示例Schema
  */
-async function createExampleSchemas(decorators: boolean): Promise<void> {
+async function _createExampleSchemas(decorators: boolean): Promise<void> {
   if (decorators) {
     const userSchema = `import { Entity, Field } from '@linch-kit/schema'
 
@@ -624,7 +515,7 @@ export const Post = defineEntity('Post', {
 /**
  * 创建生成脚本
  */
-async function createGenerateScript(): Promise<void> {
+async function _createGenerateScript(): Promise<void> {
   const script = `#!/usr/bin/env node
 /**
  * Schema code generation script
@@ -645,11 +536,10 @@ try {
 }
 
 /**
- * 所有Schema相关命令
+ * 所有Schema相关命令 - 精简版
  */
 export const schemaCommands: CLICommand[] = [
   generateSchemaCommand,
   validateSchemaCommand,
-  initSchemaCommand,
-  infoSchemaCommand,
+  watchSchemaCommand,
 ]

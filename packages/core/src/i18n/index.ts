@@ -181,6 +181,7 @@ export const coreI18n = createPackageI18n({
       'cli.command.not.found': 'Command {name} not found',
       'cli.command.duplicate': 'Command {name} already exists',
       'cli.info.description': 'AI-First full-stack development framework',
+      'cli.init.starting': 'LinchKit project initialization starting',
       
       // 租户配置消息
       'config.tenant.exists': 'Tenant {tenantId} already exists',
@@ -229,6 +230,7 @@ export const coreI18n = createPackageI18n({
       'cli.command.not.found': '命令 {name} 未找到',
       'cli.command.duplicate': '命令 {name} 已存在',
       'cli.info.description': 'AI优先的全栈开发框架',
+      'cli.init.starting': 'LinchKit 项目初始化开始',
       
       // 租户配置消息
       'config.tenant.exists': '租户 {tenantId} 已存在',
