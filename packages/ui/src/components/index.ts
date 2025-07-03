@@ -19,7 +19,6 @@ export * from './ui/progress'
 export * from './ui/select'
 export * from './ui/separator'
 export * from './ui/sheet'
-export * from './ui/sidebar'
 export * from './ui/skeleton'
 export * from './ui/switch'
 export * from './ui/table'
@@ -31,3 +30,4 @@ export * from './ui/tooltip'
 
 // Hooks
 export * from '../hooks/use-toast'
+export * from '../hooks/use-mobile'

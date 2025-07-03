@@ -1,14 +1,14 @@
 /**
  * Console 布局组件
  * 
- * 提供 Console 模块的基础布局结构
+ * 提供 Console 模块的基础布局结构，使用简单可靠的自定义 sidebar
  */
 
 'use client'
 
-import { ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import { cn } from '@linch-kit/ui/utils'
-import { Card, CardContent } from '@linch-kit/ui'
+import { ModernSidebar, ModernPage } from '../layout/ModernSidebar'
 
 export interface ConsoleLayoutProps {
   /** 页面标题 */
@@ -17,42 +17,38 @@ export interface ConsoleLayoutProps {
   description?: string
   /** 页面操作按钮 */
   actions?: ReactNode
-  /** 面包屑导航 */
-  breadcrumbs?: ReactNode
+  /** 面包屑导航项 */
+  breadcrumbItems?: Array<{
+    label: string
+    href?: string
+  }>
   /** 页面内容 */
   children: ReactNode
-  /** 是否显示卡片容器 */
-  card?: boolean
   /** 自定义样式类名 */
   className?: string
+  /** 是否显示侧边栏 */
+  showSidebar?: boolean
 }
 
 /**
- * Console 页面布局
+ * Console 页面布局 - 使用简单可靠的自定义 sidebar
  */
 export function ConsoleLayout({
   title,
   description,
   actions,
-  breadcrumbs,
+  breadcrumbItems,
   children,
-  card = true,
-  className
+  className,
+  showSidebar = true
 }: ConsoleLayoutProps) {
-  const content = (
-    <div className={cn('console-layout', className)}>
-      {/* 页面头部 */}
-      {(title || description || actions || breadcrumbs) && (
-        <div className="mb-6">
-          {/* 面包屑 */}
-          {breadcrumbs && (
-            <div className="mb-4">
-              {breadcrumbs}
-            </div>
-          )}
-          
-          {/* 标题和操作 */}
-          {(title || description || actions) && (
+  // 如果不显示侧边栏，直接返回内容
+  if (!showSidebar) {
+    return (
+      <div className={cn('console-layout', className)}>
+        {/* 页面头部 */}
+        {(title || description || actions) && (
+          <div className="mb-6">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 {title && (
@@ -73,29 +69,37 @@ export function ConsoleLayout({
                 </div>
               )}
             </div>
-          )}
+          </div>
+        )}
+        
+        {/* 页面内容 */}
+        <div className="console-content">
+          {children}
         </div>
-      )}
-      
-      {/* 页面内容 */}
-      <div className="console-content">
-        {children}
       </div>
-    </div>
-  )
-  
-  // 如果需要卡片容器
-  if (card) {
-    return (
-      <Card className="console-page-card">
-        <CardContent className="p-6">
-          {content}
-        </CardContent>
-      </Card>
     )
   }
-  
-  return content
+
+  return (
+    <ModernSidebar
+      title="LinchKit"
+      subtitle="Console"
+      breadcrumbs={breadcrumbItems}
+      className={className}
+      user={{
+        name: 'Admin User',
+        email: 'admin@linchkit.com'
+      }}
+    >
+      <ModernPage
+        title={title}
+        description={description}
+        actions={actions}
+      >
+        {children}
+      </ModernPage>
+    </ModernSidebar>
+  )
 }
 
 /**
@@ -187,7 +191,7 @@ export function ConsoleSidebarLayout({
   children,
   sidebarWidth = 'md',
   sidebarPosition = 'left',
-  _collapsible = false,
+  collapsible = false,
   className
 }: ConsoleSidebarLayoutProps) {
   const sidebarWidthClasses = {

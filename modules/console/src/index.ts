@@ -43,6 +43,9 @@ export { Dashboard } from './pages/Dashboard'
 // 2. 基础组件 (暂时禁用以解决构建问题)
 // export * from './components'
 
+// 3. 布局组件 (已删除旧的布局)
+// export * from './layouts'
+
 // 3. 租户管理页面 (暂时禁用以解决构建问题)
 // export { default as TenantList } from './pages/tenants/TenantList'
 // export { default as TenantCreate } from './pages/tenants/TenantCreate'  
