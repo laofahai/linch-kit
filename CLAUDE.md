@@ -1,8 +1,8 @@
 # LinchKit 开发指南
 
-**版本**: v4.2.0  
+**版本**: v2.0.0  
 **项目**: LinchKit - AI-First 全栈开发框架  
-**更新**: 2025-07-01
+**更新**: 2025-07-03
 
 ## ⚠️ 开发前必读
 
@@ -188,12 +188,12 @@ chore:    构建/工具
 - **@linch-kit/ui** - UI组件库
 
 ### 技术栈
-- **框架**: Next.js 15.3.4 + React 19.0.0
+- **框架**: Next.js 15.3.4 + React 19.0.0  
 - **语言**: TypeScript 5.8.3（严格模式）
 - **样式**: Tailwind CSS 4.x + shadcn/ui
-- **API**: tRPC + Zod Schema
-- **数据**: Prisma + PostgreSQL
-- **认证**: NextAuth + @linch-kit/auth
+- **API**: tRPC + Zod 3.25.67
+- **数据**: Prisma 6.10.1 + PostgreSQL
+- **认证**: NextAuth 5.0.0-beta.25 + @linch-kit/auth
 
 ### 文件操作原则
 - **永远不要**主动创建文档文件（*.md）或 README
