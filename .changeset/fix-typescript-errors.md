@@ -2,7 +2,6 @@
 "@linch-kit/core": patch
 "@linch-kit/schema": patch
 "@linch-kit/trpc": patch
-"@linch-kit/starter": patch
 ---
 
 fix: 修复TypeScript类型错误和CLI功能
