@@ -146,7 +146,7 @@ export function UserForm() {
 ## 📚 文档
 
 - [快速开始指南](./docs/quick-start.md)
-- [架构设计](./ai-context/zh/current/module-architecture-design.md)
+- [架构设计](./ai-context/zh/system-design/module-architecture-design.md)
 - [API 参考](./ai-context/zh/current/packages-api-reference.md)
 - [开发指南](./ai-context/zh/current/development-constraints.md)
 
@@ -181,7 +181,7 @@ export function UserForm() {
 
 - 📖 [Git 工作流规范](./docs/git_workflow.md) - 分支管理、提交规范、PR 流程
 - 🔒 [开发约束文档](./ai-context/zh/current/development-constraints.md) - 技术约束、代码规范
-- 🏗️ [架构设计文档](./ai-context/zh/current/module-architecture-design.md) - 系统架构、模块设计
+- 🏗️ [架构设计文档](./ai-context/zh/system-design/module-architecture-design.md) - 系统架构、模块设计
 
 ### 开发命令
 

@@ -1,54 +1,21 @@
-# LinchKit AI 开发助手指导
+# LinchKit 开发指南
 
 **版本**: v4.2.0  
-**项目**: LinchKit - AI-First 全栈开发框架
+**项目**: LinchKit - AI-First 全栈开发框架  
 **更新**: 2025-07-01
 
-## ⚠️ 重要：开发前必读
+## ⚠️ 开发前必读
 
-**⚠️ 每个新的开发 session 强制要求：**
+**每个新的开发 session 强制要求：**
 1. **设置环境**: `export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"`
-2. **阅读开发进度**: `ai-context/zh/current/development-status.md` - 了解项目当前状态
-3. **理解开发约束**: `ai-context/zh/current/development-constraints.md` - 掌握核心开发规范
-4. **完成 Session 检查清单** - 确保环境和约束理解到位
+2. **阅读开发约束**: `ai-context/zh/current/development-constraints.md` - **必须遵守**
+3. **查看当前状态**: `ai-context/zh/current/development-status.md` - 了解项目进度
 
-## 🚀 项目概述
+## 🚀 快速开始
 
-LinchKit 是生产就绪的企业级 AI-First 全栈开发框架，采用 Schema 驱动架构，提供端到端类型安全。
+LinchKit 是生产就绪的企业级 AI-First 全栈开发框架，采用 Schema 驱动架构。
 
-### 🎯 核心原则
-- **AI-First**: 所有设计都优先考虑 AI 理解和处理能力
-- **Schema 驱动**: 以 Zod Schema 为单一数据源，驱动整个系统
-- **类型安全**: 端到端 TypeScript 类型安全保障
-- **模块化**: 高内聚、低耦合的包设计
-
-### 🏛️ 架构层次
-```
-L0: @linch-kit/core      ✅ 基础设施 (100%)
-L1: @linch-kit/schema    ✅ Schema引擎 (100%)
-L2: @linch-kit/auth      ✅ 认证权限 (100%)
-L2: @linch-kit/crud      ✅ CRUD操作 (100%)
-L3: @linch-kit/trpc      ✅ API层 (100%)
-L3: @linch-kit/ui        ✅ UI组件 (100%)
-L4: modules/console      ✅ 管理平台 (100%)
-L4: @linch-kit/ai        ⏳ AI集成（规划中）
-```
-
-## 📚 核心文档
-
-### 必读文档
-- **🔄 开发进度**: `ai-context/zh/current/development-status.md` - 项目最新状态和待办事项
-- **🔒 开发约束**: `ai-context/zh/current/development-constraints.md` - 核心规范和质量标准
-- **🏗️ 模块架构**: `ai-context/zh/current/module-architecture-design.md` - 系统架构设计
-- **📖 API参考**: `ai-context/zh/current/packages-api-reference.md` - 包功能速查
-
-### 其他文档
-- **历史记录**: `ai-context/zh/archive/development-history-complete.md`
-- **AI包设计**: `ai-context/zh/planning/ai-package-design.md`
-- **系统架构**: `ai-context/zh/system-design/architecture.md`
-
-## 🛠️ 开发命令
-
+### 开发命令
 ```bash
 # 环境设置（每次必须）
 export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"
@@ -59,15 +26,40 @@ pnpm build      # 构建验证
 pnpm validate   # 完整验证
 ```
 
-## 🔒 核心约束
+### 架构层次
+```
+L0: @linch-kit/core      ✅ 基础设施 (100%)
+L1: @linch-kit/schema    ✅ Schema引擎 (100%)
+L2: @linch-kit/auth      ✅ 认证权限 (100%)
+L2: @linch-kit/crud      ✅ CRUD操作 (100%)
+L3: @linch-kit/trpc      ✅ API层 (100%)
+L3: @linch-kit/ui        ✅ UI组件 (100%)
+L4: modules/console      ✅ 管理平台 (100%)
+```
 
-必须严格遵守以下约束（详见 `ai-context/zh/current/development-constraints.md`）：
+## 📚 核心文档
 
+### 🔴 强制性文档
+- **🔒 开发约束**: `ai-context/zh/current/development-constraints.md` - **必须遵守的核心规范**
+- **🔄 开发进度**: `ai-context/zh/current/development-status.md` - 项目最新状态和待办事项
+
+### 📖 参考文档
+- **🏗️ 模块架构**: `ai-context/zh/system-design/module-architecture-design.md` - 系统架构设计
+- **📖 API参考**: `ai-context/zh/current/packages-api-reference.md` - 包功能速查
+- **🏛️ 系统架构**: `ai-context/zh/system-design/architecture.md` - 详细架构设计
+- **🤖 AI包设计**: `ai-context/zh/system-design/ai-package-design.md` - AI功能规划
+
+## 🔒 核心约束（必须遵守）
+
+**⚠️ 开发前必须阅读完整约束文档**: `ai-context/zh/current/development-constraints.md`
+
+### 关键约束摘要
 1. **TypeScript 严格模式** - 禁止使用 `any`，使用 `unknown` 替代
 2. **包管理规范** - 仅使用 pnpm，禁止 npm/yarn
 3. **架构依赖顺序** - core → schema → auth → crud → trpc → ui → console
 4. **功能复用原则** - 必须使用 LinchKit 内部包功能，禁止重复实现
-5. **质量标准** - 测试覆盖率 core>90%, 其他>80%，构建时间<10秒
+5. **发布流程** - 禁止手动发布，必须使用 CI/CD 自动化
+6. **质量标准** - 测试覆盖率 core>90%, 其他>80%，构建时间<10秒
 
 ## 💡 AI 开发模式
 
@@ -87,57 +79,92 @@ pnpm validate   # 完整验证
 - [ ] 遵循依赖顺序？
 - [ ] 通过所有验证？
 
-## 📋 项目状态摘要
+### 🔄 Session 切换管理
+**重要**: 当对话接近 token 限制时，必须主动管理session切换：
 
-**项目成熟度**: 生产就绪（v4.2.0）
-**完成度**: 核心功能 100%
+1. **保存进度**：
+   - 使用 TodoWrite 工具更新任务状态
+   - 更新 development-status.md 记录完成的工作
+   - 记录当前工作的关键文件路径和代码位置
 
-### ✅ 已完成功能
-- **6个核心包** - 全部完成并经过生产验证
-- **Console模块** - 企业级管理平台
-- **AI Dashboard** - 数据可视化和智能分析
-- **统一工作台** - 基于角色的模块化架构
-- **现代UI设计** - shadcn/ui + Tailwind CSS v4
+2. **提供 session 切换 prompt**：
+   ```
+   建议保存进度开启 new session
+   
+   下一个 session 请使用以下 prompt：
+   [具体的继续开发指令，包含：]
+   - 当前完成状态 (✅❌⏳)  
+   - 下一步具体任务
+   - 相关文件路径
+   - 需要注意的约束
+   ```
 
-### 🚀 当前特性
-- **统一入口** - /dashboard 统一工作台
-- **角色权限** - SUPER_ADMIN、TENANT_ADMIN、USER
-- **模块化架构** - 系统管理、租户管理、业务应用
-- **响应式设计** - 移动端完美适配
-- **主题系统** - 明暗主题切换
+3. **session 切换触发条件**：
+   - 对话长度超过 100 轮
+   - 感觉接近 token 限制
+   - 任务阶段性完成需要总结
 
-## 🏗️ 技术架构
+## 🚀 发布流程强制要求
 
-### 核心技术栈
-- **框架**: Next.js 15.3.4 + React 19.0.0
-- **语言**: TypeScript 5.8.3（严格模式）
-- **样式**: Tailwind CSS 4.x + shadcn/ui
-- **API**: tRPC + Zod Schema
-- **数据**: Prisma + PostgreSQL
-- **认证**: NextAuth + @linch-kit/auth
+### ⚠️ 禁止手动发布
+- **绝对禁止** 手动运行 `npm publish` 或 `pnpm publish`
+- **必须使用** 自动化 CI/CD 流程发布
+- **所有发布** 必须通过 GitHub Actions 完成
 
-### 包功能速查
-- **@linch-kit/core** - 日志、配置、插件系统
-- **@linch-kit/schema** - Schema定义、验证、转换
-- **@linch-kit/auth** - 认证、授权、会话管理
-- **@linch-kit/crud** - 通用CRUD操作
-- **@linch-kit/trpc** - 类型安全API
-- **@linch-kit/ui** - UI组件库
+### 自动化发布流程
+1. **创建 changeset**: `pnpm changeset`
+2. **版本更新**: `pnpm changeset version` (本地或CI)
+3. **推送代码**: `git push origin main`
+4. **自动发布**: GitHub Actions 自动检测并发布
 
-## 🔄 下一阶段任务
+### 发布触发条件
+- **主分支推送** - 自动运行测试和构建
+- **标签推送** - 自动发布到 NPM
+- **Changeset 检测** - 自动版本管理
 
-参见 `ai-context/zh/current/development-status.md` 的 Phase 10 计划：
-- 基础设施完善
-- 增强权限管理系统
-- 多租户管理界面
-- 实时通知和事件系统
+### 发布验证要求
+- ✅ 所有测试必须通过
+- ✅ 构建必须成功 
+- ✅ 代码检查必须通过
+- ✅ 类型检查必须通过
 
-## 📖 Context7 文档集成
+## 🌳 分支管理规范
 
-使用 Context7 查询第三方库文档时：
-1. **优先使用 Context7** - 查询 React、Vue、Next.js 等框架的最新文档
-2. **调用顺序** - 先用 `resolve-library-id` 获取库ID，再用 `get-library-docs`
-3. **文档优先** - 在实现功能前，先查询相关库的官方文档
+### 分支策略
+- **主分支**: `main` - 生产就绪代码，受保护
+- **功能分支**: `feature/xxx` - 新功能开发
+- **修复分支**: `fix/xxx` - Bug 修复
+- **发布分支**: `release/vx.x.x` - 版本发布准备
+
+### PR (Pull Request) 规范
+- **标题格式**: `feat|fix|docs|refactor: 简短描述`
+- **必须包含**:
+  - 变更说明
+  - 测试验证 
+  - 相关 issue 链接
+- **合并要求**:
+  - 通过 CI/CD 检查
+  - 代码审查通过
+  - 无冲突
+
+### Git 提交规范
+```bash
+# 提交格式
+git commit -m "type(scope): description
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+# 类型说明
+feat:     新功能
+fix:      Bug 修复
+docs:     文档更新
+style:    代码格式
+refactor: 重构
+test:     测试相关
+chore:    构建/工具
+```
 
 ## ⚠️ 重要开发原则
 
@@ -150,7 +177,62 @@ pnpm validate   # 完整验证
 - ❌ 不要自己写CRUD逻辑 → 使用 `@linch-kit/crud`
 - ❌ 不要自己写UI组件 → 使用 `@linch-kit/ui`
 
+### 包功能速查
+- **@linch-kit/core** - 日志、配置、插件系统
+- **@linch-kit/schema** - Schema定义、验证、转换
+- **@linch-kit/auth** - 认证、授权、会话管理
+- **@linch-kit/crud** - 通用CRUD操作
+- **@linch-kit/trpc** - 类型安全API
+- **@linch-kit/ui** - UI组件库
+
+### 技术栈
+- **框架**: Next.js 15.3.4 + React 19.0.0
+- **语言**: TypeScript 5.8.3（严格模式）
+- **样式**: Tailwind CSS 4.x + shadcn/ui
+- **API**: tRPC + Zod Schema
+- **数据**: Prisma + PostgreSQL
+- **认证**: NextAuth + @linch-kit/auth
+
 ### 文件操作原则
 - **永远不要**主动创建文档文件（*.md）或 README
 - **总是优先**编辑现有文件而不是创建新文件
 - **只创建**实现功能绝对必要的文件
+
+## 📖 Context7 文档集成（AI必须使用）
+
+使用 Context7 查询第三方库文档时：
+1. **优先使用 Context7** - 查询 React、Vue、Next.js 等框架的最新文档
+2. **调用顺序** - 先用 `resolve-library-id` 获取库ID，再用 `get-library-docs`
+3. **文档优先** - 在实现功能前，先查询相关库的官方文档
+
+## 🤝 Gemini 协作模式（复杂决策必须协商）
+
+### 复杂决策协商机制
+对于架构设计、重大技术选择、用户体验设计等复杂决策，建议与 Gemini CLI 协商：
+
+**触发条件**：
+- 架构重构或重大变更
+- 新技术栈选择
+- 用户体验设计决策
+- 性能优化方案
+- 复杂算法设计
+
+**协商流程**：
+```bash
+# 设置问题描述
+export PROMPT="架构设计问题：如何实现LinchKit CLI极简化架构？
+- 当前问题：20+命令过于复杂
+- 目标：精简到10个以内核心命令
+- 约束：保持完整功能，提升开发体验
+- 需要：设计建议和实施方案"
+
+# 调用Gemini协商
+gemini <<EOF
+$PROMPT
+EOF
+```
+
+**协商原则**：
+- 融合双重AI智慧：Claude的实施经验 + Gemini的创新思维
+- 决策透明化：展示Gemini的建议和Claude的解读
+- 最优方案：结合两个AI代理的优势制定方案
