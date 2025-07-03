@@ -1,5 +1,13 @@
 # @linch-kit/auth
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`3292090`](https://github.com/laofahai/linch-kit/commit/32920903564d896acf78461bdde992d68402b246), [`3292090`](https://github.com/laofahai/linch-kit/commit/32920903564d896acf78461bdde992d68402b246)]:
+  - @linch-kit/schema@2.0.1
+  - @linch-kit/core@2.0.1
+
 ## 2.0.0
 
 ### Patch Changes
