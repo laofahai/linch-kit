@@ -129,11 +129,14 @@ L4: modules/console      ✅ 管理平台 (100%)
    - 当Release PR合并时自动发布到NPM
 
 ### 🔄 标准开发流程
-1. **功能开发**: 在feature分支完成开发和修复
-2. **创建changeset**: `pnpm changeset` 
-3. **提交代码**: 提交功能代码和changeset文件
-4. **创建PR**: `gh pr create` 合并到main
-5. **自动发布**: GitHub Actions处理版本和发布
+1. **创建分支**: `git checkout -b feature/xxx` 从main创建功能分支
+2. **功能开发**: 在feature分支完成开发和修复
+3. **创建changeset**: `pnpm changeset` 
+4. **提交代码**: 提交功能代码和changeset文件
+5. **创建PR**: `gh pr create` 合并到main
+6. **等待合并**: PR通过检查后合并到main分支
+7. **自动发布**: GitHub Actions处理版本和发布
+8. **清理分支**: PR合并后自动或手动删除开发分支
 
 ### 发布触发条件
 - **主分支推送** - 自动运行测试和构建
@@ -153,6 +156,57 @@ L4: modules/console      ✅ 管理平台 (100%)
 - **功能分支**: `feature/xxx` - 新功能开发
 - **修复分支**: `fix/xxx` - Bug 修复
 - **发布分支**: `release/vx.x.x` - 版本发布准备
+
+### 🗂️ 分支生命周期管理
+
+#### 分支创建
+```bash
+# 从最新main分支创建功能分支
+git checkout main
+git pull origin main
+git checkout -b feature/your-feature-name
+```
+
+#### 分支开发
+```bash
+# 在功能分支上开发
+git add .
+git commit -m "feat: 功能描述"
+git push origin feature/your-feature-name
+```
+
+#### PR创建和合并
+```bash
+# 创建PR
+gh pr create --title "feat: 功能描述" --body "详细说明"
+
+# PR合并后自动删除分支 (推荐在GitHub设置中启用)
+# 或手动删除本地和远程分支
+git checkout main
+git pull origin main
+git branch -d feature/your-feature-name          # 删除本地分支
+git push origin --delete feature/your-feature-name  # 删除远程分支
+```
+
+#### 🤖 分支自动清理 (推荐)
+在GitHub仓库设置中启用：
+- **Settings** → **General** → **Pull Requests**
+- ✅ **Automatically delete head branches** - PR合并后自动删除分支
+
+#### 手动分支清理命令
+```bash
+# 查看所有分支
+git branch -a
+
+# 删除已合并的本地分支
+git branch --merged main | grep -v "main" | xargs -n 1 git branch -d
+
+# 清理远程分支引用
+git remote prune origin
+
+# 使用gh命令批量清理
+gh pr list --state merged --json headRefName --jq '.[].headRefName' | xargs -I {} git push origin --delete {}
+```
 
 ### PR (Pull Request) 规范
 - **标题格式**: `feat|fix|docs|refactor: 简短描述`
