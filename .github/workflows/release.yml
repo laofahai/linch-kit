@@ -69,8 +69,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.changesets.outputs.publishedPackages[0].version }}
-          release_name: Release ${{ steps.changesets.outputs.publishedPackages[0].version }}
+          tag_name: v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}
+          release_name: Release v${{ fromJson(steps.changesets.outputs.publishedPackages)[0].version }}
           body: |
             ## Released Packages
             ${{ steps.changesets.outputs.publishedPackages }}

@@ -443,7 +443,7 @@ async function watchSchemaChanges(_input: string, _callback: () => Promise<void>
 /**
  * 创建Schema配置
  */
-async function createSchemaConfig(typescript: boolean, decorators: boolean): Promise<void> {
+async function _createSchemaConfig(typescript: boolean, decorators: boolean): Promise<void> {
   const config = {
     input: './src/schema',
     output: './generated',
@@ -458,7 +458,7 @@ async function createSchemaConfig(typescript: boolean, decorators: boolean): Pro
 /**
  * 创建示例Schema
  */
-async function createExampleSchemas(decorators: boolean): Promise<void> {
+async function _createExampleSchemas(decorators: boolean): Promise<void> {
   if (decorators) {
     const userSchema = `import { Entity, Field } from '@linch-kit/schema'
 
@@ -515,7 +515,7 @@ export const Post = defineEntity('Post', {
 /**
  * 创建生成脚本
  */
-async function createGenerateScript(): Promise<void> {
+async function _createGenerateScript(): Promise<void> {
   const script = `#!/usr/bin/env node
 /**
  * Schema code generation script
