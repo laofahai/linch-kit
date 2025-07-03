@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "description": "LinchKit AI Context Navigation Index",
+    "last_updated": "2025-07-03"
+  },
+  "navigation": {
+    "overview": "ai-context/README.md",
+    "vision": "ai-context/vision_and_scope.md",
+    "roadmap": "ai-context/roadmap.md",
+    "constraints": "ai-context/workflow_and_constraints.md",
+    "changelog": "ai-context/changelog.md"
+  },
+  "architecture": {
+    "overview": "ai-context/system_architecture/overview.md",
+    "frontend": "ai-context/system_architecture/frontend_applications.md",
+    "backend": "ai-context/system_architecture/backend_infrastructure.md",
+    "integration": "ai-context/system_architecture/integration_patterns.md"
+  },
+  "packages": {
+    "core": {
+      "path": "packages/core",
+      "readme": "packages/core/README.md",
+      "main": "packages/core/src/index.ts",
+      "features": ["logging", "configuration", "plugin-system"]
+    },
+    "schema": {
+      "path": "packages/schema", 
+      "readme": "packages/schema/README.md",
+      "main": "packages/schema/src/index.ts",
+      "features": ["validation", "transformation", "type-generation"]
+    },
+    "auth": {
+      "path": "packages/auth",
+      "readme": "packages/auth/README.md", 
+      "main": "packages/auth/src/index.ts",
+      "features": ["authentication", "authorization", "session-management"]
+    },
+    "crud": {
+      "path": "packages/crud",
+      "readme": "packages/crud/README.md",
+      "main": "packages/crud/src/index.ts", 
+      "features": ["database-operations", "query-builder", "validation"]
+    },
+    "trpc": {
+      "path": "packages/trpc",
+      "readme": "packages/trpc/README.md",
+      "main": "packages/trpc/src/index.ts",
+      "features": ["type-safe-api", "router-builder", "middleware"]
+    },
+    "ui": {
+      "path": "packages/ui",
+      "readme": "packages/ui/README.md", 
+      "main": "packages/ui/src/index.ts",
+      "features": ["components", "themes", "styling"]
+    }
+  },
+  "applications": {
+    "starter": {
+      "path": "apps/starter",
+      "readme": "apps/starter/README.md",
+      "main": "apps/starter/app/layout.tsx",
+      "features": ["dashboard", "authentication", "multi-tenant"]
+    },
+    "website": {
+      "path": "apps/website", 
+      "readme": "apps/website/README.md",
+      "main": "apps/website/pages/_app.tsx",
+      "features": ["documentation", "i18n", "nextra"]
+    },
+    "console": {
+      "path": "modules/console",
+      "readme": "modules/console/README.md", 
+      "main": "modules/console/src/index.ts",
+      "features": ["admin-panel", "role-management", "audit-logs"]
+    }
+  },
+  "workflows": {
+    "git": "ai-context/system_architecture/git_workflow.md",
+    "ci": ".github/workflows/ci.yml",
+    "release": ".github/workflows/release.yml",
+    "deployment": "ai-context/system_architecture/deployment.md"
+  },
+  "common_tasks": {
+    "add_package": "ai-context/development_guides/package_development.md",
+    "add_feature": "ai-context/development_guides/feature_development.md",
+    "fix_bug": "ai-context/development_guides/bug_fixing.md",
+    "update_deps": "ai-context/development_guides/dependency_management.md"
+  },
+  "search_patterns": {
+    "schemas": "packages/schema/src/**/*.ts",
+    "components": "packages/ui/src/components/**/*.tsx",
+    "api_routes": "apps/*/app/api/**/*.ts",
+    "pages": "apps/*/app/**/page.tsx",
+    "types": "**/*.types.ts",
+    "configs": "**/*.config.{js,ts,json}",
+    "tests": "**/*.{test,spec}.{js,ts,tsx}"
+  }
+}
