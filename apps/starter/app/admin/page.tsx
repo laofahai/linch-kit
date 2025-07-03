@@ -180,7 +180,7 @@ function AdminPageContent() {
             <p className="text-muted-foreground mb-4">
               您没有访问系统管理控制台的权限。请联系管理员获取相应权限。
             </p>
-            <Button onClick={() => window.history.back()}>返回</Button>
+            <Button variant="default" size="default" className="" onClick={() => window.history.back()}>返回</Button>
           </CardContent>
         </Card>
       </div>
@@ -210,21 +210,22 @@ function AdminPageContent() {
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-bold">LinchKit 系统管理</h1>
             {isSystemAdmin ? (
-              <Badge variant="destructive">超级管理员</Badge>
+              <Badge variant="destructive" className="">超级管理员</Badge>
             ) : isAdmin ? (
-              <Badge variant="secondary">管理员</Badge>
+              <Badge variant="secondary" className="">管理员</Badge>
             ) : (
-              <Badge variant="outline">用户</Badge>
+              <Badge variant="outline" className="">用户</Badge>
             )}
           </div>
           <div className="ml-auto flex items-center space-x-4">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" className="">
               <span className="mr-2">🔔</span>
               通知
             </Button>
             <Button 
               variant="ghost" 
               size="sm"
+              className=""
               onClick={handleLogout}
             >
               <span className="mr-2">🚪</span>

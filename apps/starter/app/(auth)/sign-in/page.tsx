@@ -96,7 +96,7 @@ function SignInForm() {
                   type="email"
                   placeholder="name@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                   required
                   disabled={isSubmitting || isLoading}
                   className="h-10"
@@ -119,7 +119,7 @@ function SignInForm() {
                   type="password"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                   required
                   disabled={isSubmitting || isLoading}
                   className="h-10"
@@ -131,6 +131,8 @@ function SignInForm() {
                 type="submit" 
                 className="w-full h-10" 
                 disabled={isSubmitting || isLoading}
+                variant="default"
+                size="default"
               >
                 {isSubmitting ? (
                   <>
@@ -155,11 +157,11 @@ function SignInForm() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" type="button" disabled={isSubmitting || isLoading} className="h-10">
+              <Button variant="outline" size="default" type="button" disabled={isSubmitting || isLoading} className="h-10">
                 <Github className="mr-2 h-4 w-4" />
                 GitHub
               </Button>
-              <Button variant="outline" type="button" disabled={isSubmitting || isLoading} className="h-10">
+              <Button variant="outline" size="default" type="button" disabled={isSubmitting || isLoading} className="h-10">
                 <Mail className="mr-2 h-4 w-4" />
                 Email
               </Button>
