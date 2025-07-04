@@ -97,7 +97,8 @@ class FindManyCommand extends BaseQueryCommand {
       const result = await (this.model as { findMany: (query: unknown) => Promise<unknown[]> })
         .findMany(this.query)
       
-      this.getMetrics().recordsAffected = result.length
+      const metrics = this.getMetrics()
+      metrics.recordsAffected = result.length
       return result
     } catch (error) {
       this.logger.error('FindMany execution failed', error instanceof Error ? error : new Error('Unknown error'), {
@@ -122,7 +123,8 @@ class FindFirstCommand extends BaseQueryCommand {
       const result = await (this.model as { findFirst: (query: unknown) => Promise<unknown> })
         .findFirst(this.query)
       
-      this.getMetrics().recordsAffected = result ? 1 : 0
+      const metrics = this.getMetrics()
+      metrics.recordsAffected = result ? 1 : 0
       return result
     } catch (error) {
       this.logger.error('FindFirst execution failed', error instanceof Error ? error : new Error('Unknown error'), {
