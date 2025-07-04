@@ -27,7 +27,8 @@
     "cli_and_tools": "ai-context/architecture/cli_and_tools.md",
     "git_workflow": "ai-context/architecture/git_workflow.md",
     "implementation_roadmap": "ai-context/architecture/implementation_roadmap.md",
-    "complete_architecture_design": "ai-context/architecture/complete_architecture_design.md"
+    "complete_architecture_design": "ai-context/architecture/complete_architecture_design.md",
+    "worktree_parallel_development": "ai-context/architecture/worktree-parallel-development.md"
   },
   "reference": {
     "packages_api": "ai-context/reference/packages_api.md",
