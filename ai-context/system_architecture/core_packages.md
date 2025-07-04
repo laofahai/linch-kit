@@ -155,27 +155,43 @@ export function VerticalLayout({
 ```
 
 ### L4: modules/console
-**职责**: 企业级管理控制台
-- **管理界面**: 租户、用户、权限管理界面
-- **搜索API**: tRPC搜索接口提供
-- **页面组件**: 可嵌入的管理页面组件
-- **业务逻辑**: 企业级管理功能的业务逻辑
+**职责**: 企业级管理控制台平台（集成器）
+- **平台基础设施**: 统一的导航、主题、权限、布局系统
+- **功能集成**: 将所有 packages 功能组合成完整管理界面
+- **插件管理**: 官方插件和第三方插件的加载管理
+- **扩展支持**: 支持自定义路由和组件的动态注册
+
+**新架构特点**:
+- **完全基于 packages**: Console 不实现业务逻辑，只做集成
+- **配置驱动**: 通过 LinchKitConfig 控制功能和外观
+- **可选使用**: 用户可以完全绕过 Console 直接使用 packages
+- **渐进式扩展**: 支持从开箱即用到完全自定义的平滑升级
 
 **集成方式**:
 ```typescript
-// Console模块集成到Starter
-import { ConsoleRouter } from '@linch-kit/console';
+// Console 作为平台基础设施
+import { LinchKitConsole } from '@linch-kit/console'
+import config from '@/linchkit.config'
 
-// 在Starter中使用
-function DashboardLayout() {
-  return (
-    <div>
-      <Sidebar />
-      <Main>
-        <ConsoleRouter />
-      </Main>
-    </div>
-  );
+export default function DashboardPage() {
+  return <LinchKitConsole config={config} />
+}
+
+// 混合模式：Console + 自定义功能
+const hybridConfig: LinchKitConfig = {
+  mode: 'hybrid',
+  console: {
+    features: ['user-management', 'tenant-management']
+  },
+  hybrid: {
+    customRoutes: [
+      {
+        path: '/inventory',
+        component: './src/extensions/inventory/InventoryPage',
+        name: '库存管理'
+      }
+    ]
+  }
 }
 ```
 
