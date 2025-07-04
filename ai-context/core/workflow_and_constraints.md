@@ -411,6 +411,20 @@ chore:    构建/工具
 - **违规后果**：累积未清理分支将导致仓库混乱，影响团队协作
 - **强制提交**：Session结束前必须提交所有更改
 
+### 🔄 Worktree 并行开发约束
+
+**详细流程参考**: [architecture/worktree-parallel-development.md](../architecture/worktree-parallel-development.md)
+
+#### 核心约束
+- **强制位置**：所有worktree必须在 `worktrees/` 目录下
+- **命名规范**：遵循 `feature-[name]` / `hotfix-[issue]` / `experiment-[tech]` 格式
+- **生命周期管理**：创建→开发→清理，不允许长期保留已完成的worktree
+- **环境隔离**：每个worktree独立依赖安装和构建验证
+- **配置继承**：自动共享主仓库的 `.claude/settings.local.json` 配置
+
+#### 强制清理要求
+完成开发后必须立即清理：worktree目录 + 远程分支 + 本地分支
+
 ### 🎯 提交粒度标准
 - **单一职责**：每次提交只做一件事
 - **完整功能**：提交的代码必须是可工作的状态

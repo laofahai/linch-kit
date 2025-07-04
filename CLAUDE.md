@@ -23,6 +23,8 @@
   # 或
   git checkout -b fix/[issue-description]
   ```
+- [ ] **Worktree环境检查**: 如在worktree中，确认当前分支与worktree目录名一致
+- [ ] **主仓库保护**: 如在主仓库目录，禁止在main分支直接工作
 
 ### 3. 工作目录检查
 - [ ] 运行 `git status --porcelain` 检查工作目录状态
@@ -37,8 +39,8 @@
 ### 5. 上下文获取策略
 - [ ] **仅在必要时**读取核心文档：
   - ai-context/README.md（文档地图）
-  - ai-context/workflow_and_constraints.md（约束规范）
-  - ai-context/roadmap.md（当前状态）
+  - ai-context/core/workflow_and_constraints.md（约束规范）
+  - ai-context/roadmap/roadmap.md（当前状态）
 - [ ] **优先使用搜索**而非全文读取
 - [ ] 建立任务相关的最小上下文
 
@@ -48,7 +50,7 @@
 ```
 AI 将自动执行完整的初始化检查。
 
-**📋 标准化 Session 模板**: [ai-context/session_template.md](./ai-context/session_template.md) - 详细的执行流程指导
+**📋 标准化 Session 模板**: [ai-context/core/session_template.md](./ai-context/core/session_template.md) - 详细的执行流程指导
 
 ## 🚀 项目概览
 
@@ -103,11 +105,11 @@ bun validate   # 完整验证
 **导航中心**: [ai-context/README.md](./ai-context/README.md) - 完整的文档地图和使用指南
 
 ### 🔴 核心约束 (每次开发前必读)
-**开发规范**: [ai-context/workflow_and_constraints.md](./ai-context/workflow_and_constraints.md) - **所有开发约束和技术规范**
+**开发规范**: [ai-context/core/workflow_and_constraints.md](./ai-context/core/workflow_and_constraints.md) - **所有开发约束和技术规范**
 
 ## 🔒 基础约束
 
-必须严格遵守以下约束（详见 [ai-context/workflow_and_constraints.md](./ai-context/workflow_and_constraints.md)）：
+必须严格遵守以下约束（详见 [ai-context/core/workflow_and_constraints.md](./ai-context/core/workflow_and_constraints.md)）：
 
 1. **TypeScript 严格模式** - 禁止使用 `any`，使用 `unknown` 替代
 2. **包管理规范** - 仅使用 bun，禁止 npm/yarn
@@ -275,11 +277,11 @@ bun validate   # 完整验证
 
 ### 📋 新功能开发流程
 1. **需求分析** - 使用 TodoWrite 分解功能需求
-2. **架构设计** - 参考 [ai-context/system_architecture/](./ai-context/system_architecture/) 确定设计
+2. **架构设计** - 参考 [ai-context/architecture/](./ai-context/architecture/) 确定设计
 3. **查询文档** - 优先使用 Context7（添加 "use context7"），备用 WebSearch/WebFetch
-4. **编码实现** - 严格遵循 [ai-context/workflow_and_constraints.md](./ai-context/workflow_and_constraints.md) 约束
+4. **编码实现** - 严格遵循 [ai-context/core/workflow_and_constraints.md](./ai-context/core/workflow_and_constraints.md) 约束
 5. **测试验证** - 运行 `bun validate` 确保质量
-6. **文档更新** - 更新 [ai-context/changelog.md](./ai-context/changelog.md) 记录完成功能
+6. **文档更新** - 更新 [ai-context/history/changelog.md](./ai-context/history/changelog.md) 记录完成功能
 
 ### 🐛 问题排查流程
 1. **错误定位** - 分析错误日志和堆栈信息
