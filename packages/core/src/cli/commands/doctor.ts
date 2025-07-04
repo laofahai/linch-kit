@@ -364,7 +364,7 @@ async function checkConfiguration(verbose?: boolean): Promise<DiagnosticCategory
     issues.push({
       level: 'info',
       message: '未找到Tailwind配置文件',
-      suggestion: '如果使用Tailwind，运行 npx tailwindcss init'
+      suggestion: '如果使用Tailwind，运行 bunx tailwindcss init'
     })
   } else if (verbose) {
     issues.push({

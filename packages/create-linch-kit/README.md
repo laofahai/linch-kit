@@ -5,8 +5,8 @@ Create LinchKit apps instantly - AI-First 全栈开发框架脚手架
 ## 快速开始
 
 ```bash
-# 使用 npx (推荐)
-npx create-linch-kit my-app
+# 使用 bunx (推荐)
+bunx create-linch-kit my-app
 
 # 或者使用 bun
 bun create linch-kit my-app

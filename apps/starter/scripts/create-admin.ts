@@ -4,9 +4,9 @@
  * LinchKit 管理员创建工具
  * 
  * 使用方法:
- * npx tsx scripts/create-admin.ts
+ * bunx tsx scripts/create-admin.ts
  * 或
- * npx tsx scripts/create-admin.ts --email=admin@company.com --name="管理员" --password=secure123
+ * bunx tsx scripts/create-admin.ts --email=admin@company.com --name="管理员" --password=secure123
  */
 
 import { Command } from 'commander'

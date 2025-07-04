@@ -11,7 +11,7 @@ process.env.UV_THREADPOOL_SIZE = '64'
 process.env.NODE_MAX_LISTENERS = '100'
 
 // 启动 Next.js 开发服务器，关闭 Turbopack 以减少文件监听
-const dev = spawn('npx', ['next', 'dev', '--port', '3002'], {
+const dev = spawn('bunx', ['next', 'dev', '--port', '3002'], {
   stdio: 'inherit',
   cwd: __dirname,
   env: {

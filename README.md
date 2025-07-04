@@ -51,7 +51,7 @@ L4: @linch-kit/console   管理平台 (多租户、权限管理)
 
 ```bash
 # 一键创建 LinchKit 项目
-npx create-linch-kit my-app
+bunx create-linch-kit my-app
 
 # 进入项目目录
 cd my-app
@@ -64,7 +64,7 @@ bun dev
 
 ```bash
 # 创建新项目
-npx create-next-app@latest my-app --typescript --tailwind --eslint --app
+bunx create-next-app@latest my-app --typescript --tailwind --eslint --app
 
 cd my-app
 
