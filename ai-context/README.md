@@ -6,8 +6,8 @@
 
 ### 📋 Session 启动检查清单
 1. **📖 导航理解** - 阅读本 README.md 了解文档结构
-2. **🎯 项目愿景** - 快速浏览 [vision_and_scope.md](./vision_and_scope.md)
-3. **🏗️ 架构掌握** - 参考 [system_architecture/](./system_architecture/) 理解系统设计
+2. **🔍 上下文索引** - 查阅 [manifest.json](./manifest.json) 快速定位相关文档
+3. **📋 标准流程** - 参考 [session_template.md](./session_template.md) 执行标准化流程
 4. **🛠️ 工作流程** - **必读** [workflow_and_constraints.md](./workflow_and_constraints.md)
 5. **📈 当前状态** - 查看 [roadmap.md](./roadmap.md) 了解进行中任务
 6. **📜 已完成** - 参考 [changelog.md](./changelog.md) 了解完成功能
