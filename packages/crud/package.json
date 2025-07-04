@@ -16,8 +16,8 @@
     "build": "tsup",
     "build:packages": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
     "lint": "eslint src --ext .ts,.tsx --fix",
     "type-check": "tsc --noEmit"
   },
