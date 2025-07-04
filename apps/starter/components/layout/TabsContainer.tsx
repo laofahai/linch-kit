@@ -3,23 +3,29 @@
 import { useTabsStore } from '@/lib/stores/tabs-store'
 import { TabsBar } from './TabsBar'
 import { TabContent } from './TabContent'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { useIsTabletOrDesktop } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 
 interface TabsContainerProps {
   className?: string
+  headerOnly?: boolean // 新增：仅显示标签栏（用于导航栏中）
 }
 
-export function TabsContainer({ className }: TabsContainerProps) {
+export function TabsContainer({ className, headerOnly = false }: TabsContainerProps) {
   const { tabs, activeTabId } = useTabsStore()
-  const isDesktop = useIsDesktop()
+  const isTabletOrDesktop = useIsTabletOrDesktop()
 
   // 响应式标签页显示策略
-  const shouldShowTabs = isDesktop && tabs.length > 1
+  const shouldShowTabs = isTabletOrDesktop && tabs.length > 1
 
   // 如果不应该显示标签页，直接返回 null
   if (!shouldShowTabs) {
     return null
+  }
+
+  // 如果只显示标签栏（用于导航栏）
+  if (headerOnly) {
+    return <TabsBar className={className} />
   }
 
   return (

@@ -36,7 +36,17 @@ export function useMediaQuery(query: string): boolean {
 
 /**
  * 预定义的断点 Hooks
+ * 断点定义：
+ * - Mobile: < 640px
+ * - Tablet: 640px - 1023px  
+ * - Desktop: >= 1024px
  */
-export const useIsDesktop = () => useMediaQuery('(min-width: 768px)')
+export const useIsDesktop = () => useMediaQuery('(min-width: 1024px)')
 export const useIsTablet = () => useMediaQuery('(min-width: 640px) and (max-width: 1023px)')
 export const useIsMobile = () => useMediaQuery('(max-width: 639px)')
+
+/**
+ * 专门用于标签页/面包屑切换的响应式逻辑
+ * 在中等屏幕(md+)以上显示标签页，小屏幕显示面包屑
+ */
+export const useIsTabletOrDesktop = () => useMediaQuery('(min-width: 768px)')

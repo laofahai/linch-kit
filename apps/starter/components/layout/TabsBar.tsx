@@ -5,8 +5,13 @@ import { TabItem } from './TabItem'
 import { Button } from '@/components/ui/button'
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRef, useState, useEffect } from 'react'
+import { cn } from '@/lib/utils'
 
-export function TabsBar() {
+interface TabsBarProps {
+  className?: string
+}
+
+export function TabsBar({ className }: TabsBarProps) {
   const { tabs, activeTabId, addTab } = useTabsStore()
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const [showScrollButtons, setShowScrollButtons] = useState(false)
@@ -62,7 +67,10 @@ export function TabsBar() {
   }
 
   return (
-    <div className="flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className={cn(
+      "flex h-16 items-center gap-x-2 bg-background border-b border-border px-4",
+      className
+    )}>
       {/* 左滚动按钮 */}
       {showScrollButtons && (
         <Button
@@ -70,19 +78,19 @@ export function TabsBar() {
           size="sm"
           onClick={scrollLeft}
           disabled={!canScrollLeft}
-          className="h-8 w-8 p-0 flex-shrink-0"
+          className="h-8 w-8 p-0 flex-shrink-0 rounded-full"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
       )}
 
-      {/* 标签页滚动区域 */}
+      {/* 胶囊标签页滚动区域 */}
       <div
         ref={scrollAreaRef}
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        <div className="flex min-w-max">
+        <div className="flex items-center gap-x-2 min-w-max">
           {tabs.map((tab) => (
             <TabItem
               key={tab.id}
@@ -100,7 +108,7 @@ export function TabsBar() {
           size="sm"
           onClick={scrollRight}
           disabled={!canScrollRight}
-          className="h-8 w-8 p-0 flex-shrink-0"
+          className="h-8 w-8 p-0 flex-shrink-0 rounded-full"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -111,7 +119,7 @@ export function TabsBar() {
         variant="ghost"
         size="sm"
         onClick={handleAddTab}
-        className="h-8 w-8 p-0 flex-shrink-0 ml-1"
+        className="h-8 w-8 p-0 flex-shrink-0 rounded-full"
       >
         <Plus className="h-4 w-4" />
       </Button>
