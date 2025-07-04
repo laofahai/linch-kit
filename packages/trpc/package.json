@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@linch-kit/core": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
     "@linch-kit/auth": "workspace:*",
     "@trpc/server": "^11.4.3",
     "@trpc/client": "^11.4.3",

@@ -48,12 +48,12 @@
   "dependencies": {
     "@auth/core": "^0.40.0",
     "@casl/ability": "^6.7.3",
+    "@linch-kit/core": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
     "next-auth": "5.0.0-beta.25",
     "zod": "^3.25.67"
   },
   "devDependencies": {
-    "@linch-kit/core": "workspace:*",
-    "@linch-kit/schema": "workspace:*",
     "@types/react": "^19.1.8",
     "react": "^19.1.0",
     "tsup": "^8.5.0",
