@@ -26,7 +26,6 @@ import {
 } from '@linch-kit/ui'
 import { 
   Menu, 
-  X, 
   Home, 
   Settings, 
   Users, 

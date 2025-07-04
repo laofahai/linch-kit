@@ -7,7 +7,9 @@
 'use client'
 
 import React, { ReactNode } from 'react'
+import { useSession } from '@linch-kit/auth'
 import { cn } from '@linch-kit/ui/utils'
+
 import { ModernSidebar, ModernPage } from '../layout/ModernSidebar'
 
 export interface ConsoleLayoutProps {
@@ -42,6 +44,9 @@ export function ConsoleLayout({
   className,
   showSidebar = true
 }: ConsoleLayoutProps) {
+  // 获取当前用户会话
+  const { data: session } = useSession()
+  
   // 如果不显示侧边栏，直接返回内容
   if (!showSidebar) {
     return (
@@ -86,10 +91,11 @@ export function ConsoleLayout({
       subtitle="Console"
       breadcrumbs={breadcrumbItems}
       className={className}
-      user={{
-        name: 'Admin User',
-        email: 'admin@linchkit.com'
-      }}
+      user={session?.user ? {
+        name: session.user.name || 'User',
+        email: session.user.email || 'user@example.com',
+        avatar: session.user.image || undefined
+      } : undefined}
     >
       <ModernPage
         title={title}
@@ -191,7 +197,7 @@ export function ConsoleSidebarLayout({
   children,
   sidebarWidth = 'md',
   sidebarPosition = 'left',
-  collapsible = false,
+  collapsible: _collapsible = false,
   className
 }: ConsoleSidebarLayoutProps) {
   const sidebarWidthClasses = {
