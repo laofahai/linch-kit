@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "LinchKit AI-First 全栈开发框架 - 企业级生产应用",
+  "packageManager": "bun@1.2.18",
   "scripts": {
     "dev": "node dev.js",
     "dev:turbo": "next dev --turbo",
