@@ -6,7 +6,7 @@
  * @since 0.1.0
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test'
 
 import {
   createLinchKitAuthConfig,
@@ -14,21 +14,21 @@ import {
 } from '../../adapters/nextauth-adapter'
 
 // Mock NextAuth.js dependencies
-vi.mock('next-auth', () => ({
-  default: vi.fn(),
-  NextAuth: vi.fn()
+mock.module('next-auth', () => ({
+  default: mock(),
+  NextAuth: mock()
 }))
 
 describe('NextAuth Adapter', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    // Bun test handles mock management automatically
     // Reset environment variables
     delete process.env.NEXTAUTH_SECRET
     delete process.env.NEXTAUTH_URL
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
+    // Bun test handles mock restoration automatically
   })
 
   describe('createLinchKitAuthConfig', () => {
@@ -58,7 +58,7 @@ describe('NextAuth Adapter', () => {
      * @expect 配置中包含指定的提供者
      */
     it('should configure custom providers', () => {
-      const mockAuthorize = vi.fn().mockResolvedValue({ id: '1', email: 'test@example.com' })
+      const mockAuthorize = mock().mockResolvedValue({ id: '1', email: 'test@example.com' })
       
       const config = createLinchKitAuthConfig({
         providers: {
@@ -97,9 +97,9 @@ describe('NextAuth Adapter', () => {
      * @expect 回调函数正确设置
      */
     it('should configure custom callbacks', () => {
-      const mockSignIn = vi.fn().mockResolvedValue(true)
-      const mockJwt = vi.fn().mockResolvedValue({})
-      const mockSession = vi.fn().mockResolvedValue({})
+      const mockSignIn = mock().mockResolvedValue(true)
+      const mockJwt = mock().mockResolvedValue({})
+      const mockSession = mock().mockResolvedValue({})
 
       const config = createLinchKitAuthConfig({
         providers: {},

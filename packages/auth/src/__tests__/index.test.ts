@@ -6,11 +6,11 @@
  * @since 0.1.0
  */
 
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, mock } from 'bun:test'
 
 // Mock NextAuth.js to avoid dependency issues
-vi.mock('next-auth', () => ({
-  default: vi.fn(() => ({ handlers: {}, auth: vi.fn(), signIn: vi.fn(), signOut: vi.fn() }))
+mock.module('next-auth', () => ({
+  default: mock(() => ({ handlers: {}, auth: mock(), signIn: mock(), signOut: mock() }))
 }))
 
 describe('@linch-kit/auth Package Exports', () => {

@@ -6,24 +6,24 @@
  * @since 0.1.0
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test'
 
 import { CASLPermissionEngine } from '../../permissions/casl-engine'
 import type { User, PermissionContext } from '../../types'
 
 // Mock CASL library
-vi.mock('@casl/ability', () => ({
-  AbilityBuilder: vi.fn(() => ({
-    can: vi.fn(),
-    cannot: vi.fn(),
-    build: vi.fn(() => ({
-      can: vi.fn(() => true),
-      cannot: vi.fn(() => false)
+mock.module('@casl/ability', () => ({
+  AbilityBuilder: mock(() => ({
+    can: mock(),
+    cannot: mock(),
+    build: mock(() => ({
+      can: mock(() => true),
+      cannot: mock(() => false)
     }))
   })),
-  createMongoAbility: vi.fn(() => ({
-    can: vi.fn(() => true),
-    cannot: vi.fn(() => false)
+  createMongoAbility: mock(() => ({
+    can: mock(() => true),
+    cannot: mock(() => false)
   }))
 }))
 
@@ -49,11 +49,11 @@ describe('CASLPermissionEngine', () => {
       userAgent: 'Test Browser'
     }
 
-    vi.clearAllMocks()
+    // Bun test doesn't need explicit mock clearing in beforeEach
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
+    // Bun test handles mock restoration automatically
   })
 
   describe('Basic Permission Checking', () => {

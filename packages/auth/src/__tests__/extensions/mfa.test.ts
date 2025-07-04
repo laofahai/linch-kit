@@ -6,24 +6,23 @@
  * @since 0.1.0
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test'
 
 import { MFAManager } from '../../extensions/mfa'
 
 // Mock speakeasy library
-vi.mock('speakeasy', () => ({
-  generateSecret: vi.fn(() => ({
+mock.module('speakeasy', () => ({
+  generateSecret: mock(() => ({
     base32: 'JBSWY3DPEHPK3PXP',
     otpauth_url: 'otpauth://totp/Test?secret=JBSWY3DPEHPK3PXP'
   })),
   totp: {
-    verify: vi.fn(() => ({ delta: 0 }))
+    verify: mock(() => ({ delta: 0 }))
   }
 }))
 
-// Mock crypto for backup codes
-vi.mock('crypto', () => ({
-  randomBytes: vi.fn(() => Buffer.from('test-random-bytes'))
+mock.module('crypto', () => ({
+  randomBytes: mock(() => Buffer.from('test-random-bytes'))
 }))
 
 describe('MFAManager', () => {
@@ -37,12 +36,11 @@ describe('MFAManager', () => {
       issuer: 'LinchKit Test',
       backupCodesCount: 8
     })
-    mockSpeakeasy = await import('speakeasy')
-    vi.clearAllMocks()
+    // Bun test handles mock management automatically
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
+    // Bun test handles mock restoration automatically
   })
 
   describe('TOTP Management', () => {
@@ -72,9 +70,6 @@ describe('MFAManager', () => {
       const user = { id: 'user-123', email: 'test@example.com' } as any
       const token = '123456'
 
-      // Mock successful verification
-      mockSpeakeasy.totp.verify.mockReturnValue({ delta: 0 })
-
       const result = await mfaManager.verifyTOTP(user, token)
 
       expect(result).toBeDefined()
@@ -89,9 +84,6 @@ describe('MFAManager', () => {
     it('should reject invalid TOTP token', async () => {
       const user = { id: 'user-123', email: 'test@example.com' } as any
       const token = 'invalid'
-
-      // Mock failed verification
-      mockSpeakeasy.totp.verify.mockReturnValue(false)
 
       const result = await mfaManager.verifyTOTP(user, token)
 
@@ -164,9 +156,9 @@ describe('MFAManager', () => {
     it('should handle invalid user objects', async () => {
       const invalidUser = null as any
 
-      await expect(async () => {
+      expect(async () => {
         await mfaManager.setupTOTP(invalidUser)
-      }).rejects.toThrow()
+      }).toThrow()
     })
 
     /**

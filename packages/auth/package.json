@@ -40,8 +40,8 @@
     "build": "tsup",
     "build:packages": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --fix"
   },
@@ -58,7 +58,7 @@
     "react": "^19.1.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "@types/bun": "^1.2.18"
   },
   "peerDependencies": {
     "@linch-kit/core": "workspace:*",
