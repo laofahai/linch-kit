@@ -28,8 +28,8 @@
     "dev": "tsup --watch",
     "clean": "rm -rf dist node_modules/.cache",
     "lint": "eslint src --ext .ts,.tsx --fix",
-    "test": "vitest",
-    "test:watch": "vitest --watch",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -45,7 +45,6 @@
     "@types/node": "^24.0.7",
     "typescript": "^5.8.3",
     "tsup": "^8.5.0",
-    "vitest": "^3.2.4",
     "eslint": "^9.30.0"
   },
   "peerDependencies": {

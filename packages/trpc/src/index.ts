@@ -55,3 +55,11 @@ export interface AppRouter {
 
 // CLI命令
 export { trpcCommands } from './cli/commands'
+
+// 基础 tRPC 构建器（仅用于测试）
+export const router = (routes: Record<string, unknown>) => routes
+export const procedure = {}
+export const middleware = (fn: unknown) => fn
+export const publicProcedure = {}
+export const protectedProcedure = {}
+export const adminProcedure = {}
