@@ -159,6 +159,9 @@ const authConfig: LinchKitAuthConfig = {
         email: user.email,
         provider: account?.provider 
       })
+      
+      // 注意：这里不能直接操作localStorage，因为这是服务器端
+      // 客户端Token缓存将在useTokenCache hook中处理
     },
     async onSignOut({ session, token }) {
       Logger.info('User signed out', { 

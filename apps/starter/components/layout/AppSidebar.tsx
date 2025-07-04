@@ -34,7 +34,6 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronDown,
-  Zap,
   CircleUser,
   LogOut,
   Globe
@@ -102,12 +101,6 @@ const modernNavItems: NavItem[] = [
       { label: 'Billing', href: '/dashboard/settings/billing', icon: Settings },
     ]
   },
-  { 
-    label: 'Admin', 
-    href: '/admin', 
-    icon: Zap,
-    badge: 'Pro'
-  },
 ]
 
 /**
@@ -140,7 +133,6 @@ function NavMenuItem({
       if (iconComponent === Users) return 'Users'
       if (iconComponent === Settings) return 'Settings'
       if (iconComponent === BarChart3) return 'BarChart3'
-      if (iconComponent === Zap) return 'Zap'
       return 'Home' // 默认图标
     }
 

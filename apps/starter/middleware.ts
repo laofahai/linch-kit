@@ -9,10 +9,8 @@ const PUBLIC_PATHS = [
   '/forgot-password'
 ]
 
-// 只有管理员能访问的路径
-const ADMIN_PATHS = [
-  '/admin'
-]
+// 只有管理员能访问的路径（已移除admin路由）
+const ADMIN_PATHS: string[] = []
 
 // 认证相关路径
 const AUTH_PATHS = [

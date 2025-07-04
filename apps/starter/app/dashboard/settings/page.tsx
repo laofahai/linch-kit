@@ -1,6 +1,6 @@
 /**
  * 租户设置页面
- * 展示配置管理和CRUD操作
+ * 集成 Console 配置管理功能
  */
 
 'use client'
@@ -24,7 +24,8 @@ import {
   Separator
 } from '@linch-kit/ui'
 import { Logger } from '@linch-kit/core'
-import { Save, RefreshCw } from 'lucide-react'
+import { Save, RefreshCw, Shield, Settings as SettingsIcon } from 'lucide-react'
+import { useTokenCache } from '@/hooks/use-token-cache'
 
 type ConfigItem = {
   key: string
@@ -37,6 +38,7 @@ type ConfigItem = {
 
 export default function SettingsPage() {
   const { toast } = useToast()
+  const { isAdmin, isAuthenticated } = useTokenCache()
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   
@@ -150,6 +152,27 @@ export default function SettingsPage() {
     loadSettings()
   }, [loadSettings])
 
+  // 权限检查
+  if (!isAuthenticated) {
+    return (
+      <div className="w-full flex items-center justify-center min-h-96">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Shield className="h-5 w-5 mr-2" />
+              访问受限
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              请先登录以访问设置页面
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center min-h-96">
@@ -187,11 +210,12 @@ export default function SettingsPage() {
 
       {/* 设置选项卡 */}
       <Tabs defaultValue="general" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-5' : 'grid-cols-4'}`}>
           <TabsTrigger value="general">基础设置</TabsTrigger>
           <TabsTrigger value="auth">认证安全</TabsTrigger>
           <TabsTrigger value="limits">限制配置</TabsTrigger>
           <TabsTrigger value="notifications">通知设置</TabsTrigger>
+          {isAdmin && <TabsTrigger value="admin">管理员</TabsTrigger>}
         </TabsList>
 
         {/* 基础设置 */}
@@ -414,6 +438,78 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* 管理员设置 - 仅管理员可见 */}
+        {isAdmin && (
+          <TabsContent value="admin">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Shield className="h-5 w-5 mr-2" />
+                  管理员设置
+                </CardTitle>
+                <CardDescription>
+                  高级系统配置和管理员功能
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Card className="p-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <SettingsIcon className="h-5 w-5 text-primary" />
+                      <h4 className="font-medium">系统配置</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      管理全局系统配置和环境变量
+                    </p>
+                    <Button variant="outline" size="sm">
+                      配置管理
+                    </Button>
+                  </Card>
+
+                  <Card className="p-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <Shield className="h-5 w-5 text-primary" />
+                      <h4 className="font-medium">权限管理</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      管理用户角色和权限分配
+                    </p>
+                    <Button variant="outline" size="sm">
+                      权限配置
+                    </Button>
+                  </Card>
+                </div>
+
+                <Separator />
+                
+                <div className="space-y-4">
+                  <h4 className="font-medium text-destructive">危险操作</h4>
+                  <div className="p-4 border border-destructive/20 rounded-lg bg-destructive/5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h5 className="font-medium text-destructive">重置系统设置</h5>
+                        <p className="text-sm text-muted-foreground">
+                          将所有配置重置为默认值，此操作不可逆
+                        </p>
+                      </div>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => toast({
+                          title: '功能开发中',
+                          description: '重置功能正在开发中'
+                        })}
+                      >
+                        重置设置
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )

@@ -12,7 +12,6 @@ import { Button } from '@linch-kit/ui'
 const DashboardPage = lazy(() => import('../../app/dashboard/page'))
 const UsersPage = lazy(() => import('../../app/dashboard/users/page'))
 const SettingsPage = lazy(() => import('../../app/dashboard/settings/page'))
-const AdminPage = lazy(() => import('../../app/admin/page'))
 const TrpcDemoPage = lazy(() => import('../../app/trpc-demo/page'))
 
 // 页面路由映射
@@ -20,7 +19,6 @@ const pageRoutes: Record<string, React.LazyExoticComponent<React.ComponentType> 
   '/dashboard': DashboardPage,
   '/dashboard/users': UsersPage,
   '/dashboard/settings': SettingsPage,
-  '/admin': AdminPage,
   '/trpc-demo': TrpcDemoPage,
   '/dashboard/analytics': null, // 待实现
   '/dashboard/analytics/traffic': null, // 待实现
