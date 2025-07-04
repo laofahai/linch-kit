@@ -170,12 +170,16 @@ EOF
     local packages_json="[]"
     
     if [ ${#scope[@]} -gt 0 ]; then
-        scope_json=$(printf '%s\n' "${scope[@]}" | jq -R . | jq -s .)
+        scope_json=$(printf '%s\n' "${scope[@]}" | jq -R . | jq -s . 2>/dev/null || echo '[]')
     fi
     
     if [ ${#packages[@]} -gt 0 ]; then
-        packages_json=$(printf '%s\n' "${packages[@]}" | jq -R . | jq -s .)
+        packages_json=$(printf '%s\n' "${packages[@]}" | jq -R . | jq -s . 2>/dev/null || echo '[]')
     fi
+    
+    # 调试输出
+    echo "DEBUG: scope_json=$scope_json" >&2
+    echo "DEBUG: packages_json=$packages_json" >&2
     
     task_analysis=$(echo "$task_analysis" | jq \
         --arg task_type "$task_type" \
@@ -188,7 +192,7 @@ EOF
          .analysis.complexity = $complexity |
          .analysis.packages_involved = $packages |
          .analysis.requires_gemini_consultation = $requires_gemini |
-         .analysis.ai_confidence = (if $requires_gemini then 0.6 else 0.8 end)')
+         .analysis.ai_confidence = (if $requires_gemini then 0.6 else 0.8 end)' 2>/dev/null || echo '{}')
     
     echo "$task_analysis"
 }
@@ -683,6 +687,10 @@ ai_auto_execute() {
     # 保存工作流配置
     local config_file="$TASKS_DIR/ai-generated-$workflow_id.json"
     
+    # 调试输出
+    echo "DEBUG: workflow_config contents:" >&2
+    echo "$workflow_config" | head -20 >&2
+    
     # 确保配置是有效的 JSON
     if echo "$workflow_config" | jq . >/dev/null 2>&1; then
         echo "$workflow_config" | jq . > "$config_file"
@@ -690,6 +698,8 @@ ai_auto_execute() {
         log_error "生成的工作流配置不是有效的 JSON"
         echo "$workflow_config" > "${config_file}.debug"
         log_error "调试输出已保存到: ${config_file}.debug"
+        echo "DEBUG: JSON validation error:" >&2
+        echo "$workflow_config" | jq . 2>&1 || true
         return 1
     fi
     
