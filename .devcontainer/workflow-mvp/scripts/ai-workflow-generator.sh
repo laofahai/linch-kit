@@ -310,7 +310,7 @@ generate_workflow_from_analysis() {
     "task_type": "TASK_TYPE_PLACEHOLDER",
     "complexity": "COMPLEXITY_PLACEHOLDER",
     "generated_at": "TIMESTAMP_PLACEHOLDER",
-    "ai_confidence": AI_CONFIDENCE_PLACEHOLDER
+    "ai_confidence": "AI_CONFIDENCE_PLACEHOLDER"
   }
 }
 EOF
