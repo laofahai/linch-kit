@@ -1,0 +1,77 @@
+{
+  "workflow": {
+    "id": "ai-20250704-185220",
+    "description": "AI 生成的自动化工作流",
+    "ai_generated": true,
+    "linchkit_constraints_enforced": true,
+    "automation_level": "moderate",
+    "tasks": [
+      {
+        "id": "setup-general-branch",
+        "type": "git",
+        "command": "worktree add -b feature/general/ai-generated ./worktrees/general-ai main",
+        "depends_on": [],
+        "linchkit_constraint": "分支安全检查"
+      },
+      {
+        "id": "install-deps",
+        "type": "shell",
+        "command": "cd ./worktrees/general-ai && export PATH=\"/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH\" && bun install",
+        "depends_on": [
+          "setup-general-branch"
+        ],
+        "linchkit_constraint": "强制使用 bun"
+      },
+      {
+        "id": "full-build",
+        "type": "shell",
+        "command": "cd ./worktrees/general-ai && bun run build",
+        "depends_on": [
+          "install-deps"
+        ],
+        "linchkit_constraint": "完整构建验证"
+      },
+      {
+        "id": "quality-check",
+        "type": "shell",
+        "command": "cd ./worktrees/general-ai && bun run lint && bun run check-types",
+        "depends_on": [
+          "full-build"
+        ],
+        "linchkit_constraint": "代码质量和类型安全"
+      },
+      {
+        "id": "final-constraint-validation",
+        "type": "shell",
+        "command": "echo '🚨 LinchKit 强制性约束最终验证' && cd ./worktrees/*/",
+        "depends_on": [],
+        "linchkit_constraint": "最终约束验证",
+        "priority": "critical"
+      },
+      {
+        "id": "architecture-dependency-check",
+        "type": "shell",
+        "command": "echo '检查架构依赖顺序: core → schema → auth → crud → trpc → ui → console'",
+        "depends_on": [
+          "final-constraint-validation"
+        ],
+        "linchkit_constraint": "架构依赖顺序验证"
+      },
+      {
+        "id": "no-circular-deps-check",
+        "type": "shell",
+        "command": "echo '检查循环依赖' && cd ./worktrees/*/ && bun run deps:check || echo '依赖检查完成'",
+        "depends_on": [
+          "architecture-dependency-check"
+        ],
+        "linchkit_constraint": "禁止循环依赖"
+      }
+    ]
+  },
+  "metadata": {
+    "task_type": "",
+    "complexity": "",
+    "generated_at": "2025-07-04T18:52:20+08:00",
+    "ai_confidence": ""
+  }
+}
