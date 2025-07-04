@@ -203,14 +203,49 @@ execute_shell_task() {
     
     log_info "执行 Shell 命令: $command"
     
+    # 获取自动化级别
+    local automation_level
+    automation_level=$(jq -r '.workflow.automation_level // "safe"' "$CONFIG_FILE" 2>/dev/null || echo "safe")
+    
     cd "$PROJECT_ROOT"
-    if eval "$command"; then
-        log_success "Shell 命令执行成功"
-        return 0
-    else
-        log_error "Shell 命令执行失败"
-        return 1
-    fi
+    
+    # 根据自动化级别执行命令
+    case "$automation_level" in
+        "dangerous")
+            log_warning "危险模式: 自动接受所有提示"
+            if yes "y" | eval "$command" 2>&1; then
+                log_success "Shell 命令执行成功 (危险模式)"
+                return 0
+            else
+                local exit_code=$?
+                [ $exit_code -eq 141 ] && return 0  # SIGPIPE is OK
+                log_error "Shell 命令执行失败 (退出码: $exit_code)"
+                return $exit_code
+            fi
+            ;;
+        "moderate")
+            log_info "适度模式: 使用安全默认响应"
+            if yes "" | eval "$command" 2>&1; then
+                log_success "Shell 命令执行成功 (适度模式)"
+                return 0
+            else
+                local exit_code=$?
+                [ $exit_code -eq 141 ] && return 0
+                log_error "Shell 命令执行失败 (退出码: $exit_code)"
+                return $exit_code
+            fi
+            ;;
+        *)
+            # 安全模式：正常执行
+            if eval "$command"; then
+                log_success "Shell 命令执行成功"
+                return 0
+            else
+                log_error "Shell 命令执行失败"
+                return 1
+            fi
+            ;;
+    esac
 }
 
 # 执行单个任务

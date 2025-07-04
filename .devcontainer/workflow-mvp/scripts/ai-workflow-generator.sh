@@ -299,6 +299,7 @@ generate_workflow_from_analysis() {
     "description": "AI 生成的自动化工作流",
     "ai_generated": true,
     "linchkit_constraints_enforced": true,
+    "automation_level": "AUTOMATION_LEVEL_PLACEHOLDER",
     "tasks": []
   },
   "metadata": {
@@ -317,11 +318,30 @@ EOF
     local ai_confidence
     ai_confidence=$(echo "$task_analysis" | jq -r '.analysis.ai_confidence')
     
+    # 根据任务类型和复杂度决定自动化级别
+    local automation_level="safe"
+    case "$task_type" in
+        "testing")
+            automation_level="moderate"  # 测试任务通常可以自动化
+            ;;
+        "general"|"refactor")
+            if [ "$complexity" = "high" ]; then
+                automation_level="safe"  # 高复杂度任务需要人工确认
+            else
+                automation_level="moderate"
+            fi
+            ;;
+        *)
+            automation_level="moderate"  # 默认使用适度自动化
+            ;;
+    esac
+    
     workflow_config="${workflow_config/WORKFLOW_ID_PLACEHOLDER/$workflow_id}"
     workflow_config="${workflow_config/TASK_TYPE_PLACEHOLDER/$task_type}"
     workflow_config="${workflow_config/COMPLEXITY_PLACEHOLDER/$complexity}"
     workflow_config="${workflow_config/TIMESTAMP_PLACEHOLDER/$timestamp}"
     workflow_config="${workflow_config/AI_CONFIDENCE_PLACEHOLDER/$ai_confidence}"
+    workflow_config="${workflow_config/AUTOMATION_LEVEL_PLACEHOLDER/$automation_level}"
     
     # 根据任务类型生成具体任务
     local tasks_json="[]"

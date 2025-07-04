@@ -1,0 +1,68 @@
+{
+  "workflow": {
+    "id": "api-refactor-test",
+    "description": "重构用户 API，添加批量操作和搜索功能",
+    "tasks": [
+      {
+        "id": "setup-branch",
+        "type": "git",
+        "command": "worktree add -b feature/api/user-refactor ./worktrees/api-refactor main",
+        "depends_on": []
+      },
+      {
+        "id": "install-deps",
+        "type": "shell",
+        "command": "cd ./worktrees/api-refactor && bun install",
+        "depends_on": ["setup-branch"]
+      },
+      {
+        "id": "analyze-current-api",
+        "type": "shell",
+        "command": "cd ./worktrees/api-refactor && echo 'TODO: 分析现有用户 API 结构'",
+        "depends_on": ["install-deps"]
+      },
+      {
+        "id": "refactor-user-router",
+        "type": "shell",
+        "command": "cd ./worktrees/api-refactor && echo 'TODO: 重构用户路由器'",
+        "depends_on": ["analyze-current-api"]
+      },
+      {
+        "id": "add-batch-operations",
+        "type": "shell",
+        "command": "cd ./worktrees/api-refactor && echo 'TODO: 添加批量创建、更新、删除操作'",
+        "depends_on": ["refactor-user-router"]
+      },
+      {
+        "id": "implement-search",
+        "type": "shell",
+        "command": "cd ./worktrees/api-refactor && echo 'TODO: 实现用户搜索功能（支持模糊查询、分页、排序）'",
+        "depends_on": ["add-batch-operations"]
+      },
+      {
+        "id": "update-schemas",
+        "type": "shell",
+        "command": "cd ./worktrees/api-refactor && echo 'TODO: 更新 Zod schemas'",
+        "depends_on": ["implement-search"]
+      },
+      {
+        "id": "add-api-tests",
+        "type": "shell",
+        "command": "cd ./worktrees/api-refactor && echo 'TODO: 添加 API 测试'",
+        "depends_on": ["update-schemas"]
+      },
+      {
+        "id": "run-tests",
+        "type": "shell",
+        "command": "cd ./worktrees/api-refactor && bun test",
+        "depends_on": ["add-api-tests"]
+      },
+      {
+        "id": "update-docs",
+        "type": "shell",
+        "command": "cd ./worktrees/api-refactor && echo 'TODO: 更新 API 文档'",
+        "depends_on": ["run-tests"]
+      }
+    ]
+  }
+}
