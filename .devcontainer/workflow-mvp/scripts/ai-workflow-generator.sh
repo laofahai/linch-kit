@@ -165,11 +165,23 @@ EOF
     fi
     
     # 生成解析结果
+    # 处理可能为空的数组
+    local scope_json="[]"
+    local packages_json="[]"
+    
+    if [ ${#scope[@]} -gt 0 ]; then
+        scope_json=$(printf '%s\n' "${scope[@]}" | jq -R . | jq -s .)
+    fi
+    
+    if [ ${#packages[@]} -gt 0 ]; then
+        packages_json=$(printf '%s\n' "${packages[@]}" | jq -R . | jq -s .)
+    fi
+    
     task_analysis=$(echo "$task_analysis" | jq \
         --arg task_type "$task_type" \
-        --argjson scope "$(printf '%s\n' "${scope[@]}" | jq -R . | jq -s .)" \
+        --argjson scope "$scope_json" \
         --arg complexity "$complexity" \
-        --argjson packages "$(printf '%s\n' "${packages[@]}" | jq -R . | jq -s .)" \
+        --argjson packages "$packages_json" \
         --argjson requires_gemini "$requires_gemini" \
         '.analysis.task_type = $task_type |
          .analysis.scope = $scope |
