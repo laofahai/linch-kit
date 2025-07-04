@@ -1,0 +1,31 @@
+{
+  "name": "ai-context-tools",
+  "version": "1.0.0",
+  "description": "AI-Context 优化维护工具集",
+  "type": "module",
+  "scripts": {
+    "context": "node scripts/context-tools.js",
+    "validate": "node validators/doc-validator.js",
+    "api-summary": "node scripts/context-tools.js --generate-api-summary",
+    "check-undocumented": "node scripts/context-tools.js --list-undocumented-packages",
+    "validate-manifest": "node scripts/context-tools.js --validate-manifest",
+    "sync-arch": "node scripts/context-tools.js --sync-architecture-docs"
+  },
+  "dependencies": {
+    "globby": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "ai-context",
+    "documentation",
+    "automation",
+    "linchkit"
+  ],
+  "author": "AI Assistant",
+  "license": "MIT"
+}

@@ -1,21 +1,51 @@
 {
   "meta": {
-    "version": "1.0.0",
-    "description": "LinchKit AI Context Navigation Index",
-    "last_updated": "2025-07-03"
+    "version": "2.0.0",
+    "description": "LinchKit AI Context Navigation Index - Layered Architecture",
+    "last_updated": "2025-07-04",
+    "structure_version": "layered-v1"
   },
   "navigation": {
     "overview": "ai-context/README.md",
-    "vision": "ai-context/vision_and_scope.md",
-    "roadmap": "ai-context/roadmap.md",
-    "constraints": "ai-context/workflow_and_constraints.md",
-    "changelog": "ai-context/changelog.md"
+    "optimization_plan": "ai-context/ai-context-optimization-plan.md",
+    "core": "ai-context/core/",
+    "architecture": "ai-context/architecture/",
+    "reference": "ai-context/reference/",
+    "roadmap": "ai-context/roadmap/",
+    "history": "ai-context/history/",
+    "tools": "ai-context/tools/"
+  },
+  "core": {
+    "vision_and_scope": "ai-context/core/vision_and_scope.md",
+    "workflow_and_constraints": "ai-context/core/workflow_and_constraints.md",
+    "session_template": "ai-context/core/session_template.md"
   },
   "architecture": {
-    "overview": "ai-context/system_architecture/overview.md",
-    "frontend": "ai-context/system_architecture/frontend_applications.md",
-    "backend": "ai-context/system_architecture/backend_infrastructure.md",
-    "integration": "ai-context/system_architecture/integration_patterns.md"
+    "overview": "ai-context/architecture/overview.md",
+    "core_packages": "ai-context/architecture/core_packages.md",
+    "frontend_applications": "ai-context/architecture/frontend_applications.md",
+    "cli_and_tools": "ai-context/architecture/cli_and_tools.md",
+    "git_workflow": "ai-context/architecture/git_workflow.md",
+    "implementation_roadmap": "ai-context/architecture/implementation_roadmap.md",
+    "complete_architecture_design": "ai-context/architecture/complete_architecture_design.md",
+    "worktree_parallel_development": "ai-context/architecture/worktree-parallel-development.md"
+  },
+  "reference": {
+    "packages_api": "ai-context/reference/packages_api.md",
+    "auth_package_completeness": "ai-context/reference/auth-package-completeness-report.md",
+    "core_package_completeness": "ai-context/reference/core-package-completeness-report.md",
+    "dependency_analysis": "ai-context/reference/dependency-analysis.md",
+    "test_coverage_summary": "ai-context/reference/test-coverage-summary.md",
+    "phase1_verification": "ai-context/reference/phase1-verification-report.md",
+    "bun_migration_plan": "ai-context/reference/bun-migration-plan.md"
+  },
+  "roadmap": {
+    "roadmap": "ai-context/roadmap/roadmap.md",
+    "development_status": "ai-context/roadmap/development-status.md"
+  },
+  "history": {
+    "changelog": "ai-context/history/changelog.md",
+    "development_history": "ai-context/history/development_history.md"
   },
   "packages": {
     "core": {
@@ -76,18 +106,16 @@
     }
   },
   "workflows": {
-    "git": "ai-context/system_architecture/git_workflow.md",
+    "git": "ai-context/architecture/git_workflow.md",
     "ci": ".github/workflows/ci.yml",
-    "release": ".github/workflows/release.yml",
-    "deployment": "ai-context/system_architecture/deployment.md"
-  },
-  "common_tasks": {
-    "add_package": "ai-context/development_guides/package_development.md",
-    "add_feature": "ai-context/development_guides/feature_development.md",
-    "fix_bug": "ai-context/development_guides/bug_fixing.md",
-    "update_deps": "ai-context/development_guides/dependency_management.md"
+    "release": ".github/workflows/release.yml"
   },
   "search_patterns": {
+    "constraints": "ai-context/core/**/*.md",
+    "architecture": "ai-context/architecture/**/*.md",
+    "reference": "ai-context/reference/**/*.md",
+    "roadmap": "ai-context/roadmap/**/*.md",
+    "history": "ai-context/history/**/*.md",
     "schemas": "packages/schema/src/**/*.ts",
     "components": "packages/ui/src/components/**/*.tsx",
     "api_routes": "apps/*/app/api/**/*.ts",
@@ -95,5 +123,10 @@
     "types": "**/*.types.ts",
     "configs": "**/*.config.{js,ts,json}",
     "tests": "**/*.{test,spec}.{js,ts,tsx}"
+  },
+  "tools": {
+    "scripts": "ai-context/tools/scripts/",
+    "templates": "ai-context/tools/templates/",
+    "validators": "ai-context/tools/validators/"
   }
 }
