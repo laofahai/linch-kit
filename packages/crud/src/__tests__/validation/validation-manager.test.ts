@@ -4,8 +4,9 @@
  */
 
 import { describe, it, expect, mock, beforeEach } from 'bun:test'
-import { ValidationManager } from '../../validation/validation-manager'
 import type { Entity } from '@linch-kit/schema'
+
+import { ValidationManager } from '../../validation/validation-manager'
 import type { SchemaRegistry, Logger } from '../../types'
 
 describe('ValidationManager', () => {
