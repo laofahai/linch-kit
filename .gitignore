@@ -43,4 +43,7 @@ yarn-error.log*
 *.pem
 
 .idea
-.vscodeworktrees/
+.vscode
+
+# Git worktrees
+worktrees/
