@@ -757,16 +757,16 @@ describe('LinchKit CLI Integration', () => {
 #!/bin/bash
 
 # 测试基础命令
-pnpm linch version
-pnpm linch info
+bun linch version
+bun linch info
 
 # 测试生成器命令
-pnpm linch generate:schema
-pnpm linch generate:crud
+bun linch generate:schema
+bun linch generate:crud
 
 # 测试认证命令
-pnpm linch auth:init
-pnpm linch auth:create-user test@example.com
+bun linch auth:init
+bun linch auth:create-user test@example.com
 ```
 
 ---
@@ -951,7 +951,7 @@ export class CLIErrorReporter {
 
 ### 职责明确分离
 - **linch CLI**: 专注开发工具，仅9个核心命令
-- **package.json scripts**: 通用开发/构建命令 (pnpm dev/build等)
+- **package.json scripts**: 通用开发/构建命令 (bun dev/build等)
 - **Console UI**: 业务管理和用户操作
 
 ### 极简高效

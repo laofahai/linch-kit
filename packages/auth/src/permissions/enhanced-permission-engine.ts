@@ -116,10 +116,10 @@ export class EnhancedPermissionEngine extends CASLPermissionEngine {
    */
   async getRolePermissions(_roleId: string): Promise<string[]> {
     // 获取直接权限
-    const directPermissions = await this.getRoleDirectPermissions(roleId)
+    const directPermissions = await this.getRoleDirectPermissions(_roleId)
     
     // 获取父角色
-    const parentRoles = await this.getParentRoles(roleId)
+    const parentRoles = await this.getParentRoles(_roleId)
     
     // 递归获取父角色权限
     const inheritedPermissions: string[] = []

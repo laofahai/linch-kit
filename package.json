@@ -80,9 +80,10 @@
     "typescript": "5.8.3",
     "vitest": "^3.2.4"
   },
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "bun@1.2.18",
   "engines": {
-    "node": ">=18"
+    "node": ">=18",
+    "bun": ">=1.0"
   },
   "dependencies": {
     "dayjs": "^1.11.13"
@@ -92,30 +93,6 @@
     "packages/*",
     "modules/*"
   ],
-  "pnpm": {
-    "patchedDependencies": {
-      "react-hook-form@7.59.0": "patches/react-hook-form@7.59.0.patch"
-    },
-    "ignoredBuiltDependencies": [
-      "@prisma/client",
-      "@prisma/engines",
-      "@tailwindcss/oxide",
-      "contentlayer",
-      "core-js-pure",
-      "esbuild",
-      "msw",
-      "node",
-      "prisma",
-      "protobufjs",
-      "sharp",
-      "unrs-resolver"
-    ],
-    "overrides": {
-      "esbuild@<=0.24.2": ">=0.25.0",
-      "brace-expansion@>=1.0.0 <=1.1.11": ">=1.1.12",
-      "brace-expansion@>=2.0.0 <=2.0.1": ">=2.0.2"
-    }
-  },
   "trustedDependencies": [
     "@tailwindcss/oxide",
     "protobufjs",
