@@ -2,7 +2,7 @@
  * @linch-kit/schema 实体系统测试
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'bun:test'
 
 import { defineField, defineEntity } from '../index'
 

@@ -17,8 +17,8 @@
     "dev": "tsup --watch",
     "build": "tsup",
     "build:packages": "tsup",
-    "test": "vitest",
-    "test:coverage": "vitest --coverage",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
@@ -44,8 +44,7 @@
     "reflect-metadata": "^0.2.2",
     "tsup": "^8.5.0",
     "typescript": "5.8.3",
-    "vitest": "^3.2.4",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@types/bun": "^1.2.18",
     "@faker-js/faker": "^9.8.0"
   },
   "keywords": [
