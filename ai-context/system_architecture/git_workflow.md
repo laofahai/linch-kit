@@ -100,8 +100,8 @@ git checkout -b fix/bug-description
 # ... 修复代码 ...
 
 # 3. 测试验证
-pnpm test
-pnpm build
+bun test
+bun build
 
 # 4. 提交修复
 git commit -m "fix: resolve login validation error
@@ -133,8 +133,8 @@ git checkout -b release/v1.0.3
 # 更新版本号、CHANGELOG 等
 
 # 3. 测试发布候选
-pnpm validate
-pnpm build:packages
+bun validate
+bun build:packages
 
 # 4. 合并到主分支
 git checkout main
@@ -239,10 +239,10 @@ on:
 ### Changeset 发布流程
 ```bash
 # 1. 创建 changeset
-pnpm changeset
+bun changeset
 
 # 2. 版本更新 (可选，CI 也可以做)
-pnpm changeset version
+bun changeset version
 
 # 3. 提交并推送
 git add .

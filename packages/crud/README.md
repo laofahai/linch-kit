@@ -14,7 +14,7 @@
 ## 📦 安装
 
 ```bash
-pnpm add @linch-kit/crud
+bun add @linch-kit/crud
 ```
 
 ## 🚀 快速开始

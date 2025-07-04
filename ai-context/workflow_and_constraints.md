@@ -8,7 +8,7 @@
 - **端到端类型安全**
 
 ### 2. 包管理规范
-- **仅使用 pnpm**，禁止 npm/yarn
+- **仅使用 bun**，禁止 npm/yarn
 - **环境路径**:
   ```bash
   export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"
@@ -27,7 +27,7 @@ core → schema → auth → crud → trpc → ui → console
 - **无 ESLint 错误**
 
 ### 5. UI 组件规范
-- **shadcn/ui 组件** 使用 `pnpm dlx shadcn@latest add [component]`
+- **shadcn/ui 组件** 使用 `bun dlx shadcn@latest add [component]`
 - **必须导出** 到 `@linch-kit/ui/components`
 
 ### 6. Tailwind CSS 4 规范
@@ -94,14 +94,14 @@ core → schema → auth → crud → trpc → ui → console
 ### 必须命令
 ```bash
 # 开发
-pnpm dev
+bun dev
 
 # 验证
-pnpm build
-pnpm test
+bun build
+bun test
 
 # 完整验证
-pnpm validate
+bun validate
 ```
 
 ### 代码规范
@@ -169,7 +169,7 @@ const files = await glob(searchPattern, { ignore: '**/node_modules/**' })
 #### 2. 使用流程
 ```bash
 # 开发新功能前必须执行
-pnpm check-reuse sidebar tabs layout
+bun check-reuse sidebar tabs layout
 
 # 检查结果示例：
 # [发现匹配] packages/ui/src/components/ui/sidebar.tsx
@@ -226,10 +226,10 @@ pnpm check-reuse sidebar tabs layout
 . "$(dirname -- "$0")/_/husky.sh"
 
 # 运行格式化和lint检查
-pnpm lint-staged
+bun lint-staged
 
 # 确保构建成功
-pnpm build
+bun build
 ```
 
 #### 2. lint-staged 配置
@@ -247,9 +247,9 @@ pnpm build
 
 #### 3. CI/CD 质量门禁
 在 `.github/workflows/ci.yml` 中强制执行：
-- **构建检查**: `pnpm build`
-- **代码质量**: `pnpm lint`
-- **测试验证**: `pnpm test`
+- **构建检查**: `bun build`
+- **代码质量**: `bun lint`
+- **测试验证**: `bun test`
 - **类型检查**: `tsc --noEmit`
 
 ### 🚨 违规检测与处理
@@ -315,7 +315,7 @@ chore:    构建/工具
 
 - **禁止提交敏感信息** (密钥、Token)
 - **使用环境变量** 管理配置
-- **定期安全检查** `pnpm audit`
+- **定期安全检查** `bun audit`
 
 ## 📦 包功能复用
 
@@ -411,7 +411,7 @@ export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"
 ```
 
 ### 📋 技术实现检查清单
-- [ ] ✅ 使用正确的包管理工具（pnpm）？
+- [ ] ✅ 使用正确的包管理工具（bun）？
 - [ ] ✅ 遵循架构依赖顺序？  
 - [ ] ✅ 使用 LinchKit 内部包功能？
 - [ ] ✅ 符合代码质量标准？

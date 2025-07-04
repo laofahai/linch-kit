@@ -107,35 +107,35 @@ packages/
 ### 典型开发流程
 ```bash
 # 1. 项目初始化
-pnpm linch init
+bun linch init
 
 # 2. Schema驱动开发
-pnpm linch schema:generate
-pnpm linch schema:watch    # 开发时监听
+bun linch schema:generate
+bun linch schema:watch    # 开发时监听
 
 # 3. 业务逻辑开发
-pnpm linch crud:generate
-pnpm linch trpc:generate
+bun linch crud:generate
+bun linch trpc:generate
 
 # 4. 数据库管理
-pnpm linch crud:migrate
-pnpm linch crud:seed
+bun linch crud:migrate
+bun linch crud:seed
 
 # 5. 系统维护
-pnpm linch doctor          # 诊断问题
-pnpm linch upgrade         # 升级框架
+bun linch doctor          # 诊断问题
+bun linch upgrade         # 升级框架
 ```
 
 ### 帮助系统
 ```bash
 # 查看所有命令
-pnpm linch help
+bun linch help
 
 # 查看特定命令
-pnpm linch help init
+bun linch help init
 
 # 查看特定分类
-pnpm linch help -c schema
+bun linch help -c schema
 ```
 
 ## 🎨 设计特色
@@ -200,28 +200,28 @@ pnpm linch help -c schema
 ### 架构对比
 ```bash
 # 重构前 (分散式)
-pnpm linch init:project
-pnpm linch init:schema  
-pnpm linch info:system
-pnpm linch info:schema
-pnpm linch generate:crud
-pnpm linch dev
-pnpm linch build
+bun linch init:project
+bun linch init:schema  
+bun linch info:system
+bun linch info:schema
+bun linch generate:crud
+bun linch dev
+bun linch build
 # ... 20+ 命令
 
 # 重构后 (结构化)
-pnpm linch init
-pnpm linch info
-pnpm linch help
-pnpm linch schema:generate
-pnpm linch schema:validate
-pnpm linch schema:watch
-pnpm linch crud:generate
-pnpm linch crud:migrate
-pnpm linch crud:seed
-pnpm linch trpc:generate
-pnpm linch upgrade
-pnpm linch doctor
+bun linch init
+bun linch info
+bun linch help
+bun linch schema:generate
+bun linch schema:validate
+bun linch schema:watch
+bun linch crud:generate
+bun linch crud:migrate
+bun linch crud:seed
+bun linch trpc:generate
+bun linch upgrade
+bun linch doctor
 # 11个精选命令
 ```
 
@@ -573,11 +573,11 @@ linch crud:seed             # 填充测试数据
 linch trpc:generate         # 生成 tRPC API 路由
 
 # 开发/构建命令使用 package.json scripts:
-pnpm dev                    # 开发模式 (已在package.json中)
-pnpm build                  # 构建项目 (已在package.json中)  
-pnpm build:packages         # 构建包 (已在package.json中)
-pnpm build:apps             # 构建应用 (已在package.json中)
-pnpm version                # 版本管理 (已在package.json中)
+bun dev                    # 开发模式 (已在package.json中)
+bun build                  # 构建项目 (已在package.json中)  
+bun build:packages         # 构建包 (已在package.json中)
+bun build:apps             # 构建应用 (已在package.json中)
+bun version                # 版本管理 (已在package.json中)
 ```
 
 ### 移除的业务命令 (由 Console UI 处理)

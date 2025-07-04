@@ -4,7 +4,6 @@
  */
 
 import type { 
-  LinchKitUser,
   Role,
   Permission,
   PermissionContext
@@ -374,7 +373,7 @@ export abstract class BasePermissionService implements IPermissionService {
     return Array.from(allRoles.values())
   }
   
-  async getUserEffectivePermissions(userId: string, context?: PermissionContext): Promise<Permission[]> {
+  async getUserEffectivePermissions(userId: string, _context?: PermissionContext): Promise<Permission[]> {
     // 获取用户的所有角色
     const roles = await this.getUserRoles(userId, true)
     

@@ -61,7 +61,7 @@ Glob "相关目录/**/*.ts"
 - [ ] 2. [具体实现步骤1]
 - [ ] 3. [具体实现步骤2]
 - [ ] 4. 编写/更新测试用例
-- [ ] 5. 运行 pnpm validate 验证
+- [ ] 5. 运行 bun validate 验证
 - [ ] 6. 更新文档 (changelog/roadmap)
 - [ ] 7. 提交符合规范的 commit
 - [ ] 8. 提醒用户创建 PR
@@ -89,9 +89,9 @@ TodoWrite
 ### 完成定义检查
 - [ ] 代码完成 - 功能代码已实现
 - [ ] 类型安全 - 通过 TypeScript 检查
-- [ ] 代码质量 - 运行 `pnpm lint` 无错误
-- [ ] 测试通过 - 运行 `pnpm test` 全部通过
-- [ ] 构建验证 - 运行 `pnpm build` 成功
+- [ ] 代码质量 - 运行 `bun lint` 无错误
+- [ ] 测试通过 - 运行 `bun test` 全部通过
+- [ ] 构建验证 - 运行 `bun build` 成功
 - [ ] 文档更新 - 更新相关文档
 - [ ] 规范提交 - 遵循 Conventional Commits
 - [ ] 分支整洁 - 相对于目标分支干净
@@ -99,7 +99,7 @@ TodoWrite
 ### Session 结束检查
 ```bash
 # 运行完整验证
-pnpm validate
+bun validate
 
 # 提交更改
 git add .

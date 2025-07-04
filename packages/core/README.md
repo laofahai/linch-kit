@@ -41,8 +41,8 @@ graph TD
 ### 安装
 
 ```bash
-# 使用 pnpm (推荐)
-pnpm add @linch-kit/core
+# 使用 bun (推荐)
+bun add @linch-kit/core
 
 # 使用 npm
 npm install @linch-kit/core
@@ -406,15 +406,15 @@ health.addChecker('config-cache', async () => {
 
 ```bash
 # 运行所有测试
-pnpm test
+bun test
 
 # 运行覆盖率测试
-pnpm test:coverage
+bun test:coverage
 
 # 运行特定模块测试
-pnpm test plugin
-pnpm test config
-pnpm test cli
+bun test plugin
+bun test config
+bun test cli
 ```
 
 ### 测试覆盖率目标
@@ -443,17 +443,17 @@ pnpm test cli
 
 2. **安装依赖**:
    ```bash
-   pnpm install
+   bun install
    ```
 
 3. **开发模式**:
    ```bash
-   pnpm dev:core
+   bun dev:core
    ```
 
 4. **运行测试**:
    ```bash
-   pnpm test:core
+   bun test:core
    ```
 
 ### 开发约束

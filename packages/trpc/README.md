@@ -14,7 +14,7 @@
 ## 📦 安装
 
 ```bash
-pnpm add @linch-kit/trpc
+bun add @linch-kit/trpc
 ```
 
 ## 🚀 快速开始

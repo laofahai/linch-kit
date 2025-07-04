@@ -57,7 +57,7 @@ npx create-linch-kit my-app
 cd my-app
 
 # 启动开发服务器
-pnpm dev
+bun dev
 ```
 
 ### 方式二：手动安装
@@ -174,7 +174,7 @@ export function UserForm() {
 ### 环境要求
 
 - Node.js >= 18
-- pnpm >= 8
+- bun >= 1.0
 - TypeScript >= 5.0
 
 ### 开发规范
@@ -187,22 +187,22 @@ export function UserForm() {
 
 ```bash
 # 安装依赖
-pnpm install
+bun install
 
 # 开发模式
-pnpm dev
+bun dev
 
 # 构建所有包
-pnpm build:packages
+bun build:packages
 
 # 运行测试
-pnpm test
+bun test
 
 # 类型检查
-pnpm type-check
+bun type-check
 
 # 代码检查
-pnpm lint
+bun lint
 ```
 
 ## 📄 许可证

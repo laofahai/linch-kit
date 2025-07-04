@@ -82,7 +82,7 @@ L4: @linch-kit/ai        ⏳ AI集成（规划中）
 - [ ] TodoRead 检查待办事项
 - [ ] git branch 检查当前分支
 - [ ] git status 检查工作目录状态
-- [ ] pnpm check-reuse 检查包复用
+- [ ] bun check-reuse 检查包复用
 - [ ] 确认任务描述具体明确
 
 ### 开发过程中必做
@@ -92,9 +92,9 @@ L4: @linch-kit/ai        ⏳ AI集成（规划中）
 - [ ] 确保类型安全
 
 ### 完成后必验证
-- [ ] pnpm build 构建成功
-- [ ] pnpm lint 无错误
-- [ ] pnpm test 测试通过
+- [ ] bun build 构建成功
+- [ ] bun lint 无错误
+- [ ] bun test 测试通过
 - [ ] 更新相关文档
 - [ ] 提交规范的commit
 

@@ -8,8 +8,8 @@ Create LinchKit apps instantly - AI-First 全栈开发框架脚手架
 # 使用 npx (推荐)
 npx create-linch-kit my-app
 
-# 或者使用 pnpm
-pnpm create linch-kit my-app
+# 或者使用 bun
+bun create linch-kit my-app
 
 # 或者使用 yarn
 yarn create linch-kit my-app
@@ -37,7 +37,7 @@ Options:
 
 2. **安装依赖** (如果使用了 --no-install)
    ```bash
-   pnpm install
+   bun install
    # 或者
    npm install
    ```
@@ -50,17 +50,17 @@ Options:
 
 4. **初始化数据库**
    ```bash
-   pnpm db:push
+   bun db:push
    ```
 
 5. **创建管理员账户**
    ```bash
-   pnpm create-admin
+   bun create-admin
    ```
 
 6. **启动开发服务器**
    ```bash
-   pnpm dev
+   bun dev
    ```
 
 7. **访问应用**

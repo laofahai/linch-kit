@@ -257,8 +257,8 @@ import { DashboardView } from '@/components/dashboard'
 
 1. **安装依赖**
    ```bash
-   pnpm add @linch-kit/core @linch-kit/schema @linch-kit/auth
-   pnpm add @linch-kit/crud @linch-kit/trpc @linch-kit/ui
+   bun add @linch-kit/core @linch-kit/schema @linch-kit/auth
+   bun add @linch-kit/crud @linch-kit/trpc @linch-kit/ui
    ```
 
 2. **基础配置**

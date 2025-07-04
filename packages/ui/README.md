@@ -13,7 +13,7 @@ LinchKit UI组件库 - Schema驱动的企业级React组件
 ## 📦 安装
 
 ```bash
-pnpm add @linch-kit/ui
+bun add @linch-kit/ui
 ```
 
 ## 🔧 依赖
@@ -139,22 +139,22 @@ await pluginSystem.register(uiPlugin)
 
 ```bash
 # 安装依赖
-pnpm install
+bun install
 
 # 开发模式
-pnpm dev
+bun dev
 
 # 构建
-pnpm build
+bun build
 
 # 测试
-pnpm test
+bun test
 
 # 代码检查
-pnpm lint
+bun lint
 
 # 类型检查
-pnpm type-check
+bun type-check
 ```
 
 ## 📄 License

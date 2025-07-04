@@ -14,7 +14,7 @@
 ## 📦 安装
 
 ```bash
-pnpm add @linch-kit/auth
+bun add @linch-kit/auth
 ```
 
 ## 🚀 快速开始
