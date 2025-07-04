@@ -28,9 +28,111 @@ log_error() { echo -e "${RED}[AI-ERROR]${NC} $1"; }
 log_ai() { echo -e "${PURPLE}[AI-AGENT]${NC} $1"; }
 log_gemini() { echo -e "${CYAN}[GEMINI]${NC} $1"; }
 
-# 强制性环境初始化检查
+# 智能文件识别 - 判断文件是否为工作流生成
+is_workflow_generated_file() {
+    local file="$1"
+    
+    # 工作流生成文件模式
+    local workflow_patterns=(
+        "tasks/ai-generated-*"
+        "state/*.state.json"
+        "worktrees/*"
+        "*.log"
+        "*.tmp"
+        ".devcontainer/workflow-mvp/tasks/*"
+        ".devcontainer/workflow-mvp/state/*"
+        "SESSION_PROGRESS.md"
+        "NEXT_SESSION_PROMPT.md"
+    )
+    
+    for pattern in "${workflow_patterns[@]}"; do
+        if [[ "$file" == $pattern ]]; then
+            return 0  # 是工作流生成的文件
+        fi
+    done
+    
+    return 1  # 不是工作流生成的文件
+}
+
+# 处理工作流生成的文件
+handle_workflow_files() {
+    local files=("$@")
+    
+    log_info "🤖 处理工作流生成的文件:"
+    for file in "${files[@]}"; do
+        echo "    📁 $file"
+    done
+    
+    echo ""
+    echo "工作流文件处理选项:"
+    echo "1. 自动提交工作流文件（推荐）"
+    echo "2. 忽略工作流文件，继续执行"
+    echo "3. 清理工作流文件"
+    
+    read -p "请选择 (1-3): " choice
+    
+    case "$choice" in
+        1)
+            # 自动提交工作流文件
+            for file in "${files[@]}"; do
+                git add "$file" 2>/dev/null || true
+            done
+            git commit -m "feat(ai-workflow): 自动提交工作流生成的文件
+
+🤖 AI工作流自动生成的文件包括:
+$(printf '- %s\n' "${files[@]}")
+
+🚀 Generated with LinchKit AI Workflow System
+Co-Authored-By: Claude <noreply@anthropic.com>" 2>/dev/null || true
+            log_success "✅ 工作流文件已自动提交"
+            ;;
+        2)
+            log_info "✅ 忽略工作流文件，继续执行"
+            ;;
+        3)
+            # 清理工作流文件
+            for file in "${files[@]}"; do
+                if [[ "$file" == worktrees/* ]]; then
+                    rm -rf "$file" 2>/dev/null || true
+                else
+                    rm -f "$file" 2>/dev/null || true
+                fi
+            done
+            log_success "✅ 工作流文件已清理"
+            ;;
+        *)
+            log_error "无效选择，默认忽略文件"
+            ;;
+    esac
+}
+
+# 自动提交用户更改
+auto_commit_changes() {
+    log_info "🔄 自动提交所有更改..."
+    
+    # 添加所有更改
+    git add . 2>/dev/null || true
+    
+    # 生成提交消息
+    local commit_msg="chore: AI工作流自动提交用户更改
+
+📝 自动提交包含以下更改:
+$(git diff --cached --name-only | sed 's/^/- /')
+
+🤖 Auto-committed by LinchKit AI Workflow System
+Co-Authored-By: Claude <noreply@anthropic.com>"
+    
+    if git commit -m "$commit_msg" 2>/dev/null; then
+        log_success "✅ 更改已自动提交"
+    else
+        log_warning "⚠️ 自动提交失败，请手动处理"
+        return 1
+    fi
+}
+
+# 智能环境管理系统 - 支持连续AI工作流
 enforce_environment_constraints() {
-    log_info "🚨 执行 LinchKit 强制性环境约束检查..."
+    log_info "🚨 执行 LinchKit 智能环境约束检查..."
     
     # 1. 检查必要依赖
     local missing_deps=()
@@ -73,15 +175,86 @@ enforce_environment_constraints() {
         fi
     done
     
-    # 4. 检查工作目录状态
+    # 4. 智能工作目录状态检查
     if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
         log_warning "⚠️ 工作目录有未提交更改"
-        log_warning "建议先提交或暂存更改，然后重新运行"
-        git status --short
-        return 1
+        
+        # 智能分析未提交更改的类型
+        local untracked_files="$(git ls-files --others --exclude-standard)"
+        local modified_files="$(git diff --name-only)"
+        local staged_files="$(git diff --cached --name-only)"
+        
+        # 检查是否为工作流生成的文件
+        local workflow_generated_files=()
+        local user_modified_files=()
+        
+        # 分析未跟踪文件
+        if [ -n "$untracked_files" ]; then
+            while IFS= read -r file; do
+                if is_workflow_generated_file "$file"; then
+                    workflow_generated_files+=("$file")
+                else
+                    user_modified_files+=("$file")
+                fi
+            done <<< "$untracked_files"
+        fi
+        
+        # 分析已修改文件
+        if [ -n "$modified_files" ]; then
+            while IFS= read -r file; do
+                if is_workflow_generated_file "$file"; then
+                    workflow_generated_files+=("$file")
+                else
+                    user_modified_files+=("$file")
+                fi
+            done <<< "$modified_files"
+        fi
+        
+        # 智能处理策略
+        if [ ${#workflow_generated_files[@]} -gt 0 ] && [ ${#user_modified_files[@]} -eq 0 ]; then
+            log_info "✅ 检测到纯工作流生成的文件，自动处理中..."
+            handle_workflow_files "${workflow_generated_files[@]}"
+        elif [ ${#user_modified_files[@]} -gt 0 ]; then
+            log_warning "🔍 检测到用户修改的文件，需要手动处理:"
+            for file in "${user_modified_files[@]}"; do
+                echo "    📝 $file"
+            done
+            
+            echo ""
+            echo "请选择处理方式:"
+            echo "1. 自动提交所有更改并继续"
+            echo "2. 暂存更改并继续"
+            echo "3. 手动处理后重新运行"
+            echo "4. 忽略并继续（不推荐）"
+            
+            read -p "请选择 (1-4): " choice
+            
+            case "$choice" in
+                1)
+                    auto_commit_changes
+                    ;;
+                2)
+                    git stash push -m "AI工作流自动暂存 - $(date)"
+                    log_info "✅ 更改已暂存，可通过 'git stash pop' 恢复"
+                    ;;
+                3)
+                    log_info "请手动处理更改后重新运行"
+                    return 1
+                    ;;
+                4)
+                    log_warning "⚠️ 忽略更改继续执行（可能存在冲突风险）"
+                    ;;
+                *)
+                    log_error "无效选择，请重新运行"
+                    return 1
+                    ;;
+            esac
+        else
+            log_info "✅ 工作目录状态已智能处理"
+        fi
     fi
     
-    log_success "✅ 环境约束检查通过"
+    log_success "✅ 智能环境约束检查通过"
     return 0
 }
 

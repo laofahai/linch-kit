@@ -198,14 +198,17 @@ execute_git_task() {
 # 执行 Shell 任务
 execute_shell_task() {
     local task_config="$1"
+    local config_file="${2:-}"
     local command
     command=$(echo "$task_config" | jq -r '.command')
     
     log_info "执行 Shell 命令: $command"
     
     # 获取自动化级别
-    local automation_level
-    automation_level=$(jq -r '.workflow.automation_level // "safe"' "$CONFIG_FILE" 2>/dev/null || echo "safe")
+    local automation_level="safe"
+    if [ -n "$config_file" ] && [ -f "$config_file" ]; then
+        automation_level=$(jq -r '.workflow.automation_level // "safe"' "$config_file" 2>/dev/null || echo "safe")
+    fi
     
     cd "$PROJECT_ROOT"
     
@@ -252,6 +255,7 @@ execute_shell_task() {
 execute_task() {
     local workflow_id="$1"
     local task_config="$2"
+    local config_file="${3:-}"
     local task_id
     local task_type
     
@@ -290,7 +294,7 @@ execute_task() {
             fi
             ;;
         "shell")
-            if execute_shell_task "$task_config"; then
+            if execute_shell_task "$task_config" "$config_file"; then
                 update_task_status "$workflow_id" "$task_id" "completed"
                 log_success "任务完成: $task_id"
                 return 0
@@ -349,7 +353,7 @@ execute_workflow() {
             fi
             
             # 尝试执行任务
-            if execute_task "$workflow_id" "$task_config"; then
+            if execute_task "$workflow_id" "$task_config" "$config_file"; then
                 tasks_executed=$((tasks_executed + 1))
             else
                 local exit_code=$?
