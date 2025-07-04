@@ -283,7 +283,7 @@ generate_workflow_from_analysis() {
     local task_analysis="$1"
     local workflow_id="$2"
     
-    log_ai "🔧 生成 AI 工作流配置..."
+    log_ai "🔧 生成 AI 工作流配置..." >&2
     
     local task_type
     local scope
