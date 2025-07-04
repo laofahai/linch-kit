@@ -1,191 +1,117 @@
-# LinchKit AI 驱动工作流 - 下一个 Session 完整指导
+# LinchKit AI 驱动工作流 - 下一个 Session 继续指令
 
-## 🚨 强制性 Session 初始化 (Pre-flight Checklist)
+## 🎯 Session 背景
+当前已完成 LinchKit AI 自动化工作流 Phase 1 的核心功能实现，成功演示了从自然语言到完整AI驱动开发的端到端流程。但发现了关键的环境约束逻辑矛盾需要紧急修复。
 
-**触发指令**: 用户说 "继续开发 AI 工作流" 或类似关键词
+## 🚨 **立即需要解决的关键问题**
 
-### 阶段 1: 强制性文档阅读 (必须按顺序完成)
+### **问题**: 环境约束逻辑矛盾
+- **现状**: 工作流执行会生成/修改文件，但环境约束要求工作目录必须干净
+- **影响**: 第一个工作流执行后，后续工作流都无法启动，破坏连续自动化
+- **优先级**: 最高
 
-**⚠️ 在执行任何操作前，必须严格按顺序阅读以下文档：**
+## 📋 **下一个 Session 的具体任务**
 
-1. **项目核心指导** (最高优先级)
-   ```bash
-   # 必读文档 1: 项目总体指导
-   cat /home/laofahai/workspace/linch-kit/CLAUDE.md
+### 🔴 **主要任务1: 修复环境约束矛盾**
+
+1. **分析现有约束逻辑**
+   - 阅读 `scripts/ai-workflow-generator.sh` 的 `enforce_environment_constraints` 函数
+   - 理解当前工作目录检查逻辑
+
+2. **设计新的环境管理策略**
+   - 区分工作流生成的文件 vs 用户修改
+   - 实现智能文件分类和自动处理
+   - 支持工作流自动提交机制
+
+3. **实现解决方案**（选择其一）:
+   - **方案A**: 智能忽略工作流生成的文件
+   - **方案B**: 自动提交工作流生成的文件  
+   - **方案C**: 在 worktree 中执行工作流，避免污染主分支
+
+### 🔴 **主要任务2: 完成场景演示**
+
+完成剩余两个关键场景的端到端演示：
+
+1. **UI 组件场景**
    ```
-   - 📋 Phase 1 强制性 Session 初始化流程
-   - 🏛️ LinchKit 架构状态和技术栈
-   - 📚 知识库导航和约束要求
-
-2. **开发规范约束** (强制遵守)
-   ```bash
-   # 必读文档 2: 开发约束和工作流程
-   cat /home/laofahai/workspace/linch-kit/ai-context/workflow_and_constraints.md
-   ```
-   - 🚨 TypeScript 严格模式要求
-   - 📦 bun 包管理器强制使用
-   - 🏗️ 架构依赖顺序规范
-   - 🧪 测试覆盖率标准
-
-3. **当前工作流状态** (上下文理解)
-   ```bash
-   # 必读文档 3: 当前开发进度
-   cat /home/laofahai/workspace/linch-kit/.devcontainer/workflow-mvp/AI_AUTOMATION_PROGRESS.md
-   ```
-   - ✅ 已完成功能清单
-   - 🔄 待完成任务列表
-   - 📁 文件结构说明
-
-4. **并行开发架构** (技术方案)
-   ```bash
-   # 必读文档 4: 并行开发工作流架构
-   cat /home/laofahai/workspace/linch-kit/ai-context/system_architecture/parallel_development_workflow.md
-   ```
-   - 🎯 Phase 1-3 实施策略
-   - 🛡️ 风险管控机制
-   - 📋 成功标准定义
-
-### 阶段 2: 环境和状态检查
-
-5. **分支安全检查** (🔴 最高优先级)
-   ```bash
-   git branch --show-current
-   git status --porcelain
-   ```
-   - 确保在 `feature/parallel-development-workflow` 分支
-   - 检查工作目录状态
-
-6. **任务状态检查**
-   ```bash
-   # 检查待办事项
-   TodoRead
+   用户输入: "创建用户管理的数据表格组件，支持增删改查"
+   预期: AI 自动识别为 UI 任务，生成相关工作流并执行
    ```
 
-7. **工作流系统状态**
+2. **API 重构场景**  
+   ```
+   用户输入: "重构用户 API，添加批量操作和搜索功能"
+   预期: AI 自动识别为 API 任务，生成相关工作流并执行
+   ```
+
+### 🟡 **次要任务3: 系统优化**
+
+1. **修复技术债务**
+   - 修复 `engine.sh` 第208行的 `CONFIG_FILE` 变量未绑定问题
+   - 清理调试输出和临时文件
+
+2. **增强 AI 能力**
+   - 优化任务类型识别准确性
+   - 改进 Gemini 协商机制集成
+
+## 🎯 **期望的 Session 结果**
+
+### **必须完成**:
+- ✅ 修复环境约束矛盾，实现真正的连续自动化
+- ✅ 成功演示 UI 组件自动化开发场景
+- ✅ 成功演示 API 重构自动化开发场景
+
+### **成功标准**:
+1. **连续执行测试**: 能够连续运行多个工作流而无需手动干预
+2. **三大场景完整**: JWT认证 + UI组件 + API重构 全部演示成功
+3. **用户体验**: 用户只需提供自然语言，AI完成所有开发工作
+
+## 📂 **重要文件位置**
+
+```
+工作目录: /home/laofahai/workspace/linch-kit/.devcontainer/workflow-mvp/
+核心脚本: scripts/ai-workflow-generator.sh (关键的环境约束函数)
+执行引擎: engine.sh (CONFIG_FILE 变量错误位置)  
+状态管理: state/ (执行状态跟踪)
+任务配置: tasks/ (生成的工作流配置)
+进度报告: SESSION_PROGRESS.md (当前成就总结)
+```
+
+## 🚀 **启动指令**
+
+### **Claude 开始新 Session 时，请执行**:
+
+1. **切换到正确目录**:
    ```bash
    cd /home/laofahai/workspace/linch-kit/.devcontainer/workflow-mvp
-   ./scripts/status.sh
    ```
 
-### 阶段 3: 任务明确化
+2. **读取进度状态**:
+   ```bash
+   cat SESSION_PROGRESS.md
+   ```
 
-8. **当前 Session 目标确认**
-   - ✅ 已完成: Phase 1 MVP + AI 自动生成器
-   - 🎯 本 Session: 测试和优化完全 AI 驱动系统
-   - 🔄 核心任务: 验证端到端自动化流程
+3. **检查当前分支和状态**:
+   ```bash
+   git branch --show-current
+   git status --short
+   ```
 
-## 🤖 核心任务: 完全 AI 驱动验证
+4. **读取待办任务**:
+   ```bash
+   # 使用 TodoRead 查看当前任务列表
+   ```
 
-### 任务描述
-**用户只需提供自然语言，Claude 自动完成从需求分析到代码执行的全流程**
+5. **开始修复环境约束问题**:
+   ```bash
+   # 分析 scripts/ai-workflow-generator.sh 中的 enforce_environment_constraints 函数
+   # 设计并实现解决方案
+   ```
 
-### 测试场景 (按优先级执行)
+## 💡 **提示**
 
-#### 🚀 场景 1: 基础 AI 工作流测试
-```bash
-cd /home/laofahai/workspace/linch-kit/.devcontainer/workflow-mvp
-./scripts/ai-workflow-generator.sh "为用户模块添加基础的增删改查功能"
-```
+- **核心目标**: 实现真正的"用户只需自然语言，AI自动完成所有工作"
+- **关键挑战**: 平衡自动化便利性和代码质量控制
+- **成功指标**: 连续执行多个自然语言任务而无需手动干预
 
-#### 🔧 场景 2: 复杂任务处理测试
-```bash
-./scripts/ai-workflow-generator.sh "重构认证系统，添加多因素认证和会话管理"
-```
-
-#### 🧪 场景 3: 跨包协调测试
-```bash
-./scripts/ai-workflow-generator.sh "创建完整的用户权限管理界面，包括角色分配和权限矩阵"
-```
-
-### 验证要点
-
-1. **AI 自然语言解析** ✅
-   - 任务类型识别准确性
-   - 复杂度评估合理性
-   - 包依赖分析正确性
-
-2. **Gemini 协商机制** 🔄
-   - 复杂任务自动触发协商
-   - 网络失败时的降级处理
-   - 协商结果的有效集成
-
-3. **LinchKit 规范强制** ✅
-   - TypeScript 严格模式检查
-   - bun 包管理器使用
-   - 架构依赖顺序验证
-   - 分支安全检查
-
-4. **工作流自动执行** 🔄
-   - 任务依赖关系处理
-   - 失败任务的智能分析
-   - 进度监控和报告生成
-
-## 🛠️ 优化任务清单
-
-### 高优先级
-- [ ] 完善 AI 任务分解算法
-- [ ] 优化 Gemini 协商提示词
-- [ ] 增强失败分析的智能程度
-- [ ] 添加更多任务类型模板
-
-### 中优先级  
-- [ ] 实现多 AI 代理冲突检测
-- [ ] 增加实时进度推送
-- [ ] 扩展 AI 模板库
-- [ ] 优化用户交互体验
-
-## 📋 质量标准
-
-### 功能性要求
-- ✅ 支持完全自然语言输入
-- ✅ 自动生成符合规范的工作流
-- ✅ 端到端执行无人工干预
-- 🔄 智能错误处理和恢复
-
-### 性能要求
-- ⏱️ 工作流生成时间 < 30秒
-- 🎯 任务解析准确率 > 90%
-- 🔄 系统执行成功率 > 85%
-
-### 合规要求
-- 🛡️ 100% 遵循 LinchKit 开发规范
-- 🔒 强制分支安全检查
-- 📊 测试覆盖率要求达标
-- 🏗️ 架构依赖顺序正确
-
-## 🎯 成功标准
-
-用户输入: **"帮我实现一个用户管理功能"**
-
-Claude 自动完成:
-1. 📝 解析需求 (用户管理 = CRUD + 权限 + UI)
-2. 🤝 Gemini 协商 (复杂任务获得专家建议)  
-3. ⚙️ 生成工作流 (遵循所有 LinchKit 规范)
-4. 🚀 自动执行 (创建分支、安装依赖、测试等)
-5. 📊 进度监控 (实时状态更新)
-6. ✅ 完成报告 (结果摘要和后续建议)
-
-**全程用户无需任何技术操作，只需提供自然语言需求！**
-
-## 💡 开发提示
-
-### 调试技巧
-```bash
-# 查看 AI 生成的配置
-cat tasks/ai-generated-*.json | jq '.'
-
-# 查看执行状态
-cat state/ai-generated-*.state.json | jq '.'
-
-# 启用详细日志
-bash -x scripts/ai-workflow-generator.sh "测试任务"
-```
-
-### 常见问题处理
-- **Gemini 连接失败**: 使用内置专家知识继续
-- **任务解析错误**: 检查关键词匹配逻辑
-- **执行失败**: 查看 AI 失败分析建议
-
----
-
-**🚀 立即开始: 让 Claude 完全接管开发流程，实现真正的 AI-First 开发体验！**
+**这是 LinchKit AI-First 开发框架的关键里程碑！** 🎯
