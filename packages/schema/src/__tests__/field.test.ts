@@ -184,4 +184,100 @@ describe('Field System', () => {
       expect(definition.locales).toEqual(['en', 'zh-CN'])
     })
   })
+
+  describe('Field Transformers', () => {
+    it('should create field with custom transform', () => {
+      const field = defineField.string().transform((value) => value.toUpperCase())
+      const definition = field.build()
+      expect(definition.transform).toBeDefined()
+      expect(typeof definition.transform).toBe('function')
+    })
+
+    it('should create field with default value', () => {
+      const field = defineField.string().default('default value')
+      const definition = field.build()
+      expect(definition.defaultValue).toBe('default value')
+    })
+
+    it('should create field with computed default', () => {
+      const field = defineField.string().default(() => 'computed default')
+      const definition = field.build()
+      expect(typeof definition.defaultValue).toBe('function')
+    })
+  })
+
+  describe('Field Validation', () => {
+    it('should create field with built-in constraints', () => {
+      const field = defineField.string().min(3).max(10).required()
+      const definition = field.build()
+      expect(definition.min).toBe(3)
+      expect(definition.max).toBe(10)
+      expect(definition.required).toBe(true)
+    })
+
+    it('should create number field with range constraints', () => {
+      const field = defineField.number().min(0).max(100)
+      const definition = field.build()
+      expect(definition.min).toBe(0)
+      expect(definition.max).toBe(100)
+    })
+  })
+
+  describe('Field Metadata', () => {
+    it('should create field with description', () => {
+      const field = defineField.string().description('User name field')
+      const definition = field.build()
+      expect(definition.description).toBe('User name field')
+    })
+  })
+
+  describe('Field Chaining', () => {
+    it('should support complex field chaining', () => {
+      const field = defineField.string()
+        .required()
+        .min(3)
+        .max(50)
+        .unique()
+        .index()
+        .description('User email field')
+        .transform((value) => value.toLowerCase().trim())
+      
+      const definition = field.build()
+      expect(definition.type).toBe('string')
+      expect(definition.required).toBe(true)
+      expect(definition.min).toBe(3)
+      expect(definition.max).toBe(50)
+      expect(definition.unique).toBe(true)
+      expect(definition.index).toBe(true)
+      expect(definition.description).toBe('User email field')
+      expect(definition.transform).toBeDefined()
+    })
+  })
+
+  describe('Field Type Guards', () => {
+    it('should identify string fields', () => {
+      const field = defineField.string().build()
+      expect(field.type).toBe('string')
+    })
+
+    it('should identify number fields', () => {
+      const field = defineField.number().build()
+      expect(field.type).toBe('number')
+    })
+
+    it('should identify boolean fields', () => {
+      const field = defineField.boolean().build()
+      expect(field.type).toBe('boolean')
+    })
+
+    it('should identify date fields', () => {
+      const field = defineField.date().build()
+      expect(field.type).toBe('date')
+    })
+
+    it('should identify relation fields', () => {
+      const field = defineField.relation('User').build()
+      expect(field.type).toBe('relation')
+    })
+  })
 })

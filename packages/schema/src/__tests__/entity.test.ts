@@ -58,4 +58,140 @@ describe('Entity System', () => {
       expect(Product.fields.description.type).toBe('i18n')
     })
   })
+
+  describe('Entity Validation', () => {
+    it('should validate complete entity data', async () => {
+      const User = defineEntity('User', {
+        name: defineField.string().required(),
+        email: defineField.email().required(),
+        age: defineField.number().min(0).max(120)
+      })
+
+      const validData = {
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        name: 'John Doe',
+        email: 'john@example.com',
+        age: 30,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+
+      const result = await User.validate(validData)
+      expect(result).toBe(true)
+    })
+
+    it('should reject invalid entity data', async () => {
+      const User = defineEntity('User', {
+        name: defineField.string().required(),
+        email: defineField.email().required(),
+        age: defineField.number().min(0).max(120)
+      })
+
+      const invalidData = {
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        name: '',
+        email: 'invalid-email',
+        age: -5,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+
+      const result = await User.validate(invalidData)
+      expect(result).toBe(false)
+    })
+
+    it('should parse and validate complete data', () => {
+      const User = defineEntity('User', {
+        name: defineField.string().required(),
+        email: defineField.email().required(),
+        age: defineField.number().optional()
+      })
+
+      const validData = {
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        name: 'John Doe',
+        email: 'john@example.com',
+        age: 30,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+
+      const result = User.validateAndParse(validData)
+      expect(result).toEqual(validData)
+    })
+
+    it('should validate create input', () => {
+      const User = defineEntity('User', {
+        name: defineField.string().required(),
+        email: defineField.email().required(),
+        age: defineField.number().optional()
+      })
+
+      const createData = {
+        name: 'John Doe',
+        email: 'john@example.com'
+      }
+
+      const result = User.validateCreate(createData)
+      expect(result).toEqual(createData)
+    })
+
+    it('should validate update input', () => {
+      const User = defineEntity('User', {
+        name: defineField.string().required(),
+        email: defineField.email().required(),
+        age: defineField.number().optional()
+      })
+
+      const updateData = {
+        name: 'John Smith'
+      }
+
+      const result = User.validateUpdate(updateData)
+      expect(result).toEqual(updateData)
+    })
+  })
+
+  describe('Entity Options', () => {
+    it('should create entity with custom options', () => {
+      const User = defineEntity('User', {
+        fields: {
+          name: defineField.string().required(),
+          email: defineField.email().required()
+        },
+        options: {
+          timestamps: false,
+          softDelete: true
+        }
+      })
+
+      expect(User.options.timestamps).toBe(false)
+      expect(User.options.softDelete).toBe(true)
+    })
+
+    it('should use default options when not specified', () => {
+      const User = defineEntity('User', {
+        name: defineField.string().required(),
+        email: defineField.email().required()
+      })
+
+      expect(User.options.timestamps).toBe(true)
+      expect(User.options.softDelete).toBe(false)
+    })
+  })
+
+  describe('Entity Type Safety', () => {
+    it('should provide typed access to entity properties', () => {
+      const User = defineEntity('User', {
+        name: defineField.string().required(),
+        email: defineField.email().required(),
+        age: defineField.number().optional()
+      })
+
+      // 测试类型访问器
+      expect(User.type).toBeDefined()
+      expect(User.createInput).toBeDefined()
+      expect(User.updateInput).toBeDefined()
+    })
+  })
 })
