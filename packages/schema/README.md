@@ -41,7 +41,7 @@ LinchKit Schema驱动开发引擎 - 基于TypeScript的企业级Schema定义和�
 ### 安装
 
 ```bash
-pnpm add @linch-kit/schema
+bun add @linch-kit/schema
 ```
 
 ### 基础使用
@@ -223,7 +223,7 @@ export interface UpdateUser {
 ### 安装CLI
 
 ```bash
-pnpm add -g @linch-kit/schema
+bun add -g @linch-kit/schema
 ```
 
 ### 基础命令
@@ -489,16 +489,16 @@ git clone <repository-url>
 cd linch-kit/packages/schema
 
 # 安装依赖
-pnpm install
+bun install
 
 # 运行测试
-pnpm test
+bun test
 
 # 构建项目
-pnpm build
+bun build
 
 # 类型检查
-pnpm check-types
+bun check-types
 ```
 
 ### 代码规范

@@ -234,7 +234,7 @@ export * from './hooks'
 }
 
 # 执行生成
-pnpm schema:generate
+bun schema:generate
 ```
 
 ### 2. Starter 中集成路由

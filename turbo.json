@@ -6,8 +6,7 @@
     "scripts/**",
     "tools/**",
     "package.json",
-    "pnpm-lock.yaml",
-    "pnpm-workspace.yaml",
+    "bun.lock",
     ".changeset/**"
   ],
   "globalEnv": [

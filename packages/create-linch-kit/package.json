@@ -29,8 +29,8 @@
     "dev": "tsup --watch",
     "type-check": "tsc --noEmit",
     "lint": "eslint src/",
-    "validate": "pnpm build && pnpm lint && pnpm type-check",
-    "prepublishOnly": "pnpm build"
+    "validate": "bun run build && bun run lint && bun run type-check",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "chalk": "^5.3.0",

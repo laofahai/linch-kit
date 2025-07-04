@@ -10,7 +10,7 @@
 
 ### Patch Changes
 
-- [`83f9489`](https://github.com/laofahai/linch-kit/commit/83f9489f807e36fa2ae5031e1e8da6caa7c26f00) Thanks [@laofahai](https://github.com/laofahai)! - 修复发布问题：包含 dist 目录，修复 bin 文件缺失问题，改用 pnpm changeset publish
+- [`83f9489`](https://github.com/laofahai/linch-kit/commit/83f9489f807e36fa2ae5031e1e8da6caa7c26f00) Thanks [@laofahai](https://github.com/laofahai)! - 修复发布问题：包含 dist 目录，修复 bin 文件缺失问题，改用 bun changeset publish
 
 ## 2.0.1
 
@@ -25,7 +25,7 @@
 - 🎉 首次发布 create-linch-kit 脚手架工具
 - ⚡ 使用 degit 快速下载模板，无需 Git 克隆
 - 🔧 自动替换项目配置和依赖版本
-- 📦 智能检测包管理器 (pnpm > yarn > npm)
+- 📦 智能检测包管理器 (bun > pnpm > yarn > npm)
 - 🎨 交互式项目创建流程
 - 🚀 支持跳过依赖安装和 Git 初始化
 - 📝 完整的项目创建后提示信息

@@ -3,14 +3,14 @@
  * 基于现有 CASL 引擎扩展，支持更复杂的企业级权限管理
  */
 
-import { CASLPermissionEngine } from './casl-engine'
 import type { 
   LinchKitUser,
   PermissionAction,
   PermissionSubject,
-  PermissionContext,
-  IPermissionChecker
+  PermissionContext
 } from '../types'
+
+import { CASLPermissionEngine } from './casl-engine'
 
 /**
  * 增强的权限检查结果
@@ -26,8 +26,8 @@ export interface EnhancedPermissionResult {
 /**
  * 角色继承信息
  */
-interface RoleHierarchy {
-  roleId: string
+interface _RoleHierarchy {
+  _roleId: string
   parentRoleId?: string
   inheritedPermissions: string[]
 }
@@ -35,7 +35,7 @@ interface RoleHierarchy {
 /**
  * 字段级权限规则
  */
-interface FieldPermissionRule {
+interface _FieldPermissionRule {
   resource: string
   fields: {
     allowed: string[]
@@ -114,12 +114,12 @@ export class EnhancedPermissionEngine extends CASLPermissionEngine {
   /**
    * 获取角色的所有权限（包括继承的权限）
    */
-  async getRolePermissions(roleId: string): Promise<string[]> {
+  async getRolePermissions(_roleId: string): Promise<string[]> {
     // 获取直接权限
-    const directPermissions = await this.getRoleDirectPermissions(roleId)
+    const directPermissions = await this.getRoleDirectPermissions(_roleId)
     
     // 获取父角色
-    const parentRoles = await this.getParentRoles(roleId)
+    const parentRoles = await this.getParentRoles(_roleId)
     
     // 递归获取父角色权限
     const inheritedPermissions: string[] = []
@@ -286,69 +286,69 @@ export class EnhancedPermissionEngine extends CASLPermissionEngine {
   // 私有辅助方法
   // ============================================================================
 
-  private async getUserDirectRoles(userId: string): Promise<string[]> {
+  private async getUserDirectRoles(_userId: string): Promise<string[]> {
     // TODO: 从数据库查询用户直接分配的角色
     // 这里应该查询 UserRoleAssignment 表
     return []
   }
 
-  private async getInheritedRoles(roleIds: string[]): Promise<string[]> {
+  private async getInheritedRoles(_roleIds: string[]): Promise<string[]> {
     // TODO: 从数据库查询角色继承关系
     // 这里应该查询 Role 表的 parentRoleId
     return []
   }
 
-  private async getRoleDirectPermissions(roleId: string): Promise<string[]> {
+  private async getRoleDirectPermissions(_roleId: string): Promise<string[]> {
     // TODO: 从数据库查询角色的直接权限
     // 这里应该查询 RolePermission 表
     return []
   }
 
-  private async getParentRoles(roleId: string): Promise<string[]> {
+  private async getParentRoles(_roleId: string): Promise<string[]> {
     // TODO: 从数据库查询父角色
     // 这里应该查询 Role 表的继承关系
     return []
   }
 
   private async getRoleFieldPermissions(
-    roleId: string, 
-    resourceType: string
+    _roleId: string, 
+    _resourceType: string
   ): Promise<{ allowed: string[]; denied: string[] }> {
     // TODO: 从数据库查询角色的字段权限
     return { allowed: [], denied: [] }
   }
 
   private async getContextFieldPermissions(
-    user: LinchKitUser,
-    resourceType: string,
-    context: PermissionContext
+    _user: LinchKitUser,
+    _resourceType: string,
+    _context: PermissionContext
   ): Promise<{ allowed: string[]; denied: string[] }> {
     // TODO: 根据上下文获取字段权限
     return { allowed: [], denied: [] }
   }
 
   private async getRoleConditions(
-    roleId: string,
-    action: string,
-    subject: string | any
+    _roleId: string,
+    _action: string,
+    _subject: string | any
   ): Promise<Record<string, unknown>> {
     // TODO: 从数据库查询角色的权限条件
     return {}
   }
 
   private async getResourceConditions(
-    user: LinchKitUser,
-    action: string,
-    resource: any
+    _user: LinchKitUser,
+    _action: string,
+    _resource: any
   ): Promise<Record<string, unknown>> {
     // TODO: 从 ResourcePermission 表查询资源级权限
     return {}
   }
 
   private async getRoleResourceQuery(
-    roleId: string,
-    action: string,
-    resourceType: string
+    _roleId: string,
+    _action: string,
+    _resourceType: string
   ): Promise<Record<string, unknown>> {
     // TODO: 获取角色的资源查询条件
     return {}

@@ -80,10 +80,13 @@ git push origin feature/your-feature-name
 # 6. 创建 Pull Request
 # 在 GitHub 界面创建 PR
 
-# 7. 合并后清理
+# 7. 合并后清理（必须执行）
 git checkout main
 git pull origin main
+# 删除本地分支（强制要求）
 git branch -d feature/your-feature-name
+# 删除远程分支（如果 GitHub 未自动删除）
+git push origin --delete feature/your-feature-name
 ```
 
 ### 2. Bug 修复流程
@@ -97,8 +100,8 @@ git checkout -b fix/bug-description
 # ... 修复代码 ...
 
 # 3. 测试验证
-pnpm test
-pnpm build
+bun test
+bun build
 
 # 4. 提交修复
 git commit -m "fix: resolve login validation error
@@ -109,6 +112,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 # 5. 推送并创建 PR
 git push origin fix/bug-description
+
+# 6. 合并后清理（必须执行）
+git checkout main
+git pull origin main
+# 删除本地分支
+git branch -d fix/bug-description
+# 删除远程分支
+git push origin --delete fix/bug-description
 ```
 
 ### 3. 发布流程
@@ -122,8 +133,8 @@ git checkout -b release/v1.0.3
 # 更新版本号、CHANGELOG 等
 
 # 3. 测试发布候选
-pnpm validate
-pnpm build:packages
+bun validate
+bun build:packages
 
 # 4. 合并到主分支
 git checkout main
@@ -133,8 +144,11 @@ git merge release/v1.0.3
 git tag v1.0.3
 git push origin v1.0.3
 
-# 6. 清理发布分支
+# 6. 清理发布分支（必须执行）
+# 删除本地分支
 git branch -d release/v1.0.3
+# 删除远程分支（如果推送过）
+git push origin --delete release/v1.0.3
 ```
 
 ---
@@ -225,10 +239,10 @@ on:
 ### Changeset 发布流程
 ```bash
 # 1. 创建 changeset
-pnpm changeset
+bun changeset
 
 # 2. 版本更新 (可选，CI 也可以做)
-pnpm changeset version
+bun changeset version
 
 # 3. 提交并推送
 git add .
@@ -310,7 +324,9 @@ git commit -m "resolve merge conflicts"
 - ✅ 写清晰的提交信息
 - ✅ 定期同步主分支
 - ✅ 合并前进行充分测试
-- ✅ 及时删除已合并的分支
+- ✅ PR 合并后立即删除本地和远程分支（强制要求）
+- ✅ 使用 `git branch -d` 删除本地分支
+- ✅ 使用 `git push origin --delete` 删除远程分支
 
 ---
 
