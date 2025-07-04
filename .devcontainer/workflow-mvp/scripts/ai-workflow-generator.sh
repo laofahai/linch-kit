@@ -662,7 +662,16 @@ ai_auto_execute() {
     
     # 保存工作流配置
     local config_file="$TASKS_DIR/ai-generated-$workflow_id.json"
-    echo "$workflow_config" > "$config_file"
+    
+    # 确保配置是有效的 JSON
+    if echo "$workflow_config" | jq . >/dev/null 2>&1; then
+        echo "$workflow_config" | jq . > "$config_file"
+    else
+        log_error "生成的工作流配置不是有效的 JSON"
+        echo "$workflow_config" > "${config_file}.debug"
+        log_error "调试输出已保存到: ${config_file}.debug"
+        return 1
+    fi
     
     log_info "已生成 AI 工作流配置: $config_file"
     
