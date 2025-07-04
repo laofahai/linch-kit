@@ -1,0 +1,372 @@
+# 开发指南
+
+本指南将帮助你深入了解 LinchKit 的各个功能模块，以及如何在实际项目中使用它们。
+
+## 开发流程
+
+### 1. 项目初始化
+
+```bash
+# 创建新项目
+npx create-linch-app my-app
+cd my-app
+
+# 安装依赖
+bun install
+
+# 启动开发服务器
+bun dev
+```
+
+### 2. 定义 Schema
+
+```tsx
+// schemas/user.ts
+import { z } from 'zod'
+
+export const userSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, '名称不能为空'),
+  email: z.string().email('邮箱格式不正确'),
+  role: z.enum(['admin', 'user']).default('user'),
+  createdAt: z.date().default(() => new Date()),
+  updatedAt: z.date().default(() => new Date()),
+})
+
+export type User = z.infer<typeof userSchema>
+```
+
+### 3. 创建 API 路由
+
+```tsx
+// api/user.ts
+import { createRouter, publicProcedure } from '@linch-kit/trpc'
+import { userSchema } from '../schemas/user'
+
+export const userRouter = createRouter({
+  // 获取用户列表
+  list: publicProcedure
+    .input(z.object({
+      page: z.number().default(1),
+      limit: z.number().default(10),
+    }))
+    .query(async ({ input }) => {
+      const { page, limit } = input
+      const offset = (page - 1) * limit
+      
+      return await db.user.findMany({
+        skip: offset,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      })
+    }),
+
+  // 创建用户
+  create: publicProcedure
+    .input(userSchema.omit({ id: true, createdAt: true, updatedAt: true }))
+    .mutation(async ({ input }) => {
+      return await db.user.create({
+        data: input,
+      })
+    }),
+
+  // 更新用户
+  update: publicProcedure
+    .input(z.object({
+      id: z.string(),
+      data: userSchema.partial(),
+    }))
+    .mutation(async ({ input }) => {
+      return await db.user.update({
+        where: { id: input.id },
+        data: { ...input.data, updatedAt: new Date() },
+      })
+    }),
+
+  // 删除用户
+  delete: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      return await db.user.delete({
+        where: { id: input.id },
+      })
+    }),
+})
+```
+
+### 4. 创建 UI 组件
+
+```tsx
+// components/UserList.tsx
+import { trpc } from '@/lib/trpc'
+import { Button } from '@linch-kit/ui'
+
+export function UserList() {
+  const { data: users, isLoading } = trpc.user.list.useQuery()
+  const createUser = trpc.user.create.useMutation()
+
+  if (isLoading) return <div>加载中...</div>
+
+  return (
+    <div>
+      <h2>用户列表</h2>
+      <Button 
+        onClick={() => createUser.mutate({
+          name: '新用户',
+          email: 'user@example.com',
+        })}
+      >
+        添加用户
+      </Button>
+      
+      <ul>
+        {users?.map(user => (
+          <li key={user.id}>
+            {user.name} - {user.email}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+```
+
+## 核心模块使用
+
+### Schema 模块
+
+```tsx
+import { createSchemaManager } from '@linch-kit/schema'
+
+const schemaManager = createSchemaManager({
+  schemas: {
+    user: userSchema,
+    product: productSchema,
+  },
+})
+
+// 验证数据
+const validatedUser = schemaManager.validate('user', userData)
+
+// 生成 TypeScript 类型
+type User = schemaManager.infer<'user'>
+```
+
+### 认证模块
+
+```tsx
+import { createAuthProvider } from '@linch-kit/auth'
+
+const authProvider = createAuthProvider({
+  providers: {
+    credentials: {
+      authenticate: async (credentials) => {
+        // 验证用户凭据
+        const user = await verifyCredentials(credentials)
+        return user
+      },
+    },
+    oauth: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      },
+    },
+  },
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 天
+  },
+})
+```
+
+### CRUD 模块
+
+```tsx
+import { createCrud } from '@linch-kit/crud'
+
+const userCrud = createCrud({
+  schema: userSchema,
+  model: 'user',
+  permissions: {
+    create: ['admin'],
+    read: ['admin', 'user'],
+    update: ['admin'],
+    delete: ['admin'],
+  },
+})
+
+// 自动生成的 CRUD 操作
+const users = await userCrud.findMany()
+const user = await userCrud.create(userData)
+const updatedUser = await userCrud.update(id, updateData)
+await userCrud.delete(id)
+```
+
+## 高级功能
+
+### 插件系统
+
+```tsx
+import { createPlugin } from '@linch-kit/core'
+
+const auditPlugin = createPlugin({
+  name: 'audit',
+  hooks: {
+    'before:create': async (context) => {
+      // 记录创建操作
+      await auditLog.create({
+        action: 'create',
+        model: context.model,
+        data: context.data,
+        userId: context.user.id,
+      })
+    },
+    'after:update': async (context) => {
+      // 记录更新操作
+      await auditLog.create({
+        action: 'update',
+        model: context.model,
+        changes: context.changes,
+        userId: context.user.id,
+      })
+    },
+  },
+})
+```
+
+### 权限控制
+
+```tsx
+import { createPermissionChecker } from '@linch-kit/auth'
+
+const can = createPermissionChecker({
+  rules: {
+    admin: {
+      user: ['create', 'read', 'update', 'delete'],
+      product: ['create', 'read', 'update', 'delete'],
+    },
+    user: {
+      user: ['read'],
+      product: ['read'],
+    },
+  },
+})
+
+// 检查权限
+if (can(currentUser, 'create', 'user')) {
+  // 允许创建用户
+}
+```
+
+### 数据验证
+
+```tsx
+import { createValidator } from '@linch-kit/schema'
+
+const validator = createValidator({
+  rules: {
+    // 自定义验证规则
+    uniqueEmail: async (value) => {
+      const existing = await db.user.findUnique({
+        where: { email: value },
+      })
+      return !existing
+    },
+  },
+})
+
+const userSchemaWithCustomValidation = userSchema.extend({
+  email: z.string().email().refine(validator.rules.uniqueEmail, {
+    message: '邮箱已存在',
+  }),
+})
+```
+
+## 最佳实践
+
+### 1. 项目结构
+
+```
+src/
+├── schemas/          # Schema 定义
+├── api/             # API 路由
+├── components/      # UI 组件
+├── hooks/           # 自定义 hooks
+├── lib/             # 工具函数
+├── types/           # TypeScript 类型
+└── utils/           # 通用工具
+```
+
+### 2. 代码组织
+
+- **一个文件一个 Schema**：便于维护和复用
+- **API 路由分组**：按功能模块组织
+- **组件原子化**：小而专注的组件
+- **hooks 复用**：提取共同的逻辑
+
+### 3. 错误处理
+
+```tsx
+import { TRPCError } from '@trpc/server'
+
+export const userRouter = createRouter({
+  getUser: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input }) => {
+      const user = await db.user.findUnique({
+        where: { id: input.id },
+      })
+      
+      if (!user) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: '用户不存在',
+        })
+      }
+      
+      return user
+    }),
+})
+```
+
+### 4. 性能优化
+
+```tsx
+// 使用 React Query 的缓存和重试机制
+const { data: users } = trpc.user.list.useQuery(
+  { page: 1, limit: 10 },
+  {
+    staleTime: 5 * 60 * 1000, // 5 分钟
+    cacheTime: 10 * 60 * 1000, // 10 分钟
+    retry: 3,
+  }
+)
+```
+
+## 故障排除
+
+### 常见问题
+
+1. **Schema 验证失败**：检查数据类型和约束条件
+2. **API 调用失败**：确认路由定义和权限设置
+3. **类型错误**：确保 Schema 和 TypeScript 类型一致
+4. **权限被拒绝**：检查用户角色和权限配置
+
+### 调试技巧
+
+```tsx
+// 启用调试模式
+const app = createApp({
+  debug: process.env.NODE_ENV === 'development',
+  logger: {
+    level: 'debug',
+  },
+})
+```
+
+## 下一步
+
+- [API 参考](/docs/api)：查看完整的 API 文档
+- [示例项目](/docs/examples)：学习实际应用场景
+- [最佳实践](/docs/best-practices)：了解推荐的开发模式
