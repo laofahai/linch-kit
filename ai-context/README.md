@@ -7,10 +7,45 @@
 ### 📋 Session 启动检查清单
 1. **📖 导航理解** - 阅读本 README.md 了解文档结构
 2. **🔍 上下文索引** - 查阅 [manifest.json](./manifest.json) 快速定位相关文档
-3. **📋 标准流程** - 参考 [session_template.md](./session_template.md) 执行标准化流程
-4. **🛠️ 工作流程** - **必读** [workflow_and_constraints.md](./workflow_and_constraints.md)
-5. **📈 当前状态** - 查看 [roadmap.md](./roadmap.md) 了解进行中任务
-6. **📜 已完成** - 参考 [changelog.md](./changelog.md) 了解完成功能
+3. **📋 标准流程** - 参考 [core/session_template.md](./core/session_template.md) 执行标准化流程
+4. **🛠️ 工作流程** - **必读** [core/workflow_and_constraints.md](./core/workflow_and_constraints.md)
+5. **📈 当前状态** - 查看 [roadmap/roadmap.md](./roadmap/roadmap.md) 了解进行中任务
+6. **📜 已完成** - 参考 [history/changelog.md](./history/changelog.md) 了解完成功能
+
+## 📚 核心文档结构
+
+### 🎯 优化后的分层架构
+
+基于 **AI-Context 优化维护方案 v2.0**，文档结构采用分层管理模式：
+
+```
+ai-context/
+├── 📋 manifest.json                  # 元数据索引 (AI自动生成)
+├── 🎯 core/                         # 核心约束和工作流
+│   ├── vision_and_scope.md          # 项目愿景和范围
+│   ├── workflow_and_constraints.md  # 开发约束规范
+│   └── session_template.md         # 标准Session模板
+├── 🏗️ architecture/               # 系统架构设计
+│   ├── overview.md                 # 架构总览
+│   ├── core_packages.md           # 核心包设计
+│   ├── cli_and_tools.md           # CLI工具设计
+│   └── git_workflow.md            # Git工作流程
+├── 📚 reference/                   # 自动生成参考文档
+│   ├── packages_api.md            # 包API索引
+│   └── [package]-completeness-report.md
+├── 📈 roadmap/                     # 发展路线图
+│   ├── roadmap.md                 # 功能路线图
+│   └── development-status.md      # 开发状态
+├── 📝 history/                     # 历史记录
+│   ├── changelog.md               # 变更日志
+│   └── development_history.md     # 开发历史
+└── 🔧 tools/                       # 自动化工具
+    ├── scripts/                   # 自动化脚本
+    ├── templates/                 # 文档模板
+    └── validators/                # 验证工具
+```
+
+详见：[AI-Context 优化维护方案](./ai-context-optimization-plan.md)
 
 ## 📚 核心文档结构
 
@@ -18,37 +53,37 @@
 
 | 文档 | 职责 | AI使用时机 |
 |------|------|-----------|
-| **[vision_and_scope.md](./vision_and_scope.md)** | 项目愿景、目标、核心价值 | 理解项目背景和目标 |
-| **[workflow_and_constraints.md](./workflow_and_constraints.md)** | 🔴**开发约束、技术规范、AI协作规则** | **每次编码前必读** |
-| **[roadmap.md](./roadmap.md)** | 当前任务、未来计划、优先级 | 开始新任务前查看 |
-| **[changelog.md](./changelog.md)** | 已完成功能、重要变更记录 | 了解项目进展历史 |
+| **[core/vision_and_scope.md](./core/vision_and_scope.md)** | 项目愿景、目标、核心价值 | 理解项目背景和目标 |
+| **[core/workflow_and_constraints.md](./core/workflow_and_constraints.md)** | 🔴**开发约束、技术规范、AI协作规则** | **每次编码前必读** |
+| **[roadmap/roadmap.md](./roadmap/roadmap.md)** | 当前任务、未来计划、优先级 | 开始新任务前查看 |
+| **[history/changelog.md](./history/changelog.md)** | 已完成功能、重要变更记录 | 了解项目进展历史 |
 
 ### 🏗️ 架构设计文档
 
-**统一架构设计中心**: [system_architecture/](./system_architecture/)
+**统一架构设计中心**: [architecture/](./architecture/)
 
 | 文档 | 内容 | 使用场景 |
 |------|------|---------|
-| **[overview.md](./system_architecture/overview.md)** | 架构总览、核心原则 | 理解整体架构设计 |
-| **[core_packages.md](./system_architecture/core_packages.md)** | 核心包设计、依赖关系 | 包开发和集成时查阅 |
-| **[cli_and_tools.md](./system_architecture/cli_and_tools.md)** | CLI工具、支撑系统设计 | CLI相关开发 |
-| **[git_workflow.md](./system_architecture/git_workflow.md)** | Git工作流、分支策略 | 代码提交和分支管理 |
+| **[architecture/overview.md](./architecture/overview.md)** | 架构总览、核心原则 | 理解整体架构设计 |
+| **[architecture/core_packages.md](./architecture/core_packages.md)** | 核心包设计、依赖关系 | 包开发和集成时查阅 |
+| **[architecture/cli_and_tools.md](./architecture/cli_and_tools.md)** | CLI工具、支撑系统设计 | CLI相关开发 |
+| **[architecture/git_workflow.md](./architecture/git_workflow.md)** | Git工作流、分支策略 | 代码提交和分支管理 |
 
 ### 📚 参考资料
 
 | 目录/文件 | 内容 | 使用时机 |
 |-----------|------|---------|
 | **[reference/packages_api.md](./reference/packages_api.md)** | 包API详细参考 | 查询具体API用法 |
-| **[archive/](./archive/)** | 历史文档归档 | 需要查看历史决策时 |
+| **[history/](./history/)** | 历史文档归档 | 需要查看历史决策时 |
 
 ## 🤖 AI 开发工作流程
 
 ### 📖 标准开发流程
 1. **文档导航** → 阅读本 `README.md` 了解文档结构
-2. **理解愿景** → 快速浏览 `vision_and_scope.md` 了解项目目标  
-3. **掌握架构** → 参考 `system_architecture/` 理解系统设计
-4. **遵循规范** → **必读** `workflow_and_constraints.md` 中的约束
-5. **了解现状** → 查看 `roadmap.md` 了解当前进度
+2. **理解愿景** → 快速浏览 `core/vision_and_scope.md` 了解项目目标  
+3. **掌握架构** → 参考 `architecture/` 理解系统设计
+4. **遵循规范** → **必读** `core/workflow_and_constraints.md` 中的约束
+5. **了解现状** → 查看 `roadmap/roadmap.md` 了解当前进度
 6. **规划任务** → 使用 TodoWrite 工具制定详细任务计划
 7. **实施开发** → 严格遵循架构和约束
 8. **验证结果** → 运行测试和构建
@@ -57,7 +92,7 @@
 ### ⚠️ 关键提醒
 
 #### 🔴 强制约束检查
-- **开发前必读**: [workflow_and_constraints.md](./workflow_and_constraints.md)
+- **开发前必读**: [core/workflow_and_constraints.md](./core/workflow_and_constraints.md)
 - **架构依赖**: core → schema → auth → crud → trpc → ui → console
 - **包功能复用**: 必须使用 LinchKit 内部包功能
 - **质量标准**: 测试覆盖率 >80% (core >90%)
@@ -70,18 +105,18 @@
 
 #### 🔄 文档维护规则
 - **单一信息源**: 避免重复信息，使用MD链接引用
-- **实时更新**: 完成功能后立即更新 `changelog.md`
-- **架构变更**: 修改架构时更新 `system_architecture/`
-- **约束变更**: 新约束添加到 `workflow_and_constraints.md`
+- **实时更新**: 完成功能后立即更新 `history/changelog.md`
+- **架构变更**: 修改架构时更新 `architecture/`
+- **约束变更**: 新约束添加到 `core/workflow_and_constraints.md`
 
 
 ## 🎯 文档管理约束
 
 ### 📝 文档更新规则
-1. **功能完成** → 更新 `changelog.md`
-2. **架构变更** → 更新 `system_architecture/` 相关文档
-3. **新约束** → 添加到 `workflow_and_constraints.md`
-4. **计划调整** → 更新 `roadmap.md`
+1. **功能完成** → 更新 `history/changelog.md`
+2. **架构变更** → 更新 `architecture/` 相关文档
+3. **新约束** → 添加到 `core/workflow_and_constraints.md`
+4. **计划调整** → 更新 `roadmap/roadmap.md`
 5. **重大决策** → 记录在相关架构文档中
 
 ### 🔗 链接使用规范
@@ -91,28 +126,28 @@
 
 ### ⚠️ 信息完整性保证
 - **不丢失信息**: 所有重要信息都已迁移到新结构
-- **历史保留**: 旧文档移至 `archive/` 目录
+- **历史保留**: 旧文档移至 `history/` 目录
 - **持续维护**: AI 助手负责保持文档同步和更新
 
 ## 🚀 快速查找指南
 
 ### 寻找开发约束和规范
-→ [workflow_and_constraints.md](./workflow_and_constraints.md)
+→ [core/workflow_and_constraints.md](./core/workflow_and_constraints.md)
 
 ### 寻找架构设计信息  
-→ [system_architecture/](./system_architecture/)
+→ [architecture/](./architecture/)
 
 ### 寻找当前任务和计划
-→ [roadmap.md](./roadmap.md)
+→ [roadmap/roadmap.md](./roadmap/roadmap.md)
 
 ### 寻找已完成功能
-→ [changelog.md](./changelog.md)
+→ [history/changelog.md](./history/changelog.md)
 
 ### 寻找包API用法
 → [reference/packages_api.md](./reference/packages_api.md)
 
 ### 寻找历史决策
-→ [archive/](./archive/)
+→ [history/](./history/)
 
 ---
 
