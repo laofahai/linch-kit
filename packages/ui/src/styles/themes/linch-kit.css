@@ -1,0 +1,181 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* 
+  LinchKit "Quantum" Theme
+  Designed for a modern, professional, and AI-driven feel.
+  
+  Color Philosophy:
+  - Quantum Blue: Deep, intelligent blue representing technology and stability
+  - Cosmic Purple: Bright purple for highlights and AI elements  
+  - Stellar Night: Dark background with subtle blue tint to reduce eye strain
+  - Professional typography with enhanced readability
+*/
+
+:root {
+  --background: hsl(0 0% 100%); /* Clean White */
+  --foreground: hsl(224 10% 10%); /* Dark Slate Gray */
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(224 10% 10%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(224 10% 10%);
+  --primary: hsl(217 91% 60%); /* Quantum Blue */
+  --primary-foreground: hsl(210 20% 98%); /* Almost White */
+  --secondary: hsl(220 15% 96%); /* Light Gray */
+  --secondary-foreground: hsl(222 47% 11%);
+  --muted: hsl(220 15% 96%);
+  --muted-foreground: hsl(220 9% 45%);
+  --accent: hsl(262 84% 59%); /* Cosmic Purple */
+  --accent-foreground: hsl(210 20% 98%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(210 20% 98%);
+  --border: hsl(220 13% 91%);
+  --input: hsl(220 13% 91%);
+  --ring: hsl(262 84% 59%); /* Cosmic Purple for focus ring */
+  --radius: 0.5rem; /* Professional rounded corners */
+  
+  /* Chart colors with quantum theme */
+  --chart-1: hsl(217 91% 60%); /* Quantum Blue */
+  --chart-2: hsl(262 84% 59%); /* Cosmic Purple */
+  --chart-3: hsl(195 100% 50%); /* Cyan */
+  --chart-4: hsl(280 100% 70%); /* Magenta */
+  --chart-5: hsl(150 100% 40%); /* Emerald */
+  
+  /* Sidebar with quantum theme */
+  --sidebar-background: hsl(220 20% 98%);
+  --sidebar-foreground: hsl(220 15% 40%);
+  --sidebar-primary: hsl(217 91% 60%); /* Quantum Blue */
+  --sidebar-primary-foreground: hsl(210 20% 98%);
+  --sidebar-accent: hsl(262 84% 59%); /* Cosmic Purple */
+  --sidebar-accent-foreground: hsl(210 20% 98%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(262 84% 59%); /* Cosmic Purple */
+  --sidebar: hsl(220 20% 98%);
+}
+
+.dark {
+  --background: hsl(224 71% 4%); /* Stellar Night */
+  --foreground: hsl(210 20% 98%); /* Almost White */
+  --card: hsl(224 71% 6%);
+  --card-foreground: hsl(210 20% 98%);
+  --popover: hsl(224 71% 4%);
+  --popover-foreground: hsl(210 20% 98%);
+  --primary: hsl(217 91% 60%); /* Quantum Blue */
+  --primary-foreground: hsl(210 20% 98%);
+  --secondary: hsl(215 28% 17%); /* Darker Slate */
+  --secondary-foreground: hsl(210 20% 98%);
+  --muted: hsl(215 28% 17%);
+  --muted-foreground: hsl(215 20% 65%);
+  --accent: hsl(262 84% 59%); /* Cosmic Purple */
+  --accent-foreground: hsl(210 20% 98%);
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(210 20% 98%);
+  --border: hsl(215 28% 17%);
+  --input: hsl(215 28% 17%);
+  --ring: hsl(262 84% 59%); /* Cosmic Purple for focus ring */
+  
+  /* Dark mode chart colors */
+  --chart-1: hsl(217 91% 70%); /* Brighter Quantum Blue */
+  --chart-2: hsl(262 84% 69%); /* Brighter Cosmic Purple */
+  --chart-3: hsl(195 100% 60%); /* Bright Cyan */
+  --chart-4: hsl(280 100% 80%); /* Bright Magenta */
+  --chart-5: hsl(150 100% 50%); /* Bright Emerald */
+  
+  /* Dark sidebar with quantum theme */
+  --sidebar-background: hsl(224 71% 3%);
+  --sidebar-foreground: hsl(215 20% 65%);
+  --sidebar-primary: hsl(217 91% 60%); /* Quantum Blue */
+  --sidebar-primary-foreground: hsl(210 20% 98%);
+  --sidebar-accent: hsl(262 84% 59%); /* Cosmic Purple */
+  --sidebar-accent-foreground: hsl(210 20% 98%);
+  --sidebar-border: hsl(215 28% 17%);
+  --sidebar-ring: hsl(262 84% 59%); /* Cosmic Purple */
+  --sidebar: hsl(224 71% 3%);
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar-background: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius: 0.5rem;
+  --default-border-color: var(--border);
+  --default-background-color: var(--background);
+  --default-text-color: var(--foreground);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Additional LinchKit enhancements */
+@layer utilities {
+  .quantum-glow {
+    box-shadow: 0 0 20px hsla(262, 84%, 59%, 0.3);
+  }
+  
+  .quantum-border {
+    border: 1px solid hsla(262, 84%, 59%, 0.5);
+  }
+  
+  .stellar-backdrop {
+    background: linear-gradient(135deg, 
+      hsla(224, 71%, 4%, 0.95) 0%, 
+      hsla(262, 84%, 59%, 0.05) 100%);
+  }
+}
