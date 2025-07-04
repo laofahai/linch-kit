@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 
 import { PluginRegistry } from '../../plugin/registry'
 import type { Plugin, PluginMetadata, PluginStatus } from '../../types'
@@ -18,12 +18,12 @@ describe('PluginRegistry', () => {
         name: 'Test Plugin',
         version: '1.0.0'
       },
-      init: vi.fn().mockResolvedValue(undefined),
-      setup: vi.fn().mockResolvedValue(undefined),
-      start: vi.fn().mockResolvedValue(undefined),
-      ready: vi.fn().mockResolvedValue(undefined),
-      stop: vi.fn().mockResolvedValue(undefined),
-      destroy: vi.fn().mockResolvedValue(undefined)
+      init: mock().mockResolvedValue(undefined),
+      setup: mock().mockResolvedValue(undefined),
+      start: mock().mockResolvedValue(undefined),
+      ready: mock().mockResolvedValue(undefined),
+      stop: mock().mockResolvedValue(undefined),
+      destroy: mock().mockResolvedValue(undefined)
     }
 
     // Plugin with dependencies
@@ -34,17 +34,17 @@ describe('PluginRegistry', () => {
         version: '1.0.0',
         dependencies: ['test-plugin']
       },
-      init: vi.fn().mockResolvedValue(undefined),
-      setup: vi.fn().mockResolvedValue(undefined),
-      start: vi.fn().mockResolvedValue(undefined),
-      ready: vi.fn().mockResolvedValue(undefined),
-      stop: vi.fn().mockResolvedValue(undefined),
-      destroy: vi.fn().mockResolvedValue(undefined)
+      init: mock().mockResolvedValue(undefined),
+      setup: mock().mockResolvedValue(undefined),
+      start: mock().mockResolvedValue(undefined),
+      ready: mock().mockResolvedValue(undefined),
+      stop: mock().mockResolvedValue(undefined),
+      destroy: mock().mockResolvedValue(undefined)
     }
   })
 
   afterEach(() => {
-    vi.clearAllMocks()
+    mock.restore()
   })
 
   describe('Plugin Registration', () => {
@@ -75,7 +75,7 @@ describe('PluginRegistry', () => {
     })
 
     it('should emit registration events', () => {
-      const listener = vi.fn()
+      const listener = mock()
       registry.on('pluginRegistered', listener)
       
       registry.registerSync(mockPlugin)
@@ -114,7 +114,7 @@ describe('PluginRegistry', () => {
 
     it('should handle plugin initialization failure', async () => {
       const error = new Error('Init failed')
-      mockPlugin.init = vi.fn().mockRejectedValue(error)
+      mockPlugin.init = mock().mockRejectedValue(error)
       
       await expect(registry.startPlugin('test-plugin')).rejects.toThrow('Init failed')
       expect(registry.getPluginStatus('test-plugin')).toBe('error')
@@ -130,7 +130,7 @@ describe('PluginRegistry', () => {
     })
 
     it('should emit lifecycle events', async () => {
-      const listener = vi.fn()
+      const listener = mock()
       registry.on('pluginStarted', listener)
       
       await registry.startPlugin('test-plugin')
@@ -243,7 +243,7 @@ describe('PluginRegistry', () => {
     })
 
     it('should handle partial failures during startAll', async () => {
-      mockPluginWithDeps.init = vi.fn().mockRejectedValue(new Error('Failed'))
+      mockPluginWithDeps.init = mock().mockRejectedValue(new Error('Failed'))
       
       const results = await registry.startAll()
       
@@ -276,7 +276,7 @@ describe('PluginRegistry', () => {
       await registry.startPlugin('test-plugin')
       
       const stopError = new Error('Stop failed')
-      mockPlugin.stop = vi.fn().mockRejectedValue(stopError)
+      mockPlugin.stop = mock().mockRejectedValue(stopError)
       
       await expect(registry.stopPlugin('test-plugin')).rejects.toThrow('Stop failed')
       

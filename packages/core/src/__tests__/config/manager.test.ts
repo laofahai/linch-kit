@@ -1,34 +1,36 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 
 import { ConfigManager } from '../../config/manager'
 import type { ConfigSource } from '../../types'
 
-// Mock dependencies
-vi.mock('fs/promises', () => ({
-  readFile: vi.fn()
+// Mock fs/promises
+const mockReadFile = mock()
+mock.module('fs/promises', () => ({
+  readFile: mockReadFile
 }))
 
-vi.mock('yaml', () => ({
-  parse: vi.fn()
+// Mock yaml
+const mockYamlParse = mock()
+mock.module('yaml', () => ({
+  parse: mockYamlParse
 }))
 
 // Mock fetch for remote configs
-global.fetch = vi.fn()
+global.fetch = mock()
 
 describe('ConfigManager', () => {
   let manager: ConfigManager
-  let mockFs: unknown
-  let mockYaml: unknown
-
-  beforeEach(async () => {
+  beforeEach(() => {
     manager = new ConfigManager()
-    mockFs = await import('fs/promises')
-    mockYaml = await import('yaml')
-    vi.clearAllMocks()
+    
+    // Clear all mocks
+    mockReadFile.mockClear()
+    mockYamlParse.mockClear()
+    global.fetch.mockClear()
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
+    // Mocks are automatically restored by Bun
   })
 
   describe('Basic Configuration Management', () => {
@@ -86,7 +88,7 @@ describe('ConfigManager', () => {
       manager.set('key1', 'value1')
       manager.set('key2', 'value2')
 
-      const listener = vi.fn()
+      const listener = mock()
       manager.on('config:cleared', listener)
 
       manager.clear()
@@ -98,7 +100,7 @@ describe('ConfigManager', () => {
 
   describe('Configuration Events', () => {
     it('should emit config:changed event when value changes', () => {
-      const listener = vi.fn()
+      const listener = mock()
       manager.on('config:changed', listener)
 
       manager.set('test.key', 'initial')
@@ -117,7 +119,7 @@ describe('ConfigManager', () => {
     })
 
     it('should not emit config:changed event when value is the same', () => {
-      const listener = vi.fn()
+      const listener = mock()
       manager.on('config:changed', listener)
 
       manager.set('test.key', 'value')
@@ -127,7 +129,7 @@ describe('ConfigManager', () => {
     })
 
     it('should emit config:deleted event when value is deleted', () => {
-      const listener = vi.fn()
+      const listener = mock()
       manager.on('config:deleted', listener)
 
       manager.set('test.key', 'value')
@@ -142,7 +144,7 @@ describe('ConfigManager', () => {
 
   describe('Configuration Watching', () => {
     it('should watch for configuration changes', () => {
-      const callback = vi.fn()
+      const callback = mock()
       const unwatch = manager.watch('test.key', callback)
 
       manager.set('test.key', 'value1')
@@ -157,7 +159,7 @@ describe('ConfigManager', () => {
     })
 
     it('should support deep watching', () => {
-      const callback = vi.fn()
+      const callback = mock()
       manager.watch('app.name', callback, { deep: true })
 
       manager.set('app', { name: 'TestApp' })
@@ -170,7 +172,7 @@ describe('ConfigManager', () => {
     })
 
     it('should manage watchers with IDs', () => {
-      const callback = vi.fn()
+      const callback = mock()
       manager.watch('test.key', callback, { watchId: 'watcher1' })
 
       manager.set('test.key', 'value')
@@ -200,7 +202,7 @@ describe('ConfigManager', () => {
           }
         }
 
-        const listener = vi.fn()
+        const listener = mock()
         manager.on('config:loaded', listener)
 
         await manager.loadConfig(source)
@@ -217,7 +219,7 @@ describe('ConfigManager', () => {
     describe('File Source', () => {
       it('should load JSON configuration from file', async () => {
         const configData = { app: { name: 'FileApp' }, port: 3000 }
-        mockFs.readFile.mockResolvedValue(JSON.stringify(configData))
+        mockReadFile.mockResolvedValue(JSON.stringify(configData))
 
         const source: ConfigSource = {
           id: 'json-config',
@@ -227,15 +229,15 @@ describe('ConfigManager', () => {
 
         await manager.loadConfig(source)
 
-        expect(mockFs.readFile).toHaveBeenCalledWith('/path/to/config.json', 'utf-8')
+        expect(mockReadFile).toHaveBeenCalledWith('/path/to/config.json', 'utf-8')
         expect(manager.get('app')).toEqual({ name: 'FileApp' })
         expect(manager.get('port')).toBe(3000)
       })
 
       it('should load YAML configuration from file', async () => {
         const configData = { app: { name: 'YamlApp' }, enabled: true }
-        mockFs.readFile.mockResolvedValue('app:\n  name: YamlApp\nenabled: true')
-        mockYaml.parse.mockReturnValue(configData)
+        mockReadFile.mockResolvedValue('app:\n  name: YamlApp\nenabled: true')
+        mockYamlParse.mockReturnValue(configData)
 
         const source: ConfigSource = {
           id: 'yaml-config',
@@ -245,14 +247,14 @@ describe('ConfigManager', () => {
 
         await manager.loadConfig(source)
 
-        expect(mockFs.readFile).toHaveBeenCalledWith('/path/to/config.yaml', 'utf-8')
-        expect(mockYaml.parse).toHaveBeenCalledWith('app:\n  name: YamlApp\nenabled: true')
+        expect(mockReadFile).toHaveBeenCalledWith('/path/to/config.yaml', 'utf-8')
+        expect(mockYamlParse).toHaveBeenCalledWith('app:\n  name: YamlApp\nenabled: true')
         expect(manager.get('app')).toEqual({ name: 'YamlApp' })
         expect(manager.get('enabled')).toBe(true)
       })
 
       it('should handle file loading errors', async () => {
-        mockFs.readFile.mockRejectedValue(new Error('File not found'))
+        mockReadFile.mockRejectedValue(new Error('File not found'))
 
         const source: ConfigSource = {
           id: 'error-config',
@@ -260,7 +262,7 @@ describe('ConfigManager', () => {
           path: '/nonexistent/config.json'
         }
 
-        const errorListener = vi.fn()
+        const errorListener = mock()
         manager.on('config:error', errorListener)
 
         await expect(manager.loadConfig(source)).rejects.toThrow('Failed to load config from /nonexistent/config.json')
@@ -379,7 +381,7 @@ describe('ConfigManager', () => {
 
       it('should load YAML configuration from remote URL', async () => {
         const configData = { app: { name: 'RemoteYamlApp' } }
-        mockYaml.parse.mockReturnValue(configData)
+        mockYamlParse.mockReturnValue(configData)
         
         // @ts-ignore
         global.fetch.mockResolvedValue({

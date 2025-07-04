@@ -29,8 +29,8 @@
     "build": "tsup",
     "build:packages": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest",
-    "test:coverage": "vitest --coverage",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix"
@@ -49,10 +49,8 @@
     "@types/convict": "^6.1.6",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^24.0.7",
-    "@vitest/coverage-v8": "^3.2.4",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.4",
     "yaml": "^2.8.0"
   },
   "dependencies": {
