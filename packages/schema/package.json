@@ -23,7 +23,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "clean": "rm -rf dist .turbo coverage",
-    "prepack": "pnpm build"
+    "prepack": "bun run build"
   },
   "files": [
     "dist",

@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "validate": "pnpm build && pnpm lint && pnpm type-check",
+    "validate": "bun run build && bun run lint && bun run type-check",
     "init": "tsx scripts/init.ts",
     "init:project": "tsx scripts/init.ts",
     "db:generate": "prisma generate",

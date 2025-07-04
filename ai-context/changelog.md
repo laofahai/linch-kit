@@ -1,5 +1,13 @@
 # LinchKit 开发变更日志
 
+## 📝 2025-07-04 文档更新
+
+### ✅ Git 分支管理规范强化
+- **更新文档**: git_workflow.md、workflow_and_constraints.md、CLAUDE.md
+- **新增要求**: PR 合并后必须立即删除本地和远程分支
+- **清理命令**: 明确规定使用 `git branch -d` 和 `git push origin --delete`
+- **流程集成**: 在任务计划模板中增加分支清理步骤
+
 ## 🎉 v1.0.2 发布里程碑 (2025-07-02)
 
 ### ✅ NPM 发布成果

@@ -29,33 +29,32 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          version: 10.12.4
+          bun-version: latest
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Build packages
-        run: pnpm turbo build:packages
+        run: bun run turbo build:packages
 
       - name: Run tests
-        run: pnpm turbo test
+        run: bun run turbo test
 
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm changeset publish
-          version: pnpm changeset version
+          publish: bun run changeset publish
+          version: bun run changeset version
           commit: 'chore: release packages'
           title: 'chore: release packages'
         env:
@@ -94,23 +93,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
           registry-url: 'https://npm.pkg.github.com'
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.12.4
-
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Build packages
-        run: pnpm turbo build:packages
+        run: bun run turbo build:packages
 
       - name: Publish to GitHub Packages
         run: |
@@ -118,7 +116,7 @@ jobs:
           find packages -name "package.json" -exec sed -i 's/"registry": ".*"/"registry": "https:\/\/npm.pkg.github.com"/g' {} \;
           
           # 发布到 GitHub Packages
-          pnpm -r publish --registry https://npm.pkg.github.com --no-git-checks
+          bun run -r publish --registry https://npm.pkg.github.com --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
 
@@ -132,22 +130,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.12.4
+          bun-version: latest
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Build packages
-        run: pnpm turbo build --filter='./packages/*'
+        run: bun run turbo build --filter='./packages/*'
 
       - name: Deploy to Vercel (Demo App)
         if: secrets.VERCEL_TOKEN != ''

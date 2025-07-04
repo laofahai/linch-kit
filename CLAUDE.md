@@ -145,6 +145,7 @@ pnpm validate   # 完整验证
 - [ ] 7. 更新文档 (changelog/roadmap/development-status)
 - [ ] 8. 提交符合规范的 commit
 - [ ] 9. 提醒用户创建 PR
+- [ ] 10. PR 合并后删除本地和远程分支
 
 **包复用检查**: 必须在步骤0执行，确认无重复实现
 **质量要求**: 构建成功 + ESLint通过 + 测试通过 + 文档同步

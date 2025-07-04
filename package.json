@@ -38,7 +38,7 @@
     "clean": "turbo run clean && rm -rf node_modules/.cache",
     "clean:dist": "turbo run clean:dist",
     "clean:node_modules": "find . -name 'node_modules' -type d -exec rm -rf {} + 2>/dev/null || true",
-    "reset": "pnpm clean:dist && pnpm clean:node_modules && pnpm install",
+    "reset": "bun run clean:dist && bun run clean:node_modules && bun install",
     "deps:graph": "node scripts/deps-graph.js",
     "deps:check": "node scripts/dev-tools.js check",
     "changeset": "changeset",
@@ -46,12 +46,12 @@
     "changeset:publish": "changeset publish",
     "release": "node scripts/release.js",
     "release:dry": "node scripts/release.js --dry-run",
-    "version": "changeset version && pnpm install --lockfile-only",
-    "ci": "pnpm install --frozen-lockfile && pnpm build && pnpm test && pnpm lint",
+    "version": "changeset version && bun install --lockfile-only",
+    "ci": "bun install --frozen-lockfile && bun run build && bun run test && bun run lint",
     "prepare": "husky install",
-    "setup": "node scripts/update-all-configs.js && pnpm install",
+    "setup": "node scripts/update-all-configs.js && bun install",
     "test:workflow": "node scripts/test-workflow.js",
-    "validate": "pnpm test:workflow",
+    "validate": "bun run test:workflow",
     "docs:cleanup": "node scripts/cleanup-docs.js",
     "docs:migrate": "node scripts/migrate-docs.js",
     "docs:build": "turbo run build --filter='./apps/docs'",
@@ -87,6 +87,11 @@
   "dependencies": {
     "dayjs": "^1.11.13"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "modules/*"
+  ],
   "pnpm": {
     "patchedDependencies": {
       "react-hook-form@7.59.0": "patches/react-hook-form@7.59.0.patch"
@@ -110,5 +115,10 @@
       "brace-expansion@>=1.0.0 <=1.1.11": ">=1.1.12",
       "brace-expansion@>=2.0.0 <=2.0.1": ">=2.0.2"
     }
-  }
+  },
+  "trustedDependencies": [
+    "@tailwindcss/oxide",
+    "protobufjs",
+    "unrs-resolver"
+  ]
 }
