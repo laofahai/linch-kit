@@ -43,6 +43,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useSession, signOut } from 'next-auth/react'
 import { TabsContainer } from './TabsContainer'
 import { useTabsStore } from '@/lib/stores/tabs-store'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 
 export interface AppSidebarLayoutProps {
   /** 页面内容 */
@@ -611,6 +612,12 @@ export function AppSidebarLayout({
 }: AppSidebarLayoutProps) {
   const { isCollapsed, toggleSidebar } = useSidebarState()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { tabs } = useTabsStore()
+  const isDesktop = useIsDesktop()
+
+  // 响应式导航策略
+  const shouldShowBreadcrumbs = !isDesktop || (isDesktop && tabs.length <= 1)
+  const shouldShowTabs = isDesktop && tabs.length > 1
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -643,28 +650,61 @@ export function AppSidebarLayout({
             <Menu className="w-5 h-5" />
           </Button>
 
-          {/* Breadcrumbs */}
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbPage className="text-gray-600 dark:text-gray-400 font-medium">{title}</BreadcrumbPage>
-              </BreadcrumbItem>
-              {breadcrumbs.map((crumb, index) => (
-                <React.Fragment key={index}>
-                  <BreadcrumbSeparator className="text-gray-300 dark:text-gray-600" />
+          {/* 响应式面包屑导航 - 带平滑过渡 */}
+          <div className={cn(
+            "transition-all duration-300 ease-in-out",
+            shouldShowBreadcrumbs 
+              ? "opacity-100 translate-x-0" 
+              : "opacity-0 -translate-x-2 pointer-events-none"
+          )}>
+            {shouldShowBreadcrumbs && (
+              <Breadcrumb>
+                <BreadcrumbList>
                   <BreadcrumbItem>
-                    {crumb.href ? (
-                      <BreadcrumbLink href={crumb.href} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
-                        {crumb.label}
-                      </BreadcrumbLink>
-                    ) : (
-                      <BreadcrumbPage className="text-gray-900 dark:text-white font-medium">{crumb.label}</BreadcrumbPage>
-                    )}
+                    <BreadcrumbPage className={cn(
+                      "font-medium transition-colors duration-200",
+                      isDesktop 
+                        ? "text-gray-500 dark:text-gray-500 text-sm" // 桌面端弱化样式
+                        : "text-gray-600 dark:text-gray-400" // 移动端正常样式
+                    )}>
+                      {title}
+                    </BreadcrumbPage>
                   </BreadcrumbItem>
-                </React.Fragment>
-              ))}
-            </BreadcrumbList>
-          </Breadcrumb>
+                  {breadcrumbs.map((crumb, index) => (
+                    <React.Fragment key={index}>
+                      <BreadcrumbSeparator className={cn(
+                        "transition-colors duration-200",
+                        isDesktop 
+                          ? "text-gray-300 dark:text-gray-700" // 桌面端更淡
+                          : "text-gray-300 dark:text-gray-600" // 移动端正常
+                      )} />
+                      <BreadcrumbItem>
+                        {crumb.href ? (
+                          <BreadcrumbLink href={crumb.href} className={cn(
+                            "transition-colors duration-200",
+                            isDesktop
+                              ? "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm" // 桌面端弱化
+                              : "text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white" // 移动端正常
+                          )}>
+                            {crumb.label}
+                          </BreadcrumbLink>
+                        ) : (
+                          <BreadcrumbPage className={cn(
+                            "font-medium transition-colors duration-200",
+                            isDesktop
+                              ? "text-gray-600 dark:text-gray-400 text-sm" // 桌面端弱化
+                              : "text-gray-900 dark:text-white" // 移动端正常
+                          )}>
+                            {crumb.label}
+                          </BreadcrumbPage>
+                        )}
+                      </BreadcrumbItem>
+                    </React.Fragment>
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            )}
+          </div>
 
           {/* Header Actions */}
           <div className="ml-auto flex items-center gap-1">
@@ -674,12 +714,30 @@ export function AppSidebarLayout({
           </div>
         </header>
 
-        {/* Page Content with Tabs */}
-        <main className="flex-1 overflow-hidden bg-gray-50/50 dark:bg-gray-950/50">
-          <TabsContainer />
-          {/* Fallback content when no tabs are active */}
-          <div className="h-full overflow-auto">
-            {children}
+        {/* Page Content with Responsive Tabs - 带平滑过渡 */}
+        <main className="flex-1 overflow-hidden bg-gray-50/50 dark:bg-gray-950/50 relative">
+          {/* 标签页容器 - 带淡入淡出动画 */}
+          <div className={cn(
+            "absolute inset-0 transition-all duration-300 ease-in-out",
+            shouldShowTabs 
+              ? "opacity-100 translate-y-0" 
+              : "opacity-0 translate-y-2 pointer-events-none"
+          )}>
+            {shouldShowTabs && <TabsContainer />}
+          </div>
+          
+          {/* 传统页面内容 - 带淡入淡出动画 */}
+          <div className={cn(
+            "absolute inset-0 transition-all duration-300 ease-in-out",
+            !shouldShowTabs 
+              ? "opacity-100 translate-y-0" 
+              : "opacity-0 translate-y-2 pointer-events-none"
+          )}>
+            {!shouldShowTabs && (
+              <div className="h-full overflow-auto p-4 md:p-6">
+                {children}
+              </div>
+            )}
           </div>
         </main>
       </div>

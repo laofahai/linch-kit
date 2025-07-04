@@ -1,5 +1,25 @@
 # LinchKit 开发变更日志
 
+## 🎯 2025-07-04 响应式导航优化
+
+### ✅ 多标签页响应式面包屑导航
+- **新功能**: 实现智能响应式导航策略
+- **移动端策略** (< 768px): 显示面包屑导航，隐藏标签页，优化单任务流体验
+- **桌面端策略** (≥ 768px): 显示标签页，弱化面包屑，支持多任务切换
+- **平滑过渡**: 添加 300ms 淡入淡出动画，提升用户体验
+- **SSR兼容**: 实现 useMediaQuery Hook，避免水合不匹配问题
+
+#### 技术实现亮点
+- **响应式逻辑**: `shouldShowBreadcrumbs = !isDesktop || (isDesktop && tabs.length <= 1)`
+- **状态保持**: 标签页状态在响应式切换时完整保留
+- **视觉设计**: 桌面端面包屑弱化显示，移动端面包屑正常显示
+- **动画效果**: 使用 CSS Transform 和 Opacity 实现平滑过渡
+
+#### 文件更新
+- **新增**: `apps/starter/hooks/useMediaQuery.ts` - 响应式媒体查询 Hook
+- **修改**: `apps/starter/components/layout/AppSidebar.tsx` - 响应式导航逻辑
+- **修改**: `apps/starter/components/layout/TabsContainer.tsx` - 条件渲染支持
+
 ## 📝 2025-07-04 文档更新
 
 ### ✅ Git 分支管理规范强化
