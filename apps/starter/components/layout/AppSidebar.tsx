@@ -5,8 +5,6 @@
  * Features: Mobile-first responsive design, smooth animations, modern aesthetics
  */
 
-/* eslint-disable @next/next/no-img-element */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import React, { ReactNode, useState, useEffect, useCallback } from 'react'
@@ -344,6 +342,7 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
               <Button variant="ghost" className="w-full justify-start gap-3 p-2 h-auto">
                 <div className="w-7 h-7 bg-accent/20 rounded-full flex items-center justify-center">
                   {session?.user?.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img 
                       src={session.user.image} 
                       alt={session.user.name || 'User'} 
@@ -367,6 +366,7 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
             ) : (
               <Button variant="ghost" size="sm" className="h-10 w-full p-0 rounded-none">
                 {session?.user?.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img 
                     src={session.user.image} 
                     alt={session.user.name || 'User'} 
@@ -384,6 +384,7 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
             <div className="flex items-center gap-3 p-2">
               <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
                 {session?.user?.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img 
                     src={session.user.image} 
                     alt={session.user.name || 'User'} 
@@ -544,6 +545,7 @@ function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange
             <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent/30 dark:hover:bg-accent/40 active:bg-accent/50 dark:active:bg-accent/60 transition-colors cursor-pointer">
               <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
                 {session?.user?.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img 
                     src={session.user.image} 
                     alt={session.user.name || 'User'} 
@@ -675,6 +677,10 @@ export function AppSidebarLayout({
         {/* Page Content with Tabs */}
         <main className="flex-1 overflow-hidden bg-gray-50/50 dark:bg-gray-950/50">
           <TabsContainer />
+          {/* Fallback content when no tabs are active */}
+          <div className="h-full overflow-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

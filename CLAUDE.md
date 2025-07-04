@@ -135,15 +135,19 @@ pnpm validate   # 完整验证
 ### 任务计划模板
 ```
 ## 开发计划：[功能名称]
+- [ ] 0. 包复用检查：pnpm check-reuse [关键词]
 - [ ] 1. 创建功能分支 feature/[task-name]
-- [ ] 2. [具体实现步骤1]
+- [ ] 2. [具体实现步骤1] 
 - [ ] 3. [具体实现步骤2]
-- [ ] 4. 编写/更新测试用例
-- [ ] 5. 运行 pnpm validate 验证
-- [ ] 6. 更新文档 (changelog/roadmap)
-- [ ] 7. 提交符合规范的 commit
-- [ ] 8. 提醒用户创建 PR
+- [ ] 4. ESLint质量检查：修复所有错误（禁止使用eslint-disable）
+- [ ] 5. 编写/更新测试用例
+- [ ] 6. 运行 pnpm validate 验证
+- [ ] 7. 更新文档 (changelog/roadmap/development-status)
+- [ ] 8. 提交符合规范的 commit
+- [ ] 9. 提醒用户创建 PR
 
+**包复用检查**: 必须在步骤0执行，确认无重复实现
+**质量要求**: 构建成功 + ESLint通过 + 测试通过 + 文档同步
 **预估时间**: [评估每个步骤的复杂度]
 **Session 建议**: 建议分 X 个 session 完成
 ```

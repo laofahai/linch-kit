@@ -83,11 +83,10 @@ export function TabsBar() {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         <div className="flex min-w-max">
-          {tabs.map((tab, index) => (
+          {tabs.map((tab) => (
             <TabItem
               key={tab.id}
               tab={tab}
-              index={index}
               isActive={tab.id === activeTabId}
             />
           ))}

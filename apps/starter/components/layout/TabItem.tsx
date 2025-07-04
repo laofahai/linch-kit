@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import { useTabsStore, type Tab } from '@/lib/stores/tabs-store'
@@ -27,7 +26,6 @@ import { useRouter } from 'next/navigation'
 
 interface TabItemProps {
   tab: Tab
-  index: number
   isActive: boolean
 }
 
@@ -43,7 +41,7 @@ const iconMap = {
   Zap,
 } as const
 
-export function TabItem({ tab, index, isActive }: TabItemProps) {
+export function TabItem({ tab, isActive }: TabItemProps) {
   const { 
     setActiveTab, 
     removeTab, 
