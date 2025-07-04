@@ -23,6 +23,8 @@
   # 或
   git checkout -b fix/[issue-description]
   ```
+- [ ] **Worktree环境检查**: 如在worktree中，确认当前分支与worktree目录名一致
+- [ ] **主仓库保护**: 如在主仓库目录，禁止在main分支直接工作
 
 ### 3. 工作目录检查
 - [ ] 运行 `git status --porcelain` 检查工作目录状态
