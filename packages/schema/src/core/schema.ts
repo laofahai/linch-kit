@@ -80,12 +80,12 @@ export class SchemaBuilder<T extends Record<string, FieldDefinition> = {}> {
    * 扩展另一个Schema
    */
   extend(
-    other: SchemaBuilder<any> | Entity<any>
-  ): SchemaBuilder<any> {
+    other: SchemaBuilder<Record<string, FieldDefinition>> | Entity<Record<string, FieldDefinition>>
+  ): SchemaBuilder<Record<string, FieldDefinition>> {
     if (other instanceof SchemaBuilder) {
-      return this.fields(other._fields).options(other._options) as SchemaBuilder<any>
+      return this.fields(other._fields).options(other._options) as SchemaBuilder<Record<string, FieldDefinition>>
     } else {
-      return this.fields(other.fields as any).options(other.options) as SchemaBuilder<any>
+      return this.fields(other.fields).options(other.options) as SchemaBuilder<Record<string, FieldDefinition>>
     }
   }
 

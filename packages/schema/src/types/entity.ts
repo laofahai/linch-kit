@@ -7,6 +7,7 @@
  */
 
 import type { z } from 'zod'
+
 import type { FieldDefinition, PermissionRule } from './field'
 
 /**
