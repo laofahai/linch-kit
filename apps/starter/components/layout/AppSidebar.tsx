@@ -36,7 +36,9 @@ import {
   ChevronDown,
   CircleUser,
   LogOut,
-  Globe
+  Globe,
+  Building,
+  Shield
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useSession, signOut } from 'next-auth/react'
@@ -68,40 +70,41 @@ interface NavItem {
   children?: NavItem[]
 }
 
-// Vercel-style navigation structure with hierarchy
-const modernNavItems: NavItem[] = [
-  { 
-    label: 'Overview', 
-    href: '/dashboard', 
-    icon: Home, 
-    active: true 
-  },
-  { 
-    label: 'Users', 
-    href: '/dashboard/users', 
-    icon: Users,
-    badge: '12'
-  },
-  { 
-    label: 'Analytics', 
-    href: '/dashboard/analytics', 
-    icon: BarChart3,
-    children: [
-      { label: 'Traffic', href: '/dashboard/analytics/traffic', icon: BarChart3 },
-      { label: 'Conversions', href: '/dashboard/analytics/conversions', icon: BarChart3 },
-    ]
-  },
-  { 
-    label: 'Settings', 
-    href: '/dashboard/settings', 
-    icon: Settings,
-    children: [
-      { label: 'General', href: '/dashboard/settings/general', icon: Settings },
-      { label: 'Security', href: '/dashboard/settings/security', icon: Settings },
-      { label: 'Billing', href: '/dashboard/settings/billing', icon: Settings },
-    ]
-  },
-]
+// Navigation items with role-based access control
+function getNavItems(userRole: string | undefined): NavItem[] {
+  const isAdmin = userRole === 'SUPER_ADMIN' || userRole === 'TENANT_ADMIN'
+  
+  const baseItems: NavItem[] = [
+    { 
+      label: 'Overview', 
+      href: '/dashboard', 
+      icon: Home, 
+      active: true 
+    },
+    { 
+      label: 'Settings', 
+      href: '/dashboard/settings', 
+      icon: Settings
+    }
+  ]
+
+  // 管理功能 - 仅管理员可见
+  if (isAdmin) {
+    baseItems.splice(1, 0, {
+      label: 'Admin',
+      href: '/dashboard/admin',
+      icon: Shield,
+      children: [
+        { label: 'Overview', href: '/dashboard/admin', icon: Home },
+        { label: 'Users', href: '/dashboard/admin/users', icon: Users },
+        { label: 'Tenants', href: '/dashboard/admin/tenants', icon: Building },
+        { label: 'System Settings', href: '/dashboard/admin/settings', icon: Settings },
+      ]
+    })
+  }
+
+  return baseItems
+}
 
 /**
  * Vercel-style Navigation Item Component
@@ -133,6 +136,8 @@ function NavMenuItem({
       if (iconComponent === Users) return 'Users'
       if (iconComponent === Settings) return 'Settings'
       if (iconComponent === BarChart3) return 'BarChart3'
+      if (iconComponent === Shield) return 'Shield'
+      if (iconComponent === Building) return 'Building'
       return 'Home' // 默认图标
     }
 
@@ -269,6 +274,7 @@ function NavMenuItem({
  */
 function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onToggle: () => void }) {
   const { data: session } = useSession()
+  const navItems = getNavItems((session?.user as { role?: string })?.role)
   
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/sign-in' })
@@ -315,7 +321,7 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
           "space-y-1",
           isCollapsed ? "px-0" : "px-2"
         )}>
-          {modernNavItems.map((item) => (
+          {navItems.map((item) => (
             <NavMenuItem 
               key={item.href} 
               item={item} 
@@ -489,6 +495,7 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
  */
 function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: (open: boolean) => void }) {
   const { data: session } = useSession()
+  const navItems = getNavItems((session?.user as { role?: string })?.role)
   
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/sign-in' })
@@ -524,7 +531,7 @@ function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange
           {/* Navigation */}
           <nav className="flex-1 py-4 overflow-y-auto">
             <div className="space-y-1 px-4">
-              {modernNavItems.map((item) => (
+              {navItems.map((item) => (
                 <NavMenuItem 
                   key={item.href} 
                   item={item} 
