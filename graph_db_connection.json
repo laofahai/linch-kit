@@ -1,0 +1,7 @@
+{
+  "neo4j": {
+    "connectionUri": "neo4j+s://e3e9521a.databases.neo4j.io",
+    "queryApiUrl": "https://e3e9521a.databases.neo4j.io/db/{databaseName}/query/v2",
+    "username": "neo4j"
+  }
+}
