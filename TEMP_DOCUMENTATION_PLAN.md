@@ -177,9 +177,9 @@
     *   **现有**：严格的分支命名、提交信息格式（Conventional Commits）、PR 审查要求和 CI/CD 集成。
     *   **整合**：创建/更新这些新文档文件的行为将自然地融入现有 Git 工作流。文档的更改将作为功能/修复分支的一部分，在 PR 中进行审查，并使用适当的提交类型（`docs`）进行提交。
 
-6.  **“Worktree 并行开发强制规范”**：
-    *   **现有**：所有开发必须在独立的 worktree 中进行，临时 `DESIGN.md` 文件随后整合到主文档中。
-    *   **整合**：新的包特定 `README.md` 和 `ai-context/packages-api/*.md` 文件将成为详细设计和 API 文档的**永久存储位置**，这些内容可能最初在 worktree 中的临时 `DESIGN.md` 中起草。`workflow_and_constraints.md` 中的“整合目标映射”应更新，以明确包含 `ai-context/packages-api/*.md` 作为“模块设计”或“API 设计”内容的整合目标。
+6.  **“分支并行开发规范”**：
+    *   **现有**：所有开发必须在独立的 功能分支 中进行，临时 `DESIGN.md` 文件随后整合到主文档中。
+    *   **整合**：新的包特定 `README.md` 和 `ai-context/packages-api/*.md` 文件将成为详细设计和 API 文档的**永久存储位置**，这些内容可能最初在 功能分支 中的临时 `DESIGN.md` 中起草。`workflow_and_constraints.md` 中的“整合目标映射”应更新，以明确包含 `ai-context/packages-api/*.md` 作为“模块设计”或“API 设计”内容的整合目标。
 
 **总体影响：**
 

@@ -50,16 +50,16 @@ core → schema → auth → crud → trpc → ui → console
 - **扩展接口**: 为未来高级功能预留扩展点
 - **商业化考虑**: 基础版满足中小企业需求，高级版作为商业扩展
 
-### 9. Worktree 并行开发强制规范
-- **主仓库目录保护**: 主仓库目录 (`/home/laofahai/workspace/linch-kit`) 必须始终保持在 `main` 分支
-- **开发工作隔离**: 所有功能开发、Bug修复、实验性工作必须在独立的 worktree 中进行
-- **Worktree 命名规范**: 
-  - 功能开发: `worktrees/feature-[descriptive-name]`
-  - Bug修复: `worktrees/fix-[issue-description]`
-  - 实验性: `worktrees/experiment-[technology]`
-- **分支对应关系**: worktree 目录名应与分支名保持逻辑一致
-- **强制检查**: AI助手每次开始工作前必须验证工作环境，违规时立即创建合适的 worktree
-- **清理责任**: 完成工作后必须及时清理不需要的 worktree 和分支
+### 9. 分支并行开发规范
+- **主分支保护**: 直接在 `main`, `master`, `develop`, `release/*` 分支上工作是禁止的
+- **开发工作隔离**: 所有功能开发、Bug修复、实验性工作必须在专门的功能分支中进行
+- **分支命名规范**: 
+  - 功能开发: `feature/[descriptive-name]`
+  - Bug修复: `fix/[issue-description]`
+  - 实验性: `experiment/[technology]`
+- **分支生命周期**: 从 main 创建 → 开发 → PR → 合并 → 删除
+- **强制检查**: AI助手每次开始工作前必须验证当前分支，违规时立即创建合适的功能分支
+- **清理责任**: 完成工作后必须及时清理本地和远程分支
 
 ## 🛠️ 开发流程
 
@@ -422,19 +422,16 @@ chore:    构建/工具
 - **违规后果**：累积未清理分支将导致仓库混乱，影响团队协作
 - **强制提交**：Session结束前必须提交所有更改
 
-### 🔄 Worktree 并行开发约束
-
-**详细流程参考**: [architecture/worktree-parallel-development.md](../architecture/worktree-parallel-development.md)
+### 🔄 分支并行开发约束
 
 #### 核心约束
-- **强制位置**：所有worktree必须在 `worktrees/` 目录下
-- **命名规范**：遵循 `feature-[name]` / `hotfix-[issue]` / `experiment-[tech]` 格式
-- **生命周期管理**：创建→开发→清理，不允许长期保留已完成的worktree
-- **环境隔离**：每个worktree独立依赖安装和构建验证
-- **配置继承**：自动共享主仓库的 `.claude/settings.local.json` 配置
+- **分支隔离**：所有开发工作必须在独立的功能分支中进行
+- **命名规范**：遵循 `feature/[name]` / `fix/[issue]` / `experiment/[tech]` 格式
+- **生命周期管理**：从 main 创建 → 开发 → PR → 合并 → 删除，不允许长期保留已完成的分支
+- **环境检查**：开发前必须检查当前分支状态和工作目录状态
 
 #### 强制清理要求
-完成开发后必须立即清理：worktree目录 + 远程分支 + 本地分支
+完成开发后必须立即清理：远程分支 + 本地分支
 
 ### 🎯 提交粒度标准
 - **单一职责**：每次提交只做一件事
