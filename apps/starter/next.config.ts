@@ -15,8 +15,6 @@ const nextConfig: NextConfig = {
     },
     // 启用 React 19 的并发特性
     serverComponentsExternalPackages: ["@prisma/client"],
-    // 禁用自动安装依赖
-    autoInstallPackages: false,
   },
 
   // 性能优化
