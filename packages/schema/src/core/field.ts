@@ -711,15 +711,15 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
 
     case 'email':
       schema = z.string().email()
-      if ('minLength' in field && field.minLength !== undefined) schema = (schema as z.ZodString).min(field.minLength)
-      if ('maxLength' in field && field.maxLength !== undefined) schema = (schema as z.ZodString).max(field.maxLength)
+      if ('minLength' in field && typeof field.minLength === 'number') schema = (schema as z.ZodString).min(field.minLength)
+      if ('maxLength' in field && typeof field.maxLength === 'number') schema = (schema as z.ZodString).max(field.maxLength)
       if ('transform' in field && field.transform) schema = schema.transform(field.transform)
       break
 
     case 'url':
       schema = z.string().url()
-      if ('minLength' in field && field.minLength !== undefined) schema = (schema as z.ZodString).min(field.minLength)
-      if ('maxLength' in field && field.maxLength !== undefined) schema = (schema as z.ZodString).max(field.maxLength)
+      if ('minLength' in field && typeof field.minLength === 'number') schema = (schema as z.ZodString).min(field.minLength)
+      if ('maxLength' in field && typeof field.maxLength === 'number') schema = (schema as z.ZodString).max(field.maxLength)
       if ('transform' in field && field.transform) schema = schema.transform(field.transform)
       break
 
