@@ -14,7 +14,7 @@ import { createLogger } from '@linch-kit/core'
  */
 export const logger = createLogger({
   name: 'schema'
-}) as unknown
+}) as ReturnType<typeof createLogger>
 
 /**
  * 日志记录辅助函数
