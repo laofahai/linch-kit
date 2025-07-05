@@ -50,6 +50,17 @@ core → schema → auth → crud → trpc → ui → console
 - **扩展接口**: 为未来高级功能预留扩展点
 - **商业化考虑**: 基础版满足中小企业需求，高级版作为商业扩展
 
+### 9. Worktree 并行开发强制规范
+- **主仓库目录保护**: 主仓库目录 (`/home/laofahai/workspace/linch-kit`) 必须始终保持在 `main` 分支
+- **开发工作隔离**: 所有功能开发、Bug修复、实验性工作必须在独立的 worktree 中进行
+- **Worktree 命名规范**: 
+  - 功能开发: `worktrees/feature-[descriptive-name]`
+  - Bug修复: `worktrees/fix-[issue-description]`
+  - 实验性: `worktrees/experiment-[technology]`
+- **分支对应关系**: worktree 目录名应与分支名保持逻辑一致
+- **强制检查**: AI助手每次开始工作前必须验证工作环境，违规时立即创建合适的 worktree
+- **清理责任**: 完成工作后必须及时清理不需要的 worktree 和分支
+
 ## 🛠️ 开发流程
 
 ### 🔴 设计文档强制要求

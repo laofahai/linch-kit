@@ -14,17 +14,35 @@
 - [ ] 使用 `TodoRead` 检查待办事项
 - [ ] 如有未完成任务，询问用户是否继续或开始新任务
 
-### 2. 分支安全检查 (🔴 最高优先级)
+### 2. 分支与 Worktree 安全检查 (🔴 最高优先级)
+- [ ] 运行 `pwd` 确认当前工作目录
 - [ ] 运行 `git branch --show-current` 检查当前分支
-- [ ] **禁止在以下分支工作**: `main`, `master`, `develop`, `release/*`
-- [ ] 如在受限分支，**立即创建新分支**：
-  ```bash
-  git checkout -b feature/[task-description]
-  # 或
-  git checkout -b fix/[issue-description]
-  ```
-- [ ] **Worktree环境检查**: 如在worktree中，确认当前分支与worktree目录名一致
-- [ ] **主仓库保护**: 如在主仓库目录，禁止在main分支直接工作
+- [ ] **主仓库目录规则**：
+  - 如在主仓库目录 (`/home/laofahai/workspace/linch-kit`)，**必须保持在 main 分支**
+  - **禁止在主仓库目录的其他分支工作**
+- [ ] **Worktree 强制要求**：
+  - 所有功能开发、Bug 修复必须在 worktree 中进行
+  - 检查是否存在合适的 worktree：`git worktree list`
+  - 如无合适 worktree，立即创建：
+    ```bash
+    # 1. 确保在主仓库目录的 main 分支
+    cd /home/laofahai/workspace/linch-kit
+    git checkout main
+    
+    # 2. 创建功能分支
+    git checkout -b feature/[task-name]
+    
+    # 3. 创建对应的 worktree
+    git worktree add worktrees/[descriptive-name] feature/[task-name]
+    
+    # 4. 切换到 worktree 开始工作
+    cd worktrees/[descriptive-name]
+    ```
+- [ ] **Worktree 命名规范**：
+  - 功能开发: `worktrees/feature-[name]`
+  - Bug 修复: `worktrees/fix-[issue]`
+  - 实验性: `worktrees/experiment-[tech]`
+- [ ] **禁止直接在以下分支工作**: `main`, `master`, `develop`, `release/*`
 
 ### 3. 工作目录检查
 - [ ] 运行 `git status --porcelain` 检查工作目录状态
@@ -279,6 +297,49 @@ bun validate   # 完整验证
 - **自动回滚** - 使用 `git restore` 撤销不当更改
 - **流程重启** - 要求按正确流程重新执行
 - **预防更新** - 自动更新相关文档防止重复错误
+
+## 🌳 Worktree 并行开发管理
+
+### 🚨 Worktree 使用强制规范
+
+**核心原则**: 主仓库目录仅用于管理，所有开发工作必须在 worktree 中进行
+
+#### 1. 环境检查与创建
+```bash
+# 检查当前环境
+pwd                           # 确认当前目录
+git branch --show-current     # 确认当前分支
+git worktree list            # 查看现有 worktree
+
+# 如在主仓库目录且不在 main 分支，立即切换
+git checkout main
+
+# 创建新的开发环境
+git checkout -b feature/your-task-name
+git worktree add worktrees/feature-your-task feature/your-task-name
+cd worktrees/feature-your-task
+```
+
+#### 2. 已有 Worktree 的处理
+```bash
+# 查看现有 worktree
+git worktree list
+
+# 进入已存在的 worktree 继续工作
+cd worktrees/existing-feature
+
+# 清理不需要的 worktree
+git worktree remove worktrees/feature-name
+git branch -d feature/branch-name  # 删除对应分支
+```
+
+#### 3. 违规检测与处理
+- **发现在主仓库目录的非 main 分支工作**: 立即停止，创建 worktree
+- **发现在 worktree 中但分支不匹配**: 修正分支或重新创建
+- **主仓库目录有未提交更改**: 先处理更改再继续
+
+### 📚 Worktree 最佳实践参考
+详细指导请参考: [ai-context/architecture/worktree-parallel-development.md](./ai-context/architecture/worktree-parallel-development.md)
 
 ## 🎯 具体场景开发指导
 

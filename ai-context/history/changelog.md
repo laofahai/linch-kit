@@ -44,6 +44,29 @@
 - **权限保护**: 在layout层而非middleware层实现权限检查
 - **文档整合**: 临时设计文档成功整合到主文档体系
 
+## 🌳 2025-07-05 Worktree 并行开发规范化
+
+### 🚨 强制性开发约束更新
+- **CLAUDE.md 重大更新**: 增加 Worktree 使用强制规范
+- **主仓库保护**: 明确主仓库目录必须始终保持在 main 分支
+- **开发工作隔离**: 所有开发工作必须在独立的 worktree 中进行
+- **违规检测机制**: AI助手必须在每次开始工作前验证环境
+
+### 📚 文档体系完善
+- **workflow_and_constraints.md**: 新增第9条 Worktree 并行开发强制规范
+- **实施指导**: 提供详细的 worktree 创建、管理、清理流程
+- **命名规范**: 标准化 worktree 和分支命名约定
+
+### 🔧 环境管理优化
+- **创建标准流程**: 为 starter-console-packages-integration 创建专用 worktree
+- **配置共享**: 验证 .claude 配置在 worktree 间的正确继承
+- **上下文一致性**: 确保 ai-context 在所有 worktree 中可访问
+
+### 🎯 下一步计划
+- 在新 worktree 中实施 starter 与 console 及 packages 的集成
+- 验证并行开发工作流的实际效果
+- 持续优化 worktree 管理自动化工具
+
 ## 🚀 2025-07-04 架构重构：平台化转型
 
 ### 🎯 重大架构调整
