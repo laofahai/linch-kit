@@ -6,6 +6,7 @@
  * @since 0.1.0
  */
 
+import type { z } from 'zod'
 import type { FieldDefinition, PermissionRule } from './field'
 
 /**
@@ -45,6 +46,7 @@ export interface EntityHooks {
  */
 export interface EntityOptions {
   tableName?: string
+  schema?: string
   description?: string
   softDelete?: boolean
   timestamps?: boolean
@@ -72,15 +74,33 @@ export interface Entity<T = Record<string, unknown>> {
   fields: Record<keyof T, FieldDefinition>
   options: EntityOptions
 
+  // Zod Schemas
+  zodSchema: z.ZodObject<Record<string, z.ZodSchema>>
+  createSchema: z.ZodObject<Record<string, z.ZodSchema>>
+  updateSchema: z.ZodObject<Record<string, z.ZodSchema>>
+
+  // 类型获取属性
+  type: T
+  createInput: CreateInput<T>
+  updateInput: UpdateInput<T>
+
   // Schema相关方法（不包含数据库操作）
   validate(data: unknown): Promise<boolean>
   validateAndParse(data: unknown): T
   validateCreate(data: unknown): CreateInput<T>
   validateUpdate(data: unknown): UpdateInput<T>
 
+  // 实体信息获取方法
+  getTableName(): string
+  getFieldNames(): string[]
+  getRequiredFields(): string[]
+  getUniqueFields(): string[]
+  getIndexedFields(): string[]
+  getRelationFields(): Array<[string, FieldDefinition]>
+
   // Schema操作方法
   clone(): Entity<T>
-  extend(fields: Record<string, FieldDefinition>): Entity
+  extend(fields: Record<string, FieldDefinition | { build(): FieldDefinition }>): Entity
   withOptions(options: Partial<EntityOptions>): Entity<T>
 }
 

@@ -372,7 +372,7 @@ describe('Entity System', () => {
         
         const postField = relationFields.find(([name]) => name === 'posts')?.[1]
         expect(postField?.type).toBe('relation')
-        expect(postField?.target).toBe('Post')
+        expect((postField as any)?.target).toBe('Post')
       })
 
       it('should return empty array when no relation fields', () => {

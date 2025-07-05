@@ -15,12 +15,11 @@ import type {
   UrlFieldOptions,
   UuidFieldOptions,
   TextFieldOptions,
-  // JsonFieldOptions,     // 暂时注释掉未使用的类型
-  // I18nFieldOptions,     // 暂时注释掉未使用的类型
+  JsonFieldOptions,
+  I18nFieldOptions,
   EnumFieldOptions,
   ArrayFieldOptions,
   RelationFieldOptions,
-  // I18nFieldConfig,      // 暂时注释掉未使用的类型
   BaseFieldDefinition
 } from '../types'
 
@@ -155,7 +154,7 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
   }
 
   // Add direct access to common properties (non-conflicting names)
-  get type(): string {
+  get type(): FieldType {
     return this.definition.type
   }
 
@@ -411,8 +410,12 @@ class EnumFieldBuilder<T extends readonly string[]> extends FieldBuilder<EnumFie
  * 数组字段构建器
  */
 class ArrayFieldBuilder extends FieldBuilder<ArrayFieldOptions> {
-  constructor(items: FieldDefinition, options: Partial<ArrayFieldOptions> = {}) {
-    super({ type: 'array', items, required: false, ...options } as ArrayFieldOptions)
+  constructor(items: FieldDefinition | { build(): FieldDefinition }, options: Partial<ArrayFieldOptions> = {}) {
+    // 如果传入的是构建器，先构建出定义
+    const itemDefinition = items && typeof items === 'object' && 'build' in items && typeof items.build === 'function'
+      ? items.build()
+      : items as FieldDefinition
+    super({ type: 'array', items: itemDefinition, required: false, ...options } as ArrayFieldOptions)
   }
 
   min(length: number): this {
@@ -519,6 +522,57 @@ class RelationFieldBuilder extends FieldBuilder<RelationFieldOptions> {
 }
 
 /**
+ * JSON字段构建器
+ */
+class JsonFieldBuilder extends FieldBuilder<JsonFieldOptions> {
+  constructor(options: Partial<JsonFieldOptions> = {}) {
+    super({ type: 'json', required: false, ...options } as JsonFieldOptions)
+  }
+
+  schema(schema: Record<string, unknown>): this {
+    this.definition.schema = schema
+    return this
+  }
+
+  get jsonSchema(): Record<string, unknown> | undefined {
+    return this.definition.schema
+  }
+}
+
+/**
+ * I18n字段构建器
+ */
+class I18nFieldBuilder extends FieldBuilder<I18nFieldOptions> {
+  constructor(locales: string[] = ['en'], options: Partial<I18nFieldOptions> = {}) {
+    super({ 
+      type: 'i18n', 
+      baseType: 'string',
+      locales,
+      required: false, 
+      ...options 
+    } as I18nFieldOptions)
+  }
+
+  baseType(type: Exclude<FieldType, 'i18n' | 'relation' | 'array'>): this {
+    this.definition.baseType = type
+    return this
+  }
+
+  fallback(locale: string): this {
+    this.definition.fallback = locale
+    return this
+  }
+
+  get locales(): string[] {
+    return this.definition.locales
+  }
+
+  get fallbackLocale(): string | undefined {
+    return this.definition.fallback
+  }
+}
+
+/**
  * 定义字段的主入口
  */
 export const defineField = {
@@ -574,15 +628,21 @@ export const defineField = {
   /**
    * 定义数组字段
    */
-  array(items: FieldDefinition, options?: Partial<ArrayFieldOptions>): ArrayFieldBuilder {
+  array(items: FieldDefinition | { build(): FieldDefinition }, options?: Partial<ArrayFieldOptions>): ArrayFieldBuilder {
     return new ArrayFieldBuilder(items, options)
   },
 
   /**
    * 定义关系字段
    */
-  relation(target: string, options?: Partial<RelationFieldOptions>): RelationFieldBuilder {
-    return new RelationFieldBuilder(target, options)
+  relation(target: string, relationTypeOrOptions?: string | Partial<RelationFieldOptions>): RelationFieldBuilder {
+    // 兼容性处理：如果第二个参数是字符串，则作为 relationType
+    if (typeof relationTypeOrOptions === 'string') {
+      return new RelationFieldBuilder(target, { 
+        relationType: relationTypeOrOptions as 'oneToOne' | 'oneToMany' | 'manyToOne' | 'manyToMany'
+      })
+    }
+    return new RelationFieldBuilder(target, relationTypeOrOptions)
   },
 
   /**
@@ -618,33 +678,15 @@ export const defineField = {
   /**
    * 定义JSON字段
    */
-  json(options?: Partial<BaseFieldDefinition>): FieldBuilder<BaseFieldDefinition> {
-    const jsonFieldBuilder = new (class extends FieldBuilder<BaseFieldDefinition> {
-      constructor() {
-        super({ type: 'json', required: false, ...options } as BaseFieldDefinition)
-      }
-    })()
-    return jsonFieldBuilder
+  json(options?: Partial<JsonFieldOptions>): JsonFieldBuilder {
+    return new JsonFieldBuilder(options)
   },
 
   /**
    * 定义国际化字段
    */
-  i18n(locales?: string[]): FieldBuilder<BaseFieldDefinition> {
-    const i18nFieldBuilder = new (class extends FieldBuilder<BaseFieldDefinition> {
-      constructor() {
-        super({ 
-          type: 'i18n', 
-          required: false,
-          locales: locales || ['en', 'zh-CN']
-        } as BaseFieldDefinition & { locales: string[] })
-      }
-      
-      get locales(): string[] {
-        return (this.definition as BaseFieldDefinition & { locales: string[] }).locales
-      }
-    })()
-    return i18nFieldBuilder
+  i18n(locales?: string[], options?: Partial<I18nFieldOptions>): I18nFieldBuilder {
+    return new I18nFieldBuilder(locales || ['en'], options)
   }
 }
 

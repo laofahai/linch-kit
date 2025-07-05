@@ -541,6 +541,8 @@ describe('fieldToZod Conversion', () => {
     it('should convert i18n field with locale configuration', () => {
       const field: FieldDefinition = {
         type: 'i18n',
+        baseType: 'string',
+        locales: ['en', 'zh', 'ja'],
         required: true,
         i18n: {
           locales: ['en', 'zh', 'ja'],
@@ -556,6 +558,8 @@ describe('fieldToZod Conversion', () => {
     it('should convert i18n field without locale configuration', () => {
       const field: FieldDefinition = {
         type: 'i18n',
+        baseType: 'string',
+        locales: ['en'],
         required: true
       }
       const schema = fieldToZod(field)
@@ -566,6 +570,8 @@ describe('fieldToZod Conversion', () => {
     it('should handle optional i18n field', () => {
       const field: FieldDefinition = {
         type: 'i18n',
+        baseType: 'string',
+        locales: ['en', 'zh'],
         required: false,
         i18n: {
           locales: ['en', 'zh'],
