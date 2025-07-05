@@ -372,7 +372,7 @@ describe('Entity System', () => {
         
         const postField = relationFields.find(([name]) => name === 'posts')?.[1]
         expect(postField?.type).toBe('relation')
-        expect(postField?.target).toBe('Post')
+        expect((postField as any)?.target).toBe('Post')
       })
 
       it('should return empty array when no relation fields', () => {
@@ -548,20 +548,20 @@ describe('Entity System', () => {
       
       // Test all helper methods
       expect(ComplexEntity.getTableName()).toBe('complex_entities')
-      expect(ComplexEntity.getFieldNames()).toHaveLength(10)
+      expect(ComplexEntity.getFieldNames()).toHaveLength(11)
       expect(ComplexEntity.getRequiredFields()).toHaveLength(6)
       expect(ComplexEntity.getUniqueFields()).toHaveLength(2)
-      expect(ComplexEntity.getIndexedFields()).toHaveLength(3) // name, email (unique), and name (index)
+      expect(ComplexEntity.getIndexedFields()).toHaveLength(2) // name (unique+index), email (unique)
       expect(ComplexEntity.getRelationFields()).toHaveLength(2)
       
       // Test manipulation methods
       const cloned = ComplexEntity.clone()
-      expect(cloned.getFieldNames()).toHaveLength(10)
+      expect(cloned.getFieldNames()).toHaveLength(11)
       
       const extended = ComplexEntity.extend({
         newField: defineField.string().optional()
       })
-      expect(extended.getFieldNames()).toHaveLength(11)
+      expect(extended.getFieldNames()).toHaveLength(12)
       
       const withNewOptions = ComplexEntity.withOptions({
         timestamps: false

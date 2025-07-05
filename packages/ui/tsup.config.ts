@@ -8,7 +8,9 @@ export default defineConfig({
     'src/components/index.ts',
     'src/forms/index.ts',
     'src/tables/index.ts',
-    'src/utils/index.ts'
+    'src/utils/index.ts',
+    'src/components/ui/button.tsx',
+    'src/components/ui/card.tsx'
   ],
   format: ['cjs', 'esm'],
   dts: true,

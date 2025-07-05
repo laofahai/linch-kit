@@ -1,5 +1,7 @@
+'use client'
+
 import { useEffect } from 'react'
-import { getCLS, getFID, getFCP, getLCP, getTTFB, type Metric } from 'web-vitals'
+import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals'
 
 interface WebVitalsProps {
   onMetric?: (metric: { name: string; value: number; rating: string }) => void
@@ -45,11 +47,11 @@ export const WebVitals: React.FC<WebVitalsProps> = ({
     }
 
     // 监听 Core Web Vitals
-    getCLS(handleMetric)
-    getFID(handleMetric)
-    getFCP(handleMetric)
-    getLCP(handleMetric)
-    getTTFB(handleMetric)
+    onCLS(handleMetric)
+    onINP(handleMetric)  // INP 替代 FID
+    onFCP(handleMetric)
+    onLCP(handleMetric)
+    onTTFB(handleMetric)
   }, [onMetric, debug])
 
   // 这是一个隐藏的监控组件，不渲染任何可见内容

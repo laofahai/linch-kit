@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
+// import { z } from 'zod'
+// import { TRPCError } from '@trpc/server'
 
 import {
   appRouter,
@@ -292,10 +292,10 @@ describe('@linch-kit/trpc Integration Tests', () => {
       const crudCaller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 处理无效输入
-      await expect(crudCaller.create({ model: 'User' } as any))
+      await expect(crudCaller.create({ model: 'User' } as unknown))
         .rejects.toThrow()
       
-      await expect(crudCaller.hasPermission({ action: 'read' } as any))
+      await expect(crudCaller.hasPermission({ action: 'read' } as unknown))
         .rejects.toThrow()
     })
 

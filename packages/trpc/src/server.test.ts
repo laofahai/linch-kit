@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
+// import { TRPCError } from '@trpc/server'
 
 import {
   healthRouter,
@@ -366,7 +366,7 @@ describe('@linch-kit/trpc Server Core', () => {
 
   describe('错误处理', () => {
     it('should handle middleware errors gracefully', async () => {
-      const errorMiddleware = middleware(({ next }) => {
+      const errorMiddleware = middleware(({ next: _next }) => {
         throw new Error('Middleware error')
       })
       

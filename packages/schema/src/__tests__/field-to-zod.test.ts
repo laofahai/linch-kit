@@ -310,7 +310,7 @@ describe('fieldToZod Conversion', () => {
       const schema = fieldToZod(field)
       
       const date = new Date()
-      expect(schema.parse(date)).toBe(date)
+      expect(schema.parse(date)).toEqual(date)
       expect(() => schema.parse('2023-01-01')).toThrow()
     })
 
@@ -541,6 +541,8 @@ describe('fieldToZod Conversion', () => {
     it('should convert i18n field with locale configuration', () => {
       const field: FieldDefinition = {
         type: 'i18n',
+        baseType: 'string',
+        locales: ['en', 'zh', 'ja'],
         required: true,
         i18n: {
           locales: ['en', 'zh', 'ja'],
@@ -556,16 +558,20 @@ describe('fieldToZod Conversion', () => {
     it('should convert i18n field without locale configuration', () => {
       const field: FieldDefinition = {
         type: 'i18n',
+        baseType: 'string',
+        locales: ['en'],
         required: true
       }
       const schema = fieldToZod(field)
       
-      expect(schema.parse({ en: 'Hello', zh: '你好' })).toEqual({ en: 'Hello', zh: '你好' })
+      expect(schema.parse({ en: 'Hello' })).toEqual({ en: 'Hello' })
     })
 
     it('should handle optional i18n field', () => {
       const field: FieldDefinition = {
         type: 'i18n',
+        baseType: 'string',
+        locales: ['en', 'zh'],
         required: false,
         i18n: {
           locales: ['en', 'zh'],

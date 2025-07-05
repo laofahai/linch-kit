@@ -11,8 +11,9 @@
  */
 
 import { describe, it, expect, beforeEach, jest } from 'bun:test'
-import { QueryOptimizer, createQueryOptimizer } from '../core/query-builder/query-optimizer'
 import type { Entity } from '@linch-kit/schema'
+
+import { QueryOptimizer, createQueryOptimizer } from '../core/query-builder/query-optimizer'
 import type { Logger } from '../types'
 
 // Mock Logger

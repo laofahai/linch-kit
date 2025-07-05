@@ -104,6 +104,7 @@ export interface TextFieldOptions extends BaseFieldDefinition {
   maxLength?: number
   min?: number
   max?: number
+  transform?: (value: string) => string
   auto?: boolean
   i18n?: I18nFieldConfig
 }
@@ -147,6 +148,7 @@ export interface EmailFieldOptions extends BaseFieldDefinition {
   type: 'email'
   min?: number
   max?: number
+  transform?: (value: string) => string
   auto?: boolean
 }
 
@@ -157,6 +159,7 @@ export interface UrlFieldOptions extends BaseFieldDefinition {
   type: 'url'
   min?: number
   max?: number
+  transform?: (value: string) => string
   auto?: boolean
 }
 
@@ -166,6 +169,7 @@ export interface UrlFieldOptions extends BaseFieldDefinition {
 export interface UuidFieldOptions extends BaseFieldDefinition {
   type: 'uuid'
   version?: 4 | 5
+  transform?: (value: string) => string
   auto?: boolean
   min?: number
   max?: number

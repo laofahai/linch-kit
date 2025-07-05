@@ -5,7 +5,7 @@
 
 import { z } from 'zod'
 
-import { router, protectedProcedure } from '../index'
+import { router, protectedProcedure } from '../server'
 
 export const crudRouter = router({
   // 通用查询

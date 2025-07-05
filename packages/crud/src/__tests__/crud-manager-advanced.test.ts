@@ -14,9 +14,9 @@
  */
 
 import { describe, it, expect, mock, beforeEach } from 'bun:test'
+import type { LinchKitUser } from '@linch-kit/auth'
 
 import { CrudManager } from '../core/crud-manager'
-import type { LinchKitUser } from '@linch-kit/auth'
 
 describe('CrudManager Advanced Operations', () => {
   let mockPrisma: any

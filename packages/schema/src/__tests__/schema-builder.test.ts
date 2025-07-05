@@ -6,6 +6,7 @@ import { describe, it, expect } from 'bun:test'
 
 import { SchemaBuilder } from '../core/schema'
 import { defineField } from '../core/field'
+import type { Entity, FieldDefinition } from '../types'
 
 describe('Schema Builder', () => {
   describe('Builder Creation', () => {
@@ -120,7 +121,7 @@ describe('Schema Builder', () => {
         .field('id', defineField.uuid().required().build())
         .field('createdAt', defineField.date().required().build())
       
-      const baseEntity = baseSchema.build('Base')
+      const baseEntity = baseSchema.build('Base') as Entity<Record<string, FieldDefinition>>
       
       const userBuilder = new SchemaBuilder('User')
         .field('name', defineField.string().required().build())

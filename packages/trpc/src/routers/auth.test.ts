@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
+// import { TRPCError } from '@trpc/server'
 
 import { authRouter } from './auth'
 
@@ -167,7 +167,7 @@ describe('@linch-kit/trpc Auth Router', () => {
         services: mockServices
       }
       
-      const caller = authRouter.createCaller(contextWithNullUser as any)
+      const caller = authRouter.createCaller(contextWithNullUser as unknown)
       const result = await caller.isAuthenticated()
       expect(result).toBe(false)
     })
@@ -280,7 +280,7 @@ describe('@linch-kit/trpc Auth Router', () => {
     })
 
     it('should validate input schema', async () => {
-      const caller = authRouter.createCaller(mockAuthenticatedContext)
+      const _caller = authRouter.createCaller(mockAuthenticatedContext)
       
       const inputSchema = z.object({
         action: z.string(),
@@ -376,10 +376,10 @@ describe('@linch-kit/trpc Auth Router', () => {
       const caller = authRouter.createCaller(mockAuthenticatedContext)
       
       // 测试缺少必需字段
-      await expect(caller.hasPermission({ action: 'read' } as any))
+      await expect(caller.hasPermission({ action: 'read' } as unknown))
         .rejects.toThrow()
       
-      await expect(caller.hasPermission({ resource: 'posts' } as any))
+      await expect(caller.hasPermission({ resource: 'posts' } as unknown))
         .rejects.toThrow()
     })
 
@@ -387,20 +387,20 @@ describe('@linch-kit/trpc Auth Router', () => {
       const caller = authRouter.createCaller(mockAuthenticatedContext)
       
       // 测试无效类型
-      await expect(caller.hasPermission({ action: 123, resource: 'posts' } as any))
+      await expect(caller.hasPermission({ action: 123, resource: 'posts' } as unknown))
         .rejects.toThrow()
       
-      await expect(caller.hasPermission({ action: 'read', resource: 456 } as any))
+      await expect(caller.hasPermission({ action: 'read', resource: 456 } as unknown))
         .rejects.toThrow()
     })
 
     it('should handle null and undefined values', async () => {
       const caller = authRouter.createCaller(mockAuthenticatedContext)
       
-      await expect(caller.hasPermission({ action: null, resource: 'posts' } as any))
+      await expect(caller.hasPermission({ action: null, resource: 'posts' } as unknown))
         .rejects.toThrow()
       
-      await expect(caller.hasPermission({ action: 'read', resource: null } as any))
+      await expect(caller.hasPermission({ action: 'read', resource: null } as unknown))
         .rejects.toThrow()
     })
   })
@@ -441,7 +441,7 @@ describe('@linch-kit/trpc Auth Router', () => {
         services: mockServices
       }
       
-      const caller = authRouter.createCaller(contextWithoutUser as any)
+      const caller = authRouter.createCaller(contextWithoutUser as unknown)
       
       // 公共端点应该工作
       await expect(caller.getSession()).resolves.toBeNull()
@@ -468,7 +468,7 @@ describe('@linch-kit/trpc Auth Router', () => {
         services: mockServices
       }
       
-      const caller = authRouter.createCaller(malformedContext as any)
+      const caller = authRouter.createCaller(malformedContext as unknown)
       
       // 应该处理无效的用户对象
       await expect(caller.isAuthenticated()).resolves.toBe(true) // 因为 user 是 truthy

@@ -17,7 +17,7 @@ export const LazySection: React.FC<LazySectionProps> = ({
   fallback = null,
   delay = 0
 }) => {
-  const [isInView, setIsInView] = useState(false)
+  const [, setIsInView] = useState(false)
   const [shouldRender, setShouldRender] = useState(false)
   const sectionRef = useRef<HTMLDivElement>(null)
 

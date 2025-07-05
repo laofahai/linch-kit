@@ -257,12 +257,22 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
   /**
    * 扩展实体定义
    */
-  extend<E extends Record<string, FieldDefinition>>(
+  extend<E extends Record<string, FieldDefinition | { build(): FieldDefinition }>>(
     fields: E
   ): Entity {
+    // 转换构建器对象为字段定义
+    const processedFields: Record<string, FieldDefinition> = {}
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value && typeof value === 'object' && 'build' in value && typeof value.build === 'function') {
+        processedFields[key] = value.build()
+      } else {
+        processedFields[key] = value as FieldDefinition
+      }
+    })
+    
     return new EntityImpl(this.name, {
       name: this.name,
-      fields: { ...this.fields, ...fields },
+      fields: { ...this.fields, ...processedFields },
       options: { ...this.options }
     }) as Entity
   }
