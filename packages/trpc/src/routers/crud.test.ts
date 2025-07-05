@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
+// import { TRPCError } from '@trpc/server'
 
 import { crudRouter } from './crud'
 
@@ -91,7 +91,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 测试输入验证
       const inputSchema = z.object({
@@ -174,7 +174,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const inputSchema = z.object({
         model: z.string(),
@@ -253,7 +253,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const inputSchema = z.object({
         model: z.string(),
@@ -340,7 +340,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const inputSchema = z.object({
         model: z.string(),
@@ -423,7 +423,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const inputSchema = z.object({
         model: z.string(),
@@ -523,7 +523,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
         .rejects.toThrow()
       
       // 测试无效模型名称类型
-      await expect(caller.findMany({ model: 123 as any }))
+      await expect(caller.findMany({ model: 123 as unknown }))
         .rejects.toThrow()
     })
 
@@ -563,10 +563,10 @@ describe('@linch-kit/trpc CRUD Router', () => {
       const caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 测试缺少必需字段
-      await expect(caller.create({ model: 'User' } as any))
+      await expect(caller.create({ model: 'User' } as unknown))
         .rejects.toThrow()
       
-      await expect(caller.update({ model: 'User', data: {} } as any))
+      await expect(caller.update({ model: 'User', data: {} } as unknown))
         .rejects.toThrow()
     })
 
@@ -574,7 +574,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
       const caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       try {
-        await caller.create({ model: 'User' } as any)
+        await caller.create({ model: 'User' } as unknown)
       } catch (error) {
         expect(error).toBeInstanceOf(Error)
       }

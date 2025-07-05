@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
+
 import { DefaultAuditManager } from '../../audit/audit-manager'
 import { DefaultDataMasker } from '../../audit/data-masker'
 import type { 

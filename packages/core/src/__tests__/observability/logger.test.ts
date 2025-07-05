@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 import { hostname } from 'os'
+
+import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 
 import { LinchKitLogger, createLogger, logger } from '../../observability/logger'
 import type { Logger, LogLevel } from '../../types'

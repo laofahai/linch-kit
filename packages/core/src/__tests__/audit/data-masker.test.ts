@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest'
+
 import { DefaultDataMasker } from '../../audit/data-masker'
 
 describe('DefaultDataMasker', () => {

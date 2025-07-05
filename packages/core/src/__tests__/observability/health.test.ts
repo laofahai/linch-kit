@@ -2,8 +2,10 @@
  * @jest-environment node
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
 import { Server } from 'http'
+
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
+
 import { LinchKitHealthMonitor, createHealthMonitor, builtinCheckers } from '../../observability/health'
 import type { HealthChecker, HealthStatus } from '../../types'
 

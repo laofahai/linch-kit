@@ -3,8 +3,8 @@
  * 基于 Session 7-8 成功模式，企业级测试覆盖率
  */
 
-import { existsSync, mkdirSync, writeFileSync } from 'fs'
-import { join } from 'path'
+// import { existsSync, mkdirSync, writeFileSync } from 'fs'
+// import { join } from 'path'
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
@@ -500,7 +500,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
   describe('集成测试', () => {
     it('should integrate with file system correctly', async () => {
       // 模拟实际的文件系统场景
-      mockExistsSync.mockImplementation((path: any) => {
+      mockExistsSync.mockImplementation((path: string) => {
         return path.toString().includes('existing')
       })
 
