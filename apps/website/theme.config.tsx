@@ -106,7 +106,7 @@ const config = {
   sidebar: {
     defaultMenuCollapseLevel: 1,
     toggleButton: true,
-    titleComponent: ({ title, type }) => (
+    titleComponent: ({ title, type }: { title: string; type: string }) => (
       <span className={type === 'separator' ? 'text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide' : ''}>{title}</span>
     )
   },
