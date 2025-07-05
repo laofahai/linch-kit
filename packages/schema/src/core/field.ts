@@ -771,11 +771,14 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
     case 'i18n':
       // 国际化字段验证
       if ('locales' in field && field.locales) {
-        const localeShape: Record<string, z.ZodString> = {}
+        const localeShape: Record<string, z.ZodString | z.ZodOptional<z.ZodString>> = {}
         field.locales.forEach(locale => {
-          localeShape[locale] = z.string()
+          let localeSchema = z.string()
           if ('i18n' in field && field.i18n?.required?.includes(locale)) {
-            localeShape[locale] = localeShape[locale].min(1)
+            localeSchema = localeSchema.min(1)
+            localeShape[locale] = localeSchema
+          } else {
+            localeShape[locale] = localeSchema.optional()
           }
         })
         schema = z.object(localeShape)

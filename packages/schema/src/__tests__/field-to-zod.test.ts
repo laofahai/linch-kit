@@ -310,7 +310,7 @@ describe('fieldToZod Conversion', () => {
       const schema = fieldToZod(field)
       
       const date = new Date()
-      expect(schema.parse(date)).toBe(date)
+      expect(schema.parse(date)).toEqual(date)
       expect(() => schema.parse('2023-01-01')).toThrow()
     })
 
@@ -564,7 +564,7 @@ describe('fieldToZod Conversion', () => {
       }
       const schema = fieldToZod(field)
       
-      expect(schema.parse({ en: 'Hello', zh: '你好' })).toEqual({ en: 'Hello', zh: '你好' })
+      expect(schema.parse({ en: 'Hello' })).toEqual({ en: 'Hello' })
     })
 
     it('should handle optional i18n field', () => {
