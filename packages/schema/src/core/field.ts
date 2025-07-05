@@ -543,7 +543,7 @@ class JsonFieldBuilder extends FieldBuilder<JsonFieldOptions> {
  * I18n字段构建器
  */
 class I18nFieldBuilder extends FieldBuilder<I18nFieldOptions> {
-  constructor(locales: string[] = ['en'], options: Partial<I18nFieldOptions> = {}) {
+  constructor(locales: string[] = ['en', 'zh-CN'], options: Partial<I18nFieldOptions> = {}) {
     super({ 
       type: 'i18n', 
       baseType: 'string',
@@ -686,7 +686,7 @@ export const defineField = {
    * 定义国际化字段
    */
   i18n(locales?: string[], options?: Partial<I18nFieldOptions>): I18nFieldBuilder {
-    return new I18nFieldBuilder(locales || ['en'], options)
+    return new I18nFieldBuilder(locales || ['en', 'zh-CN'], options)
   }
 }
 
@@ -698,9 +698,6 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
 
   switch (field.type) {
     case 'string':
-    case 'email':
-    case 'url':
-    case 'uuid':
     case 'text':
       schema = z.string()
       if ('minLength' in field && field.minLength !== undefined) schema = (schema as z.ZodString).min(field.minLength)
@@ -709,6 +706,25 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
         const pattern = typeof field.pattern === 'string' ? new RegExp(field.pattern) : field.pattern
         schema = (schema as z.ZodString).regex(pattern)
       }
+      if ('transform' in field && field.transform) schema = schema.transform(field.transform)
+      break
+
+    case 'email':
+      schema = z.string().email()
+      if ('minLength' in field && field.minLength !== undefined) schema = (schema as z.ZodString).min(field.minLength)
+      if ('maxLength' in field && field.maxLength !== undefined) schema = (schema as z.ZodString).max(field.maxLength)
+      if ('transform' in field && field.transform) schema = schema.transform(field.transform)
+      break
+
+    case 'url':
+      schema = z.string().url()
+      if ('minLength' in field && field.minLength !== undefined) schema = (schema as z.ZodString).min(field.minLength)
+      if ('maxLength' in field && field.maxLength !== undefined) schema = (schema as z.ZodString).max(field.maxLength)
+      if ('transform' in field && field.transform) schema = schema.transform(field.transform)
+      break
+
+    case 'uuid':
+      schema = z.string().uuid()
       if ('transform' in field && field.transform) schema = schema.transform(field.transform)
       break
 
@@ -754,11 +770,11 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
 
     case 'i18n':
       // 国际化字段验证
-      if ('i18n' in field && field.i18n) {
+      if ('locales' in field && field.locales) {
         const localeShape: Record<string, z.ZodString> = {}
-        field.i18n.locales.forEach(locale => {
+        field.locales.forEach(locale => {
           localeShape[locale] = z.string()
-          if (field.i18n?.required?.includes(locale)) {
+          if ('i18n' in field && field.i18n?.required?.includes(locale)) {
             localeShape[locale] = localeShape[locale].min(1)
           }
         })
