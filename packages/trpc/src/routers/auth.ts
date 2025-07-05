@@ -5,7 +5,7 @@
 
 import { z } from 'zod'
 
-import { router, publicProcedure, protectedProcedure } from '../index'
+import { router, publicProcedure, protectedProcedure } from '../server'
 
 export const authRouter = router({
   // 获取当前会话
