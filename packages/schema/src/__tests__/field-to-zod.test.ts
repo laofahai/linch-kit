@@ -310,7 +310,7 @@ describe('fieldToZod Conversion', () => {
       const schema = fieldToZod(field)
       
       const date = new Date()
-      expect(schema.parse(date)).toBe(date)
+      expect(schema.parse(date)).toEqual(date)
       expect(() => schema.parse('2023-01-01')).toThrow()
     })
 

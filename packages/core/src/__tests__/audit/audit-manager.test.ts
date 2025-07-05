@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
+
 import { DefaultAuditManager } from '../../audit/audit-manager'
 import { DefaultDataMasker } from '../../audit/data-masker'
 import type { 
@@ -65,7 +66,7 @@ describe('DefaultAuditManager', () => {
     auditManager = new DefaultAuditManager(mockLogger, mockMetrics)
     testEvent = {
       eventType: 'USER_LOGIN',
-      category: 'AUTH',
+      category: 'SECURITY',
       severity: 'MEDIUM',
       operation: 'LOGIN',
       resource: 'user/123',
@@ -156,6 +157,10 @@ describe('DefaultAuditManager', () => {
     })
 
     it('should log events asynchronously', async () => {
+      // 检查policy状态
+      const policy = auditManager.getPolicy()
+      expect(policy.asyncProcessing).toBe(true)
+      
       await auditManager.log(testEvent)
       
       // 事件应该被加入队列
@@ -206,7 +211,7 @@ describe('DefaultAuditManager', () => {
     })
 
     it('should filter events based on categories', async () => {
-      await auditManager.updatePolicy({ categories: ['AUTH'] })
+      await auditManager.updatePolicy({ categories: ['SECURITY'] })
       
       await auditManager.log({ ...testEvent, category: 'SYSTEM' })
       await auditManager.flush()
@@ -276,7 +281,7 @@ describe('DefaultAuditManager', () => {
 
     it('should query events from store', async () => {
       const filter: AuditFilter = {
-        categories: ['AUTH'],
+        categories: ['SECURITY'],
         startTime: new Date('2023-01-01'),
         endTime: new Date('2023-12-31')
       }
@@ -300,7 +305,7 @@ describe('DefaultAuditManager', () => {
     })
 
     it('should handle query errors', async () => {
-      const filter: AuditFilter = { categories: ['AUTH'] }
+      const filter: AuditFilter = { categories: ['SECURITY'] }
       const error = new Error('Query failed')
       ;(mockStore.query as Mock).mockRejectedValue(error)
       
@@ -315,7 +320,7 @@ describe('DefaultAuditManager', () => {
     })
 
     it('should count events from store', async () => {
-      const filter: AuditFilter = { categories: ['AUTH'] }
+      const filter: AuditFilter = { categories: ['SECURITY'] }
       ;(mockStore.count as Mock).mockResolvedValue(42)
       
       const result = await auditManager.count(filter)
@@ -339,7 +344,7 @@ describe('DefaultAuditManager', () => {
     })
 
     it('should export events from store', async () => {
-      const filter: AuditFilter = { categories: ['AUTH'] }
+      const filter: AuditFilter = { categories: ['SECURITY'] }
       const expectedData = 'exported data'
       ;(mockStore.export as Mock).mockResolvedValue(expectedData)
       
@@ -388,7 +393,7 @@ describe('DefaultAuditManager', () => {
         enabled: true,
         level: 'WARNING',
         filter: {
-          categories: ['AUTH'],
+          categories: ['SECURITY'],
           severities: ['HIGH']
         },
         messageTemplate: 'Alert: {{eventType}} on {{resource}}'
@@ -409,7 +414,7 @@ describe('DefaultAuditManager', () => {
       
       const matchingEvent = {
         ...testEvent,
-        category: 'AUTH',
+        category: 'SECURITY',
         severity: 'HIGH'
       } as const
       
@@ -427,7 +432,7 @@ describe('DefaultAuditManager', () => {
       
       await auditManager.log({
         ...testEvent,
-        category: 'AUTH',
+        category: 'SECURITY',
         severity: 'HIGH'
       })
       
@@ -441,7 +446,7 @@ describe('DefaultAuditManager', () => {
       
       await auditManager.log({
         ...testEvent,
-        category: 'AUTH',
+        category: 'SECURITY',
         severity: 'HIGH'
       })
       
@@ -461,7 +466,7 @@ describe('DefaultAuditManager', () => {
       
       await auditManager.log({
         ...testEvent,
-        category: 'AUTH',
+        category: 'SECURITY',
         severity: 'HIGH'
       })
       
@@ -538,19 +543,16 @@ describe('DefaultAuditManager', () => {
 
   describe('定时刷新', () => {
     it('should flush events periodically', async () => {
-      vi.useFakeTimers()
+      // 使用较短的刷新间隔进行真实的定时器测试
+      await auditManager.updatePolicy({ flushInterval: 100 }) // 100ms
       
       auditManager.addStore(mockStore)
       auditManager.logSync(testEvent)
       
-      // 模拟定时器触发
-      vi.advanceTimersByTime(5000) // 默认刷新间隔
-      
-      await vi.runAllTimersAsync()
+      // 等待刷新间隔
+      await new Promise(resolve => setTimeout(resolve, 150))
       
       expect(mockStore.store).toHaveBeenCalled()
-      
-      vi.useRealTimers()
     })
   })
 

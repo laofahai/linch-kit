@@ -212,7 +212,10 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
   }
 
   transform(fn: (value: string) => string): this {
-    (this.definition as StringFieldOptions & BaseFieldDefinition).transform = fn
+    // 确保definition是可修改的对象
+    if (this.definition && typeof this.definition === 'object') {
+      (this.definition as any).transform = fn
+    }
     return this
   }
 
@@ -656,9 +659,6 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
 
   switch (field.type) {
     case 'string':
-    case 'email':
-    case 'url':
-    case 'uuid':
     case 'text':
       schema = z.string()
       if ('minLength' in field && field.minLength !== undefined) schema = (schema as z.ZodString).min(field.minLength)
@@ -667,7 +667,34 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
         const pattern = typeof field.pattern === 'string' ? new RegExp(field.pattern) : field.pattern
         schema = (schema as z.ZodString).regex(pattern)
       }
-      if ('transform' in field && field.transform) schema = schema.transform(field.transform)
+      if ('transform' in field && field.transform && typeof field.transform === 'function') {
+        schema = schema.transform(field.transform as (value: string) => string)
+      }
+      break
+    
+    case 'email':
+      schema = z.string().email()
+      if ('min' in field && field.min !== undefined && typeof field.min === 'number') schema = (schema as z.ZodString).min(field.min)
+      if ('max' in field && field.max !== undefined && typeof field.max === 'number') schema = (schema as z.ZodString).max(field.max)
+      if ('transform' in field && field.transform && typeof field.transform === 'function') {
+        schema = schema.transform(field.transform as (value: string) => string)
+      }
+      break
+    
+    case 'url':
+      schema = z.string().url()
+      if ('min' in field && field.min !== undefined && typeof field.min === 'number') schema = (schema as z.ZodString).min(field.min)
+      if ('max' in field && field.max !== undefined && typeof field.max === 'number') schema = (schema as z.ZodString).max(field.max)
+      if ('transform' in field && field.transform && typeof field.transform === 'function') {
+        schema = schema.transform(field.transform as (value: string) => string)
+      }
+      break
+    
+    case 'uuid':
+      schema = z.string().uuid()
+      if ('transform' in field && field.transform && typeof field.transform === 'function') {
+        schema = schema.transform(field.transform as (value: string) => string)
+      }
       break
 
     case 'number':
@@ -713,11 +740,13 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
     case 'i18n':
       // 国际化字段验证
       if ('i18n' in field && field.i18n) {
-        const localeShape: Record<string, z.ZodString> = {}
+        const localeShape: Record<string, z.ZodString | z.ZodOptional<z.ZodString>> = {}
         field.i18n.locales.forEach(locale => {
-          localeShape[locale] = z.string()
-          if (field.i18n?.required?.includes(locale)) {
-            localeShape[locale] = localeShape[locale].min(1)
+          const isRequired = field.i18n?.required?.includes(locale)
+          if (isRequired) {
+            localeShape[locale] = z.string().min(1)
+          } else {
+            localeShape[locale] = z.string().optional()
           }
         })
         schema = z.object(localeShape)

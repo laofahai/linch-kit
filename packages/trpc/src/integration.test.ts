@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
+// import { z } from 'zod'
+// import { TRPCError } from '@trpc/server'
 
 import {
   appRouter,
@@ -79,54 +79,54 @@ describe('@linch-kit/trpc Integration Tests', () => {
 
   describe('完整 tRPC 应用路由器集成', () => {
     it('should create complete app router with all sub-routers', async () => {
-      const caller = appRouter.createCaller(mockPublicContext)
+      const _caller = appRouter.createCaller(mockPublicContext)
       
       // 验证应用路由器结构
-      expect(caller.health).toBeDefined()
-      expect(caller.system).toBeDefined()
+      expect(_caller.health).toBeDefined()
+      expect(_caller.system).toBeDefined()
       
       // 测试健康检查端点
-      const healthResult = await caller.health.ping()
+      const healthResult = await _caller.health.ping()
       expect(healthResult.message).toBe('pong')
       expect(typeof healthResult.timestamp).toBe('string')
       expect(typeof healthResult.uptime).toBe('number')
       
       // 测试系统信息端点
-      const systemResult = await caller.system.info()
+      const systemResult = await _caller.system.info()
       expect(systemResult.name).toBe('@linch-kit/trpc')
       expect(systemResult.version).toBe('0.1.0')
     })
 
     it('should handle nested router composition', async () => {
-      const caller = appRouter.createCaller(mockAuthenticatedContext)
+      const _caller = appRouter.createCaller(mockAuthenticatedContext)
       
       // 测试嵌套路由访问
-      const statusResult = await caller.health.status()
+      const statusResult = await _caller.health.status()
       expect(statusResult.status).toBe('healthy')
       
-      const infoResult = await caller.system.info()
+      const infoResult = await _caller.system.info()
       expect(infoResult.environment).toBe('test')
     })
 
     it('should maintain context across different routers', async () => {
-      const caller = appRouter.createCaller(mockAuthenticatedContext)
+      const _caller = appRouter.createCaller(mockAuthenticatedContext)
       
       // 验证用户上下文在不同路由中保持一致
-      const healthResult = await caller.health.ping()
-      const systemResult = await caller.system.info()
+      const healthResult = await _caller.health.ping()
+      const systemResult = await _caller.system.info()
       
       expect(healthResult).toBeDefined()
       expect(systemResult).toBeDefined()
     })
 
     it('should handle concurrent requests to different routes', async () => {
-      const caller = appRouter.createCaller(mockAuthenticatedContext)
+      const _caller = appRouter.createCaller(mockAuthenticatedContext)
       
       // 并发请求不同路由
       const promises = [
-        caller.health.ping(),
-        caller.health.status(),
-        caller.system.info()
+        _caller.health.ping(),
+        _caller.health.status(),
+        _caller.system.info()
       ]
       
       const results = await Promise.all(promises)
@@ -264,11 +264,11 @@ describe('@linch-kit/trpc Integration Tests', () => {
         services: mockServices
       }
       
-      const caller = appRouter.createCaller(originalContext)
+      const _caller = appRouter.createCaller(originalContext)
       
       // 执行操作不应该改变原始上下文
-      await caller.health.ping()
-      await caller.system.info()
+      await _caller.health.ping()
+      await _caller.system.info()
       
       expect(originalContext.user).toBe(mockAuthenticatedContext.user)
       expect(originalContext.services).toBe(mockServices)
@@ -313,10 +313,10 @@ describe('@linch-kit/trpc Integration Tests', () => {
         services: faultyServices
       }
       
-      const caller = appRouter.createCaller(contextWithFaultyServices)
+      const _caller = appRouter.createCaller(contextWithFaultyServices)
       
       // 应用应该继续工作，即使日志服务失败
-      const result = await caller.health.ping()
+      const result = await _caller.health.ping()
       expect(result.message).toBe('pong')
     })
 
@@ -344,10 +344,10 @@ describe('@linch-kit/trpc Integration Tests', () => {
 
   describe('性能和可扩展性集成', () => {
     it('should handle high-frequency requests', async () => {
-      const caller = appRouter.createCaller(mockAuthenticatedContext)
+      const _caller = appRouter.createCaller(mockAuthenticatedContext)
       
       // 模拟高频请求
-      const requests = Array(50).fill(null).map(() => caller.health.ping())
+      const requests = Array(50).fill(null).map(() => _caller.health.ping())
       
       const startTime = Date.now()
       const results = await Promise.all(requests)
@@ -386,34 +386,34 @@ describe('@linch-kit/trpc Integration Tests', () => {
     })
 
     it('should maintain memory efficiency', async () => {
-      const caller = appRouter.createCaller(mockAuthenticatedContext)
+      const _caller = appRouter.createCaller(mockAuthenticatedContext)
       
       // 执行大量操作并验证没有内存泄漏迹象
       for (let i = 0; i < 100; i++) {
-        await caller.health.ping()
-        await caller.system.info()
+        await _caller.health.ping()
+        await _caller.system.info()
       }
       
       // 如果有内存泄漏，这里应该会变慢或失败
-      const finalResult = await caller.health.status()
+      const finalResult = await _caller.health.status()
       expect(finalResult.status).toBe('healthy')
     })
   })
 
   describe('类型安全性集成验证', () => {
     it('should maintain end-to-end type safety', async () => {
-      const caller = appRouter.createCaller(mockAuthenticatedContext)
+      const _caller = appRouter.createCaller(mockAuthenticatedContext)
       
       // 编译时和运行时类型安全
-      const healthResult: Awaited<ReturnType<typeof caller.health.ping>> = 
-        await caller.health.ping()
+      const healthResult: Awaited<ReturnType<typeof _caller.health.ping>> = 
+        await _caller.health.ping()
       
       expect(typeof healthResult.message).toBe('string')
       expect(typeof healthResult.timestamp).toBe('string')
       expect(typeof healthResult.uptime).toBe('number')
       
-      const systemResult: Awaited<ReturnType<typeof caller.system.info>> = 
-        await caller.system.info()
+      const systemResult: Awaited<ReturnType<typeof _caller.system.info>> = 
+        await _caller.system.info()
       
       expect(typeof systemResult.name).toBe('string')
       expect(typeof systemResult.version).toBe('string')

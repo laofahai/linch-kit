@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
+// import { TRPCError } from '@trpc/server'
 
 import {
   healthRouter,
@@ -101,8 +101,8 @@ describe('@linch-kit/trpc Server Core', () => {
 
   describe('健康检查路由器 (healthRouter)', () => {
     it('should return pong message and uptime for ping query', async () => {
-      const caller = healthRouter.createCaller(mockContext)
-      const result = await caller.ping()
+      const _caller = healthRouter.createCaller(mockContext)
+      const result = await _caller.ping()
 
       expect(result).toHaveProperty('message', 'pong')
       expect(result).toHaveProperty('timestamp')
@@ -113,8 +113,8 @@ describe('@linch-kit/trpc Server Core', () => {
     })
 
     it('should return healthy status for status query', async () => {
-      const caller = healthRouter.createCaller(mockContext)
-      const result = await caller.status()
+      const _caller = healthRouter.createCaller(mockContext)
+      const result = await _caller.status()
 
       expect(result).toHaveProperty('status', 'healthy')
       expect(result).toHaveProperty('timestamp')
@@ -123,8 +123,8 @@ describe('@linch-kit/trpc Server Core', () => {
     })
 
     it('should validate output schema for ping', async () => {
-      const caller = healthRouter.createCaller(mockContext)
-      const result = await caller.ping()
+      const _caller = healthRouter.createCaller(mockContext)
+      const result = await _caller.ping()
 
       // 验证输出符合 Zod schema
       const schema = z.object({
@@ -137,8 +137,8 @@ describe('@linch-kit/trpc Server Core', () => {
     })
 
     it('should validate output schema for status', async () => {
-      const caller = healthRouter.createCaller(mockContext)
-      const result = await caller.status()
+      const _caller = healthRouter.createCaller(mockContext)
+      const result = await _caller.status()
 
       // 验证输出符合 Zod schema
       const schema = z.object({
@@ -152,8 +152,8 @@ describe('@linch-kit/trpc Server Core', () => {
 
   describe('系统信息路由器 (systemRouter)', () => {
     it('should return system info', async () => {
-      const caller = systemRouter.createCaller(mockContext)
-      const result = await caller.info()
+      const _caller = systemRouter.createCaller(mockContext)
+      const result = await _caller.info()
 
       expect(result).toHaveProperty('name', '@linch-kit/trpc')
       expect(result).toHaveProperty('version', '0.1.0')
@@ -168,15 +168,15 @@ describe('@linch-kit/trpc Server Core', () => {
     })
 
     it('should return correct environment from NODE_ENV', async () => {
-      const caller = systemRouter.createCaller(mockContext)
-      const result = await caller.info()
+      const _caller = systemRouter.createCaller(mockContext)
+      const result = await _caller.info()
 
       expect(result.environment).toBe('test')
     })
 
     it('should validate output schema for info', async () => {
-      const caller = systemRouter.createCaller(mockContext)
-      const result = await caller.info()
+      const _caller = systemRouter.createCaller(mockContext)
+      const result = await _caller.info()
 
       const schema = z.object({
         name: z.string(),
@@ -193,22 +193,22 @@ describe('@linch-kit/trpc Server Core', () => {
 
   describe('应用路由器 (appRouter)', () => {
     it('should combine health and system routers', async () => {
-      const caller = appRouter.createCaller(mockContext)
+      const _caller = appRouter.createCaller(mockContext)
       
       // 测试健康检查路由
-      const healthResult = await caller.health.ping()
+      const healthResult = await _caller.health.ping()
       expect(healthResult.message).toBe('pong')
       
       // 测试系统信息路由
-      const systemResult = await caller.system.info()
+      const systemResult = await _caller.system.info()
       expect(systemResult.name).toBe('@linch-kit/trpc')
     })
 
     it('should be accessible through nested routes', async () => {
-      const caller = appRouter.createCaller(mockContext)
+      const _caller = appRouter.createCaller(mockContext)
       
       // 测试嵌套路由访问
-      const statusResult = await caller.health.status()
+      const statusResult = await _caller.health.status()
       expect(statusResult.status).toBe('healthy')
     })
   })
@@ -220,8 +220,8 @@ describe('@linch-kit/trpc Server Core', () => {
           test: protectedProcedure.query(() => ({ success: true }))
         })
         
-        const caller = testRouter.createCaller(mockAuthenticatedContext)
-        const result = await caller.test()
+        const _caller = testRouter.createCaller(mockAuthenticatedContext)
+        const result = await _caller.test()
         
         expect(result).toEqual({ success: true })
       })
@@ -231,9 +231,9 @@ describe('@linch-kit/trpc Server Core', () => {
           test: protectedProcedure.query(() => ({ success: true }))
         })
         
-        const caller = testRouter.createCaller(mockContext)
+        const _caller = testRouter.createCaller(mockContext)
         
-        await expect(caller.test()).rejects.toThrow('需要登录才能访问此资源')
+        await expect(_caller.test()).rejects.toThrow('需要登录才能访问此资源')
       })
 
       it('should pass user context to protected procedures', async () => {
@@ -241,8 +241,8 @@ describe('@linch-kit/trpc Server Core', () => {
           test: protectedProcedure.query(({ ctx }) => ({ userId: ctx.user.id }))
         })
         
-        const caller = testRouter.createCaller(mockAuthenticatedContext)
-        const result = await caller.test()
+        const _caller = testRouter.createCaller(mockAuthenticatedContext)
+        const result = await _caller.test()
         
         expect(result).toEqual({ userId: 'test-user-id' })
       })
@@ -254,8 +254,8 @@ describe('@linch-kit/trpc Server Core', () => {
           test: adminProcedure.query(() => ({ isAdmin: true }))
         })
         
-        const caller = testRouter.createCaller(mockAuthenticatedContext)
-        const result = await caller.test()
+        const _caller = testRouter.createCaller(mockAuthenticatedContext)
+        const result = await _caller.test()
         
         expect(result).toEqual({ isAdmin: true })
       })
@@ -265,9 +265,9 @@ describe('@linch-kit/trpc Server Core', () => {
           test: adminProcedure.query(() => ({ isAdmin: true }))
         })
         
-        const caller = testRouter.createCaller(mockContext)
+        const _caller = testRouter.createCaller(mockContext)
         
-        await expect(caller.test()).rejects.toThrow('需要登录才能访问此资源')
+        await expect(_caller.test()).rejects.toThrow('需要登录才能访问此资源')
       })
     })
 
@@ -277,8 +277,8 @@ describe('@linch-kit/trpc Server Core', () => {
           test: publicProcedure.query(() => ({ public: true }))
         })
         
-        const caller = testRouter.createCaller(mockContext)
-        const result = await caller.test()
+        const _caller = testRouter.createCaller(mockContext)
+        const result = await _caller.test()
         
         expect(result).toEqual({ public: true })
       })
@@ -288,8 +288,8 @@ describe('@linch-kit/trpc Server Core', () => {
           test: publicProcedure.query(() => ({ public: true }))
         })
         
-        const caller = testRouter.createCaller(mockAuthenticatedContext)
-        const result = await caller.test()
+        const _caller = testRouter.createCaller(mockAuthenticatedContext)
+        const result = await _caller.test()
         
         expect(result).toEqual({ public: true })
       })
@@ -366,7 +366,7 @@ describe('@linch-kit/trpc Server Core', () => {
 
   describe('错误处理', () => {
     it('should handle middleware errors gracefully', async () => {
-      const errorMiddleware = middleware(({ next }) => {
+      const errorMiddleware = middleware(({ next: _next }) => {
         throw new Error('Middleware error')
       })
       
@@ -375,9 +375,9 @@ describe('@linch-kit/trpc Server Core', () => {
         test: testProcedure.query(() => ({ success: true }))
       })
       
-      const caller = testRouter.createCaller(mockContext)
+      const _caller = testRouter.createCaller(mockContext)
       
-      await expect(caller.test()).rejects.toThrow('Middleware error')
+      await expect(_caller.test()).rejects.toThrow('Middleware error')
     })
 
     it('should handle procedure errors gracefully', async () => {
@@ -387,9 +387,9 @@ describe('@linch-kit/trpc Server Core', () => {
         })
       })
       
-      const caller = testRouter.createCaller(mockContext)
+      const _caller = testRouter.createCaller(mockContext)
       
-      await expect(caller.test()).rejects.toThrow('Procedure error')
+      await expect(_caller.test()).rejects.toThrow('Procedure error')
     })
   })
 
@@ -400,8 +400,8 @@ describe('@linch-kit/trpc Server Core', () => {
         test: publicProcedure.query(() => ({ date: testDate }))
       })
       
-      const caller = testRouter.createCaller(mockContext)
-      const result = await caller.test()
+      const _caller = testRouter.createCaller(mockContext)
+      const result = await _caller.test()
       
       expect(result.date).toBeInstanceOf(Date)
       expect(result.date.getTime()).toBe(testDate.getTime())
@@ -412,8 +412,8 @@ describe('@linch-kit/trpc Server Core', () => {
         test: publicProcedure.query(() => ({ value: undefined }))
       })
       
-      const caller = testRouter.createCaller(mockContext)
-      const result = await caller.test()
+      const _caller = testRouter.createCaller(mockContext)
+      const result = await _caller.test()
       
       expect(result).toHaveProperty('value')
       expect(result.value).toBeUndefined()

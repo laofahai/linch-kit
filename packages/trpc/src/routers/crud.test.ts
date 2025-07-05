@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { z } from 'zod'
-import { TRPCError } from '@trpc/server'
+// import { TRPCError } from '@trpc/server'
 
 import { crudRouter } from './crud'
 
@@ -57,19 +57,19 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should have all required CRUD procedures', () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      expect(caller.findMany).toBeDefined()
-      expect(caller.create).toBeDefined()
-      expect(caller.update).toBeDefined()
-      expect(caller.delete).toBeDefined()
-      expect(caller.count).toBeDefined()
+      expect(_caller.findMany).toBeDefined()
+      expect(_caller.create).toBeDefined()
+      expect(_caller.update).toBeDefined()
+      expect(_caller.delete).toBeDefined()
+      expect(_caller.count).toBeDefined()
     })
   })
 
   describe('findMany 查询操作', () => {
     it('should accept valid input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const validInput = {
         model: 'User',
@@ -79,19 +79,19 @@ describe('@linch-kit/trpc CRUD Router', () => {
         skip: 0
       }
       
-      const result = await caller.findMany(validInput)
+      const result = await _caller.findMany(validInput)
       expect(result).toEqual([])
     })
 
     it('should work with minimal input', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.findMany({ model: 'User' })
+      const result = await _caller.findMany({ model: 'User' })
       expect(result).toEqual([])
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 测试输入验证
       const inputSchema = z.object({
@@ -112,7 +112,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle complex where conditions', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const complexWhere = {
         AND: [
@@ -121,7 +121,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
         ]
       }
       
-      const result = await caller.findMany({
+      const result = await _caller.findMany({
         model: 'User',
         where: complexWhere
       })
@@ -130,9 +130,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle multiple order by fields', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.findMany({
+      const result = await _caller.findMany({
         model: 'User',
         orderBy: {
           createdAt: 'desc',
@@ -144,9 +144,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle pagination parameters', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.findMany({
+      const result = await _caller.findMany({
         model: 'User',
         take: 20,
         skip: 40
@@ -158,7 +158,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
 
   describe('create 创建操作', () => {
     it('should accept valid input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const validInput = {
         model: 'User',
@@ -169,12 +169,12 @@ describe('@linch-kit/trpc CRUD Router', () => {
         }
       }
       
-      const result = await caller.create(validInput)
+      const result = await _caller.create(validInput)
       expect(result).toEqual({})
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const inputSchema = z.object({
         model: z.string(),
@@ -190,7 +190,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle nested data creation', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const nestedData = {
         name: 'John Doe',
@@ -208,7 +208,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
         }
       }
       
-      const result = await caller.create({
+      const result = await _caller.create({
         model: 'User',
         data: nestedData
       })
@@ -217,9 +217,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle array data fields', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.create({
+      const result = await _caller.create({
         model: 'User',
         data: {
           name: 'John Doe',
@@ -237,7 +237,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
 
   describe('update 更新操作', () => {
     it('should accept valid input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const validInput = {
         model: 'User',
@@ -248,12 +248,12 @@ describe('@linch-kit/trpc CRUD Router', () => {
         }
       }
       
-      const result = await caller.update(validInput)
+      const result = await _caller.update(validInput)
       expect(result).toEqual({})
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const inputSchema = z.object({
         model: z.string(),
@@ -271,9 +271,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle complex where conditions', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.update({
+      const result = await _caller.update({
         model: 'User',
         where: {
           AND: [
@@ -288,9 +288,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle nested updates', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.update({
+      const result = await _caller.update({
         model: 'User',
         where: { id: 1 },
         data: {
@@ -307,9 +307,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle array updates', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.update({
+      const result = await _caller.update({
         model: 'User',
         where: { id: 1 },
         data: {
@@ -328,19 +328,19 @@ describe('@linch-kit/trpc CRUD Router', () => {
 
   describe('delete 删除操作', () => {
     it('should accept valid input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const validInput = {
         model: 'User',
         where: { id: 1 }
       }
       
-      const result = await caller.delete(validInput)
+      const result = await _caller.delete(validInput)
       expect(result).toEqual({})
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const inputSchema = z.object({
         model: z.string(),
@@ -356,9 +356,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle complex where conditions', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.delete({
+      const result = await _caller.delete({
         model: 'User',
         where: {
           AND: [
@@ -372,9 +372,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle multiple field conditions', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.delete({
+      const result = await _caller.delete({
         model: 'User',
         where: {
           email: 'test@example.com',
@@ -387,9 +387,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle nested field conditions', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.delete({
+      const result = await _caller.delete({
         model: 'User',
         where: {
           profile: {
@@ -404,26 +404,26 @@ describe('@linch-kit/trpc CRUD Router', () => {
 
   describe('count 统计操作', () => {
     it('should accept valid input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const validInput = {
         model: 'User',
         where: { active: true }
       }
       
-      const result = await caller.count(validInput)
+      const result = await _caller.count(validInput)
       expect(result).toBe(0)
     })
 
     it('should work without where clause', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.count({ model: 'User' })
+      const result = await _caller.count({ model: 'User' })
       expect(result).toBe(0)
     })
 
     it('should validate input schema', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       const inputSchema = z.object({
         model: z.string(),
@@ -439,9 +439,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle complex where conditions', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.count({
+      const result = await _caller.count({
         model: 'User',
         where: {
           AND: [
@@ -455,9 +455,9 @@ describe('@linch-kit/trpc CRUD Router', () => {
     })
 
     it('should handle nested field conditions', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
-      const result = await caller.count({
+      const result = await _caller.count({
         model: 'User',
         where: {
           profile: {
@@ -482,53 +482,53 @@ describe('@linch-kit/trpc CRUD Router', () => {
         services: mockServices
       }
       
-      const caller = crudRouter.createCaller(unauthorizedContext)
+      const _caller = crudRouter.createCaller(unauthorizedContext)
       
       // 测试所有操作都需要认证
-      await expect(caller.findMany({ model: 'User' }))
+      await expect(_caller.findMany({ model: 'User' }))
         .rejects.toThrow('需要登录才能访问此资源')
       
-      await expect(caller.create({ model: 'User', data: {} }))
+      await expect(_caller.create({ model: 'User', data: {} }))
         .rejects.toThrow('需要登录才能访问此资源')
       
-      await expect(caller.update({ model: 'User', where: { id: 1 }, data: {} }))
+      await expect(_caller.update({ model: 'User', where: { id: 1 }, data: {} }))
         .rejects.toThrow('需要登录才能访问此资源')
       
-      await expect(caller.delete({ model: 'User', where: { id: 1 } }))
+      await expect(_caller.delete({ model: 'User', where: { id: 1 } }))
         .rejects.toThrow('需要登录才能访问此资源')
       
-      await expect(caller.count({ model: 'User' }))
+      await expect(_caller.count({ model: 'User' }))
         .rejects.toThrow('需要登录才能访问此资源')
     })
 
     it('should pass user context to all operations', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 验证用户上下文在所有操作中都可用
       // 这些操作应该成功执行（返回默认值）
-      await expect(caller.findMany({ model: 'User' })).resolves.toEqual([])
-      await expect(caller.create({ model: 'User', data: {} })).resolves.toEqual({})
-      await expect(caller.update({ model: 'User', where: { id: 1 }, data: {} })).resolves.toEqual({})
-      await expect(caller.delete({ model: 'User', where: { id: 1 } })).resolves.toEqual({})
-      await expect(caller.count({ model: 'User' })).resolves.toBe(0)
+      await expect(_caller.findMany({ model: 'User' })).resolves.toEqual([])
+      await expect(_caller.create({ model: 'User', data: {} })).resolves.toEqual({})
+      await expect(_caller.update({ model: 'User', where: { id: 1 }, data: {} })).resolves.toEqual({})
+      await expect(_caller.delete({ model: 'User', where: { id: 1 } })).resolves.toEqual({})
+      await expect(_caller.count({ model: 'User' })).resolves.toBe(0)
     })
   })
 
   describe('输入验证', () => {
     it('should validate model parameter', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 测试空模型名称
-      await expect(caller.findMany({ model: '' }))
+      await expect(_caller.findMany({ model: '' }))
         .rejects.toThrow()
       
       // 测试无效模型名称类型
-      await expect(caller.findMany({ model: 123 as any }))
+      await expect(_caller.findMany({ model: 123 as any }))
         .rejects.toThrow()
     })
 
     it('should validate data types', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 测试数据类型验证
       const validData = {
@@ -538,19 +538,19 @@ describe('@linch-kit/trpc CRUD Router', () => {
         tags: ['dev', 'js']
       }
       
-      await expect(caller.create({ model: 'User', data: validData }))
+      await expect(_caller.create({ model: 'User', data: validData }))
         .resolves.toEqual({})
     })
 
     it('should handle edge cases', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 测试空对象
-      await expect(caller.create({ model: 'User', data: {} }))
+      await expect(_caller.create({ model: 'User', data: {} }))
         .resolves.toEqual({})
       
       // 测试 null 值
-      await expect(caller.update({ 
+      await expect(_caller.update({ 
         model: 'User', 
         where: { id: 1 }, 
         data: { optionalField: null } 
@@ -560,21 +560,21 @@ describe('@linch-kit/trpc CRUD Router', () => {
 
   describe('错误处理', () => {
     it('should handle invalid input gracefully', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 测试缺少必需字段
-      await expect(caller.create({ model: 'User' } as any))
+      await expect(_caller.create({ model: 'User' } as any))
         .rejects.toThrow()
       
-      await expect(caller.update({ model: 'User', data: {} } as any))
+      await expect(_caller.update({ model: 'User', data: {} } as any))
         .rejects.toThrow()
     })
 
     it('should maintain consistent error format', async () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       try {
-        await caller.create({ model: 'User' } as any)
+        await _caller.create({ model: 'User' } as any)
       } catch (error) {
         expect(error).toBeInstanceOf(Error)
       }
@@ -583,14 +583,14 @@ describe('@linch-kit/trpc CRUD Router', () => {
 
   describe('类型安全性', () => {
     it('should enforce type safety for all operations', () => {
-      const caller = crudRouter.createCaller(mockAuthenticatedContext)
+      const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 编译时类型检查
-      expect(typeof caller.findMany).toBe('function')
-      expect(typeof caller.create).toBe('function')
-      expect(typeof caller.update).toBe('function')
-      expect(typeof caller.delete).toBe('function')
-      expect(typeof caller.count).toBe('function')
+      expect(typeof _caller.findMany).toBe('function')
+      expect(typeof _caller.create).toBe('function')
+      expect(typeof _caller.update).toBe('function')
+      expect(typeof _caller.delete).toBe('function')
+      expect(typeof _caller.count).toBe('function')
     })
   })
 })

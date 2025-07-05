@@ -84,7 +84,7 @@ export class DefaultDataMasker implements DataMasker {
 
     for (const [key, value] of Object.entries(obj)) {
       if (Array.isArray(value)) {
-        masked[key] = this.maskArray(value)
+        masked[key] = this.maskArray(value, key)
       } else if (value && typeof value === 'object') {
         masked[key] = this.maskObject(value as Record<string, unknown>)
       } else {
@@ -95,15 +95,16 @@ export class DefaultDataMasker implements DataMasker {
     return masked
   }
 
-  maskArray(arr: unknown[]): unknown[] {
+  maskArray(arr: unknown[], fieldName?: string): unknown[] {
     return arr.map((item, index) => {
       if (Array.isArray(item)) {
-        return this.maskArray(item)
+        return this.maskArray(item, fieldName)
       } else if (item && typeof item === 'object') {
         return this.maskObject(item as Record<string, unknown>)
       } else {
-        // 对于数组项，使用索引作为字段名
-        return this.maskValue(item, `item_${index}`)
+        // 如果有父字段名，用它来判断是否敏感；否则使用索引
+        const keyToCheck = fieldName || `item_${index}`
+        return this.maskValue(item, keyToCheck)
       }
     })
   }

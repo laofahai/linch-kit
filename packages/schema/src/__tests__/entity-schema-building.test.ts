@@ -134,7 +134,7 @@ describe('Entity Schema Building', () => {
     it('should handle relation fields in schema', () => {
       const Post = defineEntity('Post', {
         title: defineField.string().required(),
-        authorId: defineField.relation('User', 'manyToOne').required()
+        authorId: defineField.relation('User').manyToOne().required()
       })
 
       const schema = Post.zodSchema
@@ -286,7 +286,7 @@ describe('Entity Schema Building', () => {
     it('should skip oneToMany relations in creation schema', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
-        posts: defineField.relation('Post', 'oneToMany').optional()
+        posts: defineField.relation('Post').oneToMany().optional()
       })
 
       const schema = User.createSchema
@@ -404,7 +404,7 @@ describe('Entity Schema Building', () => {
     it('should skip oneToMany relations in update schema', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
-        posts: defineField.relation('Post', 'oneToMany').optional()
+        posts: defineField.relation('Post').oneToMany().optional()
       })
 
       const schema = User.updateSchema
@@ -461,8 +461,8 @@ describe('Entity Schema Building', () => {
         tags: defineField.array(defineField.string()).optional(),
         
         // Relations
-        authorId: defineField.relation('User', 'manyToOne').required(),
-        comments: defineField.relation('Comment', 'oneToMany').optional()
+        authorId: defineField.relation('User').manyToOne().required(),
+        comments: defineField.relation('Comment').oneToMany().optional()
       })
 
       // Test complete schema

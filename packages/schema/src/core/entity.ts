@@ -260,9 +260,21 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
   extend<E extends Record<string, FieldDefinition>>(
     fields: E
   ): Entity {
+    // 转换FieldBuilder对象为FieldDefinition对象
+    const convertedFields: Record<string, FieldDefinition> = {}
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value && typeof value === 'object' && 'build' in value && typeof value.build === 'function') {
+        // 这是一个FieldBuilder对象
+        convertedFields[key] = (value as { build(): FieldDefinition }).build()
+      } else {
+        // 这已经是一个FieldDefinition对象
+        convertedFields[key] = value as FieldDefinition
+      }
+    })
+
     return new EntityImpl(this.name, {
       name: this.name,
-      fields: { ...this.fields, ...fields },
+      fields: { ...this.fields, ...convertedFields },
       options: { ...this.options }
     }) as Entity
   }
