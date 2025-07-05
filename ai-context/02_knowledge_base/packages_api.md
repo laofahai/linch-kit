@@ -10,23 +10,29 @@
 
 ### 核心功能
 - **插件系统** - 生命周期管理、依赖解析、事件总线
-- **配置管理** - 多环境配置、热更新
+- **配置管理** - 多租户配置、热更新、Next.js集成
 - **日志系统** - 结构化日志、级别控制
+- **审计系统** - 审计日志、数据脱敏、多存储支持
+- **CLI框架** - 插件化命令行工具
+- **可观测性** - 健康检查、指标收集、分布式追踪（部分实现）
 
 ### 主要 API
 ```typescript
 // 插件系统
-import { PluginSystem } from '@linch-kit/core'
-await PluginSystem.register(plugin)
+import { createPluginRegistry } from '@linch-kit/core'
+const registry = createPluginRegistry()
+await registry.register(plugin)
 
 // 配置管理
-import { ConfigManager } from '@linch-kit/core'
-const config = await ConfigManager.get('key', defaultValue)
+import { createSimpleTenantConfigManager } from '@linch-kit/core'
+const configManager = createSimpleTenantConfigManager()
 
 // 日志系统
-import { logger } from '@linch-kit/core'
-logger.info('message', { meta: 'data' })
+import { createLogger } from '@linch-kit/core'
+const logger = createLogger({ name: 'my-service' })
 ```
+
+📖 **[完整 API 文档](./library_api/core.md)** - 详细的接口文档、使用示例和最佳实践
 
 ---
 

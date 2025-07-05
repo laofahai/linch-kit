@@ -5,12 +5,12 @@
 **LinchKit AI 助手必读**：本目录是 AI 快速开发的知识中心。每个 Session 开始时必须按顺序阅读关键文档。
 
 ### 📋 Session 启动检查清单
-1. **📖 导航理解** - 阅读本 README.md 了解文档结构
-2. **🔍 上下文索引** - 查阅 [manifest.json](./manifest.json) 快速定位相关文档
-3. **📋 标准流程** - 参考 [core/session_template.md](./core/session_template.md) 执行标准化流程
-4. **🛠️ 工作流程** - **必读** [core/workflow_and_constraints.md](./core/workflow_and_constraints.md)
-5. **📈 当前状态** - 查看 [roadmap/roadmap.md](./roadmap/roadmap.md) 了解进行中任务
-6. **📜 已完成** - 参考 [history/changelog.md](./history/changelog.md) 了解完成功能
+1. **🤖 AI协作规范** - **必读** [00_ai_collaboration/](./00_ai_collaboration/) AI协作框架和治理规范
+2. **📖 导航理解** - 阅读本 README.md 了解文档结构
+3. **🔍 上下文索引** - 查阅 [manifest.json](./manifest.json) 快速定位相关文档
+4. **🛠️ 工作流程** - **必读** [01_strategy_and_architecture/workflow_and_constraints.md](./01_strategy_and_architecture/workflow_and_constraints.md)
+5. **📈 当前状态** - 查看 [03_planning/roadmap.md](./03_planning/roadmap.md) 了解进行中任务
+6. **📜 项目愿景** - 参考 [01_strategy_and_architecture/vision_and_scope.md](./01_strategy_and_architecture/vision_and_scope.md)
 
 ## 📚 核心文档结构
 
@@ -21,24 +21,27 @@
 ```
 ai-context/
 ├── 📋 manifest.json                  # 元数据索引 (AI自动生成)
-├── 🎯 core/                         # 核心约束和工作流
+├── 🤖 00_ai_collaboration/          # AI协作与文档治理 (新增)
+│   ├── README.md                    # 协作中心入口
+│   ├── AI_COLLABORATION_FRAMEWORK.md # AI行为准则
+│   ├── KNOWLEDGE_BASE_GOVERNANCE.md  # 知识库治理
+│   ├── UNIFIED_AI_ENHANCEMENT_AND_DOCUMENTATION_ROADMAP.md
+│   └── TEMP_DOCUMENTATION_PLAN.md   # 文档化方案
+├── 🎯 00_framework/                 # 核心框架 (保留)
+├── 🏗️ 01_strategy_and_architecture/ # 战略与架构设计
 │   ├── vision_and_scope.md          # 项目愿景和范围
 │   ├── workflow_and_constraints.md  # 开发约束规范
-│   └── session_template.md         # 标准Session模板
-├── 🏗️ architecture/               # 系统架构设计
 │   ├── overview.md                 # 架构总览
 │   ├── core_packages.md           # 核心包设计
-│   ├── cli_and_tools.md           # CLI工具设计
 │   └── git_workflow.md            # Git工作流程
-├── 📚 reference/                   # 自动生成参考文档
+├── 📚 02_knowledge_base/           # 知识库
 │   ├── packages_api.md            # 包API索引
+│   ├── library_api/               # API文档目录
 │   └── [package]-completeness-report.md
-├── 📈 roadmap/                     # 发展路线图
+├── 📈 03_planning/                 # 项目规划
 │   ├── roadmap.md                 # 功能路线图
 │   └── development-status.md      # 开发状态
-├── 📝 history/                     # 历史记录
-│   ├── changelog.md               # 变更日志
-│   └── development_history.md     # 开发历史
+├── 📝 04_archive/                  # 历史归档
 └── 🔧 tools/                       # 自动化工具
     ├── scripts/                   # 自动化脚本
     ├── templates/                 # 文档模板
