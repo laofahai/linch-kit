@@ -47,3 +47,4 @@ yarn-error.log*
 
 # Git worktrees
 worktrees/
+graph_db_connection.json
