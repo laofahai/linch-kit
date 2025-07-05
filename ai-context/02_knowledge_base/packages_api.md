@@ -59,6 +59,8 @@ const UserEntity = defineEntity('User', {
 })
 ```
 
+📖 **[完整 API 文档](./library_api/schema.md)** - 详细的接口文档、使用示例和最佳实践
+
 ---
 
 ## 🔐 @linch-kit/auth (认证权限)
@@ -82,6 +84,8 @@ await RoleManager.assignRole(userId, roleId)
 import { SessionManager } from '@linch-kit/auth'
 const session = await SessionManager.create(user)
 ```
+
+📖 **[完整 API 文档](./library_api/auth.md)** - 详细的接口文档、使用示例和最佳实践
 
 ---
 
@@ -112,6 +116,8 @@ const users = await userCRUD.findMany({
 import { createCrudRouter } from '@linch-kit/crud'
 const crudRouter = createCrudRouter({ router, protectedProcedure })
 ```
+
+📖 **[完整 API 文档](./library_api/crud.md)** - 详细的接口文档、使用示例和最佳实践
 
 ---
 

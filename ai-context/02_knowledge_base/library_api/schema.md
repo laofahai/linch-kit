@@ -472,46 +472,54 @@ export class User {
 @Pattern(regex)
 ```
 
-### 插件系统 API
+### Core插件系统集成
 
-#### 插件定义
+#### 作为Core插件注册
+
+Schema包作为Core插件系统的标准插件，通过Core的插件管理器注册：
 
 ```typescript
-import { definePlugin } from '@linch-kit/schema'
+import { createPluginRegistry } from '@linch-kit/core'
+import { schemaPlugin } from '@linch-kit/schema'
 
-const validationPlugin = definePlugin({
-  name: 'validation-plugin',
-  version: '1.0.0',
-  hooks: {
-    beforeGenerate: async (entities) => {
-      // 生成前验证
-      return entities
-    },
-    afterGenerate: async (files) => {
-      // 生成后处理
-      return files
-    }
-  },
-  generators: {
-    'custom': CustomGenerator
-  }
+const registry = createPluginRegistry()
+
+// 将Schema注册为Core插件
+await registry.register(schemaPlugin, {
+  autoRegisterCommands: true,
+  enableWatcher: false,
+  defaultGenerators: ['typescript', 'prisma'],
+  inputDir: './src/schema',
+  outputDir: './generated'
 })
+
+// 启动插件
+await registry.startAll()
 ```
 
-#### 插件管理
+#### 代码生成器扩展
+
+通过Core插件系统扩展代码生成器：
 
 ```typescript
-import { PluginManager } from '@linch-kit/schema'
+import { BaseGenerator } from '@linch-kit/schema'
 
-const manager = new PluginManager()
+class CustomGenerator extends BaseGenerator {
+  async generate(entities: Entity[]): Promise<GeneratedFile[]> {
+    // 实现自定义生成逻辑
+    return []
+  }
+}
 
-// 注册插件
-manager.register(validationPlugin)
-
-// 使用插件
-const generator = new CodeGenerator([], {
-  plugins: [validationPlugin]
-})
+// 通过Core插件系统注册生成器
+const customSchemaPlugin = {
+  name: 'custom-schema',
+  version: '1.0.0',
+  setup: async (context) => {
+    // 注册自定义生成器
+    context.registerGenerator('custom', CustomGenerator)
+  }
+}
 ```
 
 ## 🔧 使用指南

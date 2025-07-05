@@ -65,4 +65,4 @@ export * from './plugins'
 /**
  * 包版本信息
  */
-export const VERSION = '0.1.0'
+export const VERSION = '2.0.2'

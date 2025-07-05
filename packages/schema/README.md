@@ -310,17 +310,17 @@ const userData = { name: 'John', email: 'john@example.com', age: 25 }
 const validatedData = User.validateCreate(userData)
 ```
 
-## 插件集成
+## 架构集成
 
-### Core插件注册
+### 作为Core插件运行
 
-Schema包现在作为标准的LinchKit Core插件运行：
+@linch-kit/schema 设计为 @linch-kit/core 插件系统的一个标准插件，完全依赖Core的基础设施：
 
 ```typescript
 import { createPluginRegistry } from '@linch-kit/core'
 import { schemaPlugin } from '@linch-kit/schema'
 
-// 注册Schema插件
+// 将Schema注册为Core插件
 const registry = createPluginRegistry()
 await registry.register(schemaPlugin, {
   autoRegisterCommands: true,
@@ -330,13 +330,13 @@ await registry.register(schemaPlugin, {
   outputDir: './generated'
 })
 
-// 启动插件
+// 启动插件系统
 await registry.startAll()
 ```
 
-### 基础设施集成
+### 基础设施依赖
 
-Schema包完全集成了Core包的基础设施：
+Schema包完全依赖并复用Core包的基础设施，不重复实现底层功能：
 
 ```typescript
 import {
@@ -346,17 +346,19 @@ import {
   logError
 } from '@linch-kit/schema'
 
-// 使用统一的日志系统
+// 使用Core的统一日志系统
 logger.info('Schema operation completed')
 
-// 使用国际化功能
+// 使用Core的国际化功能
 const t = useSchemaTranslation()
 console.log(t('generate.success'))
 
-// 使用便捷的日志函数
+// 使用Core提供的便捷日志函数
 logInfo('Starting code generation')
 logError('Generation failed', error)
 ```
+
+**重要说明**：Schema包不提供独立的插件系统，所有插件相关功能都通过Core的插件系统实现。
 ```
 
 ## 配置选项

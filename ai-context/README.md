@@ -9,7 +9,7 @@
 2. **📖 导航理解** - 阅读本 README.md 了解文档结构
 3. **🔍 上下文索引** - 查阅 [manifest.json](./manifest.json) 快速定位相关文档
 4. **🛠️ 工作流程** - **必读** [01_strategy_and_architecture/workflow_and_constraints.md](./01_strategy_and_architecture/workflow_and_constraints.md)
-5. **📈 当前状态** - 查看 [03_planning/roadmap.md](./03_planning/roadmap.md) 了解进行中任务
+5. **📈 当前状态** - 查看 [03_planning/development-status.md](./03_planning/development-status.md) 了解进行中任务
 6. **📜 项目愿景** - 参考 [01_strategy_and_architecture/vision_and_scope.md](./01_strategy_and_architecture/vision_and_scope.md)
 
 ## 📚 核心文档结构
@@ -58,7 +58,7 @@ ai-context/
 |------|------|-----------|
 | **[core/vision_and_scope.md](./core/vision_and_scope.md)** | 项目愿景、目标、核心价值 | 理解项目背景和目标 |
 | **[core/workflow_and_constraints.md](./core/workflow_and_constraints.md)** | 🔴**开发约束、技术规范、AI协作规则** | **每次编码前必读** |
-| **[roadmap/roadmap.md](./roadmap/roadmap.md)** | 当前任务、未来计划、优先级 | 开始新任务前查看 |
+| **[03_planning/development-status.md](./03_planning/development-status.md)** | 当前任务、未来计划、优先级 | 开始新任务前查看 |
 | **[history/changelog.md](./history/changelog.md)** | 已完成功能、重要变更记录 | 了解项目进展历史 |
 
 ### 🏗️ 架构设计文档
@@ -86,7 +86,7 @@ ai-context/
 2. **理解愿景** → 快速浏览 `core/vision_and_scope.md` 了解项目目标  
 3. **掌握架构** → 参考 `architecture/` 理解系统设计
 4. **遵循规范** → **必读** `core/workflow_and_constraints.md` 中的约束
-5. **了解现状** → 查看 `roadmap/roadmap.md` 了解当前进度
+5. **了解现状** → 查看 `03_planning/development-status.md` 了解当前进度
 6. **规划任务** → 使用 TodoWrite 工具制定详细任务计划
 7. **实施开发** → 严格遵循架构和约束
 8. **验证结果** → 运行测试和构建
