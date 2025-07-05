@@ -290,12 +290,14 @@ describe('@linch-kit/trpc Integration Tests', () => {
 
     it('should handle malformed requests gracefully', async () => {
       const crudCaller = crudRouter.createCaller(mockAuthenticatedContext)
+      const authCaller = authRouter.createCaller(mockAuthenticatedContext)
       
-      // 处理无效输入
-      await expect(crudCaller.create({ model: 'User' } as any))
+      // 处理无效输入 - 缺少必需的 data 字段
+      await expect(crudCaller.create({ model: 'User' } as unknown as Parameters<typeof crudCaller.create>[0]))
         .rejects.toThrow()
       
-      await expect(crudCaller.hasPermission({ action: 'read' } as any))
+      // 处理无效的权限检查输入 - 缺少必需的 resource 字段
+      await expect(authCaller.hasPermission({ action: 'read' } as unknown as Parameters<typeof authCaller.hasPermission>[0]))
         .rejects.toThrow()
     })
 

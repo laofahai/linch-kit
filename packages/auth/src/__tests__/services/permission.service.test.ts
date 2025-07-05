@@ -4,8 +4,9 @@
  */
 
 import { describe, it, expect, beforeEach, mock } from 'bun:test'
-import { createPermissionService, BasePermissionService } from '../../services/permission.service'
-import type { Role, Permission, PermissionContext } from '../../types'
+
+import { createPermissionService } from '../../services/permission.service'
+import type { Role, Permission } from '../../types'
 
 // Mock Prisma 客户端
 const mockPrisma = {

@@ -27,7 +27,6 @@ mock.module('crypto', () => ({
 
 describe('MFAManager', () => {
   let mfaManager: MFAManager
-  let mockSpeakeasy: any
 
   beforeEach(async () => {
     mfaManager = new MFAManager({

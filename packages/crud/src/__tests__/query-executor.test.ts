@@ -10,6 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, jest } from 'bun:test'
+
 import { QueryExecutor, QueryExecutorFactory } from '../core/query-builder/query-executor'
 import type { Logger, PerformanceMetrics } from '../types'
 

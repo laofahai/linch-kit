@@ -214,7 +214,7 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
   transform(fn: (value: string) => string): this {
     // 确保definition是可修改的对象
     if (this.definition && typeof this.definition === 'object') {
-      (this.definition as any).transform = fn
+      (this.definition as StringFieldOptions & BaseFieldDefinition).transform = fn
     }
     return this
   }

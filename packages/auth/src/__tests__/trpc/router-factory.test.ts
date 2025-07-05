@@ -245,7 +245,7 @@ describe('tRPC Router Factory', () => {
     })
 
     it('should handle procedure errors', async () => {
-      const safeProcedure = async (handler: () => Promise<any>, input: any) => {
+      const safeProcedure = async (handler: () => Promise<any>, _input: any) => {
         try {
           return {
             success: true,

@@ -500,7 +500,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
   describe('集成测试', () => {
     it('should integrate with file system correctly', async () => {
       // 模拟实际的文件系统场景
-      mockExistsSync.mockImplementation((path: any) => {
+      mockExistsSync.mockImplementation((path: string) => {
         return path.toString().includes('existing')
       })
 

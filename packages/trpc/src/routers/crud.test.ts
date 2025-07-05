@@ -523,7 +523,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
         .rejects.toThrow()
       
       // 测试无效模型名称类型
-      await expect(_caller.findMany({ model: 123 as any }))
+      await expect(_caller.findMany({ model: 123 as unknown as Parameters<typeof _caller.findMany>[0] }))
         .rejects.toThrow()
     })
 
@@ -563,10 +563,10 @@ describe('@linch-kit/trpc CRUD Router', () => {
       const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       // 测试缺少必需字段
-      await expect(_caller.create({ model: 'User' } as any))
+      await expect(_caller.create({ model: 'User' } as unknown as Parameters<typeof _caller.create>[0]))
         .rejects.toThrow()
       
-      await expect(_caller.update({ model: 'User', data: {} } as any))
+      await expect(_caller.update({ model: 'User', data: {} } as unknown as Parameters<typeof _caller.update>[0]))
         .rejects.toThrow()
     })
 
@@ -574,7 +574,7 @@ describe('@linch-kit/trpc CRUD Router', () => {
       const _caller = crudRouter.createCaller(mockAuthenticatedContext)
       
       try {
-        await _caller.create({ model: 'User' } as any)
+        await _caller.create({ model: 'User' } as unknown as Parameters<typeof _caller.create>[0])
       } catch (error) {
         expect(error).toBeInstanceOf(Error)
       }

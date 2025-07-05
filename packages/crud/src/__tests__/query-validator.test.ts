@@ -11,9 +11,10 @@
  */
 
 import { describe, it, expect, beforeEach, jest } from 'bun:test'
+import type { Entity } from '@linch-kit/schema'
+
 import { QueryValidator, createQueryValidator } from '../core/query-builder/query-validator'
 import type { Logger, QueryValidationOptions, QueryValidationResult } from '../core/query-builder/query-validator'
-import type { Entity } from '@linch-kit/schema'
 
 // Mock Logger
 const mockLogger: Logger = {

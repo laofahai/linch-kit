@@ -4,15 +4,14 @@
  */
 
 import { describe, it, expect, beforeEach, mock } from 'bun:test'
+
 import {
   createPermissionMiddleware,
   permissionMiddleware,
   requirePermission,
   createUsePermission,
-  type PermissionMiddlewareConfig,
-  type PermissionCheckOptions
+  type PermissionMiddlewareConfig
 } from '../../middleware/permission.middleware'
-import { EnhancedPermissionEngine } from '../../permissions/enhanced-permission-engine'
 import type { LinchKitUser, PermissionContext } from '../../types'
 
 // Mock EnhancedPermissionEngine
@@ -460,7 +459,7 @@ describe('Permission Middleware', () => {
       decorator(target, propertyKey, descriptor)
 
       const decoratedMethod = descriptor.value
-      const ctx = { user: mockUser, permissionContext: mockContext }
+      const _ctx = { user: mockUser, permissionContext: mockContext }
 
       // 由于模块 mock 的复杂性，我们简化测试
       expect(typeof decoratedMethod).toBe('function')

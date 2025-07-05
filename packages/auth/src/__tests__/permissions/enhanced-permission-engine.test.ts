@@ -4,8 +4,9 @@
  */
 
 import { describe, it, expect, beforeEach, mock } from 'bun:test'
+
 import { EnhancedPermissionEngine, type EnhancedPermissionResult } from '../../permissions/enhanced-permission-engine'
-import type { LinchKitUser, PermissionContext } from '../../types'
+import type { LinchKitUser } from '../../types'
 
 describe('EnhancedPermissionEngine', () => {
   let permissionEngine: EnhancedPermissionEngine
