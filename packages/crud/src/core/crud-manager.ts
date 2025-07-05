@@ -436,13 +436,13 @@ export class CrudManager {
       prismaQuery.where = this.buildWhereClause(query.where)
     }
 
-    if (query.orderBy) {
+    if (query.orderBy && Array.isArray(query.orderBy)) {
       prismaQuery.orderBy = query.orderBy.map(order => ({
         [order.field]: order.direction
       }))
     }
 
-    if (query.include) {
+    if (query.include && Array.isArray(query.include)) {
       prismaQuery.include = query.include.reduce((acc, field) => {
         acc[field] = true
         return acc
@@ -466,6 +466,10 @@ export class CrudManager {
 
   private buildWhereClause(whereConditions: Array<{ field: string; operator: string; value: unknown }>): Record<string, unknown> {
     const where: Record<string, unknown> = {}
+
+    if (!Array.isArray(whereConditions)) {
+      return where
+    }
 
     whereConditions.forEach(condition => {
       const { field, operator, value } = condition
@@ -524,7 +528,7 @@ export class CrudManager {
   ): Promise<CreateInput<T>> {
     let processed = data
     
-    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
+    const plugins = this.pluginManager?.getAll() || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.beforeCreate) {
         processed = await plugin.plugin.hooks.beforeCreate(entityName, processed as Record<string, unknown>, (options || {}) as Record<string, unknown>) as CreateInput<T>
@@ -539,7 +543,7 @@ export class CrudManager {
     result: T,
     options?: CrudOptions
   ): Promise<void> {
-    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
+    const plugins = this.pluginManager?.getAll() || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.afterCreate) {
         await plugin.plugin.hooks.afterCreate(entityName, result as Record<string, unknown>, (options || {}) as Record<string, unknown>)
@@ -556,7 +560,7 @@ export class CrudManager {
   ): Promise<UpdateInput<T>> {
     let processed = data
     
-    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
+    const plugins = this.pluginManager?.getAll() || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.beforeUpdate) {
         processed = await plugin.plugin.hooks.beforeUpdate(entityName, id as string | number, processed as Record<string, unknown>, existing as Record<string, unknown>, (options || {}) as Record<string, unknown>) as UpdateInput<T>
@@ -572,7 +576,7 @@ export class CrudManager {
     existing: unknown,
     options?: CrudOptions
   ): Promise<void> {
-    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
+    const plugins = this.pluginManager?.getAll() || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.afterUpdate) {
         await plugin.plugin.hooks.afterUpdate(entityName, result as Record<string, unknown>, existing as Record<string, unknown>, (options || {}) as Record<string, unknown>)
@@ -586,7 +590,7 @@ export class CrudManager {
     existing: unknown,
     options?: CrudOptions
   ): Promise<void> {
-    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
+    const plugins = this.pluginManager?.getAll() || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.beforeDelete) {
         await plugin.plugin.hooks.beforeDelete(entityName, id as string | number, existing as Record<string, unknown>, (options || {}) as Record<string, unknown>)
@@ -599,7 +603,7 @@ export class CrudManager {
     existing: unknown,
     options?: CrudOptions
   ): Promise<void> {
-    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
+    const plugins = this.pluginManager?.getAll() || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.afterDelete) {
         await plugin.plugin.hooks.afterDelete(entityName, existing as Record<string, unknown>, (options || {}) as Record<string, unknown>)
@@ -614,7 +618,7 @@ export class CrudManager {
   ): Promise<Record<string, unknown>> {
     let processed = query
     
-    const plugins = this.pluginManager?.getAll().filter(p => p.plugin.metadata.id.includes('crud')) || []
+    const plugins = this.pluginManager?.getAll() || []
     for (const plugin of plugins) {
       if (plugin.plugin.hooks?.beforeQuery) {
         processed = await plugin.plugin.hooks.beforeQuery(entityName, processed as Record<string, unknown>, (options || {}) as Record<string, unknown>) as Record<string, unknown>
