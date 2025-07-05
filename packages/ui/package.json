@@ -24,6 +24,11 @@
       "import": "./dist/components/index.mjs",
       "require": "./dist/components/index.js"
     },
+    "./components/ui/*": {
+      "types": "./dist/components/ui/*.d.ts",
+      "import": "./dist/components/ui/*.mjs",
+      "require": "./dist/components/ui/*.js"
+    },
     "./forms": {
       "types": "./dist/forms/index.d.ts",
       "import": "./dist/forms/index.mjs",

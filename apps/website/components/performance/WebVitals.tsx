@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect } from 'react'
 import { getCLS, getFID, getFCP, getLCP, getTTFB, type Metric } from 'web-vitals'
 

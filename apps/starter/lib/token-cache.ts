@@ -32,6 +32,9 @@ class TokenCacheManager {
    */
   getCachedToken(): CachedToken | null {
     try {
+      // 检查是否在客户端环境
+      if (typeof window === 'undefined') return null
+      
       const cached = localStorage.getItem(this.CACHE_KEY)
       if (!cached) return null
 
@@ -61,6 +64,9 @@ class TokenCacheManager {
    */
   setCachedToken(token: string, expiresIn: number, userInfo: CachedToken['userInfo']): void {
     try {
+      // 检查是否在客户端环境
+      if (typeof window === 'undefined') return
+      
       const cachedToken: CachedToken = {
         token,
         expiresAt: Date.now() + expiresIn * 1000,
@@ -80,6 +86,9 @@ class TokenCacheManager {
    */
   clearToken(): void {
     try {
+      // 检查是否在客户端环境
+      if (typeof window === 'undefined') return
+      
       localStorage.removeItem(this.CACHE_KEY)
       Logger.info('Token缓存已清除')
     } catch (error) {
