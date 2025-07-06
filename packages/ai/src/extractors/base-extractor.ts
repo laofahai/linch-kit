@@ -4,7 +4,7 @@
  * 所有数据提取器的基类，提供统一的接口和公共功能
  */
 
-import { relative, isAbsolute, normalize } from 'path'
+import { isAbsolute, normalize } from 'path'
 
 import { createLogger } from '@linch-kit/core/server'
 
@@ -18,14 +18,19 @@ import type {
   Logger
 } from '../types/index.js'
 
+import { ExtractorConfig } from './extractor-config.js'
+
+
 /**
  * 抽象基础提取器
  */
 export abstract class BaseExtractor<T = unknown> implements IExtractor<T> {
   protected logger: Logger
+  protected config: ExtractorConfig
   
   constructor(public readonly name: string) {
     this.logger = createLogger({ name: `ai:extractor:${name}` })
+    this.config = ExtractorConfig.getInstance()
   }
 
   /**
@@ -169,10 +174,45 @@ export abstract class BaseExtractor<T = unknown> implements IExtractor<T> {
     
     // 如果是绝对路径，转换为相对路径
     if (isAbsolute(normalizedPath)) {
-      return relative(process.cwd(), normalizedPath)
+      return this.config.getRelativePath(normalizedPath)
     }
     
     // 如果已经是相对路径，直接返回
     return normalizedPath
+  }
+
+  /**
+   * 获取项目根目录
+   */
+  protected getProjectRoot(): string {
+    return this.config.getProjectRoot()
+  }
+
+  /**
+   * 获取工作目录
+   */
+  protected getWorkingDirectory(): string {
+    return this.config.getWorkingDirectory()
+  }
+
+  /**
+   * 解析相对于项目根目录的路径
+   */
+  protected resolveFromProject(relativePath: string): string {
+    return this.config.resolveFromProject(relativePath)
+  }
+
+  /**
+   * 检查路径是否应该被排除
+   */
+  protected shouldExcludePath(path: string): boolean {
+    return this.config.shouldExclude(path)
+  }
+
+  /**
+   * 检查文件扩展名是否支持
+   */
+  protected isSupportedExtension(extension: string): boolean {
+    return this.config.isSupportedExtension(extension)
   }
 }

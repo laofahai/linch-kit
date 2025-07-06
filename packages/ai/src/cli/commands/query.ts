@@ -438,7 +438,13 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
       const relResult = result as { 
         nodes: GraphNode[]; 
         relationships: GraphRelationship[];
-        stats: any;
+        stats: {
+          nodeTypes?: Record<string, number>;
+          relationshipTypes?: Record<string, number>;
+          totalNodes?: number;
+          totalRelationships?: number;
+          maxDepth?: number;
+        };
       }
       
       const contextPacket = {
@@ -546,7 +552,7 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
       break
     }
       
-    default:
+    default: {
       // 通用格式
       const genericPacket = {
         summary: "Query executed successfully",
@@ -555,6 +561,8 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
         follow_up_suggestions: ["Use --format table for detailed view"]
       }
       console.log(JSON.stringify(genericPacket, null, 2))
+      break
+    }
   }
 }
 

@@ -6,7 +6,7 @@
  */
 
 import { Neogma } from 'neogma'
-import type { Driver } from 'neo4j-driver'
+import type { Record as Neo4jRecord } from 'neo4j-driver'
 
 import type { GraphNode, GraphRelationship } from '../types/index.js'
 import { NodeType as NodeTypeEnum, RelationType as RelationTypeEnum } from '../types/index.js'
@@ -162,7 +162,7 @@ export class GraphQueryService {
     const session = this.neogma.driver.session()
     try {
       const result = await session.run(cypher, parameters)
-      return result.records.map((record: any) => record.get('n').properties)
+      return result.records.map((record: Neo4jRecord) => record.get('n').properties)
     } finally {
       await session.close()
     }
@@ -222,7 +222,7 @@ export class GraphQueryService {
     const nodes = new Map<string, NodeProperties>()
     const relationships: GraphRelationship[] = []
 
-    queryResponse.records.forEach((record: any) => {
+    queryResponse.records.forEach((record: Neo4jRecord) => {
       const start = record.get('start').properties
       const related = record.get('related').properties
       const rels = record.get('r')
@@ -317,7 +317,7 @@ export class GraphQueryService {
       limit: Math.floor(limit)
     })
 
-    const paths = pathsResult.records.map((record: any) => {
+    const paths = pathsResult.records.map((record: Neo4jRecord) => {
       const path = record.get('path')
       const pathLength = record.get('pathLength').toNumber()
       
@@ -347,7 +347,7 @@ export class GraphQueryService {
         metadata: { created_at: new Date().toISOString() }
       }))
 
-      const weight = relationships.reduce((sum: number, rel: any) => 
+      const weight = relationships.reduce((sum: number, rel: { properties?: { weight?: number } }) => 
         sum + (rel.properties?.weight as number || 1), 0
       )
 
@@ -400,7 +400,7 @@ export class GraphQueryService {
       RETURN n.type as type, count(*) as count
     `)
 
-    nodeTypeCounts.records.forEach((record: any) => {
+    nodeTypeCounts.records.forEach((record: Neo4jRecord) => {
       const type = record.get('type')
       const count = record.get('count').toNumber()
       nodeTypes[type] = count
@@ -413,7 +413,7 @@ export class GraphQueryService {
       RETURN type(r) as type, count(*) as count
     `)
 
-    relTypeCounts.records.forEach((record: any) => {
+    relTypeCounts.records.forEach((record: Neo4jRecord) => {
       const type = record.get('type')
       const count = record.get('count').toNumber()
       relationshipTypes[type] = count
