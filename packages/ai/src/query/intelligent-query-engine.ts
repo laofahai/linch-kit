@@ -63,7 +63,7 @@ export interface QueryContext {
 export class IntelligentQueryEngine {
   private neo4jService: Neo4jService | null = null
   private logger: Logger
-  private intentPatterns: Map<QueryIntent, RegExp[]>
+  private intentPatterns: Map<QueryIntent, RegExp[]> = new Map()
   
   constructor() {
     this.logger = createLogger({ name: 'ai:intelligent-query-engine' })
@@ -179,7 +179,11 @@ export class IntelligentQueryEngine {
 
       // 1. 解析查询意图
       const context = this.parseQuery(userQuery)
-      this.logger.debug('查询意图解析完成', context)
+      this.logger.debug('查询意图解析完成', { 
+        intent: context.intent,
+        entities: context.entities,
+        limit: context.limit
+      })
 
       // 2. 生成 Cypher 查询
       const cypherQuery = this.generateCypherQuery(context)

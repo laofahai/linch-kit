@@ -42,5 +42,14 @@ export {
 // Graph 服务
 export { Neo4jService } from './graph/neo4j-service.js'
 
+// 查询引擎
+export { IntelligentQueryEngine } from './query/intelligent-query-engine.js'
+
+// 生成引擎
+export { VibeCodingEngine } from './generation/vibe-coding-engine.js'
+
+// 配置加载器
+export { loadNeo4jConfig, validateNeo4jConfig } from './config/neo4j-config.js'
+
 // 版本信息
 export const VERSION = '1.0.0'

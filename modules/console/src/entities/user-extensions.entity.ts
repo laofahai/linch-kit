@@ -36,6 +36,11 @@ function createConsoleUserExtensions() {
       .description('console.entities.user.fields.lastLoginAt')
       .build(),
     
+    lastActiveAt: defineField.datetime()
+      .optional()
+      .description('console.entities.user.fields.lastActiveAt')
+      .build(),
+    
     lastLoginIp: defineField.string()
       .optional()
       .max(45) // 支持 IPv6

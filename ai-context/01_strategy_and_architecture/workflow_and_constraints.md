@@ -9,6 +9,7 @@
 
 ### 2. 包管理规范
 - **仅使用 bun**，禁止 npm/yarn
+- **缓存参数**：所有 `bun add`、`bun install` 等包管理命令必须加 `--no-cache` 参数
 - **环境路径**:
   ```bash
   export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"

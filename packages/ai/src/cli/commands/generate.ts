@@ -14,7 +14,7 @@ import type {
 } from '../plugin.js'
 import { VibeCodingEngine } from '../../generation/vibe-coding-engine.js'
 import { IntelligentQueryEngine } from '../../query/intelligent-query-engine.js'
-import type { GenerationContextType, TechStack, QualityLevel } from '../../generation/types.js'
+import { GenerationContextType, TechStack, QualityLevel } from '../../generation/types.js'
 
 const logger = createLogger({ name: 'ai:generate-command' })
 
@@ -43,13 +43,12 @@ async function executeGenerate(options: GenerateOptions): Promise<CommandResult>
     const queryEngine = new IntelligentQueryEngine()
     const codeEngine = new VibeCodingEngine()
     
-    await queryEngine.initialize()
     await codeEngine.initialize()
     
     // 2. 查询相关上下文
-    const queryResult = await queryEngine.queryByNaturalLanguage(options.prompt)
+    const queryResult = await queryEngine.query(options.prompt)
     
-    if (!queryResult.success || !queryResult.data) {
+    if (!queryResult.results.nodes.length) {
       return {
         success: false,
         error: '无法获取相关上下文数据',
@@ -71,9 +70,8 @@ async function executeGenerate(options: GenerateOptions): Promise<CommandResult>
     }
     
     const result = await codeEngine.generateCode(
-      generationContext,
-      queryResult.data.nodes || [],
-      queryResult.data.relationships || []
+      options.prompt,
+      generationContext
     )
     
     // 4. 输出结果
@@ -133,7 +131,7 @@ async function executeGenerate(options: GenerateOptions): Promise<CommandResult>
     }
     
   } catch (error) {
-    logger.error('代码生成失败', { error, options })
+    logger.error('代码生成失败', error instanceof Error ? error : undefined, { options })
     return {
       success: false,
       error: error instanceof Error ? error.message : '未知错误',
@@ -203,23 +201,22 @@ export const generateCommand: CLICommand = {
       name: 'type',
       description: '生成代码类型 (function|class|component|api_route|etc)',
       type: 'string',
-      default: 'function'
+      defaultValue: 'function'
     },
     {
       name: 'tech-stack',
       description: '技术栈 (typescript,react,nextjs)',
       type: 'string',
-      default: 'typescript'
+      defaultValue: 'typescript'
     },
     {
       name: 'quality',
       description: '质量级别 (prototype|development|production)',
       type: 'string',
-      default: 'production'
+      defaultValue: 'production'
     },
     {
       name: 'output',
-      alias: 'o',
       description: '输出文件路径',
       type: 'string'
     },
@@ -227,7 +224,7 @@ export const generateCommand: CLICommand = {
       name: 'dry-run',
       description: '预览模式，不保存文件',
       type: 'boolean',
-      default: false
+      defaultValue: false
     }
   ],
   

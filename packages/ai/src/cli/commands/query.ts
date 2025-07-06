@@ -33,7 +33,7 @@ async function executeQuery(
     limit?: number
     depth?: number
     direction?: 'in' | 'out' | 'both'
-    format?: 'table' | 'json' | 'tree'
+    format?: 'table' | 'json' | 'tree' | 'ai-context'
   }
 ): Promise<CommandResult> {
   const startTime = Date.now()

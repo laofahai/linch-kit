@@ -232,6 +232,7 @@ export const zhCN = {
       user: {
         fields: {
           lastLoginAt: '最后登录时间',
+          lastActiveAt: '最后活跃时间',
           lastLoginIp: '最后登录IP',
           loginCount: '登录次数',
           preferences: '偏好设置',

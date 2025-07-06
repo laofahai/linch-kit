@@ -232,6 +232,7 @@ export const en = {
       user: {
         fields: {
           lastLoginAt: 'Last Login At',
+          lastActiveAt: 'Last Active At',
           lastLoginIp: 'Last Login IP',
           loginCount: 'Login Count',
           preferences: 'Preferences',

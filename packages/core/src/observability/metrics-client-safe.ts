@@ -13,16 +13,31 @@ import type {
 } from '../types'
 
 /**
- * Client-side metrics stub implementation
+ * Client-side Counter stub implementation
  */
-class ClientMetricStub implements Counter, Gauge, Histogram, Summary {
-  // Counter methods
+class ClientCounterStub implements Counter {
   inc(_value = 1, _labels?: Record<string, string>): void {
     // No-op on client side
   }
 
-  // Gauge methods
+  get(_labels?: Record<string, string>): number {
+    return 0
+  }
+
+  reset(): void {
+    // No-op on client side
+  }
+}
+
+/**
+ * Client-side Gauge stub implementation
+ */
+class ClientGaugeStub implements Gauge {
   set(_value: number, _labels?: Record<string, string>): void {
+    // No-op on client side
+  }
+
+  inc(_value = 1, _labels?: Record<string, string>): void {
     // No-op on client side
   }
 
@@ -30,7 +45,19 @@ class ClientMetricStub implements Counter, Gauge, Histogram, Summary {
     // No-op on client side
   }
 
-  // Histogram methods
+  get(_labels?: Record<string, string>): number {
+    return 0
+  }
+
+  reset(): void {
+    // No-op on client side
+  }
+}
+
+/**
+ * Client-side Histogram stub implementation
+ */
+class ClientHistogramStub implements Histogram {
   observe(_value: number, _labels?: Record<string, string>): void {
     // No-op on client side
   }
@@ -39,8 +66,25 @@ class ClientMetricStub implements Counter, Gauge, Histogram, Summary {
     return () => {} // No-op on client side
   }
 
-  get(_labels?: Record<string, string>): unknown {
-    return { buckets: {}, count: 0, sum: 0, quantiles: {}, value: 0 }
+  get(_labels?: Record<string, string>): { buckets: Record<string, number>; count: number; sum: number } {
+    return { buckets: {}, count: 0, sum: 0 }
+  }
+
+  reset(): void {
+    // No-op on client side
+  }
+}
+
+/**
+ * Client-side Summary stub implementation
+ */
+class ClientSummaryStub implements Summary {
+  observe(_value: number, _labels?: Record<string, string>): void {
+    // No-op on client side
+  }
+
+  get(_labels?: Record<string, string>): { quantiles: Record<string, number>; count: number; sum: number } {
+    return { quantiles: {}, count: 0, sum: 0 }
   }
 
   reset(): void {
@@ -53,19 +97,19 @@ class ClientMetricStub implements Counter, Gauge, Histogram, Summary {
  */
 class ClientMetricCollector implements MetricCollector {
   createCounter(_config: MetricConfig): Counter {
-    return new ClientMetricStub()
+    return new ClientCounterStub()
   }
 
   createGauge(_config: MetricConfig): Gauge {
-    return new ClientMetricStub()
+    return new ClientGaugeStub()
   }
 
   createHistogram(_config: MetricConfig): Histogram {
-    return new ClientMetricStub()
+    return new ClientHistogramStub()
   }
 
   createSummary(_config: MetricConfig): Summary {
-    return new ClientMetricStub()
+    return new ClientSummaryStub()
   }
 
   async getMetrics(): Promise<string> {
@@ -103,11 +147,12 @@ async function loadServerMetrics() {
 /**
  * Create metric collector (server-side implementation or client stub)
  */
-export async function createMetricCollector(_config: unknown = {}): Promise<MetricCollector> {
+export async function createMetricCollector(config: unknown = {}): Promise<MetricCollector> {
   if (isServerSide()) {
     const serverMetrics = await loadServerMetrics()
     if (serverMetrics) {
-      return serverMetrics.createMetricCollector(_config)
+      // Type cast to avoid type conflicts between client/server configs
+      return serverMetrics.createMetricCollector(config as any)
     }
   }
   

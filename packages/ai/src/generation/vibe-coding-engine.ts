@@ -17,12 +17,12 @@ import type {
   ContextAnalysis,
   GeneratedCode,
   DependencyInfo,
-  ValidationResult,
-  GenerationContextType,
-  TechStack,
-  QualityLevel
+  ValidationResult
 } from './types.js'
 import {
+  GenerationContextType,
+  TechStack,
+  QualityLevel,
   GenerationContextSchema,
   GeneratedCodeSchema,
   DependencyInfoSchema

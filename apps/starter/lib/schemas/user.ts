@@ -11,6 +11,7 @@ export interface User {
   createdAt: string
   updatedAt: string
   lastLoginAt?: string | null
+  lastActiveAt?: string | null
 }
 
 // 简化的创建和更新类型
