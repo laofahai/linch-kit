@@ -499,3 +499,6 @@ export function registerCoreCLICommands(cliManager: CLIManager): void {
 
 // 自动注册核心命令
 registerCoreCLICommands(defaultCLI)
+
+// 导出插件系统
+export { createCLIPlugin, CLIPluginManager, type CLIPlugin } from './plugin'
