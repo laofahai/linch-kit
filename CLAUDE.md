@@ -4,8 +4,48 @@
 **更新**: 2025-07-06  
 **项目**: LinchKit - AI-First 全栈开发框架
 
-## 🚫 CRITICAL: NO DIRECTORY CHANGES
+## 🚫 CRITICAL: NO DIRECTORY CHANGES & MUST USE BUN
 **NEVER use `cd` to change directories. ALWAYS work from project root. Use `bun run <script> --filter <package>` for monorepo operations.**
+
+## 🔴 **MANDATORY: 强制使用 bun**
+**项目已完全转向 bun 生态，严禁使用 node 或 npm！**
+
+### ✅ 正确使用方式
+```bash
+bun run build                    # 构建项目
+bun run dev                      # 开发模式
+bun dist/cli/index.js           # 运行 CLI 工具
+bun install                      # 安装依赖
+bun test                         # 运行测试
+```
+
+### ❌ 严禁使用
+```bash
+node dist/cli/index.js          # 禁止！必须用 bun
+npm install                     # 禁止！必须用 bun install
+yarn install                    # 禁止！必须用 bun install
+npx command                     # 禁止！必须用 bun 等价命令
+```
+
+## 🔐 **MANDATORY: 环境变量管理**
+**严禁硬编码敏感信息！所有数据库连接、API密钥必须使用环境变量：**
+
+### ✅ 正确方式：使用环境变量
+```javascript
+const config = {
+  connectionUri: process.env.NEO4J_CONNECTION_URI,
+  username: process.env.NEO4J_USERNAME,
+  password: process.env.NEO4J_PASSWORD
+};
+```
+
+### ❌ 严禁：硬编码敏感信息
+```javascript
+const config = {
+  connectionUri: 'neo4j+s://...',      // 禁止！
+  password: 'actual-password'          // 禁止！
+};
+```
 
 ## 🚨 PHASE 1: 强制性 Session 初始化 (Pre-flight Checklist)
 
