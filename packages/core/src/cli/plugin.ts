@@ -64,7 +64,8 @@ export class CLIPluginManager {
       '@linch-kit/crud',
       '@linch-kit/trpc',
       '@linch-kit/ui',
-      '@linch-kit/console'
+      '@linch-kit/console',
+      '@linch-kit/ai'
     ]
 
     for (const packageName of packageNames) {

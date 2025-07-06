@@ -1,0 +1,97 @@
+{
+  "Module Import": {
+    "total": 241.589625,
+    "modules": {
+      "@linch-kit/core": 15.076084,
+      "@linch-kit/schema": 15.161333000000003,
+      "@linch-kit/auth": -1,
+      "@linch-kit/crud": 22.568665999999993,
+      "@linch-kit/trpc": 43.743832999999995,
+      "@linch-kit/ui": 127.53787499999999
+    }
+  },
+  "Build Performance": {
+    "core": {
+      "estimatedTime": 849,
+      "srcSize": 349370,
+      "hasTests": true
+    },
+    "schema": {
+      "estimatedTime": 704,
+      "srcSize": 203864,
+      "hasTests": true
+    },
+    "auth": {
+      "estimatedTime": 646,
+      "srcSize": 146061,
+      "hasTests": true
+    },
+    "crud": {
+      "estimatedTime": 898,
+      "srcSize": 397772,
+      "hasTests": true
+    },
+    "trpc": {
+      "estimatedTime": 600,
+      "srcSize": 99622,
+      "hasTests": false
+    },
+    "ui": {
+      "estimatedTime": 631,
+      "srcSize": 130677,
+      "hasTests": true
+    }
+  },
+  "Bundle Size Analysis": {
+    "core": {
+      "dist": 942342,
+      "src": 349370
+    },
+    "schema": {
+      "dist": 525910,
+      "src": 203864
+    },
+    "auth": {
+      "dist": 606920,
+      "src": 146061
+    },
+    "crud": {
+      "dist": 551711,
+      "src": 397772
+    },
+    "trpc": {
+      "dist": 53700,
+      "src": 99622
+    },
+    "ui": {
+      "dist": 441475,
+      "src": 130677
+    }
+  },
+  "Type Check Performance": {
+    "core": {
+      "files": 59,
+      "estimatedTime": 2950
+    },
+    "schema": {
+      "files": 35,
+      "estimatedTime": 1750
+    },
+    "auth": {
+      "files": 27,
+      "estimatedTime": 1350
+    },
+    "crud": {
+      "files": 36,
+      "estimatedTime": 1800
+    },
+    "trpc": {
+      "files": 10,
+      "estimatedTime": 500
+    },
+    "ui": {
+      "files": 15,
+      "estimatedTime": 750
+    }
+  }
+}

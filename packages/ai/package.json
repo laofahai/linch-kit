@@ -1,0 +1,76 @@
+{
+  "name": "@linch-kit/ai",
+  "version": "1.0.0",
+  "description": "LinchKit AI 集成层 - Graph RAG 知识图谱和 AI 工具",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "linch-kit-ai": "./dist/cli/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./extractors": {
+      "types": "./dist/extractors/index.d.ts",
+      "import": "./dist/extractors/index.js"
+    },
+    "./graph": {
+      "types": "./dist/graph/index.d.ts",
+      "import": "./dist/graph/index.js"
+    },
+    "./tools": {
+      "types": "./dist/tools/index.d.ts",
+      "import": "./dist/tools/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "typecheck": "tsc --noEmit",
+    "extract": "bun run dist/cli/index.js"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
+    "@babel/types": "^7.28.0",
+    "@linch-kit/core": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
+    "neo4j-driver": "^5.26.0",
+    "neogma": "^1.12.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "eslint": "^9.17.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "linch-kit",
+    "ai",
+    "graph-rag",
+    "knowledge-graph",
+    "neo4j",
+    "data-extraction",
+    "typescript"
+  ],
+  "author": "LinchKit Team",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
