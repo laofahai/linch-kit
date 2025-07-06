@@ -672,6 +672,34 @@ export class ImportExtractor extends BaseExtractor<ExtractionData> {
     }
   }
 
+  /**
+   * 从文件路径获取包名
+   */
+  private getPackageNameFromPath(filePath: string): string | undefined {
+    // 简单的包名推断逻辑
+    const segments = filePath.split('/')
+    const packagesIndex = segments.findIndex(segment => segment === 'packages')
+    
+    if (packagesIndex >= 0 && packagesIndex < segments.length - 1) {
+      // 如果路径包含 packages/，取下一个段作为包名
+      return segments[packagesIndex + 1]
+    }
+    
+    // 如果是 apps/ 目录
+    const appsIndex = segments.findIndex(segment => segment === 'apps')
+    if (appsIndex >= 0 && appsIndex < segments.length - 1) {
+      return segments[appsIndex + 1]
+    }
+    
+    // 如果是 modules/ 目录
+    const modulesIndex = segments.findIndex(segment => segment === 'modules')
+    if (modulesIndex >= 0 && modulesIndex < segments.length - 1) {
+      return segments[modulesIndex + 1]
+    }
+    
+    return undefined
+  }
+
   private createDependencyRelationship(dep: ModuleDependency): GraphRelationship | null {
     const fromNodeId = `file:${dep.from.replace(/[^a-zA-Z0-9-_]/g, '_')}`
     const toNodeId = dep.dependencyType === 'internal' 
