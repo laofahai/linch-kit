@@ -1,0 +1,2019 @@
+{
+  "packages": {
+    "auth": {
+      "files": {
+        "src/adapters/nextauth-adapter.ts": {
+          "functions": 20,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 5,
+          "avgFunctionLength": 13,
+          "maxFunctionLength": 129,
+          "complexityScore": 24
+        },
+        "src/cli/commands.ts": {
+          "functions": 6,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 7,
+          "imports": 2,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 5,
+          "complexityScore": 13
+        },
+        "src/cli/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/components/AuthProvider.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 2,
+          "imports": 3,
+          "avgFunctionLength": 1,
+          "maxFunctionLength": 1,
+          "complexityScore": 4
+        },
+        "src/core/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 11,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/extensions/enterprise.ts": {
+          "functions": 13,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 3,
+          "imports": 1,
+          "avgFunctionLength": 3,
+          "maxFunctionLength": 6,
+          "complexityScore": 18
+        },
+        "src/extensions/mfa.ts": {
+          "functions": 8,
+          "classes": 1,
+          "interfaces": 4,
+          "types": 1,
+          "exports": 7,
+          "imports": 1,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 7,
+          "complexityScore": 15
+        },
+        "src/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 14,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/infrastructure/index.ts": {
+          "functions": 7,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 10,
+          "imports": 2,
+          "avgFunctionLength": 9,
+          "maxFunctionLength": 27,
+          "complexityScore": 19
+        },
+        "src/middleware/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/middleware/permission.middleware.ts": {
+          "functions": 19,
+          "classes": 0,
+          "interfaces": 2,
+          "types": 1,
+          "exports": 6,
+          "imports": 2,
+          "avgFunctionLength": 19,
+          "maxFunctionLength": 61,
+          "complexityScore": 19
+        },
+        "src/permissions/casl-engine.ts": {
+          "functions": 14,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 1,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 19,
+          "complexityScore": 18
+        },
+        "src/permissions/enhanced-permission-engine.ts": {
+          "functions": 24,
+          "classes": 1,
+          "interfaces": 3,
+          "types": 0,
+          "exports": 3,
+          "imports": 2,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 37,
+          "complexityScore": 16
+        },
+        "src/plugin.ts": {
+          "functions": 8,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 4,
+          "imports": 2,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 7,
+          "complexityScore": 12
+        },
+        "src/services/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/services/permission.service.ts": {
+          "functions": 21,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 3,
+          "imports": 1,
+          "avgFunctionLength": 10,
+          "maxFunctionLength": 43,
+          "complexityScore": 16
+        },
+        "src/trpc/router-factory.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 2,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 41,
+          "maxFunctionLength": 41,
+          "complexityScore": 14
+        },
+        "src/trpc/router.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 42,
+          "maxFunctionLength": 42,
+          "complexityScore": 17
+        },
+        "src/types/index.ts": {
+          "functions": 2,
+          "classes": 2,
+          "interfaces": 7,
+          "types": 18,
+          "exports": 41,
+          "imports": 3,
+          "avgFunctionLength": 8,
+          "maxFunctionLength": 8,
+          "complexityScore": 0
+        }
+      },
+      "summary": {
+        "totalFunctions": 145,
+        "totalClasses": 6,
+        "totalInterfaces": 23,
+        "totalTypes": 21,
+        "avgComplexity": 11
+      }
+    },
+    "core": {
+      "files": {
+        "src/audit/audit-manager.ts": {
+          "functions": 35,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 16,
+          "complexityScore": 33
+        },
+        "src/audit/data-masker.ts": {
+          "functions": 21,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 9,
+          "complexityScore": 40
+        },
+        "src/audit/factory.ts": {
+          "functions": 2,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 4,
+          "avgFunctionLength": 24,
+          "maxFunctionLength": 41,
+          "complexityScore": 13
+        },
+        "src/audit/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 5,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/audit/server-factory.ts": {
+          "functions": 2,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 4,
+          "avgFunctionLength": 15,
+          "maxFunctionLength": 19,
+          "complexityScore": 4
+        },
+        "src/audit/stores/database-store.ts": {
+          "functions": 24,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 23,
+          "complexityScore": 33
+        },
+        "src/audit/stores/file-store.ts": {
+          "functions": 31,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 2,
+          "imports": 6,
+          "avgFunctionLength": 9,
+          "maxFunctionLength": 55,
+          "complexityScore": 43
+        },
+        "src/audit/types.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 9,
+          "types": 0,
+          "exports": 10,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/cli/commands/build.ts": {
+          "functions": 7,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 11,
+          "complexityScore": 31
+        },
+        "src/cli/commands/core.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 6,
+          "imports": 6,
+          "avgFunctionLength": 10,
+          "maxFunctionLength": 10,
+          "complexityScore": 3
+        },
+        "src/cli/commands/dev.ts": {
+          "functions": 11,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 14,
+          "complexityScore": 35
+        },
+        "src/cli/commands/doctor.ts": {
+          "functions": 58,
+          "classes": 0,
+          "interfaces": 2,
+          "types": 0,
+          "exports": 1,
+          "imports": 5,
+          "avgFunctionLength": 14,
+          "maxFunctionLength": 87,
+          "complexityScore": 35
+        },
+        "src/cli/commands/generate.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 5,
+          "complexityScore": 7
+        },
+        "src/cli/commands/help.ts": {
+          "functions": 18,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 10,
+          "maxFunctionLength": 46,
+          "complexityScore": 24
+        },
+        "src/cli/commands/info.ts": {
+          "functions": 23,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 12,
+          "maxFunctionLength": 61,
+          "complexityScore": 35
+        },
+        "src/cli/commands/init.ts": {
+          "functions": 12,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 6,
+          "avgFunctionLength": 8,
+          "maxFunctionLength": 41,
+          "complexityScore": 25
+        },
+        "src/cli/commands/upgrade.ts": {
+          "functions": 35,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 9,
+          "maxFunctionLength": 37,
+          "complexityScore": 29
+        },
+        "src/cli/index.ts": {
+          "functions": 18,
+          "classes": 1,
+          "interfaces": 6,
+          "types": 2,
+          "exports": 13,
+          "imports": 4,
+          "avgFunctionLength": 10,
+          "maxFunctionLength": 83,
+          "complexityScore": 11
+        },
+        "src/cli/linch-cli.ts": {
+          "functions": 7,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 9,
+          "maxFunctionLength": 19,
+          "complexityScore": 26
+        },
+        "src/cli/plugin.ts": {
+          "functions": 5,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 4,
+          "imports": 2,
+          "avgFunctionLength": 11,
+          "maxFunctionLength": 25,
+          "complexityScore": 16
+        },
+        "src/cli.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/config/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/config/manager.ts": {
+          "functions": 16,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 2,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 16,
+          "complexityScore": 38
+        },
+        "src/config/nextjs-provider-client.ts": {
+          "functions": 4,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 3,
+          "imports": 1,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 10,
+          "complexityScore": 16
+        },
+        "src/config/nextjs-provider.ts": {
+          "functions": 8,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 3,
+          "imports": 3,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 5,
+          "complexityScore": 19
+        },
+        "src/config/simple-tenant-manager.ts": {
+          "functions": 20,
+          "classes": 1,
+          "interfaces": 3,
+          "types": 1,
+          "exports": 5,
+          "imports": 5,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 20,
+          "complexityScore": 19
+        },
+        "src/config/tenant-manager.ts": {
+          "functions": 19,
+          "classes": 1,
+          "interfaces": 3,
+          "types": 1,
+          "exports": 5,
+          "imports": 6,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 15,
+          "complexityScore": 18
+        },
+        "src/config/watcher.ts": {
+          "functions": 19,
+          "classes": 1,
+          "interfaces": 3,
+          "types": 0,
+          "exports": 6,
+          "imports": 5,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 35,
+          "complexityScore": 17
+        },
+        "src/i18n/index.ts": {
+          "functions": 8,
+          "classes": 0,
+          "interfaces": 2,
+          "types": 1,
+          "exports": 8,
+          "imports": 0,
+          "avgFunctionLength": 19,
+          "maxFunctionLength": 59,
+          "complexityScore": 9
+        },
+        "src/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 10,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 4
+        },
+        "src/init/index.ts": {
+          "functions": 20,
+          "classes": 0,
+          "interfaces": 2,
+          "types": 0,
+          "exports": 9,
+          "imports": 3,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 54,
+          "complexityScore": 25
+        },
+        "src/logger-client.ts": {
+          "functions": 2,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 3,
+          "imports": 1,
+          "avgFunctionLength": 2,
+          "maxFunctionLength": 3,
+          "complexityScore": 11
+        },
+        "src/observability/health.ts": {
+          "functions": 21,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 5,
+          "imports": 4,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 16,
+          "complexityScore": 24
+        },
+        "src/observability/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 4,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/observability/logger.ts": {
+          "functions": 2,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 4,
+          "imports": 3,
+          "avgFunctionLength": 2,
+          "maxFunctionLength": 3,
+          "complexityScore": 2
+        },
+        "src/observability/metrics-client-safe.ts": {
+          "functions": 5,
+          "classes": 2,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 3,
+          "imports": 1,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 12,
+          "complexityScore": 14
+        },
+        "src/observability/metrics.ts": {
+          "functions": 21,
+          "classes": 5,
+          "interfaces": 3,
+          "types": 0,
+          "exports": 4,
+          "imports": 2,
+          "avgFunctionLength": 11,
+          "maxFunctionLength": 72,
+          "complexityScore": 23
+        },
+        "src/observability/tracing.ts": {
+          "functions": 10,
+          "classes": 2,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 4,
+          "imports": 2,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 12,
+          "complexityScore": 17
+        },
+        "src/plugin/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/plugin/registry.ts": {
+          "functions": 36,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 2,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 18,
+          "complexityScore": 36
+        },
+        "src/server.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 6,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/types/common.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 5,
+          "types": 4,
+          "exports": 9,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/types/config.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 13,
+          "types": 2,
+          "exports": 15,
+          "imports": 1,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/types/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 4,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/types/observability.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 15,
+          "types": 1,
+          "exports": 16,
+          "imports": 1,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/types/plugin.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 6,
+          "types": 1,
+          "exports": 7,
+          "imports": 1,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/utils/fs.ts": {
+          "functions": 24,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 13,
+          "imports": 2,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 29,
+          "complexityScore": 47
+        },
+        "src/utils/index-client.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/utils/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/utils/network-client.ts": {
+          "functions": 13,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 6,
+          "imports": 0,
+          "avgFunctionLength": 10,
+          "maxFunctionLength": 25,
+          "complexityScore": 22
+        },
+        "src/utils/network.ts": {
+          "functions": 20,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 9,
+          "imports": 2,
+          "avgFunctionLength": 9,
+          "maxFunctionLength": 25,
+          "complexityScore": 26
+        }
+      },
+      "summary": {
+        "totalFunctions": 579,
+        "totalClasses": 26,
+        "totalInterfaces": 83,
+        "totalTypes": 13,
+        "avgComplexity": 16
+      }
+    },
+    "create-linch-kit": {
+      "files": {
+        "src/create.ts": {
+          "functions": 18,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 1,
+          "imports": 7,
+          "avgFunctionLength": 10,
+          "maxFunctionLength": 36,
+          "complexityScore": 30
+        },
+        "src/index.ts": {
+          "functions": 2,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 0,
+          "imports": 3,
+          "avgFunctionLength": 11,
+          "maxFunctionLength": 18,
+          "complexityScore": 30
+        }
+      },
+      "summary": {
+        "totalFunctions": 20,
+        "totalClasses": 0,
+        "totalInterfaces": 1,
+        "totalTypes": 0,
+        "avgComplexity": 30
+      }
+    },
+    "crud": {
+      "files": {
+        "src/cache/cache-manager.ts": {
+          "functions": 1,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 1,
+          "maxFunctionLength": 1,
+          "complexityScore": 2
+        },
+        "src/cli/commands.ts": {
+          "functions": 20,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 11,
+          "imports": 4,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 22,
+          "complexityScore": 14
+        },
+        "src/core/crud-manager.ts": {
+          "functions": 55,
+          "classes": 1,
+          "interfaces": 6,
+          "types": 0,
+          "exports": 2,
+          "imports": 7,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 44,
+          "complexityScore": 28
+        },
+        "src/core/manager.ts": {
+          "functions": 60,
+          "classes": 2,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 8,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 46,
+          "complexityScore": 26
+        },
+        "src/core/query-builder/base-query-builder.ts": {
+          "functions": 18,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 1,
+          "imports": 7,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 19,
+          "complexityScore": 18
+        },
+        "src/core/query-builder/condition-builder.ts": {
+          "functions": 15,
+          "classes": 7,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 13,
+          "complexityScore": 23
+        },
+        "src/core/query-builder/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 6,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/core/query-builder/prisma-query-builder.ts": {
+          "functions": 7,
+          "classes": 2,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 2,
+          "imports": 5,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 13,
+          "complexityScore": 7
+        },
+        "src/core/query-builder/query-executor.ts": {
+          "functions": 16,
+          "classes": 6,
+          "interfaces": 2,
+          "types": 0,
+          "exports": 2,
+          "imports": 1,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 10,
+          "complexityScore": 16
+        },
+        "src/core/query-builder/query-optimizer.ts": {
+          "functions": 28,
+          "classes": 1,
+          "interfaces": 2,
+          "types": 0,
+          "exports": 4,
+          "imports": 2,
+          "avgFunctionLength": 9,
+          "maxFunctionLength": 47,
+          "complexityScore": 23
+        },
+        "src/core/query-builder/query-validator.ts": {
+          "functions": 40,
+          "classes": 1,
+          "interfaces": 3,
+          "types": 0,
+          "exports": 5,
+          "imports": 2,
+          "avgFunctionLength": 10,
+          "maxFunctionLength": 50,
+          "complexityScore": 32
+        },
+        "src/core/query-builder.ts": {
+          "functions": 27,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 5,
+          "avgFunctionLength": 8,
+          "maxFunctionLength": 47,
+          "complexityScore": 22
+        },
+        "src/factory.ts": {
+          "functions": 4,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 4,
+          "imports": 4,
+          "avgFunctionLength": 13,
+          "maxFunctionLength": 15,
+          "complexityScore": 4
+        },
+        "src/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 17,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/permissions/permission-checker.ts": {
+          "functions": 26,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 5,
+          "avgFunctionLength": 8,
+          "maxFunctionLength": 22,
+          "complexityScore": 24
+        },
+        "src/plugins/base-plugin.ts": {
+          "functions": 12,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 6,
+          "complexityScore": 21
+        },
+        "src/plugins/examples/audit-log-plugin.ts": {
+          "functions": 7,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 10,
+          "complexityScore": 17
+        },
+        "src/plugins/examples/user-activity-plugin.ts": {
+          "functions": 15,
+          "classes": 1,
+          "interfaces": 2,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 17,
+          "complexityScore": 14
+        },
+        "src/plugins/hook-manager.ts": {
+          "functions": 31,
+          "classes": 1,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 8,
+          "maxFunctionLength": 27,
+          "complexityScore": 32
+        },
+        "src/plugins/types.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 10,
+          "types": 0,
+          "exports": 10,
+          "imports": 1,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/trpc/router-factory.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 2,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 64,
+          "maxFunctionLength": 64,
+          "complexityScore": 10
+        },
+        "src/trpc/router.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 60,
+          "maxFunctionLength": 60,
+          "complexityScore": 12
+        },
+        "src/types/index.ts": {
+          "functions": 2,
+          "classes": 2,
+          "interfaces": 25,
+          "types": 5,
+          "exports": 32,
+          "imports": 2,
+          "avgFunctionLength": 8,
+          "maxFunctionLength": 9,
+          "complexityScore": 0
+        },
+        "src/validation/validation-manager.ts": {
+          "functions": 1,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 2
+        }
+      },
+      "summary": {
+        "totalFunctions": 387,
+        "totalClasses": 29,
+        "totalInterfaces": 59,
+        "totalTypes": 5,
+        "avgComplexity": 14
+      }
+    },
+    "schema": {
+      "files": {
+        "src/cli/commands.ts": {
+          "functions": 32,
+          "classes": 2,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 8,
+          "imports": 5,
+          "avgFunctionLength": 11,
+          "maxFunctionLength": 53,
+          "complexityScore": 22
+        },
+        "src/cli/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/core/entity.ts": {
+          "functions": 22,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 5,
+          "imports": 3,
+          "avgFunctionLength": 12,
+          "maxFunctionLength": 48,
+          "complexityScore": 22
+        },
+        "src/core/field.ts": {
+          "functions": 18,
+          "classes": 9,
+          "interfaces": 0,
+          "types": 1,
+          "exports": 2,
+          "imports": 2,
+          "avgFunctionLength": 14,
+          "maxFunctionLength": 108,
+          "complexityScore": 15
+        },
+        "src/core/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 3,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/core/schema.ts": {
+          "functions": 13,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 9,
+          "imports": 2,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 24,
+          "complexityScore": 7
+        },
+        "src/decorators/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/decorators/minimal.ts": {
+          "functions": 39,
+          "classes": 4,
+          "interfaces": 0,
+          "types": 2,
+          "exports": 13,
+          "imports": 4,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 11,
+          "complexityScore": 13
+        },
+        "src/generators/base.ts": {
+          "functions": 15,
+          "classes": 2,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 5,
+          "imports": 1,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 8,
+          "complexityScore": 15
+        },
+        "src/generators/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 3,
+          "imports": 3,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/generators/prisma.ts": {
+          "functions": 24,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 42,
+          "complexityScore": 38
+        },
+        "src/generators/typescript.ts": {
+          "functions": 20,
+          "classes": 1,
+          "interfaces": 14,
+          "types": 1,
+          "exports": 24,
+          "imports": 2,
+          "avgFunctionLength": 8,
+          "maxFunctionLength": 56,
+          "complexityScore": 23
+        },
+        "src/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 8,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/infrastructure/config.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/infrastructure/i18n.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 1,
+          "avgFunctionLength": 3,
+          "maxFunctionLength": 3,
+          "complexityScore": 3
+        },
+        "src/infrastructure/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 3,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/infrastructure/logger.ts": {
+          "functions": 4,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 5,
+          "imports": 1,
+          "avgFunctionLength": 3,
+          "maxFunctionLength": 3,
+          "complexityScore": 27
+        },
+        "src/migration/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/migration/migrator.ts": {
+          "functions": 0,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/plugin.ts": {
+          "functions": 2,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 2,
+          "maxFunctionLength": 3,
+          "complexityScore": 4
+        },
+        "src/plugins/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/server.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 3,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/types/entity.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 7,
+          "types": 3,
+          "exports": 10,
+          "imports": 2,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/types/field.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 19,
+          "types": 3,
+          "exports": 22,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/types/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 3,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/types/plugin.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 7,
+          "types": 0,
+          "exports": 7,
+          "imports": 1,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/validation/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/validation/validator.ts": {
+          "functions": 0,
+          "classes": 1,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        }
+      },
+      "summary": {
+        "totalFunctions": 190,
+        "totalClasses": 23,
+        "totalInterfaces": 50,
+        "totalTypes": 10,
+        "avgComplexity": 7
+      }
+    },
+    "trpc": {
+      "files": {
+        "src/cli/commands.ts": {
+          "functions": 35,
+          "classes": 0,
+          "interfaces": 2,
+          "types": 2,
+          "exports": 15,
+          "imports": 8,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 29,
+          "complexityScore": 16
+        },
+        "src/index.ts": {
+          "functions": 2,
+          "classes": 0,
+          "interfaces": 2,
+          "types": 1,
+          "exports": 12,
+          "imports": 0,
+          "avgFunctionLength": 2,
+          "maxFunctionLength": 2,
+          "complexityScore": 3
+        },
+        "src/routers/auth.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 37,
+          "maxFunctionLength": 37,
+          "complexityScore": 18
+        },
+        "src/routers/crud.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 60,
+          "maxFunctionLength": 60,
+          "complexityScore": 12
+        },
+        "src/server.ts": {
+          "functions": 8,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 2,
+          "exports": 14,
+          "imports": 3,
+          "avgFunctionLength": 11,
+          "maxFunctionLength": 27,
+          "complexityScore": 10
+        }
+      },
+      "summary": {
+        "totalFunctions": 47,
+        "totalClasses": 0,
+        "totalInterfaces": 4,
+        "totalTypes": 5,
+        "avgComplexity": 12
+      }
+    },
+    "ui": {
+      "files": {
+        "src/__tests__/setup.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 0,
+          "imports": 2,
+          "avgFunctionLength": 12,
+          "maxFunctionLength": 12,
+          "complexityScore": 15
+        },
+        "src/client.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 4,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 17
+        },
+        "src/components/hooks/use-mobile.ts": {
+          "functions": 2,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 9,
+          "maxFunctionLength": 15,
+          "complexityScore": 25
+        },
+        "src/components/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 26,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 6
+        },
+        "src/components/separator.tsx": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/components/ui/accordion.tsx": {
+          "functions": 4,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 5,
+          "complexityScore": 6
+        },
+        "src/components/ui/alert.tsx": {
+          "functions": 3,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 5
+        },
+        "src/components/ui/avatar.tsx": {
+          "functions": 3,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 6
+        },
+        "src/components/ui/badge.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 2,
+          "imports": 3,
+          "avgFunctionLength": 1,
+          "maxFunctionLength": 1,
+          "complexityScore": 3
+        },
+        "src/components/ui/breadcrumb.tsx": {
+          "functions": 7,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 3,
+          "maxFunctionLength": 5,
+          "complexityScore": 6
+        },
+        "src/components/ui/button.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 7,
+          "complexityScore": 2
+        },
+        "src/components/ui/card.tsx": {
+          "functions": 6,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 8
+        },
+        "src/components/ui/collapsible.tsx": {
+          "functions": 3,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 3,
+          "maxFunctionLength": 3,
+          "complexityScore": 9
+        },
+        "src/components/ui/dialog.tsx": {
+          "functions": 6,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 5
+        },
+        "src/components/ui/dropdown-menu.tsx": {
+          "functions": 15,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 6,
+          "complexityScore": 6
+        },
+        "src/components/ui/form.tsx": {
+          "functions": 8,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 2,
+          "exports": 1,
+          "imports": 6,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 22,
+          "complexityScore": 13
+        },
+        "src/components/ui/input.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 1,
+          "maxFunctionLength": 1,
+          "complexityScore": 5
+        },
+        "src/components/ui/label.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 5,
+          "complexityScore": 4
+        },
+        "src/components/ui/progress.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 5,
+          "complexityScore": 3
+        },
+        "src/components/ui/select.tsx": {
+          "functions": 6,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 4
+        },
+        "src/components/ui/separator.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 6,
+          "maxFunctionLength": 6,
+          "complexityScore": 3
+        },
+        "src/components/ui/sheet.tsx": {
+          "functions": 10,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 4,
+          "avgFunctionLength": 3,
+          "maxFunctionLength": 6,
+          "complexityScore": 7
+        },
+        "src/components/ui/sidebar.tsx": {
+          "functions": 35,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 1,
+          "exports": 1,
+          "imports": 12,
+          "avgFunctionLength": 5,
+          "maxFunctionLength": 24,
+          "complexityScore": 9
+        },
+        "src/components/ui/skeleton.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 1,
+          "maxFunctionLength": 1,
+          "complexityScore": 7
+        },
+        "src/components/ui/switch.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 11
+        },
+        "src/components/ui/table.tsx": {
+          "functions": 8,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 7
+        },
+        "src/components/ui/tabs.tsx": {
+          "functions": 4,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 6
+        },
+        "src/components/ui/textarea.tsx": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 4,
+          "complexityScore": 11
+        },
+        "src/components/ui/toast.tsx": {
+          "functions": 6,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 2,
+          "exports": 1,
+          "imports": 5,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 5,
+          "complexityScore": 6
+        },
+        "src/components/ui/toaster.tsx": {
+          "functions": 2,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 20,
+          "maxFunctionLength": 23,
+          "complexityScore": 9
+        },
+        "src/components/ui/tooltip.tsx": {
+          "functions": 4,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 3,
+          "avgFunctionLength": 4,
+          "maxFunctionLength": 6,
+          "complexityScore": 6
+        },
+        "src/forms/form-wrapper.tsx": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 5,
+          "imports": 1,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 9
+        },
+        "src/forms/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 2,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/forms/schema-field-renderer.tsx": {
+          "functions": 3,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 1,
+          "imports": 6,
+          "avgFunctionLength": 82,
+          "maxFunctionLength": 121,
+          "complexityScore": 15
+        },
+        "src/forms/schema-form.tsx": {
+          "functions": 9,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 8,
+          "avgFunctionLength": 8,
+          "maxFunctionLength": 24,
+          "complexityScore": 24
+        },
+        "src/hooks/use-mobile.ts": {
+          "functions": 2,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 1,
+          "avgFunctionLength": 9,
+          "maxFunctionLength": 15,
+          "complexityScore": 25
+        },
+        "src/hooks/use-toast.ts": {
+          "functions": 13,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 4,
+          "exports": 2,
+          "imports": 2,
+          "avgFunctionLength": 13,
+          "maxFunctionLength": 51,
+          "complexityScore": 24
+        },
+        "src/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 7,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/infrastructure/index.ts": {
+          "functions": 5,
+          "classes": 0,
+          "interfaces": 1,
+          "types": 0,
+          "exports": 5,
+          "imports": 1,
+          "avgFunctionLength": 7,
+          "maxFunctionLength": 13,
+          "complexityScore": 7
+        },
+        "src/plugin.ts": {
+          "functions": 6,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 3,
+          "maxFunctionLength": 3,
+          "complexityScore": 14
+        },
+        "src/tables/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/tables/schema-table.tsx": {
+          "functions": 9,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 9,
+          "avgFunctionLength": 24,
+          "maxFunctionLength": 59,
+          "complexityScore": 13
+        },
+        "src/types/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 5,
+          "types": 2,
+          "exports": 7,
+          "imports": 2,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        },
+        "src/utils/cn.ts": {
+          "functions": 1,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 2,
+          "avgFunctionLength": 3,
+          "maxFunctionLength": 3,
+          "complexityScore": 7
+        },
+        "src/utils/index.ts": {
+          "functions": 0,
+          "classes": 0,
+          "interfaces": 0,
+          "types": 0,
+          "exports": 1,
+          "imports": 0,
+          "avgFunctionLength": 0,
+          "maxFunctionLength": 0,
+          "complexityScore": 0
+        }
+      },
+      "summary": {
+        "totalFunctions": 190,
+        "totalClasses": 0,
+        "totalInterfaces": 9,
+        "totalTypes": 11,
+        "avgComplexity": 8
+      }
+    }
+  },
+  "summary": {
+    "totalFunctions": 1558,
+    "totalClasses": 84,
+    "totalInterfaces": 229,
+    "totalTypes": 65,
+    "avgComplexity": 12,
+    "highComplexityFiles": [
+      {
+        "file": "auth/src/adapters/nextauth-adapter.ts",
+        "complexity": 24,
+        "maxFunctionLength": 129
+      },
+      {
+        "file": "schema/src/core/field.ts",
+        "complexity": 15,
+        "maxFunctionLength": 108
+      },
+      {
+        "file": "ui/src/forms/schema-field-renderer.tsx",
+        "complexity": 15,
+        "maxFunctionLength": 121
+      }
+    ]
+  }
+}

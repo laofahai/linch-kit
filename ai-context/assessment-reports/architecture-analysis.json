@@ -1,0 +1,758 @@
+{
+  "timestamp": "2025-07-06T07:09:12.988Z",
+  "summary": {
+    "totalPackages": 7,
+    "hasCircularDeps": false,
+    "totalFiles": 216,
+    "totalLines": 47605,
+    "testCoverage": "19.4%"
+  },
+  "packages": {
+    "auth": {
+      "name": "@linch-kit/auth",
+      "version": "2.0.2",
+      "dependencies": {
+        "@auth/core": "^0.40.0",
+        "@casl/ability": "^6.7.3",
+        "@linch-kit/core": "workspace:*",
+        "@linch-kit/schema": "workspace:*",
+        "next-auth": "5.0.0-beta.25",
+        "zod": "^3.25.67"
+      },
+      "devDependencies": {
+        "@types/react": "^19.1.8",
+        "react": "^19.1.0",
+        "tsup": "^8.5.0",
+        "typescript": "^5.8.3",
+        "@types/bun": "^1.2.18"
+      },
+      "peerDependencies": {
+        "@linch-kit/core": "workspace:*",
+        "@linch-kit/schema": "workspace:*",
+        "react": "^18.0.0 || ^19.0.0",
+        "@types/react": "^18.0.0 || ^19.0.0"
+      },
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js",
+          "require": "./dist/index.cjs"
+        },
+        "./package.json": "./package.json"
+      },
+      "main": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "core": {
+      "name": "@linch-kit/core",
+      "version": "2.0.2",
+      "dependencies": {
+        "@godaddy/terminus": "^4.12.1",
+        "@opentelemetry/api": "^1.9.0",
+        "@opentelemetry/exporter-jaeger": "^2.0.1",
+        "@opentelemetry/exporter-prometheus": "^0.202.0",
+        "@opentelemetry/instrumentation": "^0.202.0",
+        "@opentelemetry/sdk-node": "^0.202.0",
+        "chokidar": "^4.0.3",
+        "commander": "^14.0.0",
+        "convict": "^6.2.4",
+        "eventemitter3": "^5.0.1",
+        "lru-cache": "^11.1.0",
+        "pino": "^9.7.0",
+        "prom-client": "^15.1.3"
+      },
+      "devDependencies": {
+        "@types/convict": "^6.1.6",
+        "@types/fs-extra": "^11.0.4",
+        "@types/node": "^24.0.7",
+        "tsup": "^8.5.0",
+        "typescript": "^5.8.3",
+        "yaml": "^2.8.0"
+      },
+      "peerDependencies": {
+        "zod": "^3.23.0"
+      },
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.mjs",
+          "require": "./dist/index.js"
+        },
+        "./cli": {
+          "types": "./dist/cli.d.ts",
+          "import": "./dist/cli.mjs",
+          "require": "./dist/cli.js"
+        },
+        "./server": {
+          "types": "./dist/server.d.ts",
+          "import": "./dist/server.mjs",
+          "require": "./dist/server.js"
+        }
+      },
+      "main": "dist/index.js",
+      "types": "dist/index.d.ts"
+    },
+    "create-linch-kit": {
+      "name": "create-linch-kit",
+      "version": "2.0.3",
+      "dependencies": {
+        "chalk": "^5.3.0",
+        "commander": "^14.0.0",
+        "degit": "^2.8.4",
+        "fs-extra": "^11.2.0",
+        "ora": "^8.1.1",
+        "prompts": "^2.4.2"
+      },
+      "devDependencies": {
+        "@types/degit": "^2.8.6",
+        "@types/fs-extra": "^11.0.4",
+        "@types/prompts": "^2.4.9",
+        "tsup": "^8.3.5",
+        "typescript": "^5.8.3"
+      },
+      "peerDependencies": {}
+    },
+    "crud": {
+      "name": "@linch-kit/crud",
+      "version": "2.0.2",
+      "dependencies": {
+        "@linch-kit/core": "workspace:*",
+        "@linch-kit/schema": "workspace:*",
+        "@linch-kit/auth": "workspace:*",
+        "@prisma/client": "^6.10.1",
+        "zod": "^3.25.67",
+        "ioredis": "^5.6.1",
+        "lru-cache": "^11.1.0"
+      },
+      "devDependencies": {
+        "@types/node": "^24.0.7",
+        "typescript": "^5.8.3",
+        "tsup": "^8.5.0",
+        "@types/bun": "^1.2.18"
+      },
+      "peerDependencies": {},
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.mjs",
+          "require": "./dist/index.js"
+        }
+      },
+      "main": "dist/index.js",
+      "types": "dist/index.d.ts"
+    },
+    "schema": {
+      "name": "@linch-kit/schema",
+      "version": "2.0.2",
+      "dependencies": {
+        "@linch-kit/core": "workspace:*",
+        "zod": "^3.25.67",
+        "ts-morph": "^26.0.0",
+        "deep-diff": "^1.0.2",
+        "@prisma/generator-helper": "^6.10.1",
+        "change-case": "^5.4.4"
+      },
+      "devDependencies": {
+        "@types/node": "^24.0.7",
+        "@types/deep-diff": "^1.0.5",
+        "reflect-metadata": "^0.2.2",
+        "tsup": "^8.5.0",
+        "typescript": "5.8.3",
+        "@types/bun": "^1.2.18",
+        "@faker-js/faker": "^9.8.0"
+      },
+      "peerDependencies": {},
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js",
+          "require": "./dist/index.cjs"
+        }
+      },
+      "main": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "trpc": {
+      "name": "@linch-kit/trpc",
+      "version": "2.0.2",
+      "dependencies": {
+        "@linch-kit/core": "workspace:*",
+        "@linch-kit/schema": "workspace:*",
+        "@linch-kit/auth": "workspace:*",
+        "@trpc/server": "^11.4.3",
+        "@trpc/client": "^11.4.3",
+        "zod": "^3.25.67",
+        "superjson": "^2.2.2"
+      },
+      "devDependencies": {
+        "@types/node": "^24.0.7",
+        "typescript": "^5.8.3",
+        "tsup": "^8.5.0",
+        "eslint": "^9.30.0"
+      },
+      "peerDependencies": {
+        "typescript": ">=5.0.0"
+      },
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js",
+          "require": "./dist/index.cjs"
+        },
+        "./server": {
+          "types": "./dist/server.d.ts",
+          "import": "./dist/server.js",
+          "require": "./dist/server.cjs"
+        }
+      },
+      "main": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "ui": {
+      "name": "@linch-kit/ui",
+      "version": "2.0.2",
+      "dependencies": {
+        "@linch-kit/core": "workspace:*",
+        "@linch-kit/schema": "workspace:*",
+        "@linch-kit/auth": "workspace:*",
+        "@linch-kit/crud": "workspace:*",
+        "@radix-ui/react-accordion": "^1.2.11",
+        "@radix-ui/react-avatar": "^1.1.10",
+        "@radix-ui/react-checkbox": "^1.3.2",
+        "@radix-ui/react-collapsible": "^1.1.11",
+        "@radix-ui/react-dialog": "^1.1.14",
+        "@radix-ui/react-dropdown-menu": "^2.1.15",
+        "@radix-ui/react-label": "^2.1.7",
+        "@radix-ui/react-popover": "^1.1.14",
+        "@radix-ui/react-progress": "^1.1.7",
+        "@radix-ui/react-select": "^2.2.5",
+        "@radix-ui/react-separator": "^1.1.7",
+        "@radix-ui/react-slider": "^1.3.5",
+        "@radix-ui/react-slot": "^1.2.3",
+        "@radix-ui/react-switch": "^1.2.5",
+        "@radix-ui/react-tabs": "^1.1.12",
+        "@radix-ui/react-toast": "^1.2.14",
+        "@radix-ui/react-tooltip": "^1.2.7",
+        "@tanstack/react-table": "^8.21.3",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lucide-react": "^0.525.0",
+        "next-themes": "^0.4.6",
+        "sonner": "^2.0.5",
+        "tailwind-merge": "^3.3.1",
+        "tw-animate-css": "^1.0.1",
+        "vaul": "^1.1.2",
+        "zod": "^3.25.67"
+      },
+      "devDependencies": {
+        "@hookform/resolvers": "^5.1.1",
+        "@testing-library/jest-dom": "^6.6.3",
+        "@testing-library/react": "^16.3.0",
+        "@testing-library/user-event": "^14.6.1",
+        "@types/react": "^19.1.8",
+        "@types/react-dom": "^19.1.6",
+        "@vitejs/plugin-react": "^4.6.0",
+        "eslint": "^9.30.0",
+        "jsdom": "^26.1.0",
+        "react": "^19.1.0",
+        "react-dom": "^19.1.0",
+        "react-hook-form": "^7.59.0",
+        "tailwindcss": "^4.1.11",
+        "tsup": "^8.5.0",
+        "typescript": "^5.8.3",
+        "vitest": "^3.2.4"
+      },
+      "peerDependencies": {
+        "@hookform/resolvers": "^5.0.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "react-hook-form": "^7.59.0"
+      },
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.mjs",
+          "require": "./dist/index.js"
+        },
+        "./components": {
+          "types": "./dist/components/index.d.ts",
+          "import": "./dist/components/index.mjs",
+          "require": "./dist/components/index.js"
+        },
+        "./components/ui/*": {
+          "types": "./dist/components/ui/*.d.ts",
+          "import": "./dist/components/ui/*.mjs",
+          "require": "./dist/components/ui/*.js"
+        },
+        "./forms": {
+          "types": "./dist/forms/index.d.ts",
+          "import": "./dist/forms/index.mjs",
+          "require": "./dist/forms/index.js"
+        },
+        "./tables": {
+          "types": "./dist/tables/index.d.ts",
+          "import": "./dist/tables/index.mjs",
+          "require": "./dist/tables/index.js"
+        },
+        "./utils": {
+          "types": "./dist/utils/index.d.ts",
+          "import": "./dist/utils/index.mjs",
+          "require": "./dist/utils/index.js"
+        },
+        "./styles/globals.css": "./dist/styles/globals.css"
+      },
+      "main": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@linch-kit/auth": {
+      "external": [
+        {
+          "dep": "@auth/core",
+          "version": "^0.40.0"
+        },
+        {
+          "dep": "@casl/ability",
+          "version": "^6.7.3"
+        },
+        {
+          "dep": "next-auth",
+          "version": "5.0.0-beta.25"
+        },
+        {
+          "dep": "zod",
+          "version": "^3.25.67"
+        }
+      ],
+      "internal": [
+        {
+          "dep": "@linch-kit/core",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "@linch-kit/schema",
+          "version": "workspace:*"
+        }
+      ],
+      "peer": [
+        {
+          "dep": "@linch-kit/core",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "@linch-kit/schema",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "react",
+          "version": "^18.0.0 || ^19.0.0"
+        },
+        {
+          "dep": "@types/react",
+          "version": "^18.0.0 || ^19.0.0"
+        }
+      ]
+    },
+    "@linch-kit/core": {
+      "external": [
+        {
+          "dep": "@godaddy/terminus",
+          "version": "^4.12.1"
+        },
+        {
+          "dep": "@opentelemetry/api",
+          "version": "^1.9.0"
+        },
+        {
+          "dep": "@opentelemetry/exporter-jaeger",
+          "version": "^2.0.1"
+        },
+        {
+          "dep": "@opentelemetry/exporter-prometheus",
+          "version": "^0.202.0"
+        },
+        {
+          "dep": "@opentelemetry/instrumentation",
+          "version": "^0.202.0"
+        },
+        {
+          "dep": "@opentelemetry/sdk-node",
+          "version": "^0.202.0"
+        },
+        {
+          "dep": "chokidar",
+          "version": "^4.0.3"
+        },
+        {
+          "dep": "commander",
+          "version": "^14.0.0"
+        },
+        {
+          "dep": "convict",
+          "version": "^6.2.4"
+        },
+        {
+          "dep": "eventemitter3",
+          "version": "^5.0.1"
+        },
+        {
+          "dep": "lru-cache",
+          "version": "^11.1.0"
+        },
+        {
+          "dep": "pino",
+          "version": "^9.7.0"
+        },
+        {
+          "dep": "prom-client",
+          "version": "^15.1.3"
+        }
+      ],
+      "internal": [],
+      "peer": [
+        {
+          "dep": "zod",
+          "version": "^3.23.0"
+        }
+      ]
+    },
+    "create-linch-kit": {
+      "external": [
+        {
+          "dep": "chalk",
+          "version": "^5.3.0"
+        },
+        {
+          "dep": "commander",
+          "version": "^14.0.0"
+        },
+        {
+          "dep": "degit",
+          "version": "^2.8.4"
+        },
+        {
+          "dep": "fs-extra",
+          "version": "^11.2.0"
+        },
+        {
+          "dep": "ora",
+          "version": "^8.1.1"
+        },
+        {
+          "dep": "prompts",
+          "version": "^2.4.2"
+        }
+      ],
+      "internal": [],
+      "peer": []
+    },
+    "@linch-kit/crud": {
+      "external": [
+        {
+          "dep": "@prisma/client",
+          "version": "^6.10.1"
+        },
+        {
+          "dep": "zod",
+          "version": "^3.25.67"
+        },
+        {
+          "dep": "ioredis",
+          "version": "^5.6.1"
+        },
+        {
+          "dep": "lru-cache",
+          "version": "^11.1.0"
+        }
+      ],
+      "internal": [
+        {
+          "dep": "@linch-kit/core",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "@linch-kit/schema",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "@linch-kit/auth",
+          "version": "workspace:*"
+        }
+      ],
+      "peer": []
+    },
+    "@linch-kit/schema": {
+      "external": [
+        {
+          "dep": "zod",
+          "version": "^3.25.67"
+        },
+        {
+          "dep": "ts-morph",
+          "version": "^26.0.0"
+        },
+        {
+          "dep": "deep-diff",
+          "version": "^1.0.2"
+        },
+        {
+          "dep": "@prisma/generator-helper",
+          "version": "^6.10.1"
+        },
+        {
+          "dep": "change-case",
+          "version": "^5.4.4"
+        }
+      ],
+      "internal": [
+        {
+          "dep": "@linch-kit/core",
+          "version": "workspace:*"
+        }
+      ],
+      "peer": []
+    },
+    "@linch-kit/trpc": {
+      "external": [
+        {
+          "dep": "@trpc/server",
+          "version": "^11.4.3"
+        },
+        {
+          "dep": "@trpc/client",
+          "version": "^11.4.3"
+        },
+        {
+          "dep": "zod",
+          "version": "^3.25.67"
+        },
+        {
+          "dep": "superjson",
+          "version": "^2.2.2"
+        }
+      ],
+      "internal": [
+        {
+          "dep": "@linch-kit/core",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "@linch-kit/schema",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "@linch-kit/auth",
+          "version": "workspace:*"
+        }
+      ],
+      "peer": [
+        {
+          "dep": "typescript",
+          "version": ">=5.0.0"
+        }
+      ]
+    },
+    "@linch-kit/ui": {
+      "external": [
+        {
+          "dep": "@radix-ui/react-accordion",
+          "version": "^1.2.11"
+        },
+        {
+          "dep": "@radix-ui/react-avatar",
+          "version": "^1.1.10"
+        },
+        {
+          "dep": "@radix-ui/react-checkbox",
+          "version": "^1.3.2"
+        },
+        {
+          "dep": "@radix-ui/react-collapsible",
+          "version": "^1.1.11"
+        },
+        {
+          "dep": "@radix-ui/react-dialog",
+          "version": "^1.1.14"
+        },
+        {
+          "dep": "@radix-ui/react-dropdown-menu",
+          "version": "^2.1.15"
+        },
+        {
+          "dep": "@radix-ui/react-label",
+          "version": "^2.1.7"
+        },
+        {
+          "dep": "@radix-ui/react-popover",
+          "version": "^1.1.14"
+        },
+        {
+          "dep": "@radix-ui/react-progress",
+          "version": "^1.1.7"
+        },
+        {
+          "dep": "@radix-ui/react-select",
+          "version": "^2.2.5"
+        },
+        {
+          "dep": "@radix-ui/react-separator",
+          "version": "^1.1.7"
+        },
+        {
+          "dep": "@radix-ui/react-slider",
+          "version": "^1.3.5"
+        },
+        {
+          "dep": "@radix-ui/react-slot",
+          "version": "^1.2.3"
+        },
+        {
+          "dep": "@radix-ui/react-switch",
+          "version": "^1.2.5"
+        },
+        {
+          "dep": "@radix-ui/react-tabs",
+          "version": "^1.1.12"
+        },
+        {
+          "dep": "@radix-ui/react-toast",
+          "version": "^1.2.14"
+        },
+        {
+          "dep": "@radix-ui/react-tooltip",
+          "version": "^1.2.7"
+        },
+        {
+          "dep": "@tanstack/react-table",
+          "version": "^8.21.3"
+        },
+        {
+          "dep": "class-variance-authority",
+          "version": "^0.7.1"
+        },
+        {
+          "dep": "clsx",
+          "version": "^2.1.1"
+        },
+        {
+          "dep": "lucide-react",
+          "version": "^0.525.0"
+        },
+        {
+          "dep": "next-themes",
+          "version": "^0.4.6"
+        },
+        {
+          "dep": "sonner",
+          "version": "^2.0.5"
+        },
+        {
+          "dep": "tailwind-merge",
+          "version": "^3.3.1"
+        },
+        {
+          "dep": "tw-animate-css",
+          "version": "^1.0.1"
+        },
+        {
+          "dep": "vaul",
+          "version": "^1.1.2"
+        },
+        {
+          "dep": "zod",
+          "version": "^3.25.67"
+        }
+      ],
+      "internal": [
+        {
+          "dep": "@linch-kit/core",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "@linch-kit/schema",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "@linch-kit/auth",
+          "version": "workspace:*"
+        },
+        {
+          "dep": "@linch-kit/crud",
+          "version": "workspace:*"
+        }
+      ],
+      "peer": [
+        {
+          "dep": "@hookform/resolvers",
+          "version": "^5.0.0"
+        },
+        {
+          "dep": "react",
+          "version": "^19.0.0"
+        },
+        {
+          "dep": "react-dom",
+          "version": "^19.0.0"
+        },
+        {
+          "dep": "react-hook-form",
+          "version": "^7.59.0"
+        }
+      ]
+    }
+  },
+  "circularDependencies": [],
+  "codeMetrics": {
+    "packages": {
+      "auth": {
+        "files": 28,
+        "lines": 5313,
+        "tsFiles": 19,
+        "testFiles": 9
+      },
+      "core": {
+        "files": 59,
+        "lines": 12953,
+        "tsFiles": 51,
+        "testFiles": 8
+      },
+      "create-linch-kit": {
+        "files": 2,
+        "lines": 244,
+        "tsFiles": 2,
+        "testFiles": 0
+      },
+      "crud": {
+        "files": 36,
+        "lines": 14001,
+        "tsFiles": 24,
+        "testFiles": 12
+      },
+      "schema": {
+        "files": 35,
+        "lines": 7600,
+        "tsFiles": 28,
+        "testFiles": 7
+      },
+      "trpc": {
+        "files": 10,
+        "lines": 3493,
+        "tsFiles": 5,
+        "testFiles": 5
+      },
+      "ui": {
+        "files": 46,
+        "lines": 4001,
+        "tsFiles": 45,
+        "testFiles": 1
+      }
+    },
+    "total": {
+      "files": 216,
+      "lines": 47605,
+      "tsFiles": 174,
+      "testFiles": 42
+    }
+  }
+}
