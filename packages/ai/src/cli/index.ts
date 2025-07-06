@@ -7,3 +7,4 @@
 export { aiCLIPlugin, aiCLIPlugin as cliPlugin } from './plugin.js'
 export { extractCommand } from './commands/extract.js'
 export { queryCommand } from './commands/query.js'
+export { generateCommand } from './commands/generate.js'

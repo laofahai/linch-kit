@@ -6,6 +6,7 @@
 
 import { readFile, readdir, stat } from 'fs/promises'
 import { join, extname, relative } from 'path'
+
 import { parse } from '@babel/parser'
 import traverse from '@babel/traverse'
 import * as t from '@babel/types'
@@ -18,6 +19,7 @@ import {
   type FunctionNode 
 } from '../types/index.js'
 import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index.js'
+
 import { BaseExtractor } from './base-extractor.js'
 
 interface FunctionInfo {

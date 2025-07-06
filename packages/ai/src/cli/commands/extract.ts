@@ -5,12 +5,12 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
+
 import type {
   CommandContext,
   CommandResult,
   CLICommand
 } from '../plugin.js'
-
 import { PackageExtractor } from '../../extractors/package-extractor.js'
 import { SchemaExtractor } from '../../extractors/schema-extractor.js'
 import { DocumentExtractor } from '../../extractors/document-extractor.js'

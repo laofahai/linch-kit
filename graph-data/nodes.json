@@ -1,5 +1,74 @@
 [
   {
+    "id": "package:_linch-kit_trpc",
+    "type": "Package",
+    "name": "@linch-kit/trpc",
+    "properties": {
+      "version": "2.0.2",
+      "description": "LinchKit tRPC API layer - End-to-end type-safe API development",
+      "path": "packages/trpc",
+      "main": "./dist/index.cjs",
+      "types": "./dist/index.d.ts",
+      "keywords": [
+        "linchkit",
+        "trpc",
+        "api",
+        "typescript",
+        "type-safe"
+      ]
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.475Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/trpc/package.json",
+      "package": "@linch-kit/trpc"
+    }
+  },
+  {
+    "id": "file:_linch-kit_trpc_README_md",
+    "type": "File",
+    "name": "README.md",
+    "properties": {
+      "file_type": "md",
+      "file_path": "packages/trpc/README.md",
+      "size": 5306
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.476Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/trpc/README.md",
+      "package": "@linch-kit/trpc"
+    }
+  },
+  {
+    "id": "file:_linch-kit_trpc_CHANGELOG_md",
+    "type": "File",
+    "name": "CHANGELOG.md",
+    "properties": {
+      "file_type": "md",
+      "file_path": "packages/trpc/CHANGELOG.md",
+      "size": 8771
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.476Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/trpc/CHANGELOG.md",
+      "package": "@linch-kit/trpc"
+    }
+  },
+  {
+    "id": "file:_linch-kit_trpc_src_index_ts",
+    "type": "File",
+    "name": "src/index.ts",
+    "properties": {
+      "file_type": "ts",
+      "file_path": "packages/trpc/src/index.ts",
+      "size": 1552
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.476Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/trpc/src/index.ts",
+      "package": "@linch-kit/trpc"
+    }
+  },
+  {
     "id": "package:_linch-kit_auth",
     "type": "Package",
     "name": "@linch-kit/auth",
@@ -21,8 +90,8 @@
       ]
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.095Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/auth/package.json",
+      "created_at": "2025-07-06T13:04:38.476Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/auth/package.json",
       "package": "@linch-kit/auth"
     }
   },
@@ -36,8 +105,8 @@
       "size": 2915
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.096Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/auth/README.md",
+      "created_at": "2025-07-06T13:04:38.476Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/auth/README.md",
       "package": "@linch-kit/auth"
     }
   },
@@ -51,8 +120,8 @@
       "size": 8257
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.096Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/auth/CHANGELOG.md",
+      "created_at": "2025-07-06T13:04:38.476Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/auth/CHANGELOG.md",
       "package": "@linch-kit/auth"
     }
   },
@@ -66,79 +135,120 @@
       "size": 2571
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.096Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/auth/src/index.ts",
+      "created_at": "2025-07-06T13:04:38.476Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/auth/src/index.ts",
       "package": "@linch-kit/auth"
     }
   },
   {
-    "id": "package:_linch-kit_core",
+    "id": "package:_linch-kit_ai",
     "type": "Package",
-    "name": "@linch-kit/core",
+    "name": "@linch-kit/ai",
     "properties": {
-      "version": "2.0.2",
-      "description": "LinchKit 基础设施包 - 插件系统、配置管理、可观测性",
-      "path": "packages/core",
-      "main": "dist/index.js",
-      "types": "dist/index.d.ts",
+      "version": "1.0.0",
+      "description": "LinchKit AI 集成层 - Graph RAG 知识图谱和 AI 工具",
+      "path": "packages/ai",
+      "main": "./dist/index.js",
+      "types": "./dist/index.d.ts",
       "keywords": [
-        "linchkit",
-        "core",
-        "infrastructure",
-        "plugin-system",
-        "configuration",
-        "observability"
+        "linch-kit",
+        "ai",
+        "graph-rag",
+        "knowledge-graph",
+        "neo4j",
+        "data-extraction",
+        "typescript"
       ]
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.096Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/core/package.json",
-      "package": "@linch-kit/core"
+      "created_at": "2025-07-06T13:04:38.476Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/ai/package.json",
+      "package": "@linch-kit/ai"
     }
   },
   {
-    "id": "file:_linch-kit_core_README_md",
-    "type": "File",
-    "name": "README.md",
-    "properties": {
-      "file_type": "md",
-      "file_path": "packages/core/README.md",
-      "size": 11609
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.096Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/core/README.md",
-      "package": "@linch-kit/core"
-    }
-  },
-  {
-    "id": "file:_linch-kit_core_CHANGELOG_md",
-    "type": "File",
-    "name": "CHANGELOG.md",
-    "properties": {
-      "file_type": "md",
-      "file_path": "packages/core/CHANGELOG.md",
-      "size": 3878
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.096Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/core/CHANGELOG.md",
-      "package": "@linch-kit/core"
-    }
-  },
-  {
-    "id": "file:_linch-kit_core_src_index_ts",
+    "id": "file:_linch-kit_ai_src_index_ts",
     "type": "File",
     "name": "src/index.ts",
     "properties": {
       "file_type": "ts",
-      "file_path": "packages/core/src/index.ts",
-      "size": 1274
+      "file_path": "packages/ai/src/index.ts",
+      "size": 830
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.096Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/core/src/index.ts",
-      "package": "@linch-kit/core"
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/ai/src/index.ts",
+      "package": "@linch-kit/ai"
+    }
+  },
+  {
+    "id": "package:_linch-kit_ui",
+    "type": "Package",
+    "name": "@linch-kit/ui",
+    "properties": {
+      "version": "2.0.2",
+      "description": "LinchKit UI组件库 - Schema驱动的企业级React组件",
+      "path": "packages/ui",
+      "main": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "keywords": [
+        "linchkit",
+        "ui",
+        "components",
+        "react",
+        "schema-driven",
+        "enterprise"
+      ]
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/ui/package.json",
+      "package": "@linch-kit/ui"
+    }
+  },
+  {
+    "id": "file:_linch-kit_ui_README_md",
+    "type": "File",
+    "name": "README.md",
+    "properties": {
+      "file_type": "md",
+      "file_path": "packages/ui/README.md",
+      "size": 3125
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/ui/README.md",
+      "package": "@linch-kit/ui"
+    }
+  },
+  {
+    "id": "file:_linch-kit_ui_CHANGELOG_md",
+    "type": "File",
+    "name": "CHANGELOG.md",
+    "properties": {
+      "file_type": "md",
+      "file_path": "packages/ui/CHANGELOG.md",
+      "size": 8463
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/ui/CHANGELOG.md",
+      "package": "@linch-kit/ui"
+    }
+  },
+  {
+    "id": "file:_linch-kit_ui_src_index_ts",
+    "type": "File",
+    "name": "src/index.ts",
+    "properties": {
+      "file_type": "ts",
+      "file_path": "packages/ui/src/index.ts",
+      "size": 427
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/ui/src/index.ts",
+      "package": "@linch-kit/ui"
     }
   },
   {
@@ -161,8 +271,8 @@
       ]
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.096Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/create-linch-kit/package.json",
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/create-linch-kit/package.json",
       "package": "create-linch-kit"
     }
   },
@@ -176,8 +286,8 @@
       "size": 2442
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/create-linch-kit/README.md",
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/create-linch-kit/README.md",
       "package": "create-linch-kit"
     }
   },
@@ -191,8 +301,8 @@
       "size": 1658
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/create-linch-kit/CHANGELOG.md",
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/create-linch-kit/CHANGELOG.md",
       "package": "create-linch-kit"
     }
   },
@@ -206,9 +316,149 @@
       "size": 765
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/create-linch-kit/src/index.ts",
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/create-linch-kit/src/index.ts",
       "package": "create-linch-kit"
+    }
+  },
+  {
+    "id": "package:_linch-kit_core",
+    "type": "Package",
+    "name": "@linch-kit/core",
+    "properties": {
+      "version": "2.0.2",
+      "description": "LinchKit 基础设施包 - 插件系统、配置管理、可观测性",
+      "path": "packages/core",
+      "main": "dist/index.js",
+      "types": "dist/index.d.ts",
+      "keywords": [
+        "linchkit",
+        "core",
+        "infrastructure",
+        "plugin-system",
+        "configuration",
+        "observability"
+      ]
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/core/package.json",
+      "package": "@linch-kit/core"
+    }
+  },
+  {
+    "id": "file:_linch-kit_core_README_md",
+    "type": "File",
+    "name": "README.md",
+    "properties": {
+      "file_type": "md",
+      "file_path": "packages/core/README.md",
+      "size": 11609
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/core/README.md",
+      "package": "@linch-kit/core"
+    }
+  },
+  {
+    "id": "file:_linch-kit_core_CHANGELOG_md",
+    "type": "File",
+    "name": "CHANGELOG.md",
+    "properties": {
+      "file_type": "md",
+      "file_path": "packages/core/CHANGELOG.md",
+      "size": 3878
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/core/CHANGELOG.md",
+      "package": "@linch-kit/core"
+    }
+  },
+  {
+    "id": "file:_linch-kit_core_src_index_ts",
+    "type": "File",
+    "name": "src/index.ts",
+    "properties": {
+      "file_type": "ts",
+      "file_path": "packages/core/src/index.ts",
+      "size": 1274
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/core/src/index.ts",
+      "package": "@linch-kit/core"
+    }
+  },
+  {
+    "id": "package:_linch-kit_schema",
+    "type": "Package",
+    "name": "@linch-kit/schema",
+    "properties": {
+      "version": "2.0.2",
+      "description": "Schema-driven development engine for LinchKit",
+      "path": "packages/schema",
+      "main": "./dist/index.cjs",
+      "types": "./dist/index.d.ts",
+      "keywords": [
+        "linch-kit",
+        "schema",
+        "code-generation",
+        "typescript",
+        "prisma",
+        "zod"
+      ]
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/schema/package.json",
+      "package": "@linch-kit/schema"
+    }
+  },
+  {
+    "id": "file:_linch-kit_schema_README_md",
+    "type": "File",
+    "name": "README.md",
+    "properties": {
+      "file_type": "md",
+      "file_path": "packages/schema/README.md",
+      "size": 11879
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/schema/README.md",
+      "package": "@linch-kit/schema"
+    }
+  },
+  {
+    "id": "file:_linch-kit_schema_CHANGELOG_md",
+    "type": "File",
+    "name": "CHANGELOG.md",
+    "properties": {
+      "file_type": "md",
+      "file_path": "packages/schema/CHANGELOG.md",
+      "size": 9026
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/schema/CHANGELOG.md",
+      "package": "@linch-kit/schema"
+    }
+  },
+  {
+    "id": "file:_linch-kit_schema_src_index_ts",
+    "type": "File",
+    "name": "src/index.ts",
+    "properties": {
+      "file_type": "ts",
+      "file_path": "packages/schema/src/index.ts",
+      "size": 1740
+    },
+    "metadata": {
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/schema/src/index.ts",
+      "package": "@linch-kit/schema"
     }
   },
   {
@@ -233,8 +483,8 @@
       ]
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/crud/package.json",
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/crud/package.json",
       "package": "@linch-kit/crud"
     }
   },
@@ -248,8 +498,8 @@
       "size": 4894
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/crud/README.md",
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/crud/README.md",
       "package": "@linch-kit/crud"
     }
   },
@@ -263,8 +513,8 @@
       "size": 8945
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/crud/CHANGELOG.md",
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/crud/CHANGELOG.md",
       "package": "@linch-kit/crud"
     }
   },
@@ -278,218 +528,9 @@
       "size": 1624
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/crud/src/index.ts",
+      "created_at": "2025-07-06T13:04:38.477Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/packages/crud/src/index.ts",
       "package": "@linch-kit/crud"
-    }
-  },
-  {
-    "id": "package:_linch-kit_schema",
-    "type": "Package",
-    "name": "@linch-kit/schema",
-    "properties": {
-      "version": "2.0.2",
-      "description": "Schema-driven development engine for LinchKit",
-      "path": "packages/schema",
-      "main": "./dist/index.cjs",
-      "types": "./dist/index.d.ts",
-      "keywords": [
-        "linch-kit",
-        "schema",
-        "code-generation",
-        "typescript",
-        "prisma",
-        "zod"
-      ]
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/schema/package.json",
-      "package": "@linch-kit/schema"
-    }
-  },
-  {
-    "id": "file:_linch-kit_schema_README_md",
-    "type": "File",
-    "name": "README.md",
-    "properties": {
-      "file_type": "md",
-      "file_path": "packages/schema/README.md",
-      "size": 11879
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/schema/README.md",
-      "package": "@linch-kit/schema"
-    }
-  },
-  {
-    "id": "file:_linch-kit_schema_CHANGELOG_md",
-    "type": "File",
-    "name": "CHANGELOG.md",
-    "properties": {
-      "file_type": "md",
-      "file_path": "packages/schema/CHANGELOG.md",
-      "size": 9026
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/schema/CHANGELOG.md",
-      "package": "@linch-kit/schema"
-    }
-  },
-  {
-    "id": "file:_linch-kit_schema_src_index_ts",
-    "type": "File",
-    "name": "src/index.ts",
-    "properties": {
-      "file_type": "ts",
-      "file_path": "packages/schema/src/index.ts",
-      "size": 1740
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/schema/src/index.ts",
-      "package": "@linch-kit/schema"
-    }
-  },
-  {
-    "id": "package:_linch-kit_trpc",
-    "type": "Package",
-    "name": "@linch-kit/trpc",
-    "properties": {
-      "version": "2.0.2",
-      "description": "LinchKit tRPC API layer - End-to-end type-safe API development",
-      "path": "packages/trpc",
-      "main": "./dist/index.cjs",
-      "types": "./dist/index.d.ts",
-      "keywords": [
-        "linchkit",
-        "trpc",
-        "api",
-        "typescript",
-        "type-safe"
-      ]
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.097Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/trpc/package.json",
-      "package": "@linch-kit/trpc"
-    }
-  },
-  {
-    "id": "file:_linch-kit_trpc_README_md",
-    "type": "File",
-    "name": "README.md",
-    "properties": {
-      "file_type": "md",
-      "file_path": "packages/trpc/README.md",
-      "size": 5306
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/trpc/README.md",
-      "package": "@linch-kit/trpc"
-    }
-  },
-  {
-    "id": "file:_linch-kit_trpc_CHANGELOG_md",
-    "type": "File",
-    "name": "CHANGELOG.md",
-    "properties": {
-      "file_type": "md",
-      "file_path": "packages/trpc/CHANGELOG.md",
-      "size": 8771
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/trpc/CHANGELOG.md",
-      "package": "@linch-kit/trpc"
-    }
-  },
-  {
-    "id": "file:_linch-kit_trpc_src_index_ts",
-    "type": "File",
-    "name": "src/index.ts",
-    "properties": {
-      "file_type": "ts",
-      "file_path": "packages/trpc/src/index.ts",
-      "size": 1552
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/trpc/src/index.ts",
-      "package": "@linch-kit/trpc"
-    }
-  },
-  {
-    "id": "package:_linch-kit_ui",
-    "type": "Package",
-    "name": "@linch-kit/ui",
-    "properties": {
-      "version": "2.0.2",
-      "description": "LinchKit UI组件库 - Schema驱动的企业级React组件",
-      "path": "packages/ui",
-      "main": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "keywords": [
-        "linchkit",
-        "ui",
-        "components",
-        "react",
-        "schema-driven",
-        "enterprise"
-      ]
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/ui/package.json",
-      "package": "@linch-kit/ui"
-    }
-  },
-  {
-    "id": "file:_linch-kit_ui_README_md",
-    "type": "File",
-    "name": "README.md",
-    "properties": {
-      "file_type": "md",
-      "file_path": "packages/ui/README.md",
-      "size": 3125
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/ui/README.md",
-      "package": "@linch-kit/ui"
-    }
-  },
-  {
-    "id": "file:_linch-kit_ui_CHANGELOG_md",
-    "type": "File",
-    "name": "CHANGELOG.md",
-    "properties": {
-      "file_type": "md",
-      "file_path": "packages/ui/CHANGELOG.md",
-      "size": 8463
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/ui/CHANGELOG.md",
-      "package": "@linch-kit/ui"
-    }
-  },
-  {
-    "id": "file:_linch-kit_ui_src_index_ts",
-    "type": "File",
-    "name": "src/index.ts",
-    "properties": {
-      "file_type": "ts",
-      "file_path": "packages/ui/src/index.ts",
-      "size": 427
-    },
-    "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/packages/ui/src/index.ts",
-      "package": "@linch-kit/ui"
     }
   },
   {
@@ -513,8 +554,8 @@
       ]
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/modules/console/package.json",
+      "created_at": "2025-07-06T13:04:38.478Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/modules/console/package.json",
       "package": "@linch-kit/console"
     }
   },
@@ -528,8 +569,8 @@
       "size": 13783
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/modules/console/README.md",
+      "created_at": "2025-07-06T13:04:38.478Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/modules/console/README.md",
       "package": "@linch-kit/console"
     }
   },
@@ -543,8 +584,8 @@
       "size": 9076
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/modules/console/CHANGELOG.md",
+      "created_at": "2025-07-06T13:04:38.478Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/modules/console/CHANGELOG.md",
       "package": "@linch-kit/console"
     }
   },
@@ -558,8 +599,8 @@
       "size": 2284
     },
     "metadata": {
-      "created_at": "2025-07-06T07:43:27.098Z",
-      "source_file": "/Users/laofahai/Documents/workspace/linch-kit/modules/console/src/index.ts",
+      "created_at": "2025-07-06T13:04:38.478Z",
+      "source_file": "/home/laofahai/workspace/linch-kit/modules/console/src/index.ts",
       "package": "@linch-kit/console"
     }
   }

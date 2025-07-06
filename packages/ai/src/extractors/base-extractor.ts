@@ -4,8 +4,9 @@
  * 所有数据提取器的基类，提供统一的接口和公共功能
  */
 
-import { createLogger } from '@linch-kit/core/server'
 import { relative, isAbsolute, normalize } from 'path'
+
+import { createLogger } from '@linch-kit/core/server'
 
 import type { 
   IExtractor, 

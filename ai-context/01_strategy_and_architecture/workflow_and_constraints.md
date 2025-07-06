@@ -98,6 +98,30 @@ core → schema → auth → crud → trpc → ui → console
 - **"让Gemini评估技术选型"**
 
 #### 5. 设计确认流程
+
+## 🤖 Phase 4.0: AI 驱动开发工作流
+
+### Graph RAG 驱动的智能开发流程
+
+**适用场景**: 复杂功能开发、多模块集成、架构理解任务
+
+**强制性执行阶段**:
+1. **理解阶段**: 使用 `linch ai:query --type stats --format ai-context` 获取项目概览
+2. **分析阶段**: 使用 `linch ai:query --type node/relations --format ai-context` 分析相关组件
+3. **实现阶段**: 基于 Graph RAG 上下文生成符合架构约定的代码
+
+**详细规范**: 参见 [AI 驱动开发工作流规范](../workflows/ai_driven_development.md)
+
+**核心约束**:
+- [ ] **必须使用 Graph RAG**: 复杂任务必须先执行 Graph RAG 查询理解上下文
+- [ ] **AI 友好格式**: 查询必须使用 `--format ai-context` 获得结构化上下文
+- [ ] **模式一致性**: 代码实现必须遵循 Graph RAG 分析得出的现有模式
+- [ ] **质量验证**: 除传统质量标准外，还需验证架构一致性和上下文准确性
+
+### AI 工具规范引用
+
+**工具清单**: 参见项目根目录 `/ai-tools-manifest.json`
+**核心工具**: `ai:query` - Graph RAG 知识图谱查询工具
 - **生成设计文档** - 基于分析和协商结果
 - **用户确认** - 必须获得用户明确同意
 - **更新架构文档** - 同步到 system_architecture 目录

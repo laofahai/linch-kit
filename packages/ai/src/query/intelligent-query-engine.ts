@@ -6,8 +6,8 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
+
 import type { 
-  Neo4jConfig, 
   GraphNode, 
   GraphRelationship, 
   QueryResult,
