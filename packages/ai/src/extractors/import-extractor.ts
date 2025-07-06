@@ -73,8 +73,8 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
   private project: Project
   private sourceFiles: SourceFile[] = []
 
-  constructor() {
-    super('ImportExtractor')
+  constructor(workingDirectory?: string) {
+    super('ImportExtractor', workingDirectory)
     const tsConfigPath = this.config.getTsConfigPath()
     this.project = new Project({
       tsConfigFilePath: tsConfigPath,

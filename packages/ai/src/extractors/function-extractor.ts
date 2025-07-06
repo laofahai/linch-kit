@@ -121,8 +121,8 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
   private project: Project
   private sourceFiles: SourceFile[] = []
 
-  constructor() {
-    super('FunctionExtractor')
+  constructor(workingDirectory?: string) {
+    super('FunctionExtractor', workingDirectory)
     const tsConfigPath = this.config.getTsConfigPath()
     this.project = new Project({
       tsConfigFilePath: tsConfigPath,

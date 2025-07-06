@@ -88,14 +88,27 @@ export class IntelligentQueryEngine {
         /找.*class/i,
         /类.*在哪/i,
         /where.*class/i,
-        /class.*definition/i
+        /class.*definition/i,
+        /找到.*类/i,
+        /所有.*类/i,
+        /显示.*类/i,
+        /.*相关.*类/i,
+        /.*类型/i,
+        /.*组件/i,
+        /component/i,
+        /React.*组件/i
       ]],
       ['find_interface', [
         /查找.*接口/i,
         /找.*interface/i,
         /接口.*在哪/i,
         /where.*interface/i,
-        /interface.*definition/i
+        /interface.*definition/i,
+        /找到.*接口/i,
+        /所有.*接口/i,
+        /显示.*接口/i,
+        /.*相关.*接口/i,
+        /Schema.*接口/i
       ]],
       ['find_dependencies', [
         /依赖.*关系/i,
@@ -162,6 +175,16 @@ export class IntelligentQueryEngine {
       this.neo4jService = null
       this.logger.info('智能查询引擎已断开连接')
     }
+  }
+
+  /**
+   * 获取知识图谱统计信息
+   */
+  async getStats() {
+    if (!this.neo4jService) {
+      throw new Error('查询引擎未连接到知识图谱')
+    }
+    return await this.neo4jService.getStats()
   }
 
   /**
@@ -411,8 +434,8 @@ export class IntelligentQueryEngine {
   private generateDependenciesQuery(entities: string[], limit: number): string {
     if (entities.length === 0) {
       return `
-        MATCH (source)-[r:RELATED_TO]->(target)
-        WHERE r.type = 'IMPORTS' OR r.type = 'DEPENDS_ON'
+        MATCH (source)-[r]->(target)
+        WHERE type(r) IN ['IMPORTS', 'DEPENDS_ON', 'EXTENDS', 'IMPLEMENTS']
         RETURN source, r, target
         LIMIT ${limit}
       `
@@ -423,8 +446,8 @@ export class IntelligentQueryEngine {
     ).join(' OR ')
 
     return `
-      MATCH (source)-[r:RELATED_TO]->(target)
-      WHERE (r.type = 'IMPORTS' OR r.type = 'DEPENDS_ON') AND (${nameConditions})
+      MATCH (source)-[r]->(target)
+      WHERE type(r) IN ['IMPORTS', 'DEPENDS_ON', 'EXTENDS', 'IMPLEMENTS'] AND (${nameConditions})
       RETURN source, r, target
       LIMIT ${limit}
     `
@@ -436,8 +459,8 @@ export class IntelligentQueryEngine {
   private generateUsageQuery(entities: string[], limit: number): string {
     if (entities.length === 0) {
       return `
-        MATCH (used)<-[r:RELATED_TO]-(user)
-        WHERE r.type = 'CALLS' OR r.type = 'USES'
+        MATCH (used)<-[r]-(user)
+        WHERE type(r) IN ['CALLS', 'USES', 'IMPORTS', 'REFERENCES']
         RETURN used, r, user
         LIMIT ${limit}
       `
@@ -448,8 +471,8 @@ export class IntelligentQueryEngine {
     ).join(' OR ')
 
     return `
-      MATCH (used)<-[r:RELATED_TO]-(user)
-      WHERE (r.type = 'CALLS' OR r.type = 'USES') AND (${nameConditions})
+      MATCH (used)<-[r]-(user)
+      WHERE type(r) IN ['CALLS', 'USES', 'IMPORTS', 'REFERENCES'] AND (${nameConditions})
       RETURN used, r, user
       LIMIT ${limit}
     `
@@ -461,7 +484,8 @@ export class IntelligentQueryEngine {
   private generateRelatedQuery(entities: string[], limit: number): string {
     if (entities.length === 0) {
       return `
-        MATCH (n:GraphNode)-[r:RELATED_TO*1..2]-(related:GraphNode)
+        MATCH (n:GraphNode)-[r*1..2]-(related:GraphNode)
+        WHERE ANY(rel IN r WHERE type(rel) IN ['CALLS', 'EXTENDS', 'IMPLEMENTS', 'IMPORTS', 'USES'])
         RETURN n, r, related
         LIMIT ${limit}
       `
@@ -472,8 +496,8 @@ export class IntelligentQueryEngine {
     ).join(' OR ')
 
     return `
-      MATCH (n:GraphNode)-[r:RELATED_TO*1..2]-(related:GraphNode)
-      WHERE ${nameConditions}
+      MATCH (n:GraphNode)-[r*1..2]-(related:GraphNode)
+      WHERE (${nameConditions}) AND ANY(rel IN r WHERE type(rel) IN ['CALLS', 'EXTENDS', 'IMPLEMENTS', 'IMPORTS', 'USES'])
       RETURN n, r, related
       LIMIT ${limit}
     `

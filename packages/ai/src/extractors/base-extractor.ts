@@ -28,9 +28,15 @@ export abstract class BaseExtractor<T = unknown> implements IExtractor<T> {
   protected logger: Logger
   protected config: ExtractorConfig
   
-  constructor(public readonly name: string) {
+  constructor(public readonly name: string, workingDirectory?: string) {
     this.logger = createLogger({ name: `ai:extractor:${name}` })
-    this.config = ExtractorConfig.getInstance()
+    // 如果提供了工作目录，重置并使用新目录
+    if (workingDirectory) {
+      ExtractorConfig.reset()
+      this.config = ExtractorConfig.getInstance(workingDirectory)
+    } else {
+      this.config = ExtractorConfig.getInstance()
+    }
   }
 
   /**

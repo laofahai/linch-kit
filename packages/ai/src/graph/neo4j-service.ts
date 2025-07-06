@@ -234,35 +234,66 @@ export class Neo4jService implements IGraphService {
    * 获取图统计信息
    */
   async getStats(): Promise<GraphStats> {
-    const nodeCountResult = await this.query('MATCH (n) RETURN count(n) as count')
-    const relCountResult = await this.query('MATCH ()-[r]->() RETURN count(r) as count')
-    
-    const nodeTypeResult = await this.query(`
-      MATCH (n) 
-      RETURN labels(n)[0] as type, count(n) as count
-    `)
-    
-    const relTypeResult = await this.query(`
-      MATCH ()-[r]->() 
-      RETURN type(r) as type, count(r) as count
-    `)
-    
-    const nodeTypes: Record<NodeType, number> = {} as Record<NodeType, number>
-    for (const _record of nodeTypeResult.metadata.query === nodeTypeResult.metadata.query ? [] : []) {
+    try {
+      // 使用原生查询获取准确的统计信息
+      const nodeCountResult = await this.executeRawCypher('MATCH (n) RETURN count(n) as count')
+      const relCountResult = await this.executeRawCypher('MATCH ()-[r]->() RETURN count(r) as count')
+      
+      const nodeTypeResult = await this.executeRawCypher(`
+        MATCH (n) 
+        RETURN labels(n)[0] as type, count(n) as count
+        ORDER BY count DESC
+      `)
+      
+      const relTypeResult = await this.executeRawCypher(`
+        MATCH ()-[r]->() 
+        RETURN type(r) as type, count(r) as count
+        ORDER BY count DESC
+      `)
+      
+      // 从查询结果中获取节点计数
+      const nodeCount = nodeCountResult.records.length > 0 ? 
+        nodeCountResult.records[0].get('count').toNumber() : 0
+      const relCount = relCountResult.records.length > 0 ? 
+        relCountResult.records[0].get('count').toNumber() : 0
+      
       // 处理节点类型统计
-    }
-    
-    const relationshipTypes: Record<RelationType, number> = {} as Record<RelationType, number>
-    for (const _record of relTypeResult.metadata.query === relTypeResult.metadata.query ? [] : []) {
-      // 处理关系类型统计  
-    }
-    
-    return {
-      node_count: nodeCountResult.metadata.result_count,
-      relationship_count: relCountResult.metadata.result_count,
-      node_types: nodeTypes,
-      relationship_types: relationshipTypes,
-      last_updated: new Date().toISOString()
+      const nodeTypes: Record<string, number> = {}
+      for (const record of nodeTypeResult.records) {
+        const type = record.get('type')
+        const count = record.get('count').toNumber()
+        if (type) {
+          nodeTypes[type] = count
+        }
+      }
+      
+      // 处理关系类型统计
+      const relationshipTypes: Record<string, number> = {}
+      for (const record of relTypeResult.records) {
+        const type = record.get('type')
+        const count = record.get('count').toNumber()
+        if (type) {
+          relationshipTypes[type] = count
+        }
+      }
+      
+      this.logger.debug('图统计信息获取成功', {
+        nodeCount,
+        relCount,
+        nodeTypesCount: Object.keys(nodeTypes).length,
+        relationshipTypesCount: Object.keys(relationshipTypes).length
+      })
+      
+      return {
+        node_count: nodeCount,
+        relationship_count: relCount,
+        node_types: nodeTypes,
+        relationship_types: relationshipTypes,
+        last_updated: new Date().toISOString()
+      }
+    } catch (error) {
+      this.logger.error('获取图统计信息失败', error instanceof Error ? error : undefined)
+      throw error
     }
   }
 

@@ -48,8 +48,8 @@ interface EntityInfo {
  */
 export class SchemaExtractor extends BaseExtractor<SchemaInfo[]> {
   
-  constructor() {
-    super('SchemaExtractor')
+  constructor(workingDirectory?: string) {
+    super('SchemaExtractor', workingDirectory)
   }
 
   /**

@@ -66,27 +66,27 @@ async function executeExtraction(
       
       switch (extractorType) {
         case 'package':
-          extractor = new PackageExtractor()
+          extractor = new PackageExtractor(options.workingDir)
           result = await extractor.extract()
           break
           
         case 'schema':
-          extractor = new SchemaExtractor()
+          extractor = new SchemaExtractor(options.workingDir)
           result = await extractor.extract()
           break
           
         case 'document':
-          extractor = new DocumentExtractor()
+          extractor = new DocumentExtractor(options.workingDir)
           result = await extractor.extract()
           break
           
         case 'function':
-          extractor = new FunctionExtractor()
+          extractor = new FunctionExtractor(options.workingDir)
           result = await extractor.extract()
           break
           
         case 'import':
-          extractor = new ImportExtractor()
+          extractor = new ImportExtractor(options.workingDir)
           result = await extractor.extract()
           break
           

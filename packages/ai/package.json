@@ -46,6 +46,7 @@
   "dependencies": {
     "@linch-kit/core": "workspace:*",
     "@linch-kit/schema": "workspace:*",
+    "dotenv": "^16.4.7",
     "neo4j-driver": "^5.26.0",
     "neogma": "^1.12.5",
     "ts-morph": "^26.0.0",

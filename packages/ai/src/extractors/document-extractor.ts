@@ -45,8 +45,8 @@ interface ContentAnalysis {
  * 分析文档之间的关联关系和与包的关系
  */
 export class DocumentExtractor extends BaseExtractor {
-  constructor() {
-    super('DocumentExtractor')
+  constructor(workingDirectory?: string) {
+    super('DocumentExtractor', workingDirectory)
   }
 
   getNodeType() {

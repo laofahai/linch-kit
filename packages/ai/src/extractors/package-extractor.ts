@@ -45,8 +45,8 @@ interface PackageExtractionData {
  * 复用现有的依赖分析逻辑，转换为统一的Graph格式
  */
 export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
-  constructor() {
-    super('PackageExtractor')
+  constructor(workingDirectory?: string) {
+    super('PackageExtractor', workingDirectory)
   }
 
   getNodeType(): NodeType[] {

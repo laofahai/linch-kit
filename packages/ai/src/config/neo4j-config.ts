@@ -63,14 +63,65 @@ export async function loadNeo4jConfig(): Promise<Neo4jConfig> {
 
 /**
  * 从环境变量加载配置
+ * 
+ * 智能查找策略：
+ * 1. 系统环境变量（优先）
+ * 2. 当前目录 .env 文件
+ * 3. 父目录 .env 文件（适用于 monorepo）
+ * 4. 项目根目录 .env 文件
  */
 function loadFromEnv(): Neo4jConfig | null {
-  const connectionUri = process.env.NEO4J_CONNECTION_URI
-  const username = process.env.NEO4J_USERNAME
-  const password = process.env.NEO4J_PASSWORD
-  const database = process.env.NEO4J_DATABASE || 'neo4j'
+  // 先检查系统环境变量（适用于生产环境）
+  let connectionUri = process.env.NEO4J_CONNECTION_URI
+  let username = process.env.NEO4J_USERNAME
+  let password = process.env.NEO4J_PASSWORD
+  let database = process.env.NEO4J_DATABASE || 'neo4j'
+
+  // 如果系统环境变量不完整，尝试加载 .env 文件
+  if (!connectionUri || !username || !password) {
+    try {
+      const { config } = require('dotenv')
+      const path = require('path')
+      const fs = require('fs')
+      
+      const searchPaths = [
+        // 1. 当前工作目录（单独应用场景）
+        process.cwd(),
+        // 2. 父目录（packages/xxx 场景）
+        path.dirname(process.cwd()),
+        // 3. 父级父目录（monorepo 根目录场景）
+        path.dirname(path.dirname(process.cwd()))
+      ]
+      
+      for (const searchPath of searchPaths) {
+        const envPath = path.join(searchPath, '.env')
+        if (fs.existsSync(envPath)) {
+          config({ path: envPath })
+          logger.debug('成功加载环境变量文件', { envPath })
+          break
+        }
+      }
+      
+      // 重新读取环境变量
+      connectionUri = process.env.NEO4J_CONNECTION_URI
+      username = process.env.NEO4J_USERNAME
+      password = process.env.NEO4J_PASSWORD
+      database = process.env.NEO4J_DATABASE || 'neo4j'
+      
+    } catch (error) {
+      logger.debug('无法加载 .env 文件，仅使用系统环境变量', {
+        error: error instanceof Error ? error.message : String(error)
+      })
+    }
+  }
 
   if (!connectionUri || !username || !password) {
+    logger.debug('Neo4j 环境变量不完整', {
+      hasConnectionUri: !!connectionUri,
+      hasUsername: !!username,
+      hasPassword: !!password,
+      cwd: process.cwd()
+    })
     return null
   }
 
