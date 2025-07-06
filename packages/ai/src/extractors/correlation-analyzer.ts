@@ -10,7 +10,6 @@ import { createLogger } from '@linch-kit/core/server'
 import type {
   GraphNode,
   GraphRelationship,
-  NodeType,
   RelationType,
   ExtractionResult,
   Logger

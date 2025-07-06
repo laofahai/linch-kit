@@ -5,10 +5,17 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
-import type { CLICommand, CommandContext, CommandResult } from '@linch-kit/core/cli'
+import type {
+  CommandContext,
+  CommandResult,
+  CLICommand
+} from '../plugin.js'
 
 import { PackageExtractor } from '../../extractors/package-extractor.js'
 import { SchemaExtractor } from '../../extractors/schema-extractor.js'
+import { DocumentExtractor } from '../../extractors/document-extractor.js'
+import { FunctionExtractor } from '../../extractors/function-extractor.js'
+import { ImportExtractor } from '../../extractors/import-extractor.js'
 import { Neo4jService } from '../../graph/neo4j-service.js'
 import { loadNeo4jConfig } from '../../config/neo4j-config.js'
 import type { GraphNode, GraphRelationship } from '../../types/index.js'
@@ -18,7 +25,7 @@ const logger = createLogger({ name: 'ai:extract-command' })
 /**
  * 支持的数据提取器类型
  */
-export type ExtractorType = 'package' | 'schema' | 'document' | 'all'
+export type ExtractorType = 'package' | 'schema' | 'document' | 'function' | 'import' | 'all'
 
 /**
  * 支持的输出格式
@@ -46,7 +53,7 @@ async function executeExtraction(
       options
     })
 
-    const workingDir = options.workingDir || process.cwd()
+    const _workingDir = options.workingDir || process.cwd()
     const allNodes: GraphNode[] = []
     const allRelationships: GraphRelationship[] = []
 
@@ -54,7 +61,7 @@ async function executeExtraction(
     for (const extractorType of extractors) {
       logger.info(`执行 ${extractorType} 数据提取...`)
       
-      let extractor: PackageExtractor | SchemaExtractor
+      let extractor: PackageExtractor | SchemaExtractor | DocumentExtractor | FunctionExtractor | ImportExtractor
       let result: { nodes: GraphNode[]; relationships: GraphRelationship[] }
       
       switch (extractorType) {
@@ -69,21 +76,33 @@ async function executeExtraction(
           break
           
         case 'document':
-          logger.warn('Document 提取器尚未实现')
-          continue
+          extractor = new DocumentExtractor()
+          result = await extractor.extract()
+          break
           
-        case 'all':
+        case 'function':
+          extractor = new FunctionExtractor()
+          result = await extractor.extract()
+          break
+          
+        case 'import':
+          extractor = new ImportExtractor()
+          result = await extractor.extract()
+          break
+          
+        case 'all': {
           // 递归调用所有提取器
-          const allExtractors: ExtractorType[] = ['package', 'schema']
+          const allExtractors: ExtractorType[] = ['package', 'schema', 'document', 'function', 'import']
           for (const subExtractor of allExtractors) {
             const subResult = await executeExtraction([subExtractor], 'json', options)
             if (subResult.success && subResult.data) {
-              const { nodes, relationships } = subResult.data as any
+              const { nodes, relationships } = subResult.data as { nodes: GraphNode[]; relationships: GraphRelationship[] }
               allNodes.push(...nodes)
               allRelationships.push(...relationships)
             }
           }
           continue
+        }
           
         default:
           logger.warn(`未知的提取器类型: ${extractorType}`)
@@ -262,7 +281,7 @@ export const extractCommand: CLICommand = {
   options: [
     {
       name: 'extractors',
-      description: '指定要使用的数据提取器 (package,schema,document,all)',
+      description: '指定要使用的数据提取器 (package,schema,document,function,import,all)',
       type: 'string',
       defaultValue: 'all',
       required: false
@@ -296,7 +315,8 @@ export const extractCommand: CLICommand = {
   ],
   examples: [
     'linch ai:extract --extractors package --output neo4j',
-    'linch ai:extract --extractors schema --output json --file ./my-data.json',
+    'linch ai:extract --extractors function --output json --file ./my-data.json',
+    'linch ai:extract --extractors import --output console',
     'linch ai:extract --extractors all --output neo4j --clear'
   ],
   handler: async (context: CommandContext): Promise<CommandResult> => {
@@ -311,7 +331,7 @@ export const extractCommand: CLICommand = {
     const workingDir = options['working-dir'] as string
     
     // 验证参数
-    const validExtractors: ExtractorType[] = ['package', 'schema', 'document', 'all']
+    const validExtractors: ExtractorType[] = ['package', 'schema', 'document', 'function', 'import', 'all']
     const validOutputs: OutputFormat[] = ['neo4j', 'json', 'console']
     
     for (const extractor of extractors) {

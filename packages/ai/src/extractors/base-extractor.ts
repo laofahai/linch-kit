@@ -5,6 +5,7 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
+import { relative, isAbsolute, normalize } from 'path'
 
 import type { 
   IExtractor, 
@@ -152,9 +153,25 @@ export abstract class BaseExtractor<T = unknown> implements IExtractor<T> {
   protected createMetadata(sourceFile?: string, packageName?: string) {
     return {
       created_at: new Date().toISOString(),
-      source_file: sourceFile,
+      source_file: sourceFile ? this.normalizeFilePath(sourceFile) : undefined,
       package: packageName,
       confidence: 1.0
     }
+  }
+
+  /**
+   * 规范化文件路径 - 确保返回相对路径，支持跨平台
+   */
+  protected normalizeFilePath(filePath: string): string {
+    // 标准化路径格式（处理反斜杠等）
+    const normalizedPath = normalize(filePath)
+    
+    // 如果是绝对路径，转换为相对路径
+    if (isAbsolute(normalizedPath)) {
+      return relative(process.cwd(), normalizedPath)
+    }
+    
+    // 如果已经是相对路径，直接返回
+    return normalizedPath
   }
 }

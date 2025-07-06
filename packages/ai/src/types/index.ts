@@ -32,7 +32,14 @@ export enum NodeType {
   SCHEMA_FIELD = 'SchemaField',   // Schema 字段
   FILE = 'File',                 // 文件
   DATABASE_TABLE = 'DatabaseTable', // 数据库表
-  DATABASE_COLUMN = 'DatabaseColumn' // 数据库列
+  DATABASE_COLUMN = 'DatabaseColumn', // 数据库列
+  FUNCTION = 'Function',         // 函数
+  CLASS = 'Class',               // 类
+  INTERFACE = 'Interface',       // 接口
+  TYPE = 'Type',                 // 类型别名
+  VARIABLE = 'Variable',         // 变量
+  IMPORT = 'Import',             // 导入语句
+  EXPORT = 'Export'              // 导出语句
 }
 
 /**
@@ -51,7 +58,12 @@ export enum RelationType {
   CONTAINS = 'CONTAINS',         // 包含关系
   CALLS = 'CALLS',               // 调用关系
   USES_TYPE = 'USES_TYPE',       // 使用类型
-  HAS_RELATION = 'HAS_RELATION'  // 具有关联
+  HAS_RELATION = 'HAS_RELATION', // 具有关联
+  OVERRIDES = 'OVERRIDES',       // 重写关系
+  RETURNS = 'RETURNS',           // 返回关系
+  PARAMETER = 'PARAMETER',       // 参数关系
+  THROWS = 'THROWS',             // 抛出异常关系
+  ASYNC_CALLS = 'ASYNC_CALLS'    // 异步调用关系
 }
 
 /**
@@ -150,6 +162,69 @@ export const SchemaEntityNodeSchema = GraphNodeSchema.extend({
 })
 
 /**
+ * 函数节点 Schema
+ */
+export const FunctionNodeSchema = GraphNodeSchema.extend({
+  type: z.literal(NodeType.FUNCTION),
+  properties: z.object({
+    signature: z.string().describe('函数签名'),
+    parameters: z.array(z.object({
+      name: z.string().describe('参数名'),
+      type: z.string().optional().describe('参数类型'),
+      optional: z.boolean().optional().describe('是否可选'),
+      default_value: z.string().optional().describe('默认值')
+    })).optional().describe('函数参数'),
+    return_type: z.string().optional().describe('返回类型'),
+    is_async: z.boolean().optional().describe('是否异步函数'),
+    is_exported: z.boolean().optional().describe('是否被导出'),
+    is_generator: z.boolean().optional().describe('是否为生成器函数'),
+    file_path: z.string().describe('定义文件路径'),
+    line_number: z.number().optional().describe('起始行号'),
+    end_line_number: z.number().optional().describe('结束行号'),
+    jsdoc: z.string().optional().describe('JSDoc 文档'),
+    access_modifier: z.enum(['public', 'private', 'protected']).optional().describe('访问修饰符'),
+    complexity: z.number().optional().describe('圈复杂度')
+  })
+})
+
+/**
+ * 类节点 Schema
+ */
+export const ClassNodeSchema = GraphNodeSchema.extend({
+  type: z.literal(NodeType.CLASS),
+  properties: z.object({
+    is_abstract: z.boolean().optional().describe('是否抽象类'),
+    is_exported: z.boolean().optional().describe('是否被导出'),
+    extends_class: z.string().optional().describe('继承的父类'),
+    implements_interfaces: z.array(z.string()).optional().describe('实现的接口'),
+    file_path: z.string().describe('定义文件路径'),
+    line_number: z.number().optional().describe('起始行号'),
+    end_line_number: z.number().optional().describe('结束行号'),
+    jsdoc: z.string().optional().describe('JSDoc 文档'),
+    access_modifier: z.enum(['public', 'private', 'protected']).optional().describe('访问修饰符'),
+    methods_count: z.number().optional().describe('方法数量'),
+    properties_count: z.number().optional().describe('属性数量')
+  })
+})
+
+/**
+ * 接口节点 Schema
+ */
+export const InterfaceNodeSchema = GraphNodeSchema.extend({
+  type: z.literal(NodeType.INTERFACE),
+  properties: z.object({
+    extends_interfaces: z.array(z.string()).optional().describe('继承的接口'),
+    is_exported: z.boolean().optional().describe('是否被导出'),
+    file_path: z.string().describe('定义文件路径'),
+    line_number: z.number().optional().describe('起始行号'),
+    end_line_number: z.number().optional().describe('结束行号'),
+    jsdoc: z.string().optional().describe('JSDoc 文档'),
+    properties_count: z.number().optional().describe('属性数量'),
+    methods_count: z.number().optional().describe('方法数量')
+  })
+})
+
+/**
  * 提取器接口
  */
 export interface IExtractor<T = unknown> {
@@ -231,6 +306,9 @@ export type PackageNode = z.infer<typeof PackageNodeSchema>
 export type DocumentNode = z.infer<typeof DocumentNodeSchema>
 export type APINode = z.infer<typeof APINodeSchema>
 export type SchemaEntityNode = z.infer<typeof SchemaEntityNodeSchema>
+export type FunctionNode = z.infer<typeof FunctionNodeSchema>
+export type ClassNode = z.infer<typeof ClassNodeSchema>
+export type InterfaceNode = z.infer<typeof InterfaceNodeSchema>
 export type Neo4jConfig = z.infer<typeof Neo4jConfigSchema>
 export type QueryResult = z.infer<typeof QueryResultSchema>
 

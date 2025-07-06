@@ -4,7 +4,7 @@
   "description": "LinchKit AI 集成层 - Graph RAG 知识图谱和 AI 工具",
   "type": "module",
   "main": "./dist/index.js",
-  "module": "./dist/index.js", 
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
     "linch-kit-ai": "./dist/cli/index.js"
@@ -20,7 +20,7 @@
       "import": "./dist/extractors/index.js"
     },
     "./graph": {
-      "types": "./dist/graph/index.d.ts", 
+      "types": "./dist/graph/index.d.ts",
       "import": "./dist/graph/index.js"
     },
     "./tools": {
@@ -44,9 +44,13 @@
     "extract": "bun run dist/cli/index.js"
   },
   "dependencies": {
+    "@babel/parser": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
+    "@babel/types": "^7.28.0",
     "@linch-kit/core": "workspace:*",
     "@linch-kit/schema": "workspace:*",
     "neo4j-driver": "^5.26.0",
+    "neogma": "^1.12.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {

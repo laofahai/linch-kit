@@ -5,7 +5,11 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
-import type { CLICommand, CommandContext, CommandResult } from '@linch-kit/core/cli'
+import type {
+  CommandContext,
+  CommandResult,
+  CLICommand
+} from '../plugin.js'
 
 import { Neo4jService } from '../../graph/neo4j-service.js'
 import { loadNeo4jConfig } from '../../config/neo4j-config.js'
@@ -47,7 +51,7 @@ async function executeQuery(
     try {
       await neo4jService.connect()
       
-      let result: any
+      let result: unknown
       
       switch (queryType) {
         case 'node':
@@ -95,7 +99,7 @@ async function executeQuery(
 }
 
 /**
- * 查询节点
+ * 查询节点 - 使用 Neogma OGM
  */
 async function queryNodes(
   neo4jService: Neo4jService,
@@ -103,38 +107,32 @@ async function queryNodes(
   options: {
     type?: string
     limit?: number
+    exact?: boolean
   }
 ): Promise<GraphNode[]> {
-  const limit = options.limit || 10
-  let cypher = ''
-  let params: Record<string, any> = {}
-  
+  // 处理节点类型
+  let nodeType: NodeType | NodeType[] | undefined = undefined
   if (options.type) {
-    // 按类型和名称搜索
-    cypher = `
-      MATCH (n:${options.type})
-      WHERE n.name CONTAINS $searchTerm OR n.id CONTAINS $searchTerm
-      RETURN n
-      LIMIT $limit
-    `
-    params = { searchTerm, limit }
-  } else {
-    // 全文搜索
-    cypher = `
-      MATCH (n)
-      WHERE n.name CONTAINS $searchTerm OR n.id CONTAINS $searchTerm
-      RETURN n
-      LIMIT $limit
-    `
-    params = { searchTerm, limit }
+    if (options.type.includes(',')) {
+      // 多类型过滤
+      nodeType = options.type.split(',').map(t => t.trim()) as NodeType[]
+    } else {
+      // 单类型过滤
+      nodeType = options.type as NodeType
+    }
   }
-  
-  const result = await neo4jService.query(cypher, params)
-  return result.nodes
+
+  // 使用 Neogma OGM 查询
+  return await neo4jService.findNodesOGM({
+    searchTerm,
+    nodeType,
+    limit: options.limit || 10,
+    exact: options.exact || false
+  })
 }
 
 /**
- * 查询关系
+ * 查询关系 - 使用 Neogma OGM
  */
 async function queryRelations(
   neo4jService: Neo4jService,
@@ -143,87 +141,76 @@ async function queryRelations(
     depth?: number
     direction?: 'in' | 'out' | 'both'
     limit?: number
+    relationshipType?: string
   }
 ): Promise<{
   nodes: GraphNode[]
   relationships: GraphRelationship[]
+  stats: {
+    totalNodes: number
+    totalRelationships: number
+    maxDepth: number
+    relationshipTypes: Record<string, number>
+  }
 }> {
-  const depth = options.depth || 1
-  const limit = options.limit || 20
-  let relationPattern = ''
-  
-  switch (options.direction) {
-    case 'in':
-      relationPattern = `<-[r*1..${depth}]-`
-      break
-    case 'out':
-      relationPattern = `-[r*1..${depth}]->`
-      break
-    case 'both':
-    default:
-      relationPattern = `-[r*1..${depth}]-`
-      break
+  // 处理关系类型
+  let relationshipType: RelationType | RelationType[] | undefined = undefined
+  if (options.relationshipType) {
+    if (options.relationshipType.includes(',')) {
+      relationshipType = options.relationshipType.split(',').map(t => t.trim()) as RelationType[]
+    } else {
+      relationshipType = options.relationshipType as RelationType
+    }
   }
-  
-  const cypher = `
-    MATCH (start {id: $nodeId})${relationPattern}(related)
-    RETURN start, r, related
-    LIMIT $limit
-  `
-  
-  const result = await neo4jService.query(cypher, { nodeId, limit })
-  return {
-    nodes: result.nodes,
-    relationships: result.relationships
-  }
+
+  // 使用 Neogma OGM 查询关系
+  return await neo4jService.findRelationshipsOGM(nodeId, {
+    depth: options.depth || 1,
+    direction: options.direction || 'both',
+    relationshipType,
+    limit: options.limit || 20
+  })
 }
 
 /**
- * 查询路径
+ * 查询路径 - 使用 Neogma OGM
  */
 async function queryPaths(
   neo4jService: Neo4jService,
   searchTerm: string,
   options: {
     limit?: number
+    maxLength?: number
+    includeAllPaths?: boolean
   }
 ): Promise<{
   paths: Array<{
     nodes: GraphNode[]
     relationships: GraphRelationship[]
     length: number
+    weight: number
+    pathType: 'shortest' | 'all'
   }>
 }> {
-  const limit = options.limit || 5
-  const [startTerm, endTerm] = searchTerm.split(' ')
-  
-  if (!endTerm) {
-    throw new Error('路径查询需要两个节点，格式: "节点1 节点2"')
+  // 解析搜索词
+  const terms = searchTerm.split(' ')
+  if (terms.length < 2) {
+    throw new Error('路径查询需要两个节点，格式: "节点1 节点2" 或 "节点1ID 节点2ID"')
   }
   
-  const cypher = `
-    MATCH (start), (end)
-    WHERE (start.name CONTAINS $startTerm OR start.id CONTAINS $startTerm)
-      AND (end.name CONTAINS $endTerm OR end.id CONTAINS $endTerm)
-    MATCH path = shortestPath((start)-[*..6]-(end))
-    RETURN path
-    LIMIT $limit
-  `
+  const startTerm = terms[0]
+  const endTerm = terms[1]
   
-  const result = await neo4jService.query(cypher, { startTerm, endTerm, limit })
-  
-  // 处理路径结果
-  const paths = result.nodes.map((_, index) => ({
-    nodes: result.nodes.slice(index, index + 1),
-    relationships: result.relationships.slice(index, index + 1),
-    length: 1 // 简化实现
-  }))
-  
-  return { paths }
+  // 使用 Neogma OGM 查询路径
+  return await neo4jService.findPathsOGM(startTerm, endTerm, {
+    maxLength: options.maxLength || 6,
+    limit: options.limit || 5,
+    includeAllPaths: options.includeAllPaths || false
+  })
 }
 
 /**
- * 查询统计信息
+ * 查询统计信息 - 使用 Neogma OGM
  */
 async function queryStats(neo4jService: Neo4jService): Promise<{
   nodeCount: number
@@ -231,7 +218,7 @@ async function queryStats(neo4jService: Neo4jService): Promise<{
   nodeTypes: Record<string, number>
   relationshipTypes: Record<string, number>
 }> {
-  const stats = await neo4jService.getStats()
+  const stats = await neo4jService.getStatsOGM()
   
   return {
     nodeCount: stats.node_count,
@@ -245,7 +232,7 @@ async function queryStats(neo4jService: Neo4jService): Promise<{
  * 输出查询结果
  */
 function outputQueryResult(
-  result: any,
+  result: unknown,
   format: 'table' | 'json' | 'tree',
   queryType: QueryType
 ): void {
@@ -268,81 +255,141 @@ function outputQueryResult(
 /**
  * 表格格式输出
  */
-function outputTableFormat(result: any, queryType: QueryType): void {
+function outputTableFormat(result: unknown, queryType: QueryType): void {
   switch (queryType) {
     case 'node':
       if (Array.isArray(result) && result.length > 0) {
         console.log('\n📋 找到的节点:')
-        console.log('ID | 类型 | 名称')
-        console.log('---|------|------')
+        console.log('ID | 类型 | 名称 | 描述')
+        console.log('---|------|------|------')
         result.forEach((node: GraphNode) => {
-          console.log(`${node.id} | ${node.type} | ${node.name}`)
+          const description = node.properties?.description || node.properties?.file_path || '-'
+          const truncatedDesc = String(description).length > 40 ? String(description).substring(0, 40) + '...' : String(description)
+          console.log(`${node.id} | ${node.type} | ${node.name} | ${truncatedDesc}`)
         })
+        console.log(`\n📊 总计: ${result.length} 个节点`)
       } else {
         console.log('\n❌ 未找到匹配的节点')
       }
       break
       
-    case 'relations':
-      const { nodes, relationships } = result
-      if (nodes.length > 0) {
+    case 'relations': {
+      const relResult = result as { 
+        nodes: GraphNode[]; 
+        relationships: GraphRelationship[];
+        stats: {
+          totalNodes: number;
+          totalRelationships: number;
+          maxDepth: number;
+          relationshipTypes: Record<string, number>;
+        }
+      }
+      
+      if (relResult.nodes.length > 0) {
         console.log('\n🔗 关联的节点:')
-        console.log('ID | 类型 | 名称')
-        console.log('---|------|------')
-        nodes.forEach((node: GraphNode) => {
-          console.log(`${node.id} | ${node.type} | ${node.name}`)
+        console.log('ID | 类型 | 名称 | 描述')
+        console.log('---|------|------|------')
+        relResult.nodes.forEach((node: GraphNode) => {
+          const description = node.properties?.description || node.properties?.file_path || '-'
+          const truncatedDesc = String(description).length > 40 ? String(description).substring(0, 40) + '...' : String(description)
+          console.log(`${node.id} | ${node.type} | ${node.name} | ${truncatedDesc}`)
         })
       }
-      if (relationships.length > 0) {
+      
+      if (relResult.relationships.length > 0) {
         console.log('\n🔗 关系:')
-        console.log('源节点 | 关系类型 | 目标节点')
-        console.log('-------|---------|--------')
-        relationships.forEach((rel: GraphRelationship) => {
-          console.log(`${rel.source} | ${rel.type} | ${rel.target}`)
+        console.log('源节点 | 关系类型 | 目标节点 | 属性')
+        console.log('-------|---------|---------|------')
+        relResult.relationships.forEach((rel: GraphRelationship) => {
+          const props = rel.properties ? Object.keys(rel.properties).length : 0
+          console.log(`${rel.source} | ${rel.type} | ${rel.target} | ${props}个属性`)
+        })
+      }
+      
+      // 显示统计信息
+      console.log('\n📊 关系查询统计:')
+      console.log(`📦 节点数: ${relResult.stats.totalNodes}`)
+      console.log(`🔗 关系数: ${relResult.stats.totalRelationships}`)
+      console.log(`📏 最大深度: ${relResult.stats.maxDepth}`)
+      
+      if (Object.keys(relResult.stats.relationshipTypes).length > 0) {
+        console.log('\n🔗 关系类型分布:')
+        Object.entries(relResult.stats.relationshipTypes).forEach(([type, count]) => {
+          console.log(`  ${type}: ${count}`)
         })
       }
       break
+    }
       
-    case 'path':
-      const { paths } = result
-      if (paths.length > 0) {
+    case 'path': {
+      const pathResult = result as { 
+        paths: Array<{ 
+          nodes: GraphNode[]; 
+          relationships: GraphRelationship[]; 
+          length: number; 
+          weight: number; 
+          pathType: 'shortest' | 'all' 
+        }> 
+      }
+      
+      if (pathResult.paths.length > 0) {
         console.log('\n🛤️ 找到的路径:')
-        paths.forEach((path: any, index: number) => {
-          console.log(`路径 ${index + 1}: 长度 ${path.length}`)
-          console.log(`  节点数: ${path.nodes.length}`)
-          console.log(`  关系数: ${path.relationships.length}`)
+        pathResult.paths.forEach((path, index) => {
+          console.log(`\n路径 ${index + 1} (${path.pathType === 'shortest' ? '最短' : '备选'}):`)
+          console.log(`  📏 长度: ${path.length}`)
+          console.log(`  ⚖️ 权重: ${path.weight}`)
+          console.log(`  📦 节点数: ${path.nodes.length}`)
+          console.log(`  🔗 关系数: ${path.relationships.length}`)
+          
+          // 显示路径详情
+          if (path.nodes.length > 0) {
+            console.log('  📋 路径节点:')
+            path.nodes.forEach((node, nodeIndex) => {
+              console.log(`    ${nodeIndex + 1}. ${node.name} (${node.type})`)
+            })
+          }
+          
+          if (path.relationships.length > 0) {
+            console.log('  🔗 路径关系:')
+            path.relationships.forEach((rel, relIndex) => {
+              console.log(`    ${relIndex + 1}. ${rel.type}`)
+            })
+          }
         })
       } else {
         console.log('\n❌ 未找到连接路径')
       }
       break
+    }
       
-    case 'stats':
+    case 'stats': {
+      const statsResult = result as { nodeCount: number; relationshipCount: number; nodeTypes: Record<string, number>; relationshipTypes: Record<string, number> }
       console.log('\n📊 图数据库统计信息:')
-      console.log(`📦 节点总数: ${result.nodeCount}`)
-      console.log(`🔗 关系总数: ${result.relationshipCount}`)
+      console.log(`📦 节点总数: ${statsResult.nodeCount}`)
+      console.log(`🔗 关系总数: ${statsResult.relationshipCount}`)
       
-      if (Object.keys(result.nodeTypes).length > 0) {
+      if (Object.keys(statsResult.nodeTypes).length > 0) {
         console.log('\n📋 节点类型分布:')
-        Object.entries(result.nodeTypes).forEach(([type, count]) => {
+        Object.entries(statsResult.nodeTypes).forEach(([type, count]) => {
           console.log(`  ${type}: ${count}`)
         })
       }
       
-      if (Object.keys(result.relationshipTypes).length > 0) {
+      if (Object.keys(statsResult.relationshipTypes).length > 0) {
         console.log('\n🔗 关系类型分布:')
-        Object.entries(result.relationshipTypes).forEach(([type, count]) => {
+        Object.entries(statsResult.relationshipTypes).forEach(([type, count]) => {
           console.log(`  ${type}: ${count}`)
         })
       }
       break
+    }
   }
 }
 
 /**
  * 树形格式输出
  */
-function outputTreeFormat(result: any, queryType: QueryType): void {
+function outputTreeFormat(result: unknown, _queryType: QueryType): void {
   console.log('\n🌳 树形视图:')
   console.log(JSON.stringify(result, null, 2))
 }

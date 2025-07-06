@@ -1,8 +1,11 @@
 # LinchKit AI 开发助手指导
 
-**版本**: v7.0  
-**更新**: 2025-07-03  
+**版本**: v7.1  
+**更新**: 2025-07-06  
 **项目**: LinchKit - AI-First 全栈开发框架
+
+## 🚫 CRITICAL: NO DIRECTORY CHANGES
+**NEVER use `cd` to change directories. ALWAYS work from project root. Use `bun run <script> --filter <package>` for monorepo operations.**
 
 ## 🚨 PHASE 1: 强制性 Session 初始化 (Pre-flight Checklist)
 

@@ -11,15 +11,9 @@
 import { readdir, readFile } from 'fs/promises'
 import { join, relative } from 'path'
 
-import { createLogger } from '@linch-kit/core/server'
-
 import type { 
   GraphNode, 
-  GraphRelationship, 
-  ExtractionResult,
-  Logger,
-  NodeType,
-  RelationType
+  GraphRelationship
 } from '../types/index.js'
 import { NodeType as NodeTypeEnum, RelationType as RelationTypeEnum } from '../types/index.js'
 
@@ -81,14 +75,14 @@ export class SchemaExtractor extends BaseExtractor<SchemaInfo[]> {
   /**
    * 获取节点类型
    */
-  getNodeType(): NodeType[] {
+  getNodeType(): NodeTypeEnum[] {
     return [NodeTypeEnum.SCHEMA_ENTITY, NodeTypeEnum.SCHEMA_FIELD]
   }
 
   /**
    * 获取关系类型
    */
-  getRelationTypes(): RelationType[] {
+  getRelationTypes(): RelationTypeEnum[] {
     return [RelationTypeEnum.DEPENDS_ON, RelationTypeEnum.HAS_FIELD, RelationTypeEnum.EXTENDS, RelationTypeEnum.IMPLEMENTS]
   }
 
@@ -157,7 +151,7 @@ export class SchemaExtractor extends BaseExtractor<SchemaInfo[]> {
           files.push(relativePath)
         }
       }
-    } catch (error) {
+    } catch {
       // 目录不存在或无权限访问
       this.logger.debug(`无法访问目录: ${dirPath}`)
     }

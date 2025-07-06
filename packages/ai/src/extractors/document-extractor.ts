@@ -6,6 +6,38 @@ import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index.js'
 
 import { BaseExtractor } from './base-extractor.js'
 
+interface DocumentFile {
+  name: string
+  path: string
+  relativePath: string
+  extension: string
+  size: number
+  content: string
+  lastModified: Date
+}
+
+interface DocumentMetadata {
+  title?: string
+  description?: string
+  author?: string
+  date?: string
+  tags?: string[]
+  toc?: string[]
+}
+
+interface DocumentStructure {
+  headings: Array<{ level: number; text: string; line: number }>
+  sections: Array<{ title: string; content: string; level: number }>
+  codeBlocks: Array<{ language: string; content: string; line: number }>
+  links: Array<{ text: string; url: string; line: number }>
+}
+
+interface ContentAnalysis {
+  references: Record<string, DocumentFile[]>
+  metadata: Record<string, DocumentMetadata>
+  structure: Record<string, DocumentStructure>
+}
+
 /**
  * 文档提取器
  * 
@@ -41,7 +73,7 @@ export class DocumentExtractor extends BaseExtractor {
   /**
    * 转换为Graph数据格式
    */
-  async transformToGraph(rawData: { documents: any[], contentAnalysis: any }) {
+  async transformToGraph(rawData: { documents: DocumentFile[], contentAnalysis: ContentAnalysis }) {
     const nodes: GraphNode[] = []
     const relationships: GraphRelationship[] = []
 
@@ -86,7 +118,7 @@ export class DocumentExtractor extends BaseExtractor {
   /**
    * 扫描指定目录中的文档文件
    */
-  async scanDirectoryForDocs(dirPath: string, basePath = process.cwd()): Promise<any[]> {
+  async scanDirectoryForDocs(dirPath: string, basePath = process.cwd()): Promise<DocumentFile[]> {
     const documents = []
     const documentExtensions = ['.md', '.txt', '.rst', '.adoc']
 
@@ -118,7 +150,7 @@ export class DocumentExtractor extends BaseExtractor {
           const currentRelativePath = relative(basePath, itemPath)
           const depth = currentRelativePath.split('/').length
           if (depth <= 3) {
-            const subDocs: any[] = await this.scanDirectoryForDocs(itemPath, basePath)
+            const subDocs: DocumentFile[] = await this.scanDirectoryForDocs(itemPath, basePath)
             documents.push(...subDocs)
           }
         }
@@ -150,7 +182,7 @@ export class DocumentExtractor extends BaseExtractor {
           if (stats.isDirectory()) {
             const pkgDocs = await this.scanDirectoryForDocs(pkgPath)
             // 添加包信息到文档元数据
-            pkgDocs.forEach((doc: any) => {
+            pkgDocs.forEach((doc: DocumentFile & { package?: string; packagePath?: string }) => {
               doc.package = `@linch-kit/${pkg}`
               doc.packagePath = relative(process.cwd(), pkgPath)
             })
@@ -168,8 +200,14 @@ export class DocumentExtractor extends BaseExtractor {
   /**
    * 分析文档内容
    */
-  async analyzeDocumentContents(documents: any[]) {
-    const analysis = {
+  async analyzeDocumentContents(documents: DocumentFile[]): Promise<ContentAnalysis> {
+    const analysis: ContentAnalysis = {
+      references: {},
+      metadata: {},
+      structure: {}
+    }
+    
+    const tempAnalysis = {
       references: new Map<string, string[]>(),
       concepts: new Map<string, string[]>(),
       apiMentions: new Map<string, string[]>()
@@ -179,20 +217,27 @@ export class DocumentExtractor extends BaseExtractor {
       // 提取文档引用（如 [text](./other-doc.md)）
       const references = this.extractDocumentReferences(doc.content, doc.relativePath)
       if (references.length > 0) {
-        analysis.references.set(doc.relativePath, references)
+        tempAnalysis.references.set(doc.relativePath, references)
+        analysis.references[doc.relativePath] = documents.filter(d => 
+          references.some(ref => d.relativePath.includes(ref))
+        )
       }
 
       // 提取概念和术语
       const concepts = this.extractConcepts(doc.content)
       if (concepts.length > 0) {
-        analysis.concepts.set(doc.relativePath, concepts)
+        tempAnalysis.concepts.set(doc.relativePath, concepts)
       }
 
       // 提取 API 提及
       const apiMentions = this.extractAPIReferences(doc.content)
       if (apiMentions.length > 0) {
-        analysis.apiMentions.set(doc.relativePath, apiMentions)
+        tempAnalysis.apiMentions.set(doc.relativePath, apiMentions)
       }
+
+      // 提取元数据和结构
+      analysis.metadata[doc.relativePath] = this.extractDocumentMetadata(doc.content)
+      analysis.structure[doc.relativePath] = this.extractDocumentStructure(doc.content)
     }
 
     return analysis
@@ -201,7 +246,7 @@ export class DocumentExtractor extends BaseExtractor {
   /**
    * 提取文档引用
    */
-  extractDocumentReferences(content: string, currentPath: string): string[] {
+  extractDocumentReferences(content: string, _currentPath: string): string[] {
     const references = []
     
     // Markdown 链接 [text](path)
@@ -280,7 +325,7 @@ export class DocumentExtractor extends BaseExtractor {
   /**
    * 创建文档节点
    */
-  createDocumentNode(doc: any): GraphNode {
+  createDocumentNode(doc: DocumentFile & { package?: string }): GraphNode {
     const title = this.extractDocumentTitle(doc.content) || doc.name
     
     return {
@@ -349,35 +394,31 @@ export class DocumentExtractor extends BaseExtractor {
   /**
    * 创建文档间的关联关系
    */
-  createDocumentRelationships(documents: any[], analysis: any): GraphRelationship[] {
+  createDocumentRelationships(documents: DocumentFile[], analysis: ContentAnalysis): GraphRelationship[] {
     const relationships = []
 
     // 创建文档引用关系
-    for (const [docPath, references] of analysis.references) {
-      for (const refPath of references) {
-        // 解析相对路径为绝对路径
-        const resolvedPath = this.resolveDocumentPath(docPath, refPath, documents)
-        if (resolvedPath) {
-          const relationship: GraphRelationship = {
-            id: RelationshipIdGenerator.create(
-              RelationType.REFERENCES,
-              NodeIdGenerator.document(docPath),
-              NodeIdGenerator.document(resolvedPath)
-            ),
-            type: RelationType.REFERENCES,
-            source: NodeIdGenerator.document(docPath),
-            target: NodeIdGenerator.document(resolvedPath),
-            properties: {
-              reference_type: 'document_link',
-              link_path: refPath
-            },
-            metadata: {
-              ...this.createMetadata(),
-              confidence: 0.9
-            }
+    for (const [docPath, referencedDocs] of Object.entries(analysis.references)) {
+      for (const refDoc of referencedDocs) {
+        const relationship: GraphRelationship = {
+          id: RelationshipIdGenerator.create(
+            RelationType.REFERENCES,
+            NodeIdGenerator.document(docPath),
+            NodeIdGenerator.document(refDoc.relativePath)
+          ),
+          type: RelationType.REFERENCES,
+          source: NodeIdGenerator.document(docPath),
+          target: NodeIdGenerator.document(refDoc.relativePath),
+          properties: {
+            reference_type: 'document_link',
+            link_path: refDoc.relativePath
+          },
+          metadata: {
+            ...this.createMetadata(),
+            confidence: 0.9
           }
-          relationships.push(relationship)
         }
+        relationships.push(relationship)
       }
     }
 
@@ -387,7 +428,7 @@ export class DocumentExtractor extends BaseExtractor {
   /**
    * 解析文档路径
    */
-  resolveDocumentPath(currentPath: string, referencePath: string, documents: any[]): string | null {
+  resolveDocumentPath(currentPath: string, referencePath: string, documents: DocumentFile[]): string | null {
     // 如果是绝对路径，直接使用
     if (!referencePath.startsWith('./') && !referencePath.startsWith('../')) {
       const found = documents.find(doc => doc.relativePath === referencePath)
@@ -423,7 +464,7 @@ export class DocumentExtractor extends BaseExtractor {
   /**
    * 验证提取的数据
    */
-  validate(data: any): boolean {
+  validate(data: { documents: DocumentFile[]; contentAnalysis: ContentAnalysis }): boolean {
     return Array.isArray(data.documents) && 
            data.documents.length > 0 && 
            data.contentAnalysis != null
@@ -432,7 +473,93 @@ export class DocumentExtractor extends BaseExtractor {
   /**
    * 获取源数据数量
    */
-  getSourceCount(rawData: any): number {
+  getSourceCount(rawData: { documents: DocumentFile[] }): number {
     return rawData.documents.length
+  }
+
+  /**
+   * 提取文档元数据
+   */
+  private extractDocumentMetadata(content: string): DocumentMetadata {
+    const metadata: DocumentMetadata = {}
+    
+    // 提取标题
+    const titleMatch = content.match(/^#\s+(.+)$/m)
+    if (titleMatch) {
+      metadata.title = titleMatch[1].trim()
+    }
+    
+    // 提取作者和日期（从 frontmatter 或文档开头）
+    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/)
+    if (frontmatterMatch) {
+      const frontmatter = frontmatterMatch[1]
+      const authorMatch = frontmatter.match(/author:\s*(.+)/)
+      const dateMatch = frontmatter.match(/date:\s*(.+)/)
+      
+      if (authorMatch) metadata.author = authorMatch[1].trim()
+      if (dateMatch) metadata.date = dateMatch[1].trim()
+    }
+    
+    // 提取标签
+    const tagMatches = content.match(/#[\w-]+/g)
+    if (tagMatches) {
+      metadata.tags = tagMatches.map(tag => tag.slice(1))
+    }
+    
+    return metadata
+  }
+
+  /**
+   * 提取文档结构
+   */
+  private extractDocumentStructure(content: string): DocumentStructure {
+    const structure: DocumentStructure = {
+      headings: [],
+      sections: [],
+      codeBlocks: [],
+      links: []
+    }
+    
+    const lines = content.split('\n')
+    
+    lines.forEach((line, index) => {
+      // 提取标题
+      const headingMatch = line.match(/^(#{1,6})\s+(.+)$/)
+      if (headingMatch) {
+        structure.headings.push({
+          level: headingMatch[1].length,
+          text: headingMatch[2].trim(),
+          line: index + 1
+        })
+      }
+      
+      // 提取代码块
+      const codeBlockMatch = line.match(/^```(\w+)?/)
+      if (codeBlockMatch) {
+        const language = codeBlockMatch[1] || 'text'
+        structure.codeBlocks.push({
+          language,
+          content: '', // 简化实现
+          line: index + 1
+        })
+      }
+      
+      // 提取链接
+      const linkMatches = line.match(/\[([^\]]+)\]\(([^)]+)\)/g)
+      if (linkMatches) {
+        linkMatches.forEach(match => {
+          const linkMatch = match.match(/\[([^\]]+)\]\(([^)]+)\)/)
+          if (linkMatch) {
+            structure.links.push({
+              text: linkMatch[1],
+              url: linkMatch[2],
+              line: index + 1
+            })
+          }
+        })
+      }
+    })
+    
+    return structure
   }
 }
