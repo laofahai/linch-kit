@@ -1,6 +1,6 @@
 # LinchKit
 
-**🚀 生产就绪的企业级 AI-First 全栈开发框架 v1.0.2**
+**🚀 生产就绪的企业级 AI-First 全栈开发框架 v2.0.2**
 
 [![npm](https://img.shields.io/npm/v/@linch-kit/core)](https://www.npmjs.com/package/@linch-kit/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -10,7 +10,7 @@ LinchKit 是一个 Schema 驱动的企业级全栈开发框架，提供端到端
 
 ## ✨ 核心特性
 
-- 🧠 **AI-First 设计** - 为 AI 辅助开发优化的架构、文档和 API 设计
+- 🧠 **AI-First 设计** - Graph RAG 知识图谱、智能代码理解、AI 辅助开发
 - 📊 **Schema 驱动** - 以 Zod Schema 为单一数据源，自动生成类型、验证、API 和 UI
 - 🔒 **端到端类型安全** - 从数据库到前端的完整 TypeScript 类型安全
 - 🏢 **企业级架构** - 多租户、权限管理、审计日志、插件系统
@@ -28,6 +28,7 @@ L2: @linch-kit/auth      认证权限 (NextAuth + CASL)
 L2: @linch-kit/crud      CRUD 操作 (类型安全、权限集成)
 L3: @linch-kit/trpc      API 层 (端到端类型安全)
 L3: @linch-kit/ui        UI 组件库 (shadcn/ui + 企业组件)
+L4: @linch-kit/ai        AI 集成 (Graph RAG、智能查询)
 L4: @linch-kit/console   管理平台 (多租户、权限管理)
 ```
 
@@ -43,7 +44,19 @@ L4: @linch-kit/console   管理平台 (多租户、权限管理)
 | **[@linch-kit/crud](https://www.npmjs.com/package/@linch-kit/crud)** | ![npm](https://img.shields.io/npm/v/@linch-kit/crud) | CRUD 操作 - 类型安全、权限集成、复杂查询 |
 | **[@linch-kit/trpc](https://www.npmjs.com/package/@linch-kit/trpc)** | ![npm](https://img.shields.io/npm/v/@linch-kit/trpc) | API 层 - 端到端类型安全的 tRPC 集成 |
 | **[@linch-kit/ui](https://www.npmjs.com/package/@linch-kit/ui)** | ![npm](https://img.shields.io/npm/v/@linch-kit/ui) | UI 组件库 - shadcn/ui + 企业级组件 |
+| **[@linch-kit/ai](https://www.npmjs.com/package/@linch-kit/ai)** | ![npm](https://img.shields.io/npm/v/@linch-kit/ai) | AI 集成 - Graph RAG、智能查询、代码理解 |
+
+### 企业模块
+
+| 包 | 版本 | 描述 |
+|---|---|---|
 | **[@linch-kit/console](https://www.npmjs.com/package/@linch-kit/console)** | ![npm](https://img.shields.io/npm/v/@linch-kit/console) | 管理平台 - 多租户管理、权限控制、系统监控 |
+
+### 工具包
+
+| 包 | 版本 | 描述 |
+|---|---|---|
+| **[create-linch-kit](https://www.npmjs.com/package/create-linch-kit)** | ![npm](https://img.shields.io/npm/v/create-linch-kit) | 项目脚手架 - 一键创建 LinchKit 项目 |
 
 ## 🚀 快速开始
 
@@ -69,7 +82,7 @@ bunx create-next-app@latest my-app --typescript --tailwind --eslint --app
 cd my-app
 
 # 安装 LinchKit 核心包
-npm install @linch-kit/core @linch-kit/schema @linch-kit/auth @linch-kit/crud @linch-kit/trpc @linch-kit/ui
+bun add @linch-kit/core @linch-kit/schema @linch-kit/auth @linch-kit/crud @linch-kit/trpc @linch-kit/ui @linch-kit/ai
 ```
 
 ### 配置说明
@@ -145,10 +158,11 @@ export function UserForm() {
 
 ## 📚 文档
 
-- [快速开始指南](./ai-context/zh/current/development-status.md)
-- [架构设计](./ai-context/zh/system-design/module-architecture-design.md)
-- [API 参考](./ai-context/zh/current/packages-api-reference.md)
-- [开发指南](./ai-context/zh/current/development-constraints.md)
+- [快速开始指南](./docs/getting-started.md)
+- [架构设计](./ai-context/01_System/01_Architecture_Overview.md)
+- [API 参考](./ai-context/03_Reference/01_Packages_API/)
+- [开发指南](./ai-context/02_Guides/01_Development_Workflow.md)
+- [AI 功能指南](./packages/ai/README.md)
 
 ## 🏢 企业功能
 
@@ -174,14 +188,14 @@ export function UserForm() {
 ### 环境要求
 
 - Node.js >= 18
-- bun >= 1.0
+- bun >= 1.0 (主要包管理器)
 - TypeScript >= 5.0
 
 ### 开发规范
 
-- 📖 [Git 工作流规范](./ai-context/zh/system-design/git-workflow.md) - 分支管理、提交规范、PR 流程
-- 🔒 [开发约束文档](./ai-context/zh/current/development-constraints.md) - 技术约束、代码规范
-- 🏗️ [架构设计文档](./ai-context/zh/system-design/module-architecture-design.md) - 系统架构、模块设计
+- 📖 [Git 工作流规范](./ai-context/02_Guides/02_Git_Workflow.md) - 分支管理、提交规范、PR 流程
+- 🔒 [开发约束文档](./ai-context/02_Guides/01_Development_Workflow.md) - 技术约束、代码规范
+- 🏗️ [架构设计文档](./ai-context/01_System/01_Architecture_Overview.md) - 系统架构、模块设计
 
 ### 开发命令
 
@@ -217,8 +231,8 @@ MIT © [LinchKit Team](https://github.com/laofahai/linch-kit)
 
 - [GitHub](https://github.com/laofahai/linch-kit)
 - [NPM 组织](https://www.npmjs.com/org/linch-kit)
-- [文档站点](https://linch-kit.dev)
-- [演示应用](https://demo.linch-kit.dev)
+- [文档站点](https://kit.linch.tech)
+- [演示应用](https://kit-demo.linch.tech)
 
 ---
 

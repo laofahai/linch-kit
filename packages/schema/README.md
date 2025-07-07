@@ -524,4 +524,4 @@ MIT License
 
 ---
 
-更多详细信息请查看 [LinchKit 官方文档](https://linch-kit.dev)
+更多详细信息请查看 [LinchKit 官方文档](https://kit.linch.tech)
