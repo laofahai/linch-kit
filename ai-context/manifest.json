@@ -1,50 +1,71 @@
 {
   "meta": {
-    "version": "2.0.0",
-    "description": "LinchKit AI Context Navigation Index - Layered Architecture",
-    "last_updated": "2025-07-04",
-    "structure_version": "layered-v1"
+    "version": "3.0.0",
+    "description": "LinchKit AI Context Navigation Index - Restructured Architecture",
+    "last_updated": "2025-07-07",
+    "structure_version": "kebab-case-v1",
+    "restructure_notes": "Complete reorganization using Gemini collaboration framework"
   },
   "navigation": {
-    "overview": "ai-context/README.md",
-    "optimization_plan": "ai-context/ai-context-optimization-plan.md",
-    "core": "ai-context/core/",
-    "architecture": "ai-context/architecture/",
-    "reference": "ai-context/reference/",
-    "roadmap": "ai-context/roadmap/",
-    "history": "ai-context/history/",
-    "tools": "ai-context/tools/"
+    "overview": "ai-context/00-core/readme.md",
+    "quick_start": "ai-context/00-core/quick-start.md",
+    "core": "ai-context/00-core/",
+    "strategy": "ai-context/01-strategy/",
+    "architecture": "ai-context/02-architecture/",
+    "workflows": "ai-context/03-workflows/",
+    "reference": "ai-context/04-reference/",
+    "planning": "ai-context/05-planning/",
+    "archive": "ai-context/99-archive/"
   },
   "core": {
-    "vision_and_scope": "ai-context/core/vision_and_scope.md",
-    "workflow_and_constraints": "ai-context/core/workflow_and_constraints.md",
-    "session_template": "ai-context/core/session_template.md"
+    "readme": "ai-context/00-core/readme.md",
+    "quick_start": "ai-context/00-core/quick-start.md"
+  },
+  "strategy": {
+    "vision_and_scope": "ai-context/01-strategy/vision-and-scope.md",
+    "policy_as_code": "ai-context/01-strategy/policy-as-code.md"
   },
   "architecture": {
-    "overview": "ai-context/architecture/overview.md",
-    "core_packages": "ai-context/architecture/core_packages.md",
-    "frontend_applications": "ai-context/architecture/frontend_applications.md",
-    "cli_and_tools": "ai-context/architecture/cli_and_tools.md",
-    "git_workflow": "ai-context/architecture/git_workflow.md",
-    "implementation_roadmap": "ai-context/architecture/implementation_roadmap.md",
-    "complete_architecture_design": "ai-context/architecture/complete_architecture_design.md",
+    "overview": "ai-context/02-architecture/overview.md",
+    "core_packages": "ai-context/02-architecture/core-packages.md",
+    "frontend_applications": "ai-context/02-architecture/frontend-applications.md",
+    "complete_design": "ai-context/02-architecture/complete-architecture-design.md",
+    "strategies": {
+      "caching": "ai-context/02-architecture/strategies/caching-strategy.md",
+      "code_generation": "ai-context/02-architecture/strategies/code-generation-strategy.md",
+      "data_governance": "ai-context/02-architecture/strategies/data-governance-strategy.md",
+      "performance": "ai-context/02-architecture/strategies/performance-strategy.md"
+    }
+  },
+  "workflows": {
+    "ai_collaboration": "ai-context/03-workflows/ai-collaboration-guide.md",
+    "development": "ai-context/03-workflows/development-workflow.md",
+    "git": "ai-context/03-workflows/git-workflow.md"
   },
   "reference": {
-    "packages_api": "ai-context/reference/packages_api.md",
-    "auth_package_completeness": "ai-context/reference/auth-package-completeness-report.md",
-    "core_package_completeness": "ai-context/reference/core-package-completeness-report.md",
-    "dependency_analysis": "ai-context/reference/dependency-analysis.md",
-    "test_coverage_summary": "ai-context/reference/test-coverage-summary.md",
-    "phase1_verification": "ai-context/reference/phase1-verification-report.md",
-    "bun_migration_plan": "ai-context/reference/bun-migration-plan.md"
+    "packages_api": "ai-context/04-reference/packages-api.md",
+    "dependency_analysis": "ai-context/04-reference/dependency-analysis.md",
+    "api_specs": {
+      "auth": "ai-context/04-reference/api-specs/auth.md",
+      "core": "ai-context/04-reference/api-specs/core.md",
+      "crud": "ai-context/04-reference/api-specs/crud.md",
+      "schema": "ai-context/04-reference/api-specs/schema.md",
+      "trpc": "ai-context/04-reference/api-specs/trpc.md",
+      "ui": "ai-context/04-reference/api-specs/ui.md"
+    },
+    "reports": {
+      "auth_completeness": "ai-context/04-reference/reports/auth-package-completeness.md",
+      "core_completeness": "ai-context/04-reference/reports/core-package-completeness.md",
+      "schema_completeness": "ai-context/04-reference/reports/schema-package-completeness.md"
+    }
   },
-  "roadmap": {
-    "roadmap": "ai-context/roadmap/roadmap.md",
-    "development_status": "ai-context/roadmap/development-status.md"
-  },
-  "history": {
-    "changelog": "ai-context/history/changelog.md",
-    "development_history": "ai-context/history/development_history.md"
+  "planning": {
+    "development_status": "ai-context/05-planning/development-status.md",
+    "roadmap": "ai-context/05-planning/roadmap.md",
+    "improvement_proposals": {
+      "core_package": "ai-context/05-planning/improvement-proposals/core-package-issues.md",
+      "console_module": "ai-context/05-planning/improvement-proposals/console-module-issues.md"
+    }
   },
   "packages": {
     "core": {
@@ -104,17 +125,13 @@
       "features": ["admin-panel", "role-management", "audit-logs"]
     }
   },
-  "workflows": {
-    "git": "ai-context/architecture/git_workflow.md",
-    "ci": ".github/workflows/ci.yml",
-    "release": ".github/workflows/release.yml"
-  },
   "search_patterns": {
-    "constraints": "ai-context/core/**/*.md",
-    "architecture": "ai-context/architecture/**/*.md",
-    "reference": "ai-context/reference/**/*.md",
-    "roadmap": "ai-context/roadmap/**/*.md",
-    "history": "ai-context/history/**/*.md",
+    "core": "ai-context/00-core/**/*.md",
+    "strategy": "ai-context/01-strategy/**/*.md",
+    "architecture": "ai-context/02-architecture/**/*.md",
+    "workflows": "ai-context/03-workflows/**/*.md",
+    "reference": "ai-context/04-reference/**/*.md",
+    "planning": "ai-context/05-planning/**/*.md",
     "schemas": "packages/schema/src/**/*.ts",
     "components": "packages/ui/src/components/**/*.tsx",
     "api_routes": "apps/*/app/api/**/*.ts",
@@ -123,9 +140,22 @@
     "configs": "**/*.config.{js,ts,json}",
     "tests": "**/*.{test,spec}.{js,ts,tsx}"
   },
-  "tools": {
-    "scripts": "ai-context/tools/scripts/",
-    "templates": "ai-context/tools/templates/",
-    "validators": "ai-context/tools/validators/"
+  "restructure_summary": {
+    "completed_date": "2025-07-07",
+    "changes": [
+      "Migrated from numbered underscores to numbered hyphens (00_ -> 00-)",
+      "Unified all file names to kebab-case",
+      "Reorganized content by intent: core -> strategy -> architecture -> workflows -> reference -> planning",
+      "Created strategic sub-directories for better organization",
+      "Archived legacy documents to 99-archive",
+      "Preserved Git history using git mv commands"
+    ],
+    "benefits": [
+      "Clear navigation hierarchy for AI assistants",
+      "Consistent naming convention across all files",
+      "Logical grouping by document purpose",
+      "Preserved historical information in archive",
+      "Improved maintainability and searchability"
+    ]
   }
 }
