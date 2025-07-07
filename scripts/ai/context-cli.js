@@ -236,9 +236,9 @@ async function processResultsFast(queryType, graphResult, includeRelated, forEnt
     entities.push(...graphResult.nodes.map(node => ({
       name: node.name || 'Unknown',
       type: node.type || 'Unknown', 
-      path: node.path || '',
-      description: node.description || '',
-      package: node.package || 'unknown'
+      path: node.file_path || node.path || (node.properties && node.properties.file_path) || '',
+      description: node.description || (node.properties && node.properties.description) || '',
+      package: node.package || (node.properties && node.properties.package) || 'unknown'
     })));
   }
   
@@ -251,9 +251,9 @@ async function processResultsFast(queryType, graphResult, includeRelated, forEnt
           entities.push({
             name: value.properties.name || 'Unknown',
             type: value.properties.type || 'Unknown',
-            path: value.properties.path || '',
+            path: value.properties.file_path || value.properties.path || '',
             description: value.properties.description || '',
-            package: value.properties.metadata_package || 'unknown'
+            package: value.properties.metadata_package || value.properties.package || 'unknown'
           });
         }
       }
