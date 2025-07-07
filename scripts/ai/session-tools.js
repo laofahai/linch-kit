@@ -207,19 +207,27 @@ function validateEnvironment() {
   }
 }
 
-function createFeatureBranch(taskName) {
-  if (!taskName) {
-    log.error('请提供任务名称');
+// 优雅的分支创建函数
+function createFeatureBranch(branchName, taskDescription = '') {
+  if (!branchName) {
+    log.error('请提供分支名称');
     return;
   }
   
-  const branchName = `feature/${taskName.toLowerCase().replace(/\s+/g, '-')}`;
+  // 确保分支名以feature/开头
+  const fullBranchName = branchName.startsWith('feature/') ? branchName : `feature/${branchName}`;
+  
+  // 验证分支名格式（只允许字母、数字、连字符、下划线）
+  if (!/^feature\/[a-z0-9-_]+$/i.test(fullBranchName)) {
+    log.error('分支名只能包含字母、数字、连字符和下划线');
+    return;
+  }
   
   try {
     runCommand('git stash', '暂存当前更改');
     runCommand('git checkout main', '切换到主分支');
     runCommand('git pull origin main', '更新主分支');
-    runCommand(`git checkout -b ${branchName}`, `创建功能分支: ${branchName}`);
+    runCommand(`git checkout -b ${fullBranchName}`, `创建功能分支: ${fullBranchName}`);
     
     try {
       runCommand('git stash pop', '恢复暂存的更改');
@@ -227,8 +235,11 @@ function createFeatureBranch(taskName) {
       log.info('没有暂存的更改需要恢复');
     }
     
-    log.success(`已创建并切换到功能分支: ${branchName}`);
-    return branchName;
+    if (taskDescription) {
+      log.info(`任务描述: ${taskDescription}`);
+    }
+    log.success(`已创建并切换到功能分支: ${fullBranchName}`);
+    return fullBranchName;
   } catch (error) {
     log.error('创建分支失败');
     throw error;
@@ -248,8 +259,11 @@ function handleCommand(command, args) {
       checkTodos();
       
       if (status.needBranch && args.length > 0) {
-        const taskName = args.join('-');
-        createFeatureBranch(taskName);
+        const taskDescription = args.join(' ');
+        // 注意：这里需要Claude调用时传入生成的分支名
+        // 当前暂时使用任务描述作为占位符
+        log.warn('请使用Claude生成分支名后调用 bun run ai:session branch <分支名>');
+        log.info(`任务描述: ${taskDescription}`);
       }
       
       log.success('Session初始化完成！');
@@ -297,7 +311,7 @@ function handleCommand(command, args) {
         log.error('请提供分支名称');
         process.exit(1);
       }
-      createFeatureBranch(args.join('-'));
+      createFeatureBranch(args[0], args.slice(1).join(' '));
       break;
       
     case 'check':
@@ -339,6 +353,8 @@ ${colors.bold}LinchKit AI Session 工具${colors.reset}
   bun run ai:session sync
   bun run ai:session check     # 快速验证
   bun run ai:session validate  # 完整验证
+
+注意: Claude会智能生成分支名称，无需手动指定复杂的英文转换
       `);
   }
 }
