@@ -126,7 +126,9 @@ L3: @linch-kit/trpc      ✅ API层 (100%)
 L3: @linch-kit/ui        ✅ UI组件 (100%)
 L4: modules/console      ✅ 管理平台 (100%)
 L4: apps/website         ✅ 文档平台 (100%)
-L4: @linch-kit/ai        ⏳ AI集成（规划中）
+L4: apps/demo-app        ✅ 演示应用 (已修复构建问题)
+L4: apps/starter         ✅ 多标签工作台 (100%)
+L4: @linch-kit/ai        🚧 AI集成（Graph RAG需改进）
 ```
 
 ### 🛠️ 开发命令
