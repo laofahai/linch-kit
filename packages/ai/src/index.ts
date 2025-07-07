@@ -47,6 +47,7 @@ export { IntelligentQueryEngine } from './query/intelligent-query-engine.js'
 
 // 上下文查询工具
 export { ContextQueryTool } from './context/context-query-tool.js'
+export { EnhancedContextTool } from './context/enhanced-context-tool.js'
 export type {
   ContextInfo,
   EntityInfo,
@@ -57,6 +58,12 @@ export type {
   Pattern,
   IContextQueryTool
 } from './context/context-query-tool.js'
+export type {
+  EnhancedContextResponse,
+  DetectedAction,
+  FieldSuggestion,
+  ImplementationStep
+} from './context/enhanced-context-tool.js'
 
 // 生成引擎 (将被废弃)
 export { VibeCodingEngine } from './generation/vibe-coding-engine.js'
