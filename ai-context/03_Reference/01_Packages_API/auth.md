@@ -1,3 +1,48 @@
+---
+package: "@linch-kit/auth"
+version: "2.0.2"
+layer: "L2"
+dependencies: ["@linch-kit/core", "@linch-kit/schema"]
+completeness: 90
+test_coverage: 6
+status: "production_ready"
+document_type: "api_reference"
+purpose: "Graph RAG knowledge base - 企业级认证权限管理包，基于NextAuth.js 5.0构建"
+api_exports:
+  - name: "createLinchKitAuthConfig"
+    type: "function"
+    status: "stable"
+  - name: "CASLPermissionEngine"
+    type: "class"
+    status: "stable"
+  - name: "EnhancedPermissionEngine"
+    type: "class"
+    status: "stable"
+  - name: "createPermissionMiddleware"
+    type: "function"
+    status: "stable"
+  - name: "AuthProvider"
+    type: "component"
+    status: "stable"
+  - name: "useSession"
+    type: "hook"
+    status: "stable"
+  - name: "MFAManager"
+    type: "class"
+    status: "stable"
+  - name: "createAuthRouter"
+    type: "function"
+    status: "stable"
+relationships:
+  - type: "depends_on"
+    targets: ["@linch-kit/core", "@linch-kit/schema"]
+  - type: "provides_auth_for"
+    targets: ["@linch-kit/crud", "@linch-kit/trpc", "@linch-kit/ui"]
+  - type: "integrates_with"
+    targets: ["NextAuth.js", "CASL", "React"]
+last_verified: "2025-07-07"
+---
+
 # @linch-kit/auth 包 API 文档
 
 **版本**: 2.0.2  

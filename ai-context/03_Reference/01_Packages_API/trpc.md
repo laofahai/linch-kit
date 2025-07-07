@@ -1,7 +1,58 @@
+---
+package: "@linch-kit/trpc"
+version: "2.0.2"
+layer: "L4"
+dependencies: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth"]
+completeness: 80
+test_coverage: 85
+status: "production_ready"
+document_type: "api_reference"
+purpose: "Graph RAG knowledge base - 端到端类型安全的API开发，基于tRPC 11.4.3构建"
+api_exports:
+  - name: "createTRPCProxyClient"
+    type: "function"
+    status: "stable"
+  - name: "router"
+    type: "function"
+    status: "stable"
+  - name: "publicProcedure"
+    type: "object"
+    status: "stable"
+  - name: "protectedProcedure"
+    type: "object"
+    status: "stable"
+  - name: "adminProcedure"
+    type: "object"
+    status: "stable"
+  - name: "healthRouter"
+    type: "router"
+    status: "stable"
+  - name: "systemRouter"
+    type: "router"
+    status: "stable"
+  - name: "authRouter"
+    type: "router"
+    status: "stable"
+  - name: "crudRouter"
+    type: "router"
+    status: "stable"
+  - name: "createLinchKitContext"
+    type: "function"
+    status: "stable"
+relationships:
+  - type: "depends_on"
+    targets: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth"]
+  - type: "provides_api_for"
+    targets: ["@linch-kit/ui"]
+  - type: "integrates_with"
+    targets: ["tRPC", "Zod", "superjson"]
+last_verified: "2025-07-07"
+---
+
 # @linch-kit/trpc API 文档
 
 **版本**: 2.0.2  
-**层级**: L3 (API层)  
+**层级**: L4 (API层)  
 **依赖**: @linch-kit/core, @linch-kit/schema, @linch-kit/auth  
 **核心职责**: 端到端类型安全的 API 开发，基于 tRPC 11.4.3
 
