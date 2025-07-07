@@ -28,6 +28,7 @@ export type QueryIntent =
   | 'find_related'       // 查找相关代码
   | 'analyze_path'       // 分析代码路径
   | 'explain_concept'    // 解释概念
+  | 'find_general'       // 通用查找
   | 'unknown'            // 未知意图
 
 /**
@@ -147,6 +148,28 @@ export class IntelligentQueryEngine {
         /what.*is/i,
         /describe/i,
         /告诉我.*关于/i
+      ]],
+      ['find_general', [
+        // 通用查找模式 - 提高中文查询识别
+        /查找.*\w+/i,
+        /搜索.*\w+/i,
+        /寻找.*\w+/i,
+        /找.*\w+/i,
+        /.*相关/i,
+        /.*架构/i,
+        /.*设计/i,
+        /.*实现/i,
+        /.*配置/i,
+        /.*工具/i,
+        /.*模块/i,
+        /.*插件/i,
+        /.*系统/i,
+        /test/i,
+        /测试/i,
+        /linchkit/i,
+        /框架/i,
+        /API/i,
+        /接口/i
       ]]
     ])
   }
@@ -301,7 +324,15 @@ export class IntelligentQueryEngine {
     const codeKeywords = query.match(/\b[a-zA-Z_$][a-zA-Z0-9_$]*\b/g)
     if (codeKeywords) {
       // 过滤掉常见的停用词
-      const stopWords = new Set(['the', 'is', 'are', 'was', 'were', 'in', 'on', 'at', 'by', 'for', 'with', 'to', 'from', 'and', 'or', 'but', '查找', '找', '函数', '类', '接口'])
+      const stopWords = new Set([
+        // 英文停用词
+        'the', 'is', 'are', 'was', 'were', 'in', 'on', 'at', 'by', 'for', 'with', 'to', 'from', 'and', 'or', 'but',
+        'how', 'what', 'where', 'when', 'why', 'can', 'will', 'should', 'would', 'could',
+        // 中文停用词
+        '查找', '找', '搜索', '寻找', '是', '的', '了', '在', '有', '和', '与', '或', '但',
+        '函数', '类', '接口', '代码', '模块', '组件', '方法', '属性', '参数',
+        '怎么', '什么', '哪里', '为什么', '如何', '能否', '是否', '可以'
+      ])
       const filteredKeywords = codeKeywords.filter(word => 
         !stopWords.has(word.toLowerCase()) && word.length > 2
       )
@@ -341,6 +372,9 @@ export class IntelligentQueryEngine {
       
       case 'explain_concept':
         return this.generateConceptQuery(entities, limit)
+      
+      case 'find_general':
+        return this.generateGenericQuery(entities, limit)
       
       default:
         return this.generateGenericQuery(entities, limit)
@@ -588,10 +622,26 @@ export class IntelligentQueryEngine {
    * 计算置信度
    */
   private calculateConfidence(context: QueryContext): number {
-    if (context.intent === 'unknown') return 0.3
-    if (context.entities.length === 0) return 0.5
-    if (context.entities.length >= 2) return 0.9
-    return 0.7
+    // 根据意图类型计算器本置信度
+    const baseConfidence = {
+      'find_function': 0.8,
+      'find_class': 0.8,
+      'find_interface': 0.8,
+      'find_dependencies': 0.7,
+      'find_usage': 0.7,
+      'find_related': 0.6,
+      'analyze_path': 0.6,
+      'explain_concept': 0.7,
+      'find_general': 0.6,
+      'unknown': 0.3
+    }[context.intent] || 0.3
+    
+    // 根据实体数量调整置信度
+    let entityBonus = 0
+    if (context.entities.length >= 2) entityBonus = 0.2
+    else if (context.entities.length === 1) entityBonus = 0.1
+    
+    return Math.min(1.0, baseConfidence + entityBonus)
   }
 
   /**

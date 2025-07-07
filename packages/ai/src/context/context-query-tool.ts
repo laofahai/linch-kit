@@ -310,11 +310,11 @@ export class ContextQueryTool implements IContextQueryTool {
   private extractEntities(nodes: GraphNode[]): EntityInfo[] {
     return nodes.map(node => ({
       id: node.id,
-      name: (node.properties?.name as string) || 'Unknown',
+      name: node.name || 'Unknown',
       type: node.type as EntityInfo['type'],
-      package: (node.properties?.package as string) || 'unknown',
-      description: node.properties?.description as string | undefined,
-      path: node.properties?.path as string | undefined,
+      package: ((node.metadata as Record<string, unknown>)?.metadata_package as string) || 'unknown',
+      description: (node.properties?.description as string) || (node.properties?.prop_signature as string) || undefined,
+      path: (node.properties?.prop_file_path as string) || (node.properties?.metadata_source_file as string) || undefined,
       exports: node.properties?.exports as string[] | undefined,
       relevance: this.calculateRelevance(node)
     })).sort((a, b) => b.relevance - a.relevance)

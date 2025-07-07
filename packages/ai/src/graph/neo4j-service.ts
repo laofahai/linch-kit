@@ -451,12 +451,24 @@ export class Neo4jService implements IGraphService {
       return null
     }
     
+    // 分离出metadata属性和普通属性
+    const metadata: Record<string, unknown> = {}
+    const nodeProperties: Record<string, unknown> = {}
+    
+    for (const [key, value] of Object.entries(properties)) {
+      if (key.startsWith('metadata_')) {
+        metadata[key] = value
+      } else if (!['id', 'type', 'name'].includes(key)) {
+        nodeProperties[key] = value
+      }
+    }
+    
     return {
       id: properties.id as string,
       type: properties.type as NodeType,
       name: properties.name as string,
-      properties: properties.properties as Record<string, unknown> || {},
-      metadata: (properties.metadata as Record<string, unknown>) || {}
+      properties: nodeProperties,
+      metadata: metadata
     }
   }
 
