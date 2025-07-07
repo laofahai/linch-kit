@@ -1,8 +1,7 @@
 import { readFile, readdir, stat } from 'fs/promises'
-import { join, extname, relative } from 'path'
+import { extname, join, relative } from 'path'
 
-import { NodeType, RelationType, type GraphNode, type GraphRelationship } from '../types/index.js'
-import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index.js'
+import { NodeIdGenerator, NodeType, RelationType, RelationshipIdGenerator, type GraphNode, type GraphRelationship } from '../types/index.js'
 
 import { BaseExtractor } from './base-extractor.js'
 

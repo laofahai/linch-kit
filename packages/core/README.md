@@ -44,7 +44,7 @@ graph TD
 # 使用 bun (推荐)
 bun add @linch-kit/core
 
-# 使用 npm
+# 使用 npm (不推荐，建议使用 bun)
 npm install @linch-kit/core
 
 # 使用 yarn

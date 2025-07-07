@@ -42,10 +42,10 @@ Console 模块依赖 LinchKit 生态的所有核心包，是框架能力的集�
 # 使用 bun (推荐)
 bun add @linch-kit/console
 
-# 使用 npm
+# 使用 npm (不推荐，建议使用 bun)
 npm install @linch-kit/console
 
-# 使用 yarn
+# 使用 yarn (不推荐，建议使用 bun)
 yarn add @linch-kit/console
 ```
 
@@ -690,7 +690,7 @@ MIT License - 查看 [LICENSE](../../LICENSE) 文件了解详情。
 
 ## 🔗 相关链接
 
-- 📚 [LinchKit 文档](https://docs.linch-kit.com)
+- 📚 [LinchKit 文档](https://kit.linch.tech)
 - 🐛 [问题反馈](https://github.com/laofahai/linch-kit/issues)
 - 💬 [讨论社区](https://github.com/laofahai/linch-kit/discussions)
 - 🚀 [更新日志](./CHANGELOG.md)
