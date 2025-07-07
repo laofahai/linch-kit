@@ -25,6 +25,7 @@ export interface LinchKitUser extends NextAuthUser {
   tenantId?: string
   status?: 'active' | 'inactive' | 'disabled' | 'pending'
   emailVerified?: Date | null
+  birthday?: Date | null
   createdAt?: Date
   updatedAt?: Date
   lastLoginAt?: Date | null
@@ -47,6 +48,7 @@ export const UserSchema = z.object({
   tenantId: z.string().optional(),
   status: z.enum(['active', 'inactive', 'disabled', 'pending']).optional(),
   emailVerified: z.date().nullable().optional(),
+  birthday: z.date().nullable().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
   lastLoginAt: z.date().nullable().optional(),

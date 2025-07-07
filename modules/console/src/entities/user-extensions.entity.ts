@@ -58,6 +58,12 @@ function createConsoleUserExtensions() {
       .description('console.entities.user.fields.preferences')
       .build(),
     
+    // 个人信息扩展
+    displayBirthday: defineField.boolean()
+      .default(false)
+      .description('console.entities.user.fields.displayBirthday')
+      .build(),
+    
     // 多租户支持
     currentTenantId: defineField.string()
       .optional()

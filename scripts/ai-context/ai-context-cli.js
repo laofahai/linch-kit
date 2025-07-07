@@ -11,7 +11,7 @@
  * 4. 添加超时控制
  */
 
-import { Neo4jService, loadNeo4jConfig } from './packages/ai/dist/index.js';
+import { Neo4jService, loadNeo4jConfig } from '../../packages/ai/dist/index.js';
 import dotenv from 'dotenv';
 
 // 加载环境变量

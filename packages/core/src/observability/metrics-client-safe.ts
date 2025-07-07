@@ -152,7 +152,7 @@ export async function createMetricCollector(config: unknown = {}): Promise<Metri
     const serverMetrics = await loadServerMetrics()
     if (serverMetrics) {
       // Type cast to avoid type conflicts between client/server configs
-      return serverMetrics.createMetricCollector(config as any)
+      return serverMetrics.createMetricCollector(config as Parameters<typeof serverMetrics.createMetricCollector>[0])
     }
   }
   
