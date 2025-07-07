@@ -5,7 +5,9 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
+
 import type { Logger } from '../types/index.js'
+
 import { ContextQueryTool } from './context-query-tool.js'
 
 /**
@@ -513,7 +515,7 @@ export class EnhancedContextTool {
    */
   private generateFieldSuggestion(
     fieldName: string,
-    entityName?: string
+    _entityName?: string
   ): FieldSuggestion {
     // 根据字段名推断类型
     const typeMapping = {
