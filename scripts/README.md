@@ -5,9 +5,7 @@
 ### 🤖 AI 上下文工具
 位置：`ai-context/`
 
-- **ai-context-cli-fast.js** - 快速AI上下文查询工具（推荐）
-- **ai-context-cli.js** - 通用AI上下文查询工具
-- **ai-context-cli-v2.js** - 简化版AI上下文查询工具
+- **ai-context-cli.js** - AI上下文查询工具（优化版，统一接口）
 
 详见：[AI Context 工具文档](./ai-context/README.md)
 
@@ -71,7 +69,9 @@ bun validate
 - `complexity-analysis.js` - 功能与其他工具重复 
 - `performance-benchmark.js` - 基准测试结果过时
 - `generate-architecture-diagram.js` - 图表生成需求变更
-- `release.cjs` - 重复的发布脚本
+- `release.cjs` / `release.js` - 已使用changesets + CI/CD替代
+- `dev-tools.js` - 开发工具功能重复，使用turbo dev替代
+- `ai-context-cli-v2.js` / `ai-context-cli-fast.js` - 合并为统一版本
 
 ## ⚠️ 使用说明
 

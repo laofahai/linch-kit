@@ -69,11 +69,8 @@ bun scripts/ai-context/ai-context-cli.js --query "我要给user加一个生日�
 # 重新提取项目代码图谱数据
 bun scripts/graph-data-extractor.ts
 
-# 检查图谱数据质量
-bun scripts/ai-context/ai-context-cli.js --query "项目统计" --type context
-
 # 验证关键实体是否正确索引
-bun scripts/ai-context/ai-context-cli-fast.js --find-entity "User" --include-related
+bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-related
 ```
 
 #### 数据质量监控

@@ -47,58 +47,35 @@ const config = {
 };
 ```
 
-## 🚨 PHASE 1: 强制性 Session 初始化 (Pre-flight Checklist)
+## 🚨 CRITICAL: 强制性 Session 初始化 (每次对话必须执行)
 
-**触发条件**: 用户提及 "开始开发"、"修复bug"、"实现功能"、"继续开发" 等关键词
+**🔴 警告：如果跳过此检查表，将导致代码不一致和违反项目约束！**
 
-**⚠️ 在执行任何代码修改前，必须严格按顺序完成以下检查：**
+**⚠️ 无论用户请求什么，都必须先执行以下步骤：**
 
-### 1. 任务状态检查
-- [ ] 使用 `TodoRead` 检查待办事项
-- [ ] 如有未完成任务，询问用户是否继续或开始新任务
+### STEP 1: 📋 任务检查 (TodoRead)
+**⚠️ 立即执行**: 使用 `TodoRead` 工具检查是否有未完成任务
 
-### 2. 分支安全检查 (🔴 最高优先级)
-- [ ] 运行 `pwd` 确认当前工作目录
-- [ ] 运行 `git branch --show-current` 检查当前分支
-- [ ] **分支管理规范**：
-  - 所有功能开发、Bug 修复必须创建专门的功能分支
-  - 如无合适分支，立即创建：
-    ```bash
-    # 1. 确保从最新的 main 分支创建
-    git checkout main
-    git pull origin main
-    
-    # 2. 创建功能分支
-    git checkout -b feature/[task-name]
-    ```
-- [ ] **分支命名规范**：
-  - 功能开发: `feature/[name]`
-  - Bug 修复: `fix/[issue]`
-  - 实验性: `experiment/[tech]`
-- [ ] **禁止直接在以下分支工作**: `main`, `master`, `develop`, `release/*`
+### STEP 2: 🌳 分支安全检查 (强制执行)
+**⚠️ 立即执行**: 
+1. `pwd` - 确认工作目录
+2. `git branch --show-current` - 检查当前分支
+3. **如在 main/master 分支**: 立即创建功能分支
+4. **如有未提交更改**: `git status` 检查状态
 
-### 3. 工作目录检查
-- [ ] 运行 `git status --porcelain` 检查工作目录状态
-- [ ] 如有未提交更改，询问用户处理方式（stash/commit）
-- [ ] 确保工作目录干净后再继续
+### STEP 3: 🎯 强制上下文查询 (禁止跳过)
+**⚠️ 任何代码相关任务都必须先查询**:
+```bash
+# 根据用户需求选择对应查询
+bun scripts/ai-context/ai-context-cli.js --find-entity "[实体名]" --include-related
+# 或
+bun scripts/ai-context/ai-context-cli.js --find-symbol "[符号名]"  
+# 或
+bun scripts/ai-context/ai-context-cli.js --find-pattern "[模式]" --for-entity "[实体]"
+```
 
-### 4. 任务明确性检查
-- [ ] 确认任务描述具体且可执行
-- [ ] 如任务模糊（如"优化一下"），要求用户提供具体需求
-- [ ] 估算任务复杂度，决定是否需要拆分
-
-### 5. 上下文获取策略
-- [ ] **仅在必要时**读取核心文档：
-  - ai-context/README.md（文档地图）
-  - ai-context/core/workflow_and_constraints.md（约束规范）
-  - ai-context/roadmap/roadmap.md（当前状态）
-- [ ] **优先使用搜索**而非全文读取
-- [ ] 建立任务相关的最小上下文
-
-### 6. 数据同步检查（如需要）
-- [ ] **大规模代码变更后**：检查Neo4j图谱数据是否需要更新
-- [ ] **新包或Schema变更**：运行 `bun scripts/graph-data-extractor.ts` 更新图谱
-- [ ] **查询异常时**：验证AI上下文工具数据完整性
+### STEP 4: ✅ 确认准备就绪
+只有完成前3步后才能开始编码
 
 **💡 用户简化提示语**：
 ```
@@ -197,16 +174,16 @@ Claude执行: 编辑schema → 创建迁移 → 更新API → 更新UI → 运�
 
 ```bash
 # 1. 查找实体定义和相关文件 (用于添加字段、修改实体等)
-bun scripts/ai-context/ai-context-cli-fast.js --find-entity "User" --include-related
-bun scripts/ai-context/ai-context-cli-fast.js --find-entity "Product" --include-related
+bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-related
+bun scripts/ai-context/ai-context-cli.js --find-entity "Product" --include-related
 
 # 2. 查找符号定义 (用于理解函数、类、接口)
-bun scripts/ai-context/ai-context-cli-fast.js --find-symbol "UserSchema"
-bun scripts/ai-context/ai-context-cli-fast.js --find-symbol "createUser"
+bun scripts/ai-context/ai-context-cli.js --find-symbol "UserSchema"
+bun scripts/ai-context/ai-context-cli.js --find-symbol "createUser"
 
 # 3. 查找实现模式 (用于学习如何实现某种功能)
-bun scripts/ai-context/ai-context-cli-fast.js --find-pattern "add_field" --for-entity "User"
-bun scripts/ai-context/ai-context-cli-fast.js --find-pattern "create_api" --for-entity "Product"
+bun scripts/ai-context/ai-context-cli.js --find-pattern "add_field" --for-entity "User"
+bun scripts/ai-context/ai-context-cli.js --find-pattern "create_api" --for-entity "Product"
 ```
 
 ### 🚨 强制使用场景
@@ -249,7 +226,7 @@ const analysis = {
 **Phase 2: 查询项目上下文**
 ```bash
 # Claude必须调用工具获取信息
-bun scripts/ai-context/ai-context-cli-fast.js --find-entity "User" --include-related
+bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-related
 ```
 
 **Phase 3: 基于查询结果执行开发**
@@ -318,7 +295,7 @@ await Bash("bunx prisma migrate dev") // 创建迁移
 Claude: 我来帮你为User添加phone字段。首先让我查询User实体的相关信息...
 
 [调用工具]
-$ bun scripts/ai-context/ai-context-cli-fast.js --find-entity "User" --include-related
+$ bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-related
 
 我发现User定义在 packages/schema/src/user.ts，当前包含字段：id, name, email
 
@@ -463,6 +440,8 @@ $ bun scripts/ai-context/ai-context-cli-fast.js --find-entity "User" --include-r
 - [ ] **代码质量** - 运行 `bun lint` 无错误
 - [ ] **测试通过** - 运行 `bun test` 全部通过
 - [ ] **构建验证** - 运行 `bun build` 成功
+- [ ] **🔴 图谱数据同步** - 运行 `bun scripts/graph-data-extractor.ts` 更新Neo4j数据
+- [ ] **🔴 查询功能验证** - 验证AI上下文查询工具正常工作
 - [ ] **文档整合** - 临时文档已整合到主文档体系，无信息冗余
 - [ ] **文档更新** - 更新 README/CHANGELOG 或相关文档
 - [ ] **规范提交** - 遵循 Conventional Commits 格式
@@ -495,12 +474,29 @@ $ bun scripts/ai-context/ai-context-cli-fast.js --find-entity "User" --include-r
 - **约束文档** - 新增规范和最佳实践
 - **临时文档清理** - 删除已整合的临时文档，避免信息冗余
 
-### 🔄 AI上下文数据同步自动化
-重大代码变更后强制更新知识图谱：
-- **图谱数据提取** - 运行 `bun scripts/graph-data-extractor.ts` 重新分析代码
-- **数据质量验证** - 检查节点数量、关系完整性、查询性能
-- **工具功能测试** - 验证关键实体查询是否正常工作
-- **性能基准检查** - 确保查询时间保持在1.4-2.3s范围内
+### 🔄 AI上下文数据同步自动化 (强制执行)
+**🔴 每次代码提交前必须执行以下数据同步检查：**
+
+#### 强制同步触发条件
+- **添加新文件**: 立即更新图谱数据
+- **修改Schema/实体**: 必须更新图谱数据
+- **添加新函数/类**: 必须更新图谱数据
+- **修改包依赖**: 必须更新图谱数据
+- **重构代码结构**: 必须更新图谱数据
+
+#### 强制执行流程
+1. **图谱数据提取** - 运行 `bun scripts/graph-data-extractor.ts` 重新分析代码
+2. **数据质量验证** - 检查节点数量、关系完整性、查询性能
+3. **工具功能测试** - 验证关键实体查询是否正常工作
+4. **性能基准检查** - 确保查询时间保持在1.4-2.3s范围内
+5. **提交图谱数据** - 将更新的图谱数据包含在提交中
+
+#### 验证命令
+```bash
+# 必须在每次代码提交前运行
+bun scripts/graph-data-extractor.ts
+bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-related
+```
 
 ### 🔒 安全检查自动化
 - **敏感信息扫描** - 提交前检查密钥、Token
