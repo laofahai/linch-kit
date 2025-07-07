@@ -367,18 +367,36 @@ export class Neo4jService implements IGraphService {
         await tx.run(apocCypher, { nodes: batch })
         this.logger.debug(`批次 ${Math.floor(i/batchSize) + 1}: 使用 APOC 创建了 ${batch.length} 个节点`)
       } catch (apocError) {
-        // APOC 不可用，使用原生 Cypher
-        this.logger.debug('APOC 不可用，使用原生 Cypher', { error: apocError })
+        // APOC 不可用，使用原生 Cypher 按类型分组创建
+        this.logger.debug('APOC 不可用，使用原生 Cypher 按类型分组创建', { error: apocError })
         
-        const nativeCypher = `
-          UNWIND $nodes as nodeData
-          MERGE (n:GraphNode {id: nodeData.id})
-          SET n = nodeData,
-              n.updated_at = datetime()
-          RETURN count(n)
-        `
+        // 按节点类型分组
+        const nodesByType = new Map<string, any[]>()
+        for (const nodeData of batch) {
+          const type = nodeData.type || 'GraphNode'
+          if (!nodesByType.has(type)) {
+            nodesByType.set(type, [])
+          }
+          nodesByType.get(type)!.push(nodeData)
+        }
         
-        await tx.run(nativeCypher, { nodes: batch })
+        // 为每种类型创建节点，直接使用双重标签（无APOC依赖）
+        for (const [type, typeNodes] of nodesByType) {
+          this.logger.debug(`创建 ${type} 类型节点: ${typeNodes.length} 个`)
+          
+          // 直接使用多标签语法创建节点
+          const cypher = `
+            UNWIND $nodes as nodeData
+            MERGE (n:GraphNode:${type} {id: nodeData.id})
+            SET n += nodeData,
+                n.updated_at = datetime()
+            RETURN count(n)
+          `
+          
+          await tx.run(cypher, { nodes: typeNodes })
+          this.logger.debug(`创建 ${type} 节点完成`)
+        }
+        
         this.logger.debug(`批次 ${Math.floor(i/batchSize) + 1}: 使用原生 Cypher 创建了 ${batch.length} 个节点`)
       }
     }
@@ -403,38 +421,20 @@ export class Neo4jService implements IGraphService {
         ...this.flattenMetadata(rel.properties || {}, 'prop_')
       }))
       
-      // 使用 UNWIND 批量创建关系，支持动态关系类型
+      // 使用原生Cypher创建关系（无APOC依赖）
       const cypher = `
         UNWIND $relationships AS relData
-        MATCH (source:GraphNode {id: relData.source})
-        MATCH (target:GraphNode {id: relData.target})
-        CALL apoc.create.relationship(source, relData.type, relData, target) YIELD rel
-        RETURN count(rel)
-      `
-      
-      // 如果 APOC 不可用，使用原生方法（关系类型固定）
-      const fallbackCypher = `
-        UNWIND $relationships AS relData
-        MATCH (source:GraphNode {id: relData.source})
-        MATCH (target:GraphNode {id: relData.target})
+        MATCH (source {id: relData.source})
+        MATCH (target {id: relData.target})
         CREATE (source)-[r:RELATED_TO]->(target)
         SET r = relData,
             r.updated_at = datetime()
         RETURN count(r)
       `
       
-      try {
-        // 尝试使用 APOC 创建动态关系类型
-        const result = await tx.run(cypher, { relationships: batch })
-        const createdCount = result.records[0]?.get(0) || 0
-        this.logger.debug(`批次 ${Math.floor(i/batchSize) + 1}/${Math.ceil(relationships.length/batchSize)}: 使用 APOC 创建了 ${createdCount} 个关系`)
-      } catch (apocError) {
-        // APOC 不可用，使用原生方法
-        this.logger.debug('APOC 不可用，使用原生关系创建', { error: apocError })
-        const result = await tx.run(fallbackCypher, { relationships: batch })
-        const createdCount = result.records[0]?.get(0) || 0
-        this.logger.debug(`批次 ${Math.floor(i/batchSize) + 1}/${Math.ceil(relationships.length/batchSize)}: 使用原生方法创建了 ${createdCount} 个关系`)
-      }
+      const result = await tx.run(cypher, { relationships: batch })
+      const createdCount = result.records[0]?.get(0) || 0
+      this.logger.debug(`批次 ${Math.floor(i/batchSize) + 1}/${Math.ceil(relationships.length/batchSize)}: 创建了 ${createdCount} 个关系`)
     }
     
     this.logger.debug(`批量创建了 ${relationships.length} 个关系`)
