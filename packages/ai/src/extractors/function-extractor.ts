@@ -131,6 +131,13 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     })
   }
 
+  /**
+   * 安全地转换行号，处理BigInt类型
+   */
+  private safeLineNumber(lineNumber: number | bigint): number {
+    return typeof lineNumber === 'bigint' ? Number(lineNumber) : lineNumber
+  }
+
   protected async extractRawData(): Promise<CodeAnalysis> {
     const startTime = Date.now()
     this.logger.info('开始提取代码结构信息...')
@@ -302,8 +309,8 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     if (!name) return null
 
     const signature = func.getText().substring(0, 200) // 限制长度
-    const startLine = func.getStartLineNumber()
-    const endLine = func.getEndLineNumber()
+    const startLine = this.safeLineNumber(func.getStartLineNumber())
+    const endLine = this.safeLineNumber(func.getEndLineNumber())
 
     // 提取参数信息
     const parameters = func.getParameters().map((param: ParameterDeclaration) => ({
@@ -349,8 +356,8 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     if (!name) return null
 
     const signature = method.getText().substring(0, 200)
-    const startLine = method.getStartLineNumber()
-    const endLine = method.getEndLineNumber()
+    const startLine = this.safeLineNumber(method.getStartLineNumber())
+    const endLine = this.safeLineNumber(method.getEndLineNumber())
 
     const parameters = method.getParameters().map((param: ParameterDeclaration) => ({
       name: param.getName(),
@@ -404,8 +411,8 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     const variableDeclaration = parent as VariableDeclaration
     const name = variableDeclaration.getName() || 'anonymous'
     const signature = arrow.getText().substring(0, 200)
-    const startLine = arrow.getStartLineNumber()
-    const endLine = arrow.getEndLineNumber()
+    const startLine = this.safeLineNumber(arrow.getStartLineNumber())
+    const endLine = this.safeLineNumber(arrow.getEndLineNumber())
 
     const parameters = arrow.getParameters().map((param: ParameterDeclaration) => ({
       name: param.getName(),
@@ -439,8 +446,8 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     const name = cls.getName()
     if (!name) return null
 
-    const startLine = cls.getStartLineNumber()
-    const endLine = cls.getEndLineNumber()
+    const startLine = this.safeLineNumber(cls.getStartLineNumber())
+    const endLine = this.safeLineNumber(cls.getEndLineNumber())
 
     const isAbstract = cls.hasModifier(SyntaxKind.AbstractKeyword)
     const isExported = cls.isExported()
@@ -486,8 +493,8 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     const name = iface.getName()
     if (!name) return null
 
-    const startLine = iface.getStartLineNumber()
-    const endLine = iface.getEndLineNumber()
+    const startLine = this.safeLineNumber(iface.getStartLineNumber())
+    const endLine = this.safeLineNumber(iface.getEndLineNumber())
 
     const isExported = iface.isExported()
     const extendsInterfaces = iface.getExtends().map((ext: ExpressionWithTypeArguments) => ext.getText())
@@ -527,7 +534,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
     const definition = typeAlias.getTypeNode()?.getText() || ''
     const isExported = typeAlias.isExported()
-    const startLine = typeAlias.getStartLineNumber()
+    const startLine = this.safeLineNumber(typeAlias.getStartLineNumber())
     const jsdoc = typeAlias.getJsDocs()?.[0]?.getDescription()
 
     // 分析引用的类型
@@ -594,7 +601,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
     // 创建函数节点
     for (const func of rawData.functions) {
-      const nodeId = NodeIdGenerator.api(func.packageName || 'unknown', func.name, 'function')
+      const nodeId = NodeIdGenerator.api(func.packageName || 'unknown', func.name, 'function', func.filePath)
       
       const functionNode: GraphNode = {
         id: nodeId,
@@ -620,7 +627,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
       // 创建函数调用关系
       for (const calledFunction of func.calls) {
-        const targetId = NodeIdGenerator.api(func.packageName || 'unknown', calledFunction, 'function')
+        const targetId = NodeIdGenerator.api(func.packageName || 'unknown', calledFunction, 'function', func.filePath)
         const relationshipId = RelationshipIdGenerator.create(RelationType.CALLS, nodeId, targetId)
         
         relationships.push({
@@ -635,7 +642,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
     // 创建类节点
     for (const cls of rawData.classes) {
-      const nodeId = NodeIdGenerator.api(cls.packageName || 'unknown', cls.name, 'class')
+      const nodeId = NodeIdGenerator.api(cls.packageName || 'unknown', cls.name, 'class', cls.filePath)
       
       const classNode: GraphNode = {
         id: nodeId,
@@ -690,7 +697,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
     // 创建接口节点
     for (const iface of rawData.interfaces) {
-      const nodeId = NodeIdGenerator.api(iface.packageName || 'unknown', iface.name, 'interface')
+      const nodeId = NodeIdGenerator.api(iface.packageName || 'unknown', iface.name, 'interface', iface.filePath)
       
       const interfaceNode: GraphNode = {
         id: nodeId,
@@ -728,7 +735,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
     // 创建类型节点
     for (const type of rawData.types) {
-      const nodeId = NodeIdGenerator.api(type.packageName || 'unknown', type.name, 'type')
+      const nodeId = NodeIdGenerator.api(type.packageName || 'unknown', type.name, 'type', type.filePath)
       
       const typeNode: GraphNode = {
         id: nodeId,

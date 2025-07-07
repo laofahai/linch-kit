@@ -51,13 +51,14 @@ export interface CLICommand {
 /**
  * AI CLI 插件配置
  */
-export const aiCLIPlugin = {
+export const cliPlugin = {
   name: '@linch-kit/ai',
   version: '1.0.0',
-  commands: [
-    extractCommand,
-    queryCommand,
-    generateCommand,
-    contextCommand
-  ]
+  async register(cli: { registerCommand: (command: unknown) => void }) {
+    // 注册所有AI相关命令
+    cli.registerCommand(extractCommand)
+    cli.registerCommand(queryCommand)
+    cli.registerCommand(generateCommand)
+    cli.registerCommand(contextCommand)
+  }
 }

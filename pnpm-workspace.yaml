@@ -34,8 +34,7 @@ ignoredBuiltDependencies:
 
 link-workspace-packages: true
 
-patchedDependencies:
-  react-hook-form: patches/react-hook-form.patch
+# patchedDependencies configuration removed - using bun instead of pnpm
 
 prefer-workspace-packages: true
 

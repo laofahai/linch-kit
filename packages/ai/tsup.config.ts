@@ -4,9 +4,9 @@ export default defineConfig({
   entry: [
     'src/index.ts',
     'src/cli/index.ts',
+    'src/cli/main.ts',
     'src/extractors/index.ts',
-    'src/graph/index.ts',
-    'src/tools/index.ts'
+    'src/graph/index.ts'
   ],
   format: ['esm', 'cjs'],
   dts: true,
@@ -16,7 +16,4 @@ export default defineConfig({
   outDir: 'dist',
   external: ['neo4j-driver'],
   target: 'node18',
-  banner: {
-    js: '#!/usr/bin/env node',
-  },
 })
