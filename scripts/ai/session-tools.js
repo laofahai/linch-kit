@@ -83,6 +83,33 @@ function queryContext(entity, includeRelated = true) {
       : `bun scripts/ai/context-cli.js --find-entity "${entity}"`;
     
     const result = runCommand(cmd, `查询实体: ${entity}`);
+    
+    // 显示查询结果
+    if (result && result.trim()) {
+      try {
+        const jsonResult = JSON.parse(result);
+        if (jsonResult.success && jsonResult.results) {
+          console.log('\n📋 查询结果:');
+          if (jsonResult.results.primary_target) {
+            const target = jsonResult.results.primary_target;
+            console.log(`  实体: ${target.name} (${target.type})`);
+            console.log(`  文件: ${target.file_path || 'N/A'}`);
+            console.log(`  包: ${target.package || 'N/A'}`);
+          }
+          if (jsonResult.results.related_files && Object.keys(jsonResult.results.related_files).length > 0) {
+            console.log('\n📂 相关文件:');
+            Object.entries(jsonResult.results.related_files).forEach(([type, files]) => {
+              if (files && files.length > 0) {
+                console.log(`  ${type}: ${files.join(', ')}`);
+              }
+            });
+          }
+        }
+      } catch (e) {
+        console.log('\n查询结果:', result);
+      }
+    }
+    
     return result;
   } catch (error) {
     log.error('上下文查询失败，请检查Neo4j连接');
@@ -96,6 +123,25 @@ function querySymbol(symbol) {
   try {
     const cmd = `bun scripts/ai/context-cli.js --find-symbol "${symbol}"`;
     const result = runCommand(cmd, `查询符号: ${symbol}`);
+    
+    // 显示查询结果
+    if (result && result.trim()) {
+      try {
+        const jsonResult = JSON.parse(result);
+        if (jsonResult.success && jsonResult.results) {
+          console.log('\n📋 查询结果:');
+          if (jsonResult.results.primary_target) {
+            const target = jsonResult.results.primary_target;
+            console.log(`  符号: ${target.name} (${target.type})`);
+            console.log(`  文件: ${target.file_path || 'N/A'}`);
+            console.log(`  包: ${target.package || 'N/A'}`);
+          }
+        }
+      } catch (e) {
+        console.log('\n查询结果:', result);
+      }
+    }
+    
     return result;
   } catch (error) {
     log.error('符号查询失败');
@@ -112,6 +158,27 @@ function queryPattern(pattern, forEntity = '') {
       : `bun scripts/ai/context-cli.js --find-pattern "${pattern}"`;
     
     const result = runCommand(cmd, `查询模式: ${pattern}`);
+    
+    // 显示查询结果
+    if (result && result.trim()) {
+      try {
+        const jsonResult = JSON.parse(result);
+        if (jsonResult.success && jsonResult.results) {
+          console.log('\n📋 查询结果:');
+          if (jsonResult.results.patterns && jsonResult.results.patterns.length > 0) {
+            jsonResult.results.patterns.forEach((pattern, i) => {
+              console.log(`  ${i + 1}. ${pattern.name}`);
+              console.log(`     ${pattern.description}`);
+            });
+          } else {
+            console.log('  未找到相关模式');
+          }
+        }
+      } catch (e) {
+        console.log('\n查询结果:', result);
+      }
+    }
+    
     return result;
   } catch (error) {
     log.error('模式查询失败');

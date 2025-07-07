@@ -91,15 +91,52 @@ async function executeExtraction(
           break
           
         case 'all': {
-          // 递归调用所有提取器
+          // 直接执行所有提取器，避免递归调用和文件覆盖
           const allExtractors: ExtractorType[] = ['package', 'schema', 'document', 'function', 'import']
-          for (const subExtractor of allExtractors) {
-            const subResult = await executeExtraction([subExtractor], 'json', options)
-            if (subResult.success && subResult.data) {
-              const { nodes, relationships } = subResult.data as { nodes: GraphNode[]; relationships: GraphRelationship[] }
-              allNodes.push(...nodes)
-              allRelationships.push(...relationships)
+          for (const subExtractorType of allExtractors) {
+            logger.info(`执行 ${subExtractorType} 数据提取...`)
+            
+            let subExtractor: PackageExtractor | SchemaExtractor | DocumentExtractor | FunctionExtractor | ImportExtractor
+            let subResult: { nodes: GraphNode[]; relationships: GraphRelationship[] }
+            
+            switch (subExtractorType) {
+              case 'package':
+                subExtractor = new PackageExtractor(options.workingDir)
+                subResult = await subExtractor.extract()
+                break
+                
+              case 'schema':
+                subExtractor = new SchemaExtractor(options.workingDir)
+                subResult = await subExtractor.extract()
+                break
+                
+              case 'document':
+                subExtractor = new DocumentExtractor(options.workingDir)
+                subResult = await subExtractor.extract()
+                break
+                
+              case 'function':
+                subExtractor = new FunctionExtractor(options.workingDir)
+                subResult = await subExtractor.extract()
+                break
+                
+              case 'import':
+                subExtractor = new ImportExtractor(options.workingDir)
+                subResult = await subExtractor.extract()
+                break
+                
+              default:
+                logger.warn(`未知的提取器类型: ${subExtractorType}`)
+                continue
             }
+            
+            allNodes.push(...subResult.nodes)
+            allRelationships.push(...subResult.relationships)
+            
+            logger.info(`${subExtractorType} 提取完成`, {
+              nodeCount: subResult.nodes.length,
+              relationshipCount: subResult.relationships.length
+            })
           }
           continue
         }
