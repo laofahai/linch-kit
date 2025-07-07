@@ -291,6 +291,13 @@ export function TenantDetail() {
                   </div>
                 </div>
                 
+                {tenant.businessLicense && (
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">营业执照号码</label>
+                    <div className="mt-1">{tenant.businessLicense}</div>
+                  </div>
+                )}
+                
                 {tenant.description && (
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">描述</label>

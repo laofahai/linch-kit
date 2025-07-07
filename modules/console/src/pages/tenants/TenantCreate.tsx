@@ -45,6 +45,7 @@ const createTenantSchema = z.object({
     .regex(/^[a-z0-9-]+$/, 'URL标识只能包含小写字母、数字和连字符'),
   domain: z.string().optional(),
   description: z.string().optional(),
+  businessLicense: z.string().max(50, '营业执照号码不能超过50个字符').optional(),
   plan: z.enum(['free', 'starter', 'professional', 'enterprise']),
   billingCycle: z.enum(['monthly', 'yearly']).optional(),
   maxUsers: z.number().min(1, '最大用户数必须大于0').max(10000, '最大用户数不能超过10000'),
@@ -224,6 +225,19 @@ export function TenantCreate() {
               />
               <p className="text-xs text-muted-foreground">
                 可选，设置租户的自定义域名
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="businessLicense">营业执照号码</Label>
+              <Input
+                id="businessLicense"
+                placeholder="输入营业执照号码"
+                {...register('businessLicense')}
+                error={errors.businessLicense?.message}
+              />
+              <p className="text-xs text-muted-foreground">
+                可选，企业租户的营业执照注册号码
               </p>
             </div>
             

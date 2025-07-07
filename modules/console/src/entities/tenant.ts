@@ -21,6 +21,8 @@ export interface TenantMetadata {
   size?: 'small' | 'medium' | 'large' | 'enterprise'
   contactEmail?: string
   contactPhone?: string
+  businessLicenseIssuer?: string  // 营业执照颁发机构
+  businessLicenseExpiry?: string  // 营业执照到期日期 (YYYY-MM-DD)
   [key: string]: unknown
 }
 
@@ -50,6 +52,11 @@ export const TenantEntity = defineEntity('Tenant', {
   description: defineField.text()
     .optional()
     .description('租户描述'),
+  
+  businessLicense: defineField.string()
+    .optional()
+    .max(50)
+    .description('营业执照号码'),
   
   status: defineField.enum(['active', 'suspended', 'deleted', 'pending'])
     .required()
