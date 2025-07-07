@@ -47,43 +47,49 @@ const config = {
 };
 ```
 
-## 🚨 CRITICAL: 强制性 Session 初始化 (每次对话必须执行)
+## 🚀 快速启动：AI Session 工具
 
-**🔴 警告：如果跳过此检查表，将导致代码不一致和违反项目约束！**
+**核心工具**: `bun run ai:session <command>`  
+**优势**: 自动化执行CLAUDE.md中的繁琐步骤，提升开发效率
 
-**⚠️ 无论用户请求什么，都必须先执行以下步骤：**
-
-### STEP 1: 📋 任务检查 (TodoRead)
-**⚠️ 立即执行**: 使用 `TodoRead` 工具检查是否有未完成任务
-
-### STEP 2: 🌳 分支安全检查 (强制执行)
-**⚠️ 立即执行**: 
-1. `pwd` - 确认工作目录
-2. `git branch --show-current` - 检查当前分支
-3. **如在 main/master 分支**: 立即创建功能分支
-4. **如有未提交更改**: `git status` 检查状态
-
-### STEP 3: 🎯 强制上下文查询 (禁止跳过)
-**⚠️ 任何代码相关任务都必须先查询**:
+### ⚡ 快速初始化
 ```bash
-# 根据用户需求选择对应查询
-bun scripts/ai-context/ai-context-cli.js --find-entity "[实体名]" --include-related
-# 或
-bun scripts/ai-context/ai-context-cli.js --find-symbol "[符号名]"  
-# 或
-bun scripts/ai-context/ai-context-cli.js --find-pattern "[模式]" --for-entity "[实体]"
+# 自动执行所有初始化检查（分支、环境、依赖）
+bun run ai:session init "[任务描述]"
+
+# 或者简单的环境检查
+bun run ai:session init
 ```
 
-### STEP 4: ✅ 确认准备就绪
-只有完成前3步后才能开始编码
+### 🎯 上下文查询（强制执行）
+**任何代码相关任务都必须先查询项目上下文**:
+```bash
+# 查询实体定义和相关文件
+bun run ai:session query "[实体名]"
+
+# 查询符号定义（函数、类、接口）
+bun run ai:session symbol "[符号名]"
+
+# 查询实现模式
+bun run ai:session pattern "[模式]" "[实体]"
+```
+
+### 🔄 图谱数据同步（强制执行）
+```bash
+# 同步Neo4j图谱数据
+bun run ai:session sync
+
+# 完整验证（包含图谱同步）
+bun run ai:session validate
+```
 
 **💡 用户简化提示语**：
 ```
 开始开发：[具体任务描述]
 ```
-AI 将自动执行完整的初始化检查。
+AI 将自动执行 `bun run ai:session init "[任务]"` 进行初始化检查。
 
-**📋 标准化 Session 模板**: [ai-context/core/session_template.md](./ai-context/core/session_template.md) - 详细的执行流程指导
+**📋 完整工具文档**: `bun run ai:session help` - 查看所有可用命令
 
 ## 🚀 项目概览
 
@@ -135,14 +141,14 @@ bun validate   # 完整验证
 ## 📚 LinchKit 知识库
 
 ### 🎯 知识库入口
-**导航中心**: [ai-context/README.md](./ai-context/README.md) - 完整的文档地图和使用指南
+**导航中心**: [ai-context/00-core/readme.md](./ai-context/00-core/readme.md) - 完整的文档地图和使用指南
 
 ### 🔴 核心约束 (每次开发前必读)
-**开发规范**: [ai-context/core/workflow_and_constraints.md](./ai-context/core/workflow_and_constraints.md) - **所有开发约束和技术规范**
+**开发规范**: [ai-context/03-workflows/development-workflow.md](./ai-context/03-workflows/development-workflow.md) - **所有开发约束和技术规范**
 
 ## 🔒 基础约束
 
-必须严格遵守以下约束（详见 [ai-context/core/workflow_and_constraints.md](./ai-context/core/workflow_and_constraints.md)）：
+必须严格遵守以下约束（详见 [ai-context/03-workflows/development-workflow.md](./ai-context/03-workflows/development-workflow.md)）：
 
 1. **TypeScript 严格模式** - 禁止使用 `any`，使用 `unknown` 替代
 2. **包管理规范** - 仅使用 bun，禁止 npm/yarn
@@ -168,22 +174,22 @@ Claude查询: bun ai-context-cli-fast.js --find-entity "User" --include-related
 Claude执行: 编辑schema → 创建迁移 → 更新API → 更新UI → 运行测试
 ```
 
-### 🛠️ 强制使用的工具查询接口
+### 🛠️ 简化的查询接口
 
-**▶️ 在开始任何开发任务前，必须先调用相应的查询工具：**
+**▶️ 使用统一工具替代复杂命令：**
 
 ```bash
-# 1. 查找实体定义和相关文件 (用于添加字段、修改实体等)
-bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-related
-bun scripts/ai-context/ai-context-cli.js --find-entity "Product" --include-related
+# 1. 查找实体定义和相关文件
+bun run ai:session query "User"
+bun run ai:session query "Product"
 
-# 2. 查找符号定义 (用于理解函数、类、接口)
-bun scripts/ai-context/ai-context-cli.js --find-symbol "UserSchema"
-bun scripts/ai-context/ai-context-cli.js --find-symbol "createUser"
+# 2. 查找符号定义
+bun run ai:session symbol "UserSchema"
+bun run ai:session symbol "createUser"
 
-# 3. 查找实现模式 (用于学习如何实现某种功能)
-bun scripts/ai-context/ai-context-cli.js --find-pattern "add_field" --for-entity "User"
-bun scripts/ai-context/ai-context-cli.js --find-pattern "create_api" --for-entity "Product"
+# 3. 查找实现模式
+bun run ai:session pattern "add_field" "User"
+bun run ai:session pattern "create_api" "Product"
 ```
 
 ### 🚨 强制使用场景
@@ -226,7 +232,7 @@ const analysis = {
 **Phase 2: 查询项目上下文**
 ```bash
 # Claude必须调用工具获取信息
-bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-related
+bun run ai:session query "User"
 ```
 
 **Phase 3: 基于查询结果执行开发**
@@ -295,7 +301,7 @@ await Bash("bunx prisma migrate dev") // 创建迁移
 Claude: 我来帮你为User添加phone字段。首先让我查询User实体的相关信息...
 
 [调用工具]
-$ bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-related
+$ bun run ai:session query "User"
 
 我发现User定义在 packages/schema/src/user.ts，当前包含字段：id, name, email
 
@@ -314,6 +320,9 @@ $ bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-relate
 
 3. 更新相关API...
 [继续执行其他步骤]
+
+4. 同步图谱数据...
+[运行 bun run ai:session sync]
 
 完成！User现在支持phone字段了。
 ```
@@ -494,8 +503,8 @@ $ bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-relate
 #### 验证命令
 ```bash
 # 必须在每次代码提交前运行
-bun scripts/graph-data-extractor.ts
-bun scripts/ai-context/ai-context-cli.js --find-entity "User" --include-related
+bun run ai:session sync
+bun run ai:session validate
 ```
 
 ### 🔒 安全检查自动化
@@ -553,11 +562,11 @@ git push origin --delete feature/feature-name
 
 ### 📋 新功能开发流程
 1. **需求分析** - 使用 TodoWrite 分解功能需求
-2. **架构设计** - 参考 [ai-context/architecture/](./ai-context/architecture/) 确定设计
+2. **架构设计** - 参考 [ai-context/02-architecture/](./ai-context/02-architecture/) 确定设计
 3. **查询文档** - 优先使用 Context7（添加 "use context7"），备用 WebSearch/WebFetch
-4. **编码实现** - 严格遵循 [ai-context/core/workflow_and_constraints.md](./ai-context/core/workflow_and_constraints.md) 约束
+4. **编码实现** - 严格遵循 [ai-context/03-workflows/development-workflow.md](./ai-context/03-workflows/development-workflow.md) 约束
 5. **测试验证** - 运行 `bun validate` 确保质量
-6. **文档更新** - 更新 [ai-context/history/changelog.md](./ai-context/history/changelog.md) 记录完成功能
+6. **文档更新** - 更新 [ai-context/05-planning/development-status.md](./ai-context/05-planning/development-status.md) 记录完成功能
 
 ### 🐛 问题排查流程
 1. **错误定位** - 分析错误日志和堆栈信息

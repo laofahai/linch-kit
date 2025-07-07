@@ -5,6 +5,7 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
+
 import type { Logger } from '../types/index.js'
 
 /**
