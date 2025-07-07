@@ -371,7 +371,7 @@ export class Neo4jService implements IGraphService {
         this.logger.debug('APOC 不可用，使用原生 Cypher 按类型分组创建', { error: apocError })
         
         // 按节点类型分组
-        const nodesByType = new Map<string, any[]>()
+        const nodesByType = new Map<string, Record<string, unknown>[]>()
         for (const nodeData of batch) {
           const type = nodeData.type || 'GraphNode'
           if (!nodesByType.has(type)) {
