@@ -1,8 +1,56 @@
+---
+package: "@linch-kit/crud"
+version: "2.0.2"
+layer: "L3"
+dependencies: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth"]
+completeness: 85
+test_coverage: 80
+status: "production_ready"
+document_type: "api_reference"
+purpose: "Graph RAG knowledge base - 类型安全的CRUD操作包，支持复杂查询、权限集成、事务管理、缓存优化"
+api_exports:
+  - name: "CrudManager"
+    type: "class"
+    status: "stable"
+  - name: "PrismaQueryBuilder"
+    type: "class"
+    status: "stable"
+  - name: "PermissionChecker"
+    type: "class"
+    status: "stable"
+  - name: "ValidationManager"
+    type: "class"
+    status: "stable"
+  - name: "CacheManager"
+    type: "class"
+    status: "stable"
+  - name: "createCrudManager"
+    type: "function"
+    status: "stable"
+  - name: "createQueryBuilder"
+    type: "function"
+    status: "stable"
+  - name: "BaseCrudPlugin"
+    type: "class"
+    status: "stable"
+  - name: "createCrudRouter"
+    type: "function"
+    status: "stable"
+relationships:
+  - type: "depends_on"
+    targets: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth"]
+  - type: "provides_crud_for"
+    targets: ["@linch-kit/trpc", "@linch-kit/ui"]
+  - type: "integrates_with"
+    targets: ["Prisma", "Redis", "tRPC"]
+last_verified: "2025-07-07"
+---
+
 # @linch-kit/crud 包 API 文档
 
 **版本**: 2.0.2  
 **状态**: ✅ 生产就绪  
-**架构层级**: L2 (依赖 @linch-kit/core、@linch-kit/schema、@linch-kit/auth)
+**架构层级**: L3 (依赖 @linch-kit/core、@linch-kit/schema、@linch-kit/auth)
 
 ## 概述
 

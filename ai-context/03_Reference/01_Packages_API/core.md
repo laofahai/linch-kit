@@ -1,7 +1,38 @@
 # @linch-kit/core API 参考文档
 
-**版本**: v1.0  
-**更新**: 2025-07-05  
+---
+package: "@linch-kit/core"
+version: "2.0.2"
+layer: "L0"
+dependencies: []
+completeness: 95%
+test_coverage: 85%
+status: "production_ready"
+document_type: "api_reference"
+purpose: "Graph RAG knowledge base - Core package API definitions"
+api_exports:
+  - name: "createPluginRegistry"
+    type: "function"
+    status: "complete"
+  - name: "ConfigManager"
+    type: "class"
+    status: "complete"
+    server_only: true
+  - name: "Logger"
+    type: "class"
+    status: "complete"
+  - name: "AuditLogger"
+    type: "class"
+    status: "complete"
+  - name: "I18nManager"
+    type: "class"
+    status: "complete"
+relationships:
+  - type: "provides_infrastructure"
+    targets: ["@linch-kit/schema", "@linch-kit/auth", "@linch-kit/crud", "@linch-kit/trpc", "@linch-kit/ui"]
+last_verified: "2025-07-07"
+---
+
 **状态**: 生产就绪（部分功能需要增强）  
 **AI-Assisted**: true  
 **目标**: 为 @linch-kit/core 包提供完整的 API 参考文档，涵盖所有公共接口、使用示例和最佳实践

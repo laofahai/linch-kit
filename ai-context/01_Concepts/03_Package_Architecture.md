@@ -1,5 +1,26 @@
 # LinchKit 核心包设计
 
+---
+document_type: "architecture_design"
+purpose: "Graph RAG knowledge base - Package architecture and dependencies"
+entities:
+  - "@linch-kit/core"
+  - "@linch-kit/schema" 
+  - "@linch-kit/auth"
+  - "@linch-kit/crud"
+  - "@linch-kit/trpc"
+  - "@linch-kit/ui"
+  - "modules/console"
+relationships:
+  - type: "dependency_chain"
+    sequence: ["core", "schema", "auth", "crud", "trpc", "ui", "console"]
+  - type: "layer_architecture"
+    layers: ["L0", "L1", "L2", "L3", "L4"]
+version: "2.0.2"
+last_verified: "2025-07-07"
+implementation_status: "production_ready"
+---
+
 ## 📦 包架构设计原则
 
 ### 设计哲学

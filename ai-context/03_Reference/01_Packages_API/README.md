@@ -137,7 +137,7 @@ L4: modules/console      → 企业管理功能模块
 
 ### L4: 应用模块
 
-#### [modules/console](./console.md)
+#### modules/console
 **职责**: 企业级管理控制台
 
 **核心功能**:
@@ -153,6 +153,8 @@ L4: modules/console      → 企业管理功能模块
 - 权限配置
 - 系统监控
 - 运营数据分析
+
+**说明**: Console模块的详细文档请参考 [Console使用指南](../../02_Guides/03_Console_Usage.md)
 
 ## 🚀 快速 API 使用指南
 

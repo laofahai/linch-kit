@@ -1,10 +1,62 @@
+---
+package: "@linch-kit/ui"
+version: "2.0.2"
+layer: "L5"
+dependencies: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth", "@linch-kit/crud"]
+completeness: 85
+test_coverage: 80
+status: "production_ready"
+document_type: "api_reference"
+purpose: "Graph RAG knowledge base - Schema驱动的企业级React组件库，基于shadcn/ui构建"
+api_exports:
+  - name: "SchemaForm"
+    type: "component"
+    status: "stable"
+  - name: "SchemaTable"
+    type: "component"
+    status: "stable"
+  - name: "SchemaFieldRenderer"
+    type: "component"
+    status: "stable"
+  - name: "Button"
+    type: "component"
+    status: "stable"
+  - name: "Card"
+    type: "component"
+    status: "stable"
+  - name: "Input"
+    type: "component"
+    status: "stable"
+  - name: "Table"
+    type: "component"
+    status: "stable"
+  - name: "Dialog"
+    type: "component"
+    status: "stable"
+  - name: "useUITranslation"
+    type: "hook"
+    status: "stable"
+  - name: "useToast"
+    type: "hook"
+    status: "stable"
+  - name: "cn"
+    type: "function"
+    status: "stable"
+relationships:
+  - type: "depends_on"
+    targets: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth", "@linch-kit/crud"]
+  - type: "integrates_with"
+    targets: ["React", "Radix UI", "Tailwind CSS", "shadcn/ui"]
+last_verified: "2025-07-07"
+---
+
 # LinchKit UI 包 API 文档
 
 ## 📋 包概述
 
 **包名**: `@linch-kit/ui`  
 **版本**: 2.0.2  
-**架构层级**: L3 (UI组件层)  
+**架构层级**: L5 (UI组件层)  
 **描述**: LinchKit UI组件库 - Schema驱动的企业级React组件
 
 ## 🏗️ 架构设计

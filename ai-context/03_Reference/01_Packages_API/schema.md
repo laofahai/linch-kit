@@ -1,3 +1,51 @@
+---
+package: "@linch-kit/schema"
+version: "2.0.2"
+layer: "L1"
+dependencies: ["@linch-kit/core"]
+completeness: 85
+test_coverage: 75
+status: "production_ready"
+document_type: "api_reference"
+purpose: "Graph RAG knowledge base - Schema驱动开发引擎，提供类型安全的实体定义、代码生成、验证和迁移功能"
+api_exports:
+  - name: "defineField"
+    type: "factory"
+    status: "stable"
+  - name: "defineEntity"
+    type: "function"
+    status: "stable"
+  - name: "SchemaBuilder"
+    type: "class"
+    status: "stable"
+  - name: "PrismaGenerator"
+    type: "class"
+    status: "stable"
+  - name: "TypeScriptGenerator"
+    type: "class"
+    status: "stable"
+  - name: "SchemaValidator"
+    type: "class"
+    status: "stable"
+  - name: "MigrationManager"
+    type: "class"
+    status: "in_development"
+  - name: "Entity"
+    type: "decorator"
+    status: "stable"
+  - name: "Field"
+    type: "decorator"
+    status: "stable"
+relationships:
+  - type: "depends_on"
+    targets: ["@linch-kit/core"]
+  - type: "provides_schema_for"
+    targets: ["@linch-kit/auth", "@linch-kit/crud", "@linch-kit/trpc", "@linch-kit/ui"]
+  - type: "integrates_with"
+    targets: ["Zod", "Prisma", "TypeScript"]
+last_verified: "2025-07-07"
+---
+
 # @linch-kit/schema API Reference
 
 ## 📋 包概览

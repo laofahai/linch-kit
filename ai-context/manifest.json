@@ -33,6 +33,30 @@
       "priority": "high"
     },
     {
+      "path": "ai-context/01_Concepts/03_Package_Architecture.md",
+      "description": "Detailed package design principles, dependencies, and Graph RAG optimized metadata",
+      "tags": ["packages", "design", "dependencies", "graph-rag"],
+      "priority": "critical"
+    },
+    {
+      "path": "ai-context/01_Concepts/04_Complete_Architecture.md",
+      "description": "Complete architecture design with usage patterns and integration strategies",
+      "tags": ["architecture", "patterns", "integration"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/01_Concepts/05_Advanced_Strategies.md",
+      "description": "Comprehensive collection of advanced technical strategies including Policy as Code, caching, observability, data governance, and code generation",
+      "tags": ["strategy", "policy", "caching", "observability", "governance", "codegen"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/01_Concepts/06_Frontend_Architecture.md",
+      "description": "Frontend applications architecture and design patterns",
+      "tags": ["frontend", "architecture", "ui"],
+      "priority": "medium"
+    },
+    {
       "path": "ai-context/02_Guides/01_Development_Workflow.md",
       "description": "Single source of truth for development processes, coding standards, Git workflow, and all constraints",
       "tags": ["workflow", "rules", "constraints", "git"],
@@ -43,6 +67,12 @@
       "description": "Comprehensive guide for AI Session tools, Neo4j queries, and Graph RAG usage",
       "tags": ["ai", "tools", "neo4j", "rag"],
       "priority": "high"
+    },
+    {
+      "path": "ai-context/02_Guides/03_AI_Collaboration.md",
+      "description": "Comprehensive AI collaboration framework and behavioral guidelines for AI assistants",
+      "tags": ["ai", "collaboration", "guidelines", "behavior"],
+      "priority": "critical"
     },
     {
       "path": "ai-context/02_Guides/03_Console_Usage.md",
@@ -57,10 +87,22 @@
       "priority": "medium"
     },
     {
+      "path": "ai-context/03_Reference/02_Package_Reports/",
+      "description": "Package completeness reports and implementation status analysis",
+      "tags": ["reports", "status", "completeness"],
+      "priority": "medium"
+    },
+    {
       "path": "ai-context/03_Reference/02_Configuration.md",
       "description": "Environment variables and configuration reference",
       "tags": ["config", "environment", "setup"],
       "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/03_Dependency_Analysis.md",
+      "description": "Comprehensive package dependency analysis and relationship mapping",
+      "tags": ["dependencies", "analysis", "relationships"],
+      "priority": "high"
     },
     {
       "path": "ai-context/04_Project_Management/01_Roadmap.md",
@@ -79,12 +121,20 @@
       "description": "Guide for contributing to the LinchKit project",
       "tags": ["contribution", "guide", "community"],
       "priority": "low"
+    },
+    {
+      "path": "ai-context/99_Archive/",
+      "description": "Historical documents including framework maturity evaluation, AI optimization reports, and architecture assessments",
+      "tags": ["archive", "history", "evaluation"],
+      "priority": "low"
     }
   ],
   "aiInstructions": {
     "primaryEntry": "Always start by reading this manifest.json to understand the knowledge base structure",
     "criticalDocuments": [
-      "ai-context/02_Guides/01_Development_Workflow.md"
+      "ai-context/02_Guides/01_Development_Workflow.md",
+      "ai-context/01_Concepts/03_Package_Architecture.md",
+      "ai-context/02_Guides/03_AI_Collaboration.md"
     ],
     "workflowRequirements": [
       "Must create feature branch before any development work",
