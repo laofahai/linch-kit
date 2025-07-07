@@ -45,7 +45,20 @@ export { Neo4jService } from './graph/neo4j-service.js'
 // 查询引擎
 export { IntelligentQueryEngine } from './query/intelligent-query-engine.js'
 
-// 生成引擎
+// 上下文查询工具
+export { ContextQueryTool } from './context/context-query-tool.js'
+export type {
+  ContextInfo,
+  EntityInfo,
+  RelationshipInfo,
+  DocReference,
+  Example,
+  BestPractice,
+  Pattern,
+  IContextQueryTool
+} from './context/context-query-tool.js'
+
+// 生成引擎 (将被废弃)
 export { VibeCodingEngine } from './generation/vibe-coding-engine.js'
 
 // 配置加载器

@@ -267,6 +267,7 @@ export const Neo4jConfigSchema = z.object({
 export const QueryResultSchema = z.object({
   nodes: z.array(GraphNodeSchema),
   relationships: z.array(GraphRelationshipSchema),
+  records: z.array(z.record(z.unknown())).optional().describe('原始查询记录'),
   metadata: z.object({
     query_time_ms: z.number().describe('查询耗时(毫秒)'),
     result_count: z.number().describe('结果数量'),

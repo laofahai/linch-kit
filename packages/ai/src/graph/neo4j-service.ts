@@ -111,9 +111,14 @@ export class Neo4jService implements IGraphService {
       
       const nodes: GraphNode[] = []
       const relationships: GraphRelationship[] = []
+      const records: Record<string, unknown>[] = []
       
       // 处理查询结果
       for (const record of result.records) {
+        // 保存原始记录数据
+        records.push(record.toObject())
+        
+        // 解析图对象
         for (const [_key, value] of Object.entries(record.toObject())) {
           if (neo4j.isNode(value)) {
             const graphNode = this.neo4jNodeToGraphNode(value)
@@ -133,12 +138,14 @@ export class Neo4jService implements IGraphService {
         queryTime,
         nodeCount: nodes.length,
         relationshipCount: relationships.length,
-        recordCount: result.records.length
+        recordCount: result.records.length,
+        hasRawRecords: records.length > 0
       })
 
       return {
         nodes,
         relationships,
+        records,
         metadata: {
           query_time_ms: queryTime,
           result_count: result.records.length,
@@ -253,16 +260,16 @@ export class Neo4jService implements IGraphService {
       
       // 从查询结果中获取节点计数
       const nodeCount = nodeCountResult.records.length > 0 ? 
-        nodeCountResult.records[0].get('count').toNumber() : 0
+        ((nodeCountResult.records[0] as {get: (key: string) => {toNumber: () => number}}).get('count')).toNumber() : 0
       const relCount = relCountResult.records.length > 0 ? 
-        relCountResult.records[0].get('count').toNumber() : 0
+        ((relCountResult.records[0] as {get: (key: string) => {toNumber: () => number}}).get('count')).toNumber() : 0
       
       // 处理节点类型统计
       const nodeTypes: Record<string, number> = {}
       for (const record of nodeTypeResult.records) {
-        const type = record.get('type')
-        const count = record.get('count').toNumber()
-        if (type) {
+        const type = (record as {get: (key: string) => unknown}).get('type')
+        const count = ((record as {get: (key: string) => {toNumber: () => number}}).get('count')).toNumber()
+        if (type && typeof type === 'string') {
           nodeTypes[type] = count
         }
       }
@@ -270,9 +277,9 @@ export class Neo4jService implements IGraphService {
       // 处理关系类型统计
       const relationshipTypes: Record<string, number> = {}
       for (const record of relTypeResult.records) {
-        const type = record.get('type')
-        const count = record.get('count').toNumber()
-        if (type) {
+        const type = (record as {get: (key: string) => unknown}).get('type')
+        const count = ((record as {get: (key: string) => {toNumber: () => number}}).get('count')).toNumber()
+        if (type && typeof type === 'string') {
           relationshipTypes[type] = count
         }
       }

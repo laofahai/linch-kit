@@ -8,6 +8,7 @@
 import { extractCommand } from './commands/extract.js'
 import { queryCommand } from './commands/query.js'
 import { generateCommand } from './commands/generate.js'
+import { contextCommand } from './commands/context.js'
 
 // Temporary local types until core package types are properly exported
 export interface CommandContext {
@@ -56,6 +57,7 @@ export const aiCLIPlugin = {
   commands: [
     extractCommand,
     queryCommand,
-    generateCommand
+    generateCommand,
+    contextCommand
   ]
 }
