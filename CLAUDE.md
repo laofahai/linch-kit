@@ -167,49 +167,158 @@ bun validate   # 完整验证
 3. **架构依赖顺序** - core → schema → auth → crud → trpc → ui → console
 4. **功能复用原则** - 必须使用 LinchKit 内部包功能，禁止重复实现
 5. **质量标准** - 测试覆盖率 core>90%, 其他>80%，构建时间<10秒
-6. **🤖 AI上下文工具强制使用约束** - 以下情况必须使用 `bun ai-context-cli.js`
+6. **🤖 AI智能开发助手使用规范** - Claude作为智能开发伙伴的正确工作方式
 
-### 📝 强制使用场景
+### 🎯 AI助手工作流程
 
-**▶️ 必须使用场景：**
-- **不熟悉的代码库组件**: 开发旰功能前必须查询相关实现
-- **跨包集成**: 集成不同 @linch-kit 包时必须查询 API 接口
-- **架构理解**: 需要理解 LinchKit 架构设计或依赖关系时
-- **最佳实践**: 查找特定功能的推荐实现方式
-- **问题排查**: 遇到不明确错误或缺少上下文时
+**用户自然语言请求 → Claude理解分析 → 调用查询工具 → Claude执行开发**
 
-**⚠️ 禁止直接实现，必须先查询：**
-```bash
-# 错误做法：直接开始编码
-# 正确做法：先查询项目上下文
-bun ai-context-cli.js --query "用户认证" --limit 5
-bun ai-context-cli.js --query "React组件" --type patterns  
-bun ai-context-cli.js --query "错误处理" --type practices
+```
+示例：
+用户: "我要给user加一个生日字段"
+  ↓
+Claude分析: 这是添加字段需求，目标实体User，字段名birthday
+  ↓  
+Claude查询: bun ai-context-cli-fast.js --find-entity "User" --include-related
+  ↓
+工具返回: User的schema位置、相关API/UI文件、实现建议
+  ↓
+Claude执行: 编辑schema → 创建迁移 → 更新API → 更新UI → 运行测试
 ```
 
-### 📚 标准使用命令
+### 🛠️ 强制使用的工具查询接口
+
+**▶️ 在开始任何开发任务前，必须先调用相应的查询工具：**
 
 ```bash
-# 基础上下文查询
-bun ai-context-cli.js --query "查询关键词" --limit 10
+# 1. 查找实体定义和相关文件 (用于添加字段、修改实体等)
+bun ai-context-cli-fast.js --find-entity "User" --include-related
+bun ai-context-cli-fast.js --find-entity "Product" --include-related
 
-# 代码模式查询  
-bun ai-context-cli.js --query "功能关键词" --type patterns
+# 2. 查找符号定义 (用于理解函数、类、接口)
+bun ai-context-cli-fast.js --find-symbol "UserSchema"
+bun ai-context-cli-fast.js --find-symbol "createUser"
 
-# 最佳实践查询
-bun ai-context-cli.js --query "场景关键词" --type practices
-
-# 人类友好输出格式
-bun ai-context-cli.js --query "查询内容" --format text
+# 3. 查找实现模式 (用于学习如何实现某种功能)
+bun ai-context-cli-fast.js --find-pattern "add_field" --for-entity "User"
+bun ai-context-cli-fast.js --find-pattern "create_api" --for-entity "Product"
 ```
 
-### 🎆 工具优势
-- **实时数据**: 基于 5,446 节点的 Neo4j 知识图谱
-- **智能查询**: 支持中文和英文自然语言查询
-- **类型安全**: JSON 输出格式适合 AI 代理解析
-- **高效响应**: 平均查询时间 300ms
+### 🚨 强制使用场景
 
-**⚡ 立即价值**：避免重复造轮、遵循最佳实践、加速开发效率
+**任何涉及代码修改的任务都必须先查询：**
+
+1. **添加字段**: `--find-entity "EntityName" --include-related`
+2. **创建API**: `--find-pattern "create_api" --for-entity "EntityName"`
+3. **修改现有功能**: `--find-symbol "FunctionName"`
+4. **创建新组件**: `--find-pattern "create_component"`
+5. **集成第三方库**: `--find-pattern "integration"`
+
+### 📋 Claude的标准工作模式
+
+**Phase 1: 理解用户需求**
+```typescript
+// Claude内部分析（示例）
+const userRequest = "我要给user加一个生日字段"
+const analysis = {
+  action: "add_field",
+  entity: "User", 
+  field: "birthday",
+  type: "Date"
+}
+```
+
+**Phase 2: 查询项目上下文**
+```bash
+# Claude必须调用工具获取信息
+bun ai-context-cli-fast.js --find-entity "User" --include-related
+```
+
+**Phase 3: 基于查询结果执行开发**
+```typescript
+// 根据工具返回的信息，Claude使用现有工具：
+await Read(userSchemaPath)      // 读取schema文件
+await Edit(userSchemaPath, ...) // 编辑添加字段
+await Bash("bunx prisma migrate dev") // 创建迁移
+// ... 继续其他步骤
+```
+
+### 🎯 工具返回的结构化信息
+
+```json
+{
+  "success": true,
+  "results": {
+    "primary_target": {
+      "name": "User",
+      "file_path": "packages/schema/src/user.ts",
+      "current_fields": ["id", "name", "email"]
+    },
+    "related_files": {
+      "schemas": ["packages/schema/src/user.ts"],
+      "apis": ["packages/trpc/src/user.ts"],
+      "ui_components": ["packages/ui/src/forms/UserForm.tsx"]
+    },
+    "suggestions": {
+      "add_field": {
+        "steps": [
+          "1. 编辑 packages/schema/src/user.ts 更新Schema定义",
+          "2. 运行 bunx prisma migrate dev 创建数据库迁移",
+          "3. 更新相关的tRPC API procedures",
+          "4. 更新相关的UI表单组件"
+        ]
+      }
+    }
+  }
+}
+```
+
+### ⚠️ 严格禁止的行为
+
+**❌ 绝不允许：**
+- 直接猜测文件位置和代码结构
+- 在没有查询工具信息的情况下修改代码
+- 忽略工具返回的实现建议
+- 创建与现有模式不一致的代码
+
+**✅ 必须遵循：**
+- 每次开发前先查询相关上下文
+- 严格按照工具建议的文件路径和模式
+- 使用工具返回的相关文件列表
+- 遵循LinchKit的架构约束和最佳实践
+
+### 🎪 完整示例：Claude处理添加字段请求
+
+```
+用户: "给User添加一个phone字段"
+
+Claude: 我来帮你为User添加phone字段。首先让我查询User实体的相关信息...
+
+[调用工具]
+$ bun ai-context-cli-fast.js --find-entity "User" --include-related
+
+我发现User定义在 packages/schema/src/user.ts，当前包含字段：id, name, email
+
+相关文件：
+- Schema: packages/schema/src/user.ts  
+- API: packages/trpc/src/user.ts
+- UI: packages/ui/src/forms/UserForm.tsx
+
+现在我来执行以下步骤：
+
+1. 更新User Schema...
+[使用Edit工具修改packages/schema/src/user.ts]
+
+2. 创建数据库迁移...
+[使用Bash工具运行bunx prisma migrate dev]
+
+3. 更新相关API...
+[继续执行其他步骤]
+
+完成！User现在支持phone字段了。
+```
+
+**核心原则：Claude负责理解和执行，工具负责提供准确的项目信息**
 
 ## 🚨 PHASE 2: 任务规划与分解 (Task Planning & Decomposition)
 
