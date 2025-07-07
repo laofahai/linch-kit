@@ -384,12 +384,11 @@ export class Neo4jService implements IGraphService {
         for (const [type, typeNodes] of nodesByType) {
           this.logger.debug(`创建 ${type} 类型节点: ${typeNodes.length} 个`)
           
-          // 直接使用多标签语法创建节点
+          // 创建或更新节点，使用简单的标签管理
           const cypher = `
             UNWIND $nodes as nodeData
-            MERGE (n:GraphNode:${type} {id: nodeData.id})
-            SET n += nodeData,
-                n.updated_at = datetime()
+            MERGE (n:GraphNode {id: nodeData.id})
+            SET n = nodeData, n.updated_at = datetime()
             RETURN count(n)
           `
           
@@ -411,30 +410,67 @@ export class Neo4jService implements IGraphService {
     const batchSize = 1000 // 大批量处理关系
     
     for (let i = 0; i < relationships.length; i += batchSize) {
-      const batch = relationships.slice(i, i + batchSize).map(rel => ({
-        id: rel.id,
-        source: rel.source,
-        target: rel.target,
-        type: rel.type,
-        // 平坦化 metadata 和 properties
-        ...this.flattenMetadata(rel.metadata || {}),
-        ...this.flattenMetadata(rel.properties || {}, 'prop_')
-      }))
+      const batch = relationships.slice(i, i + batchSize).map(rel => {
+        try {
+          return {
+            id: rel.id,
+            source: rel.source,
+            target: rel.target,
+            type: rel.type,
+            // 平坦化 metadata 和 properties
+            ...this.flattenMetadata(rel.metadata || {}),
+            ...this.flattenMetadata(rel.properties || {}, 'prop_')
+          }
+        } catch (error) {
+          this.logger.error('关系数据处理失败', error instanceof Error ? error : undefined, { 
+            relationshipId: rel.id,
+            metadata: rel.metadata,
+            properties: rel.properties 
+          })
+          throw error
+        }
+      })
       
-      // 使用原生Cypher创建关系（无APOC依赖）
-      const cypher = `
-        UNWIND $relationships AS relData
-        MATCH (source {id: relData.source})
-        MATCH (target {id: relData.target})
-        CREATE (source)-[r:RELATED_TO]->(target)
-        SET r = relData,
-            r.updated_at = datetime()
-        RETURN count(r)
-      `
+      // 按关系类型分组处理（无APOC依赖）
+      const relationshipsByType = new Map<string, Record<string, unknown>[]>()
+      for (const relData of batch) {
+        const type = relData.type || 'RELATED_TO'
+        if (!relationshipsByType.has(type)) {
+          relationshipsByType.set(type, [])
+        }
+        relationshipsByType.get(type)!.push(relData)
+      }
       
-      const result = await tx.run(cypher, { relationships: batch })
-      const createdCount = result.records[0]?.get(0) || 0
-      this.logger.debug(`批次 ${Math.floor(i/batchSize) + 1}/${Math.ceil(relationships.length/batchSize)}: 创建了 ${createdCount} 个关系`)
+      let totalCreated = 0
+      for (const [relType, typeRels] of relationshipsByType) {
+        const cypher = `
+          UNWIND $relationships AS relData
+          MERGE (source:GraphNode {id: relData.source})
+          MERGE (target:GraphNode {id: relData.target})
+          CREATE (source)-[r:${relType}]->(target)
+          SET r = relData,
+              r.updated_at = datetime()
+          RETURN count(r)
+        `
+        
+        const result = await tx.run(cypher, { relationships: typeRels })
+        const rawCount = result.records[0]?.get(0) || 0
+        const createdCount = typeof rawCount === 'bigint' ? Number(rawCount) : (typeof rawCount === 'number' ? rawCount : 0)
+        
+        // 确保totalCreated是数字类型
+        if (typeof totalCreated !== 'number') {
+          totalCreated = 0
+        }
+        if (typeof createdCount !== 'number') {
+          this.logger.warn('非数字类型的创建计数', { rawCount, createdCount, type: typeof createdCount })
+        } else {
+          totalCreated += createdCount
+        }
+      }
+      
+      const batchNumber = Math.floor(i/batchSize) + 1
+      const totalBatches = Math.ceil(relationships.length/batchSize)
+      this.logger.debug(`批次 ${batchNumber}/${totalBatches}: 创建了 ${totalCreated} 个关系`)
     }
     
     this.logger.debug(`批量创建了 ${relationships.length} 个关系`)
@@ -514,9 +550,27 @@ export class Neo4jService implements IGraphService {
       } else if (Array.isArray(value)) {
         // 数组转换为字符串
         flattened[flatKey] = JSON.stringify(value)
+      } else if (typeof value === 'bigint') {
+        // BigInt 转换为数字或字符串
+        flattened[flatKey] = Number(value)
+      } else if (typeof value === 'number' && !isFinite(value)) {
+        // 处理 NaN 和 Infinity
+        flattened[flatKey] = null
+      } else if (typeof value === 'function') {
+        // 函数转换为字符串
+        flattened[flatKey] = '[Function]'
+      } else if (typeof value === 'symbol') {
+        // Symbol 转换为字符串
+        flattened[flatKey] = value.toString()
       } else {
-        // 基本类型直接赋值
-        flattened[flatKey] = value
+        // 基本类型直接赋值，但确保类型安全
+        if (value === null || value === undefined || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+          flattened[flatKey] = value
+        } else {
+          // 对于其他类型，转换为字符串以确保兼容性
+          this.logger.debug('未知类型字段转换为字符串', { key: flatKey, type: typeof value })
+          flattened[flatKey] = String(value)
+        }
       }
     }
     

@@ -50,3 +50,6 @@ worktrees/
 graph_db_connection.json
 graph_db_connection.json
 .env
+
+# AI Graph Data (generated files)
+graph-data/

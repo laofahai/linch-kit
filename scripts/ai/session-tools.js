@@ -123,13 +123,13 @@ function syncGraphData() {
   log.header('🔄 同步图谱数据');
   
   try {
-    // 检查是否存在 graph-data-extractor.ts
-    if (!existsSync('scripts/graph-data-extractor.ts')) {
-      log.warn('graph-data-extractor.ts 不存在，跳过图谱同步');
+    // 检查是否存在 graph-data-extractor.js
+    if (!existsSync('scripts/ai/graph-data-extractor.js')) {
+      log.warn('graph-data-extractor.js 不存在，跳过图谱同步');
       return;
     }
     
-    runCommand('bun scripts/graph-data-extractor.ts', '提取并更新图谱数据');
+    runCommand('bun scripts/ai/graph-data-extractor.js', '提取并更新图谱数据');
     log.success('图谱数据同步完成');
     
     // 验证查询功能

@@ -332,24 +332,74 @@ export interface AIToolConfig {
  * 常用节点ID生成器
  */
 export class NodeIdGenerator {
+  /**
+   * 生成短hash用于ID唯一性 - 改进版本，减少冲突
+   */
+  private static shortHash(input: string): string {
+    // 使用更复杂的hash算法减少冲突
+    let hash1 = 0;
+    let hash2 = 0;
+    
+    for (let i = 0; i < input.length; i++) {
+      const char = input.charCodeAt(i);
+      hash1 = ((hash1 << 5) - hash1) + char;
+      hash1 = hash1 & hash1; // 转换为32位整数
+      
+      hash2 = ((hash2 << 3) + hash2) ^ char;
+      hash2 = hash2 & hash2;
+    }
+    
+    // 组合两个hash值，并增加长度
+    const combined = (Math.abs(hash1) << 16) | (Math.abs(hash2) & 0xFFFF);
+    return combined.toString(36).slice(0, 10);
+  }
+
   static package(name: string): string {
     return `package:${name.replace(/[^a-zA-Z0-9-_]/g, '_')}`
   }
   
   static file(packageName: string, filePath: string): string {
-    return `file:${packageName.replace(/[^a-zA-Z0-9-_]/g, '_')}_${filePath.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_');
+    const hash = this.shortHash(filePath);
+    return `file:${safePackage}_${hash}`
   }
   
-  static api(packageName: string, apiName: string, type: string): string {
-    return `api:${packageName.replace(/[^a-zA-Z0-9-_]/g, '_')}_${type}_${apiName.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+  static api(packageName: string, apiName: string, type: string, filePath?: string): string {
+    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_');
+    const safeName = apiName.replace(/[^a-zA-Z0-9-_]/g, '_');
+    // 包含文件路径确保同名函数在不同文件中的唯一性
+    const uniqueKey = filePath ? `${filePath}:${apiName}` : `${packageName}:${apiName}`;
+    const hash = this.shortHash(uniqueKey);
+    return `api:${safePackage}_${type}_${safeName}_${hash}`
   }
   
   static document(filePath: string): string {
-    return `doc:${filePath.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+    const hash = this.shortHash(filePath);
+    return `doc:${hash}`
   }
   
   static schemaEntity(name: string): string {
     return `schema:${name.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+  }
+
+  /**
+   * 生成导入节点ID，包含文件路径确保唯一性
+   */
+  static import(packageName: string, source: string, imported: string, filePath: string): string {
+    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_');
+    const uniqueKey = `${filePath}:${source}:${imported}`;
+    const hash = this.shortHash(uniqueKey);
+    return `import:${safePackage}_${hash}`
+  }
+
+  /**
+   * 生成导出节点ID
+   */
+  static export(packageName: string, exported: string, filePath: string): string {
+    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_');
+    const uniqueKey = `${filePath}:${exported}`;
+    const hash = this.shortHash(uniqueKey);
+    return `export:${safePackage}_${hash}`
   }
 }
 

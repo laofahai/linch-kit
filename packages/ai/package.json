@@ -7,7 +7,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "linch-kit-ai": "./dist/cli/index.js"
+    "linch-kit-ai": "./dist/cli/main.js"
   },
   "exports": {
     ".": {
@@ -23,9 +23,9 @@
       "types": "./dist/graph/index.d.ts",
       "import": "./dist/graph/index.js"
     },
-    "./tools": {
-      "types": "./dist/tools/index.d.ts",
-      "import": "./dist/tools/index.js"
+    "./cli": {
+      "types": "./dist/cli/index.d.ts",
+      "import": "./dist/cli/index.js"
     }
   },
   "files": [

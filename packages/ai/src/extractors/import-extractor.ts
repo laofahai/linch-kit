@@ -83,6 +83,13 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     })
   }
 
+  /**
+   * 安全地转换行号，处理BigInt类型
+   */
+  private safeLineNumber(lineNumber: number | bigint): number {
+    return typeof lineNumber === 'bigint' ? Number(lineNumber) : lineNumber
+  }
+
   protected async extractRawData(): Promise<DependencyAnalysis> {
     const startTime = Date.now()
     this.logger.info('开始分析模块依赖关系...')
@@ -246,7 +253,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
             }],
             source: moduleSpecifier,
             filePath,
-            lineNumber: call.getStartLineNumber(),
+            lineNumber: this.safeLineNumber(call.getStartLineNumber()),
             isDynamic: true,
             packageName
           }
@@ -303,7 +310,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       specifiers,
       source,
       filePath,
-      lineNumber: importDecl.getStartLineNumber(),
+      lineNumber: this.safeLineNumber(importDecl.getStartLineNumber()),
       isDynamic: false,
       packageName
     }
@@ -330,7 +337,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       specifiers,
       source,
       filePath,
-      lineNumber: exportDecl.getStartLineNumber(),
+      lineNumber: this.safeLineNumber(exportDecl.getStartLineNumber()),
       packageName
     }
   }
@@ -385,10 +392,11 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     // 创建导入节点
     for (const importInfo of rawData.imports) {
       for (const spec of importInfo.specifiers) {
-        const importId = NodeIdGenerator.api(
+        const importId = NodeIdGenerator.import(
           importInfo.packageName || 'unknown', 
-          `${importInfo.source}:${spec.imported}`, 
-          'import'
+          importInfo.source,
+          spec.imported,
+          importInfo.filePath
         )
 
         const importNode: GraphNode = {
@@ -410,7 +418,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
         nodes.push(importNode)
 
         // 创建文件导入关系
-        const fileNodeId = `file:${importInfo.filePath.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+        const fileNodeId = NodeIdGenerator.file(importInfo.packageName || 'unknown', importInfo.filePath)
         const importRelId = RelationshipIdGenerator.create(RelationType.IMPORTS, fileNodeId, importId)
         
         relationships.push({
@@ -429,10 +437,10 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     // 创建导出节点
     for (const exportInfo of rawData.exports) {
       for (const spec of exportInfo.specifiers) {
-        const exportId = NodeIdGenerator.api(
+        const exportId = NodeIdGenerator.export(
           exportInfo.packageName || 'unknown',
-          `export:${spec.exported}`,
-          'export'
+          spec.exported,
+          exportInfo.filePath
         )
 
         const exportNode: GraphNode = {
@@ -453,7 +461,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
         nodes.push(exportNode)
 
         // 创建文件导出关系
-        const fileNodeId = `file:${exportInfo.filePath.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+        const fileNodeId = NodeIdGenerator.file(exportInfo.packageName || 'unknown', exportInfo.filePath)
         const exportRelId = RelationshipIdGenerator.create(RelationType.EXPORTS, fileNodeId, exportId)
         
         relationships.push({
@@ -468,9 +476,9 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
 
     // 创建模块依赖关系
     for (const dependency of rawData.dependencies) {
-      const sourceFileId = `file:${dependency.from.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+      const sourceFileId = NodeIdGenerator.file('unknown', dependency.from)
       const targetFileId = dependency.dependencyType === 'internal' 
-        ? `file:${dependency.to.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+        ? NodeIdGenerator.file('unknown', dependency.to)
         : `external:${dependency.to.replace(/[^a-zA-Z0-9-_]/g, '_')}`
       
       const depRelId = RelationshipIdGenerator.create(RelationType.DEPENDS_ON, sourceFileId, targetFileId)
