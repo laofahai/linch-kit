@@ -95,6 +95,11 @@ const config = {
 - [ ] **优先使用搜索**而非全文读取
 - [ ] 建立任务相关的最小上下文
 
+### 6. 数据同步检查（如需要）
+- [ ] **大规模代码变更后**：检查Neo4j图谱数据是否需要更新
+- [ ] **新包或Schema变更**：运行 `bun scripts/graph-data-extractor.ts` 更新图谱
+- [ ] **查询异常时**：验证AI上下文工具数据完整性
+
 **💡 用户简化提示语**：
 ```
 开始开发：[具体任务描述]
@@ -192,27 +197,40 @@ Claude执行: 编辑schema → 创建迁移 → 更新API → 更新UI → 运�
 
 ```bash
 # 1. 查找实体定义和相关文件 (用于添加字段、修改实体等)
-bun ai-context-cli-fast.js --find-entity "User" --include-related
-bun ai-context-cli-fast.js --find-entity "Product" --include-related
+bun scripts/ai-context/ai-context-cli-fast.js --find-entity "User" --include-related
+bun scripts/ai-context/ai-context-cli-fast.js --find-entity "Product" --include-related
 
 # 2. 查找符号定义 (用于理解函数、类、接口)
-bun ai-context-cli-fast.js --find-symbol "UserSchema"
-bun ai-context-cli-fast.js --find-symbol "createUser"
+bun scripts/ai-context/ai-context-cli-fast.js --find-symbol "UserSchema"
+bun scripts/ai-context/ai-context-cli-fast.js --find-symbol "createUser"
 
 # 3. 查找实现模式 (用于学习如何实现某种功能)
-bun ai-context-cli-fast.js --find-pattern "add_field" --for-entity "User"
-bun ai-context-cli-fast.js --find-pattern "create_api" --for-entity "Product"
+bun scripts/ai-context/ai-context-cli-fast.js --find-pattern "add_field" --for-entity "User"
+bun scripts/ai-context/ai-context-cli-fast.js --find-pattern "create_api" --for-entity "Product"
 ```
 
 ### 🚨 强制使用场景
 
-**任何涉及代码修改的任务都必须先查询：**
+**🔴 所有AI开发、文档、分析操作都必须先通过Neo4j图谱获取项目上下文：**
 
+#### 代码开发场景
 1. **添加字段**: `--find-entity "EntityName" --include-related`
 2. **创建API**: `--find-pattern "create_api" --for-entity "EntityName"`
 3. **修改现有功能**: `--find-symbol "FunctionName"`
 4. **创建新组件**: `--find-pattern "create_component"`
 5. **集成第三方库**: `--find-pattern "integration"`
+6. **重构代码**: `--find-entity "TargetEntity" --include-related`
+7. **调试问题**: `--find-symbol "ProblemFunction"`
+
+#### 文档操作场景
+8. **编写文档**: 查询相关代码实体确保准确性
+9. **更新API文档**: `--find-symbol "APIFunction"`
+10. **架构分析**: `--find-pattern "architecture_pattern"`
+
+#### 分析和决策场景
+11. **技术选型**: 查询现有技术栈和依赖关系
+12. **影响分析**: 查询变更影响的相关组件
+13. **代码审查**: 验证代码一致性和最佳实践
 
 ### 📋 Claude的标准工作模式
 
@@ -231,7 +249,7 @@ const analysis = {
 **Phase 2: 查询项目上下文**
 ```bash
 # Claude必须调用工具获取信息
-bun ai-context-cli-fast.js --find-entity "User" --include-related
+bun scripts/ai-context/ai-context-cli-fast.js --find-entity "User" --include-related
 ```
 
 **Phase 3: 基于查询结果执行开发**
@@ -280,12 +298,17 @@ await Bash("bunx prisma migrate dev") // 创建迁移
 - 在没有查询工具信息的情况下修改代码
 - 忽略工具返回的实现建议
 - 创建与现有模式不一致的代码
+- **跳过Neo4j上下文查询，直接进行任何代码操作**
+- **基于记忆或假设进行架构分析或技术决策**
+- **不验证代码一致性就编写文档或注释**
 
 **✅ 必须遵循：**
-- 每次开发前先查询相关上下文
+- **每次AI操作前必须通过Neo4j图谱查询获取准确的项目上下文**
 - 严格按照工具建议的文件路径和模式
 - 使用工具返回的相关文件列表
 - 遵循LinchKit的架构约束和最佳实践
+- **所有代码分析、文档编写、架构决策都基于实时图谱数据**
+- **任何技术选型或影响分析都先查询现有依赖关系**
 
 ### 🎪 完整示例：Claude处理添加字段请求
 
@@ -295,7 +318,7 @@ await Bash("bunx prisma migrate dev") // 创建迁移
 Claude: 我来帮你为User添加phone字段。首先让我查询User实体的相关信息...
 
 [调用工具]
-$ bun ai-context-cli-fast.js --find-entity "User" --include-related
+$ bun scripts/ai-context/ai-context-cli-fast.js --find-entity "User" --include-related
 
 我发现User定义在 packages/schema/src/user.ts，当前包含字段：id, name, email
 
@@ -471,6 +494,13 @@ $ bun ai-context-cli-fast.js --find-entity "User" --include-related
 - **roadmap** - 调整任务状态和优先级  
 - **约束文档** - 新增规范和最佳实践
 - **临时文档清理** - 删除已整合的临时文档，避免信息冗余
+
+### 🔄 AI上下文数据同步自动化
+重大代码变更后强制更新知识图谱：
+- **图谱数据提取** - 运行 `bun scripts/graph-data-extractor.ts` 重新分析代码
+- **数据质量验证** - 检查节点数量、关系完整性、查询性能
+- **工具功能测试** - 验证关键实体查询是否正常工作
+- **性能基准检查** - 确保查询时间保持在1.4-2.3s范围内
 
 ### 🔒 安全检查自动化
 - **敏感信息扫描** - 提交前检查密钥、Token
