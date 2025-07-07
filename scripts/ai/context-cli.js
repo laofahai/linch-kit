@@ -14,8 +14,13 @@
 import { Neo4jService, loadNeo4jConfig } from '../../packages/ai/dist/index.js';
 import dotenv from 'dotenv';
 
-// 加载环境变量
-dotenv.config({ path: '.env.local' });
+// 加载环境变量 - 自适应加载
+import fs from 'fs';
+if (fs.existsSync('.env.local')) {
+  dotenv.config({ path: '.env.local' });
+} else {
+  dotenv.config({ path: '.env' });
+}
 
 async function main() {
   const args = process.argv.slice(2);
