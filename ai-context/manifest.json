@@ -1,161 +1,117 @@
 {
-  "meta": {
-    "version": "3.0.0",
-    "description": "LinchKit AI Context Navigation Index - Restructured Architecture",
-    "last_updated": "2025-07-07",
-    "structure_version": "kebab-case-v1",
-    "restructure_notes": "Complete reorganization using Gemini collaboration framework"
+  "version": "1.0",
+  "description": "LinchKit Knowledge Base Manifest - Primary entry point for AI understanding of project structure and documentation",
+  "lastUpdated": "2025-07-07",
+  "project": {
+    "name": "LinchKit",
+    "version": "v7.2",
+    "description": "AI-First full-stack development framework with Schema-driven architecture"
   },
-  "navigation": {
-    "overview": "ai-context/00-core/readme.md",
-    "quick_start": "ai-context/00-core/quick-start.md",
-    "core": "ai-context/00-core/",
-    "strategy": "ai-context/01-strategy/",
-    "architecture": "ai-context/02-architecture/",
-    "workflows": "ai-context/03-workflows/",
-    "reference": "ai-context/04-reference/",
-    "planning": "ai-context/05-planning/",
-    "archive": "ai-context/99-archive/"
-  },
-  "core": {
-    "readme": "ai-context/00-core/readme.md",
-    "quick_start": "ai-context/00-core/quick-start.md"
-  },
-  "strategy": {
-    "vision_and_scope": "ai-context/01-strategy/vision-and-scope.md",
-    "policy_as_code": "ai-context/01-strategy/policy-as-code.md"
-  },
-  "architecture": {
-    "overview": "ai-context/02-architecture/overview.md",
-    "core_packages": "ai-context/02-architecture/core-packages.md",
-    "frontend_applications": "ai-context/02-architecture/frontend-applications.md",
-    "complete_design": "ai-context/02-architecture/complete-architecture-design.md",
-    "strategies": {
-      "caching": "ai-context/02-architecture/strategies/caching-strategy.md",
-      "code_generation": "ai-context/02-architecture/strategies/code-generation-strategy.md",
-      "data_governance": "ai-context/02-architecture/strategies/data-governance-strategy.md",
-      "performance": "ai-context/02-architecture/strategies/performance-strategy.md"
+  "structure": [
+    {
+      "path": "ai-context/00_Overview/01_LinchKit_Intro.md",
+      "description": "Introduction to LinchKit project, vision, and core value proposition",
+      "tags": ["overview", "introduction", "vision"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/00_Overview/02_Quick_Start.md", 
+      "description": "Quick start guide for developers and AI assistants",
+      "tags": ["guide", "quickstart"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/01_Concepts/01_Core_Principles.md",
+      "description": "Core design principles including AI-First, Schema-driven architecture",
+      "tags": ["principles", "design", "architecture"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/01_Concepts/02_System_Architecture.md",
+      "description": "Complete (6+1) system architecture overview and package dependencies",
+      "tags": ["architecture", "packages", "dependencies"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/02_Guides/01_Development_Workflow.md",
+      "description": "Single source of truth for development processes, coding standards, Git workflow, and all constraints",
+      "tags": ["workflow", "rules", "constraints", "git"],
+      "priority": "critical"
+    },
+    {
+      "path": "ai-context/02_Guides/02_AI_Tools_Usage.md",
+      "description": "Comprehensive guide for AI Session tools, Neo4j queries, and Graph RAG usage",
+      "tags": ["ai", "tools", "neo4j", "rag"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/02_Guides/03_Console_Usage.md",
+      "description": "Management platform usage guide",
+      "tags": ["console", "management", "ui"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/01_Packages_API/",
+      "description": "Detailed API documentation for all @linch-kit packages",
+      "tags": ["api", "reference", "packages"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/02_Configuration.md",
+      "description": "Environment variables and configuration reference",
+      "tags": ["config", "environment", "setup"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/04_Project_Management/01_Roadmap.md",
+      "description": "Unified roadmap synchronized with actual development progress",
+      "tags": ["roadmap", "planning", "status"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/04_Project_Management/02_Development_Status.md",
+      "description": "Current development status and completed milestones",
+      "tags": ["status", "progress", "milestones"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/04_Project_Management/03_Contribution_Guide.md",
+      "description": "Guide for contributing to the LinchKit project",
+      "tags": ["contribution", "guide", "community"],
+      "priority": "low"
     }
-  },
-  "workflows": {
-    "ai_collaboration": "ai-context/03-workflows/ai-collaboration-guide.md",
-    "development": "ai-context/03-workflows/development-workflow.md",
-    "git": "ai-context/03-workflows/git-workflow.md"
-  },
-  "reference": {
-    "packages_api": "ai-context/04-reference/packages-api.md",
-    "dependency_analysis": "ai-context/04-reference/dependency-analysis.md",
-    "api_specs": {
-      "auth": "ai-context/04-reference/api-specs/auth.md",
-      "core": "ai-context/04-reference/api-specs/core.md",
-      "crud": "ai-context/04-reference/api-specs/crud.md",
-      "schema": "ai-context/04-reference/api-specs/schema.md",
-      "trpc": "ai-context/04-reference/api-specs/trpc.md",
-      "ui": "ai-context/04-reference/api-specs/ui.md"
-    },
-    "reports": {
-      "auth_completeness": "ai-context/04-reference/reports/auth-package-completeness.md",
-      "core_completeness": "ai-context/04-reference/reports/core-package-completeness.md",
-      "schema_completeness": "ai-context/04-reference/reports/schema-package-completeness.md"
-    }
-  },
-  "planning": {
-    "development_status": "ai-context/05-planning/development-status.md",
-    "roadmap": "ai-context/05-planning/roadmap.md",
-    "improvement_proposals": {
-      "core_package": "ai-context/05-planning/improvement-proposals/core-package-issues.md",
-      "console_module": "ai-context/05-planning/improvement-proposals/console-module-issues.md"
-    }
-  },
-  "packages": {
-    "core": {
-      "path": "packages/core",
-      "readme": "packages/core/README.md",
-      "main": "packages/core/src/index.ts",
-      "features": ["logging", "configuration", "plugin-system"]
-    },
-    "schema": {
-      "path": "packages/schema", 
-      "readme": "packages/schema/README.md",
-      "main": "packages/schema/src/index.ts",
-      "features": ["validation", "transformation", "type-generation"]
-    },
-    "auth": {
-      "path": "packages/auth",
-      "readme": "packages/auth/README.md", 
-      "main": "packages/auth/src/index.ts",
-      "features": ["authentication", "authorization", "session-management"]
-    },
-    "crud": {
-      "path": "packages/crud",
-      "readme": "packages/crud/README.md",
-      "main": "packages/crud/src/index.ts", 
-      "features": ["database-operations", "query-builder", "validation"]
-    },
-    "trpc": {
-      "path": "packages/trpc",
-      "readme": "packages/trpc/README.md",
-      "main": "packages/trpc/src/index.ts",
-      "features": ["type-safe-api", "router-builder", "middleware"]
-    },
-    "ui": {
-      "path": "packages/ui",
-      "readme": "packages/ui/README.md", 
-      "main": "packages/ui/src/index.ts",
-      "features": ["components", "themes", "styling"]
-    }
-  },
-  "applications": {
-    "starter": {
-      "path": "apps/starter",
-      "readme": "apps/starter/README.md",
-      "main": "apps/starter/app/layout.tsx",
-      "features": ["dashboard", "authentication", "multi-tenant"]
-    },
-    "website": {
-      "path": "apps/website", 
-      "readme": "apps/website/README.md",
-      "main": "apps/website/pages/_app.tsx",
-      "features": ["documentation", "i18n", "nextra"]
-    },
-    "console": {
-      "path": "modules/console",
-      "readme": "modules/console/README.md", 
-      "main": "modules/console/src/index.ts",
-      "features": ["admin-panel", "role-management", "audit-logs"]
-    }
-  },
-  "search_patterns": {
-    "core": "ai-context/00-core/**/*.md",
-    "strategy": "ai-context/01-strategy/**/*.md",
-    "architecture": "ai-context/02-architecture/**/*.md",
-    "workflows": "ai-context/03-workflows/**/*.md",
-    "reference": "ai-context/04-reference/**/*.md",
-    "planning": "ai-context/05-planning/**/*.md",
-    "schemas": "packages/schema/src/**/*.ts",
-    "components": "packages/ui/src/components/**/*.tsx",
-    "api_routes": "apps/*/app/api/**/*.ts",
-    "pages": "apps/*/app/**/page.tsx",
-    "types": "**/*.types.ts",
-    "configs": "**/*.config.{js,ts,json}",
-    "tests": "**/*.{test,spec}.{js,ts,tsx}"
-  },
-  "restructure_summary": {
-    "completed_date": "2025-07-07",
-    "changes": [
-      "Migrated from numbered underscores to numbered hyphens (00_ -> 00-)",
-      "Unified all file names to kebab-case",
-      "Reorganized content by intent: core -> strategy -> architecture -> workflows -> reference -> planning",
-      "Created strategic sub-directories for better organization",
-      "Archived legacy documents to 99-archive",
-      "Preserved Git history using git mv commands"
+  ],
+  "aiInstructions": {
+    "primaryEntry": "Always start by reading this manifest.json to understand the knowledge base structure",
+    "criticalDocuments": [
+      "ai-context/02_Guides/01_Development_Workflow.md"
     ],
-    "benefits": [
-      "Clear navigation hierarchy for AI assistants",
-      "Consistent naming convention across all files",
-      "Logical grouping by document purpose",
-      "Preserved historical information in archive",
-      "Improved maintainability and searchability"
-    ]
+    "workflowRequirements": [
+      "Must create feature branch before any development work",
+      "Must use TodoWrite for complex tasks (3+ steps)",
+      "Must use bun package manager only",
+      "Must check package reuse before implementing new features",
+      "Must run bun validate before committing"
+    ],
+    "searchStrategy": "Use tags to quickly locate relevant documentation for specific tasks",
+    "maintenanceNote": "This manifest is automatically updated by scripts/sync-docs-manifest.mjs"
+  },
+  "packageArchitecture": {
+    "corePackages": [
+      "@linch-kit/core",
+      "@linch-kit/schema", 
+      "@linch-kit/auth",
+      "@linch-kit/crud",
+      "@linch-kit/trpc",
+      "@linch-kit/ui"
+    ],
+    "modules": [
+      "modules/console"
+    ],
+    "applications": [
+      "apps/starter",
+      "apps/website"
+    ],
+    "completionStatus": "100%"
   }
 }
