@@ -1,5 +1,5 @@
 {
-  "buildCommand": "bun install && bun run build --filter=demo-app",
+  "buildCommand": "cd ../.. && bun install && bun run build --filter=demo-app",
   "devCommand": "bun run dev",
   "installCommand": "bun install",
   "framework": "nextjs",
