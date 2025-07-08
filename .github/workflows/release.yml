@@ -145,7 +145,7 @@ jobs:
         run: bun run build:packages
 
       - name: Deploy to Vercel (Demo App)
-        if: secrets.VERCEL_TOKEN != ''
+        if: ${{ vars.VERCEL_ENABLED == 'true' }}
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
