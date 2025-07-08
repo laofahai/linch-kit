@@ -5,10 +5,10 @@
   "framework": "nextjs",
   "outputDirectory": ".next",
   "env": {
-    "DATABASE_URL": "@demo-database-url",
-    "DIRECT_URL": "@demo-direct-url",
-    "NEXTAUTH_URL": "@demo-nextauth-url",
-    "NEXTAUTH_SECRET": "@demo-nextauth-secret",
+    "DATABASE_URL": "@demo_database_url",
+    "DIRECT_URL": "@demo_direct_url",
+    "NEXTAUTH_URL": "@demo_nextauth_url",
+    "NEXTAUTH_SECRET": "@demo_nextauth_secret",
     "NODE_ENV": "production"
   }
 }

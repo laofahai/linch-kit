@@ -5,11 +5,13 @@
   "framework": "nextjs",
   "outputDirectory": ".next",
   "env": {
-    "DATABASE_URL": "@database-url",
-    "DIRECT_URL": "@direct-url",
-    "JWT_SECRET": "@jwt-secret",
-    "NEXTAUTH_URL": "@nextauth-url",
-    "NEXTAUTH_SECRET": "@nextauth-secret",
+    "DATABASE_URL": "@database_url",
+    "DIRECT_URL": "@direct_url",
+    "SUPABASE_URL": "@supabase_url",
+    "SUPABASE_ANON_KEY": "@supabase_anon_key",
+    "JWT_SECRET": "@jwt_secret",
+    "NEXTAUTH_URL": "@nextauth_url",
+    "NEXTAUTH_SECRET": "@nextauth_secret",
     "NODE_ENV": "production"
   }
 }
