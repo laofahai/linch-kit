@@ -25,14 +25,14 @@ import {
 
 // Mock 服务依赖
 const mockLogger = {
-  debug: vi.fn(),
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
+  debug: mock(),
+  info: mock(),
+  warn: mock(),
+  error: mock(),
 }
 
 const mockConfig = {
-  get: vi.fn((key: string) => {
+  get: mock((key: string) => {
     const configs: Record<string, unknown> = {
       NODE_ENV: 'test',
       API_KEY: 'test-api-key',
@@ -62,11 +62,11 @@ const mockAuthenticatedContext = {
 
 describe('@linch-kit/trpc Server Core', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    // Bun test mocks are automatically managed
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
+    // Bun test mocks are automatically managed
   })
 
   describe('基础导出和类型', () => {
