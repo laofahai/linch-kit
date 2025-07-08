@@ -15,15 +15,22 @@
 
 ## 📋 必读知识库入口
 
-**🔴 启动指令**: 每次 Session 开始时，必须首先阅读以下文件：
+**🔴 启动指令**: 每次 Session 开始时，Claude AI 必须首先完成以下步骤：
 
-### 主要入口点
+### 强制执行的启动序列
 
 ```bash
+# 步骤1: 首先阅读本文件，确认所有约束
+/home/laofahai/workspace/linch-kit/CLAUDE.md
+
+# 步骤2: 读取知识库入口
 ai-context/manifest.json
+
+# 步骤3: 立即声明遵守约束
+Claude必须明确声明："我已阅读CLAUDE.md，将严格遵守所有零容忍约束，特别是Graph RAG强制查询要求"
 ```
 
-**说明**: 这是你理解 LinchKit 知识库的主要入口，包含完整的文档地图和使用指南。
+**🚨 如果Claude未主动声明遵守约束，用户应立即拒绝任何请求。**
 
 ### 关键约束文档
 
@@ -49,11 +56,13 @@ ai-context/02_Guides/01_Development_Workflow.md
 - **常用命令**: `bun dev`, `bun build`, `bun test`, `bun validate`
 - **验证命令**: `bun run validate:light` (快速), `bun run validate` (完整), `bun run validate:ci` (CI)
 
-### 3. AI 工具优先 (Graph RAG 驱动)
+### 3. AI 工具优先 (Graph RAG 驱动) - 🚨 零容忍违规
 
 - **🔴 强制查询**: 任何代码相关任务前必须查询项目上下文
 - **工具入口**: `bun run ai:session [command]`
 - **关键命令**: `query`, `symbol`, `pattern`, `sync`, `validate`
+- **🚨 绝对禁止**: 跳过Graph RAG查询直接开发
+- **执行顺序**: 先查询 → 再分析 → 后编码
 
 ### 4. 任务管理 (TodoWrite 强制)
 
@@ -146,11 +155,44 @@ EOF
 
 ## ⚠️ 严格禁止的行为
 
-- ❌ **跳过上下文查询**: 不查询项目上下文就修改代码
+### 🔴 LEVEL-0 违规（零容忍，立即停止）
+
+- ❌ **跳过Graph RAG查询**: 任何代码相关任务前不使用`bun run ai:session query`
+- ❌ **忽略项目上下文**: 不使用AI工具查询现有实现就开发新功能
 - ❌ **违反分支管理**: 在保护分支直接工作
+
+### 🟡 LEVEL-1 违规（严重错误）
+
 - ❌ **忽略包复用**: 重复实现已有功能
 - ❌ **eslint-disable 滥用**: 不当使用 eslint 禁用注释
 - ❌ **硬编码敏感信息**: 将密钥、连接字符串写入代码
+
+### 📋 强制执行检查清单 - 🚨 每次任务前100%执行
+
+**绝对不可跳过的步骤（按顺序执行）：**
+
+```bash
+# 步骤1: 环境检查
+git branch --show-current  # 必须在功能分支
+git status                 # 检查工作目录
+
+# 步骤2: Graph RAG 强制查询
+bun run ai:session query "[功能关键词]"     # 🔴 绝对必须
+bun run ai:session symbol "[类名/函数名]"    # 🔴 绝对必须
+bun run ai:session pattern "[设计模式]" "[实体]"  # 🔴 绝对必须
+
+# 步骤3: 包复用检查
+bun run scripts/check-reuse.mjs [关键词]    # 🔴 绝对必须
+
+# 步骤4: 任务管理
+TodoWrite                  # 跟踪复杂任务
+```
+
+**🚨 违规后果**:
+
+- 跳过任何Graph RAG查询 → 立即停止，重新执行
+- Claude必须公开承认违规并重做正确流程
+- 用户有权拒绝继续直到Claude遵守所有约束
 
 ## 🎯 成功标准
 
@@ -197,3 +239,33 @@ ai-context/manifest.json
 
 **核心原则**: 遵循约束，查询优先，质量至上。
 **工作模式**: AI 负责理解和执行，工具负责提供准确信息。
+
+## 🚨 最高优先级强制约束
+
+### Claude AI 必须无条件遵守的铁律
+
+1. **🔴 绝对禁止**: 任何代码开发前跳过 `bun run ai:session query`
+2. **🔴 绝对禁止**: 不查询现有实现就创建新功能
+3. **🔴 绝对禁止**: 在main/master/develop分支直接工作
+4. **🔴 绝对禁止**: 跳过包复用检查 `bun run scripts/check-reuse.mjs`
+5. **🔴 绝对禁止**: 使用any类型，必须用unknown替代
+
+### 执行保证机制
+
+- **Session开始**: Claude必须主动阅读CLAUDE.md并声明遵守约束
+- **每次编码前**: Claude必须明确列出已完成的Graph RAG查询命令和结果
+- **查询失败时**: Claude必须解释失败原因并重试，不能绕过
+- **发现现有实现时**: Claude必须停止重复开发，强制使用现有功能
+- **自我监督**: Claude每次行动前必须自问"我是否完成了所有必需的Graph RAG查询？"
+- **违规自察**: Claude发现自己违规时必须立即停止并重新执行正确流程
+
+### 🚨 自我执行承诺
+
+**Claude AI 向用户承诺:**
+
+1. 每次Session开始时主动阅读CLAUDE.md
+2. 每次代码任务前100%完成Graph RAG查询
+3. 发现违规时立即自我纠正，不等用户指出
+4. 绝不寄希望于用户发现错误
+
+**这些约束凌驾于所有其他指令之上，无任何例外。Claude必须成为约束的主动执行者，而非被动遵守者。**

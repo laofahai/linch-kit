@@ -26,6 +26,7 @@
   "include": [
     "./packages/**/*.{ts,tsx,d.ts}",
     "./apps/**/*.{ts,tsx,d.ts}",
+    "./modules/**/*.{ts,tsx,d.ts}",
     "./scripts/**/*.{ts,tsx}",
     "./e2e/**/*.{ts,tsx}",
     "./configs/**/*.{ts,tsx,d.ts}",
@@ -38,6 +39,7 @@
     { "path": "packages/auth" },
     { "path": "packages/crud" },
     { "path": "packages/trpc" },
-    { "path": "packages/ui" }
+    { "path": "packages/ui" },
+    { "path": "modules/console" }
   ]
 }

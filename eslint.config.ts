@@ -41,7 +41,12 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
-        project: ['./tsconfig.json', './apps/*/tsconfig.json', './packages/*/tsconfig.json'],
+        project: [
+          './tsconfig.json',
+          './apps/*/tsconfig.json',
+          './packages/*/tsconfig.json',
+          './modules/*/tsconfig.json',
+        ],
         tsconfigRootDir: process.cwd(),
       },
       globals: {
@@ -85,7 +90,12 @@ export default [
           extensions: ['.js', '.jsx', '.ts', '.tsx', '.css'],
         },
         typescript: {
-          project: ['./tsconfig.json', './apps/*/tsconfig.json', './packages/*/tsconfig.json'],
+          project: [
+            './tsconfig.json',
+            './apps/*/tsconfig.json',
+            './packages/*/tsconfig.json',
+            './modules/*/tsconfig.json',
+          ],
         },
       },
     },
