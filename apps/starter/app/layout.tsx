@@ -5,6 +5,7 @@ import { TRPCProvider } from '@/components/providers/trpc-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { PageLoadingProvider, PerformanceMonitor } from '@/components/performance/PageLoadingProvider'
+import { MonitoringProvider } from '@/components/monitoring/MonitoringProvider'
 import "./globals.css";
 
 const geistSans = Geist({
@@ -80,6 +81,7 @@ export default function RootLayout({
                 <AuthSessionProvider session={null}>
                   {children}
                   <PerformanceMonitor />
+                  <MonitoringProvider />
                 </AuthSessionProvider>
               </TRPCProvider>
             </ThemeProvider>

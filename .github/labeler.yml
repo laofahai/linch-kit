@@ -1,0 +1,74 @@
+# 自动标签配置
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: 
+      - '**/*.md'
+      - 'docs/**'
+      - 'ai-context/**'
+
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'package.json'
+      - 'bun.lockb'
+      - '**/package.json'
+
+core:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'packages/core/**'
+
+schema:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'packages/schema/**'
+
+auth:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'packages/auth/**'
+
+crud:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'packages/crud/**'
+
+trpc:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'packages/trpc/**'
+
+ui:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'packages/ui/**'
+
+console:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'modules/console/**'
+
+starter:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'apps/starter/**'
+
+website:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'apps/website/**'
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.test.ts'
+      - '**/*.test.tsx'
+      - '**/*.spec.ts'
+      - '**/*.spec.tsx'
+      - '**/vitest.config.ts'
+      - '**/jest.config.js'

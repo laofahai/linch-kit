@@ -1,0 +1,14 @@
+{
+  "buildCommand": "cd ../.. && bun install && bun run build --filter=demo-app",
+  "devCommand": "bun run dev",
+  "installCommand": "bun install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "env": {
+    "DATABASE_URL": "@demo-database-url",
+    "DIRECT_URL": "@demo-direct-url",
+    "NEXTAUTH_URL": "@demo-nextauth-url",
+    "NEXTAUTH_SECRET": "@demo-nextauth-secret",
+    "NODE_ENV": "production"
+  }
+}
