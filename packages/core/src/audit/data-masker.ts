@@ -18,7 +18,7 @@ export class DefaultDataMasker implements DataMasker {
     /token/i,
     /key/i,
     /auth/i,
-    
+
     // 个人信息
     /email/i,
     /phone/i,
@@ -29,32 +29,32 @@ export class DefaultDataMasker implements DataMasker {
     /card/i,
     /account/i,
     /bank/i,
-    
+
     // 地址信息
     /address/i,
     /street/i,
     /city/i,
     /zip/i,
     /postal/i,
-    
+
     // 身份信息
     /id_number/i,
     /identity/i,
     /passport/i,
     /license/i,
-    
+
     // 财务信息
     /balance/i,
     /amount/i,
     /salary/i,
     /income/i,
     /payment/i,
-    
+
     // 健康信息
     /medical/i,
     /health/i,
     /diagnosis/i,
-    /prescription/i
+    /prescription/i,
   ]
 
   private maskingStrategies = new Map<string, (value: unknown) => unknown>([
@@ -62,7 +62,7 @@ export class DefaultDataMasker implements DataMasker {
     ['phone', this.maskPhone.bind(this)],
     ['creditCard', this.maskCreditCard.bind(this)],
     ['ssn', this.maskSSN.bind(this)],
-    ['default', this.maskDefault.bind(this)]
+    ['default', this.maskDefault.bind(this)],
   ])
 
   maskValue(value: unknown, fieldName: string): unknown {
@@ -110,7 +110,7 @@ export class DefaultDataMasker implements DataMasker {
 
   isSensitiveField(fieldName: string): boolean {
     const normalizedFieldName = fieldName.toLowerCase()
-    
+
     return this.sensitivePatterns.some(pattern => {
       if (typeof pattern === 'string') {
         return normalizedFieldName.includes(pattern.toLowerCase())
@@ -169,7 +169,7 @@ export class DefaultDataMasker implements DataMasker {
 
     // 保留最后4位
     const masked = '*'.repeat(numbers.length - 4) + numbers.slice(-4)
-    
+
     // 保持原格式
     let result = value
     let numberIndex = 0

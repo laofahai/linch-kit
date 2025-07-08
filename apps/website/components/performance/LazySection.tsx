@@ -15,7 +15,7 @@ export const LazySection: React.FC<LazySectionProps> = ({
   threshold = 0.1,
   rootMargin = '50px',
   fallback = null,
-  delay = 0
+  delay = 0,
 }) => {
   const [, setIsInView] = useState(false)
   const [shouldRender, setShouldRender] = useState(false)
@@ -26,11 +26,11 @@ export const LazySection: React.FC<LazySectionProps> = ({
     if (!currentRef) return
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const [entry] = entries
         if (entry.isIntersecting) {
           setIsInView(true)
-          
+
           // 延迟渲染
           const timer = setTimeout(() => {
             setShouldRender(true)
@@ -41,7 +41,7 @@ export const LazySection: React.FC<LazySectionProps> = ({
       },
       {
         threshold,
-        rootMargin
+        rootMargin,
       }
     )
 

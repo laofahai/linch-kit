@@ -10,6 +10,6 @@ export default defineConfig({
   sourcemap: true,
   splitting: false,
   banner: {
-    js: '#!/usr/bin/env node'
-  }
+    js: '#!/usr/bin/env node',
+  },
 })

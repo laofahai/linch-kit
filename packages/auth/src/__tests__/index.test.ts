@@ -10,7 +10,7 @@ import { describe, it, expect, mock } from 'bun:test'
 
 // Mock NextAuth.js to avoid dependency issues
 mock.module('next-auth', () => ({
-  default: mock(() => ({ handlers: {}, auth: mock(), signIn: mock(), signOut: mock() }))
+  default: mock(() => ({ handlers: {}, auth: mock(), signIn: mock(), signOut: mock() })),
 }))
 
 describe('@linch-kit/auth Package Exports', () => {
@@ -48,7 +48,7 @@ describe('@linch-kit/auth Package Exports', () => {
      */
     it('should export LinchKit auth adapter', async () => {
       const { createLinchKitAuthConfig } = await import('../index')
-      
+
       expect(createLinchKitAuthConfig).toBeDefined()
       expect(typeof createLinchKitAuthConfig).toBe('function')
     })
@@ -60,13 +60,13 @@ describe('@linch-kit/auth Package Exports', () => {
      */
     it('should create valid auth configuration', async () => {
       const { createLinchKitAuthConfig } = await import('../index')
-      
+
       const config = createLinchKitAuthConfig({
         providers: {
           credentials: {
-            authorize: async () => null
-          }
-        }
+            authorize: async () => null,
+          },
+        },
       })
 
       expect(config).toBeDefined()
@@ -84,7 +84,7 @@ describe('@linch-kit/auth Package Exports', () => {
      */
     it('should export CASL permission engine', async () => {
       const { CASLPermissionEngine } = await import('../index')
-      
+
       expect(CASLPermissionEngine).toBeDefined()
       expect(typeof CASLPermissionEngine).toBe('function')
     })
@@ -96,7 +96,7 @@ describe('@linch-kit/auth Package Exports', () => {
      */
     it('should create permission engine instance', async () => {
       const { CASLPermissionEngine } = await import('../index')
-      
+
       const engine = new CASLPermissionEngine()
       expect(engine).toBeDefined()
       expect(typeof engine.check).toBe('function')
@@ -113,7 +113,7 @@ describe('@linch-kit/auth Package Exports', () => {
      */
     it('should export enterprise auth extensions', async () => {
       const { EnterpriseAuthExtensions } = await import('../index')
-      
+
       expect(EnterpriseAuthExtensions).toBeDefined()
       expect(typeof EnterpriseAuthExtensions).toBe('function')
     })
@@ -125,7 +125,7 @@ describe('@linch-kit/auth Package Exports', () => {
      */
     it('should export MFA manager', async () => {
       const { MFAManager } = await import('../index')
-      
+
       expect(MFAManager).toBeDefined()
       expect(typeof MFAManager).toBe('function')
     })
@@ -137,13 +137,13 @@ describe('@linch-kit/auth Package Exports', () => {
      */
     it('should create enterprise extensions instance', async () => {
       const { EnterpriseAuthExtensions } = await import('../index')
-      
+
       const extensions = new EnterpriseAuthExtensions({
         tenantId: 'test-tenant',
         enableMFA: true,
-        enableAuditLog: true
+        enableAuditLog: true,
       })
-      
+
       expect(extensions).toBeDefined()
       expect(typeof extensions.checkUserAccess).toBe('function')
       expect(typeof extensions.validateSession).toBe('function')
@@ -156,7 +156,7 @@ describe('@linch-kit/auth Package Exports', () => {
      */
     it('should create MFA manager instance', async () => {
       const { MFAManager } = await import('../index')
-      
+
       const mfaManager = new MFAManager()
       expect(mfaManager).toBeDefined()
       expect(typeof mfaManager.generateTOTPSecret).toBe('function')
@@ -187,7 +187,7 @@ describe('@linch-kit/auth Package Exports', () => {
      */
     it('should export version information', async () => {
       const { VERSION } = await import('../index')
-      
+
       expect(VERSION).toBeDefined()
       expect(typeof VERSION).toBe('string')
       expect(VERSION).toMatch(/^\d+\.\d+\.\d+/)
@@ -201,20 +201,20 @@ describe('@linch-kit/auth Package Exports', () => {
      * @expect 组件间集成正常
      */
     it('should integrate components properly', async () => {
-      const { 
-        createLinchKitAuthConfig, 
-        CASLPermissionEngine, 
+      const {
+        createLinchKitAuthConfig,
+        CASLPermissionEngine,
         EnterpriseAuthExtensions,
-        MFAManager 
+        MFAManager,
       } = await import('../index')
 
       // 创建各个组件实例
       const authConfig = createLinchKitAuthConfig({
         providers: {
           credentials: {
-            authorize: async () => ({ id: '1', email: 'test@example.com' })
-          }
-        }
+            authorize: async () => ({ id: '1', email: 'test@example.com' }),
+          },
+        },
       })
 
       const permissionEngine = new CASLPermissionEngine()
@@ -239,13 +239,13 @@ describe('@linch-kit/auth Package Exports', () => {
       const permissionEngine = new CASLPermissionEngine()
       const enterpriseExtensions = new EnterpriseAuthExtensions({
         enableRoleBasedAccess: true,
-        enableAuditLog: true
+        enableAuditLog: true,
       })
 
       // 测试组件间的基本交互
       expect(permissionEngine).toBeDefined()
       expect(enterpriseExtensions).toBeDefined()
-      
+
       // 验证方法存在
       expect(typeof permissionEngine.check).toBe('function')
       expect(typeof enterpriseExtensions.checkUserAccess).toBe('function')

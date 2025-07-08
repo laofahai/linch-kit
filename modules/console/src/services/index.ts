@@ -1,6 +1,6 @@
 /**
  * Console 模块服务层导出
- * 
+ *
  * 提供所有 Console 模块的业务逻辑服务
  */
 
@@ -21,7 +21,7 @@ import { userService } from './user.service'
 export const consoleServices = {
   tenant: tenantService,
   plugin: pluginService,
-  user: userService
+  user: userService,
 } as const
 
 /**
@@ -52,7 +52,7 @@ export function createConsoleServices(_config: ConsoleServiceConfig) {
   return {
     tenant: tenantService,
     plugin: pluginService,
-    user: userService
+    user: userService,
   }
 }
 

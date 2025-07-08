@@ -13,7 +13,7 @@ const mockPinoLogger = {
   error: mock(),
   fatal: mock(),
   child: mock(),
-  level: 'info' as LogLevel
+  level: 'info' as LogLevel,
 }
 
 const mockPino = mock().mockReturnValue(mockPinoLogger)
@@ -26,8 +26,8 @@ mock.module('pino', () => {
     destination: mockPinoDestination,
     transport: mockPinoTransport,
     stdTimeFunctions: {
-      isoTime: () => '"2023-01-01T00:00:00.000Z"'
-    }
+      isoTime: () => '"2023-01-01T00:00:00.000Z"',
+    },
   }
   // Attach functions to the default export too
   mockPino.stdTimeFunctions = pinoModule.stdTimeFunctions
@@ -105,13 +105,16 @@ describe('Logger System', () => {
 
         linchLogger.error(message, error, data)
 
-        expect(mockPinoLogger.error).toHaveBeenCalledWith({
-          ...data,
-          error: {
-            message: error.message,
-            stack: error.stack
-          }
-        }, message)
+        expect(mockPinoLogger.error).toHaveBeenCalledWith(
+          {
+            ...data,
+            error: {
+              message: error.message,
+              stack: error.stack,
+            },
+          },
+          message
+        )
       })
 
       it('should log error messages without error object', () => {
@@ -130,13 +133,16 @@ describe('Logger System', () => {
 
         linchLogger.fatal(message, error, data)
 
-        expect(mockPinoLogger.fatal).toHaveBeenCalledWith({
-          ...data,
-          error: {
-            message: error.message,
-            stack: error.stack
-          }
-        }, message)
+        expect(mockPinoLogger.fatal).toHaveBeenCalledWith(
+          {
+            ...data,
+            error: {
+              message: error.message,
+              stack: error.stack,
+            },
+          },
+          message
+        )
       })
 
       it('should log fatal messages without error object', () => {
@@ -165,7 +171,7 @@ describe('Logger System', () => {
     describe('Log Level Management', () => {
       it('should set log level', () => {
         const level: LogLevel = 'debug'
-        
+
         linchLogger.setLevel(level)
 
         expect(mockPinoLogger.level).toBe(level)
@@ -192,8 +198,8 @@ describe('Logger System', () => {
           redact: ['password', 'token', 'secret', 'authorization'],
           base: expect.objectContaining({
             pid: process.pid,
-            hostname: hostname()
-          })
+            hostname: hostname(),
+          }),
         })
       )
     })
@@ -203,7 +209,7 @@ describe('Logger System', () => {
         level: 'debug' as LogLevel,
         name: 'custom-app',
         redact: ['custom-secret'],
-        base: { appVersion: '1.0.0' }
+        base: { appVersion: '1.0.0' },
       }
 
       createLogger(config)
@@ -213,7 +219,7 @@ describe('Logger System', () => {
           level: 'debug',
           name: 'custom-app',
           redact: ['custom-secret'],
-          base: { appVersion: '1.0.0' }
+          base: { appVersion: '1.0.0' },
         })
       )
     })
@@ -229,8 +235,8 @@ describe('Logger System', () => {
         options: {
           colorize: true,
           translateTime: 'yyyy-mm-dd HH:MM:ss',
-          ignore: 'pid,hostname'
-        }
+          ignore: 'pid,hostname',
+        },
       })
 
       process.env.NODE_ENV = originalEnv
@@ -243,22 +249,19 @@ describe('Logger System', () => {
       createLogger({ destination })
 
       expect(mockPinoDestination).toHaveBeenCalledWith(destination)
-      expect(mockPino).toHaveBeenCalledWith(
-        expect.any(Object),
-        'mock-destination'
-      )
+      expect(mockPino).toHaveBeenCalledWith(expect.any(Object), 'mock-destination')
     })
 
     it('should create logger with custom serializers', () => {
       const serializers = {
-        user: (user: any) => ({ id: user.id, name: user.name })
+        user: (user: any) => ({ id: user.id, name: user.name }),
       }
 
       createLogger({ serializers })
 
       expect(mockPino).toHaveBeenCalledWith(
         expect.objectContaining({
-          serializers
+          serializers,
         })
       )
     })
@@ -310,13 +313,11 @@ describe('Logger System', () => {
   describe('Logger Configuration Options', () => {
     it('should handle all log levels', () => {
       const levels: LogLevel[] = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
-      
+
       levels.forEach(level => {
         createLogger({ level })
-        
-        expect(mockPino).toHaveBeenCalledWith(
-          expect.objectContaining({ level })
-        )
+
+        expect(mockPino).toHaveBeenCalledWith(expect.objectContaining({ level }))
       })
     })
 
@@ -326,7 +327,7 @@ describe('Logger System', () => {
       expect(mockPino).toHaveBeenCalledWith(
         expect.objectContaining({
           level: 'info',
-          name: 'linchkit'
+          name: 'linchkit',
         })
       )
     })
@@ -335,14 +336,14 @@ describe('Logger System', () => {
       const customBase = {
         service: 'api',
         version: '2.0.0',
-        env: 'staging'
+        env: 'staging',
       }
 
       createLogger({ base: customBase })
 
       expect(mockPino).toHaveBeenCalledWith(
         expect.objectContaining({
-          base: customBase
+          base: customBase,
         })
       )
     })
@@ -351,7 +352,7 @@ describe('Logger System', () => {
       createLogger()
 
       const [pinoOptions] = mockPino.mock.calls[mockPino.mock.calls.length - 1]
-      
+
       expect(pinoOptions.formatters).toBeDefined()
       expect(typeof pinoOptions.formatters.level).toBe('function')
       expect(typeof pinoOptions.formatters.log).toBe('function')
@@ -361,7 +362,7 @@ describe('Logger System', () => {
       createLogger()
 
       const [pinoOptions] = mockPino.mock.calls[mockPino.mock.calls.length - 1]
-      
+
       expect(pinoOptions.timestamp).toBeDefined()
     })
   })
@@ -370,7 +371,7 @@ describe('Logger System', () => {
     it('should handle undefined error in error method', () => {
       const linchLogger = new LinchKitLogger(mockPinoLogger as any)
       const message = 'Error message'
-      
+
       linchLogger.error(message, undefined)
 
       expect(mockPinoLogger.error).toHaveBeenCalledWith(undefined, message)
@@ -379,7 +380,7 @@ describe('Logger System', () => {
     it('should handle undefined error in fatal method', () => {
       const linchLogger = new LinchKitLogger(mockPinoLogger as any)
       const message = 'Fatal message'
-      
+
       linchLogger.fatal(message, undefined)
 
       expect(mockPinoLogger.fatal).toHaveBeenCalledWith(undefined, message)
@@ -390,15 +391,18 @@ describe('Logger System', () => {
       const message = 'Error message'
       const error = new Error('Test error')
       delete error.stack
-      
+
       linchLogger.error(message, error)
 
-      expect(mockPinoLogger.error).toHaveBeenCalledWith({
-        error: {
-          message: error.message,
-          stack: undefined
-        }
-      }, message)
+      expect(mockPinoLogger.error).toHaveBeenCalledWith(
+        {
+          error: {
+            message: error.message,
+            stack: undefined,
+          },
+        },
+        message
+      )
     })
   })
 })

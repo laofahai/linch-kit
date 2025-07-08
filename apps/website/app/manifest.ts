@@ -6,7 +6,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'LinchKit - AI-First Full-Stack Development Framework',
     short_name: 'LinchKit',
-    description: 'Enterprise-ready development framework with Schema-driven architecture and end-to-end type safety, designed for AI era.',
+    description:
+      'Enterprise-ready development framework with Schema-driven architecture and end-to-end type safety, designed for AI era.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

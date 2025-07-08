@@ -1,6 +1,6 @@
 /**
  * Console 模块主入口
- * 
+ *
  * LinchKit Console - 企业级管理控制台
  */
 
@@ -17,11 +17,11 @@ export { createConsoleRouter } from './trpc/router-factory'
 // export { consoleRouter } from './routes/console.router'
 // export type { ConsoleRouter } from './routes/console.router'
 
-// export { tenantRouter, setTenantService } from './routes/tenant.router'  
+// export { tenantRouter, setTenantService } from './routes/tenant.router'
 // export type { TenantRouter } from './routes/tenant.router'
 
 // Provider和上下文 (已标记为客户端组件)
-export { 
+export {
   ConsoleProvider,
   useConsoleContext,
   useConsolePermission,
@@ -30,7 +30,7 @@ export {
   useConsoleConfiguration,
   useConsoleTenant,
   PermissionGuard,
-  FeatureGuard
+  FeatureGuard,
 } from './providers/ConsoleProvider'
 
 // 国际化 (纯JavaScript)
@@ -48,7 +48,7 @@ export { Dashboard } from './pages/Dashboard'
 
 // 3. 租户管理页面 (暂时禁用以解决构建问题)
 // export { default as TenantList } from './pages/tenants/TenantList'
-// export { default as TenantCreate } from './pages/tenants/TenantCreate'  
+// export { default as TenantCreate } from './pages/tenants/TenantCreate'
 // export { default as TenantDetail } from './pages/tenants/TenantDetail'
 
 // 4. Hooks (暂时禁用以解决构建问题)
@@ -68,15 +68,15 @@ export const ConsoleModule = {
   name: '@linch-kit/console',
   version: '0.1.0',
   description: 'LinchKit 企业级管理控制台',
-  
+
   // 主要导出
   Provider: ConsoleProvider,
-  
+
   // 服务
   services: consoleServices,
-  
+
   // 国际化资源
-  i18n: consoleI18nResource
+  i18n: consoleI18nResource,
 } as const
 
 export default ConsoleModule

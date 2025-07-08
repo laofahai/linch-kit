@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { 
-  Button, 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
   Input,
   Label,
@@ -21,24 +21,14 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  useToast
+  useToast,
 } from '@linch-kit/ui'
-import { 
-  Save, 
-  RefreshCw, 
-  Shield, 
-  Mail, 
-  Database, 
-  Cloud,
-  Bell,
-  Globe,
-  Lock
-} from 'lucide-react'
+import { Save, RefreshCw, Shield, Mail, Database, Cloud, Bell, Globe, Lock } from 'lucide-react'
 
 export default function SystemSettingsPage() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
-  
+
   const handleSave = async () => {
     setLoading(true)
     // 模拟保存操作
@@ -57,9 +47,7 @@ export default function SystemSettingsPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">系统设置</h1>
-            <p className="text-muted-foreground mt-2">
-              管理系统配置和全局设置
-            </p>
+            <p className="text-muted-foreground mt-2">管理系统配置和全局设置</p>
           </div>
           <div className="flex space-x-2">
             <Button variant="outline" size="sm">
@@ -92,9 +80,7 @@ export default function SystemSettingsPage() {
                 <Globe className="h-5 w-5" />
                 <CardTitle>基本信息</CardTitle>
               </div>
-              <CardDescription>
-                配置系统的基本信息和显示设置
-              </CardDescription>
+              <CardDescription>配置系统的基本信息和显示设置</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
@@ -107,16 +93,16 @@ export default function SystemSettingsPage() {
                   <Input id="systemVersion" defaultValue="v1.0.0" disabled />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="systemDescription">系统描述</Label>
-                <Textarea 
-                  id="systemDescription" 
+                <Textarea
+                  id="systemDescription"
                   placeholder="输入系统描述..."
                   defaultValue="AI-First 全栈开发框架"
                 />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="defaultLanguage">默认语言</Label>
@@ -157,31 +143,25 @@ export default function SystemSettingsPage() {
                 <Shield className="h-5 w-5" />
                 <CardTitle>安全策略</CardTitle>
               </div>
-              <CardDescription>
-                配置系统安全规则和访问控制
-              </CardDescription>
+              <CardDescription>配置系统安全规则和访问控制</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>强制双因素认证</Label>
-                  <p className="text-sm text-muted-foreground">
-                    要求所有用户启用双因素认证
-                  </p>
+                  <p className="text-sm text-muted-foreground">要求所有用户启用双因素认证</p>
                 </div>
                 <Switch defaultChecked />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>密码复杂度要求</Label>
-                  <p className="text-sm text-muted-foreground">
-                    启用强密码策略验证
-                  </p>
+                  <p className="text-sm text-muted-foreground">启用强密码策略验证</p>
                 </div>
                 <Switch defaultChecked />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="sessionTimeout">会话超时 (分钟)</Label>
@@ -204,9 +184,7 @@ export default function SystemSettingsPage() {
                 <Mail className="h-5 w-5" />
                 <CardTitle>邮件配置</CardTitle>
               </div>
-              <CardDescription>
-                配置系统邮件发送服务
-              </CardDescription>
+              <CardDescription>配置系统邮件发送服务</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
@@ -219,7 +197,7 @@ export default function SystemSettingsPage() {
                   <Input id="smtpPort" type="number" defaultValue="587" />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="smtpUsername">用户名</Label>
@@ -230,13 +208,11 @@ export default function SystemSettingsPage() {
                   <Input id="smtpPassword" type="password" placeholder="••••••••" />
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>启用 TLS/SSL</Label>
-                  <p className="text-sm text-muted-foreground">
-                    使用加密连接发送邮件
-                  </p>
+                  <p className="text-sm text-muted-foreground">使用加密连接发送邮件</p>
                 </div>
                 <Switch defaultChecked />
               </div>
@@ -252,9 +228,7 @@ export default function SystemSettingsPage() {
                 <Database className="h-5 w-5" />
                 <CardTitle>数据库配置</CardTitle>
               </div>
-              <CardDescription>
-                监控和配置数据库连接
-              </CardDescription>
+              <CardDescription>监控和配置数据库连接</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
@@ -270,7 +244,7 @@ export default function SystemSettingsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label>连接池大小</Label>
@@ -285,13 +259,11 @@ export default function SystemSettingsPage() {
                   <Input type="number" defaultValue="10" />
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>启用查询日志</Label>
-                  <p className="text-sm text-muted-foreground">
-                    记录所有数据库查询用于调试
-                  </p>
+                  <p className="text-sm text-muted-foreground">记录所有数据库查询用于调试</p>
                 </div>
                 <Switch />
               </div>
@@ -307,9 +279,7 @@ export default function SystemSettingsPage() {
                 <Cloud className="h-5 w-5" />
                 <CardTitle>第三方集成</CardTitle>
               </div>
-              <CardDescription>
-                配置外部服务和 API 集成
-              </CardDescription>
+              <CardDescription>配置外部服务和 API 集成</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -325,7 +295,7 @@ export default function SystemSettingsPage() {
                   </div>
                   <Switch defaultChecked />
                 </div>
-                
+
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center">
@@ -338,7 +308,7 @@ export default function SystemSettingsPage() {
                   </div>
                   <Switch />
                 </div>
-                
+
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="flex items-center space-x-3">
                     <div className="h-8 w-8 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -364,58 +334,48 @@ export default function SystemSettingsPage() {
                 <Bell className="h-5 w-5" />
                 <CardTitle>通知设置</CardTitle>
               </div>
-              <CardDescription>
-                配置系统通知和警报规则
-              </CardDescription>
+              <CardDescription>配置系统通知和警报规则</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>用户注册通知</Label>
-                    <p className="text-sm text-muted-foreground">
-                      新用户注册时发送通知
-                    </p>
+                    <p className="text-sm text-muted-foreground">新用户注册时发送通知</p>
                   </div>
                   <Switch defaultChecked />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>系统错误警报</Label>
-                    <p className="text-sm text-muted-foreground">
-                      系统发生错误时发送警报
-                    </p>
+                    <p className="text-sm text-muted-foreground">系统发生错误时发送警报</p>
                   </div>
                   <Switch defaultChecked />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>性能监控警报</Label>
-                    <p className="text-sm text-muted-foreground">
-                      系统性能异常时发送警报
-                    </p>
+                    <p className="text-sm text-muted-foreground">系统性能异常时发送警报</p>
                   </div>
                   <Switch />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>每日使用报告</Label>
-                    <p className="text-sm text-muted-foreground">
-                      每日发送系统使用统计报告
-                    </p>
+                    <p className="text-sm text-muted-foreground">每日发送系统使用统计报告</p>
                   </div>
                   <Switch />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="notificationEmail">通知邮箱</Label>
-                <Input 
-                  id="notificationEmail" 
-                  type="email" 
+                <Input
+                  id="notificationEmail"
+                  type="email"
                   placeholder="admin@example.com"
                   defaultValue="admin@linchkit.com"
                 />

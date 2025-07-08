@@ -52,7 +52,7 @@ export const UserSchema = z.object({
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
   lastLoginAt: z.date().nullable().optional(),
-  metadata: z.record(z.unknown()).optional()
+  metadata: z.record(z.unknown()).optional(),
 })
 
 /**
@@ -101,12 +101,20 @@ export interface LinchKitAuthConfig {
     newUser?: string
   }
   callbacks?: {
-    beforeSignIn?: (params: { user: LinchKitUser; account: Account | null; profile?: Profile }) => Promise<boolean>
+    beforeSignIn?: (params: {
+      user: LinchKitUser
+      account: Account | null
+      profile?: Profile
+    }) => Promise<boolean>
     extendSession?: (session: LinchKitSession, token: JWT) => Promise<LinchKitSession>
     extendJWT?: (token: JWT, user?: LinchKitUser, account?: Account | null) => Promise<JWT>
   }
   events?: {
-    onSignIn?: (params: { user: LinchKitUser; account: Account | null; profile?: Profile }) => Promise<void>
+    onSignIn?: (params: {
+      user: LinchKitUser
+      account: Account | null
+      profile?: Profile
+    }) => Promise<void>
     onSignOut?: (params: { session?: LinchKitSession; token?: JWT }) => Promise<void>
   }
   debug?: boolean
@@ -120,11 +128,13 @@ export interface LinchKitAuthConfig {
 export const AuthRequestSchema = z.object({
   provider: z.string(),
   credentials: z.record(z.unknown()),
-  metadata: z.object({
-    ipAddress: z.string().optional(),
-    userAgent: z.string().optional(),
-    deviceFingerprint: z.string().optional()
-  }).optional()
+  metadata: z
+    .object({
+      ipAddress: z.string().optional(),
+      userAgent: z.string().optional(),
+      deviceFingerprint: z.string().optional(),
+    })
+    .optional(),
 })
 
 export type AuthRequest = z.infer<typeof AuthRequestSchema>
@@ -135,13 +145,17 @@ export type AuthRequest = z.infer<typeof AuthRequestSchema>
 export const AuthResultSchema = z.object({
   success: z.boolean(),
   user: UserSchema.optional(),
-  tokens: z.object({
-    accessToken: z.string(),
-    refreshToken: z.string(),
-    expiresIn: z.number()
-  }).optional(),
+  tokens: z
+    .object({
+      accessToken: z.string(),
+      refreshToken: z.string(),
+      expiresIn: z.number(),
+    })
+    .optional(),
   error: z.string().optional(),
-  requiredActions: z.array(z.enum(['email_verification', 'mfa_setup', 'password_change'])).optional()
+  requiredActions: z
+    .array(z.enum(['email_verification', 'mfa_setup', 'password_change']))
+    .optional(),
 })
 
 export type AuthResult = z.infer<typeof AuthResultSchema>
@@ -160,7 +174,7 @@ export const JWTPayloadSchema = z.object({
   jti: z.string(), // JWT ID
   roles: z.array(z.string()),
   permissions: z.array(z.string()).optional(),
-  tenantId: z.string().optional()
+  tenantId: z.string().optional(),
 })
 
 export type JWTPayload = z.infer<typeof JWTPayloadSchema>
@@ -176,7 +190,7 @@ export const SessionSchema = z.object({
   createdAt: z.date(),
   expiresAt: z.date(),
   lastAccessedAt: z.date().optional(),
-  metadata: z.record(z.unknown()).optional()
+  metadata: z.record(z.unknown()).optional(),
 })
 
 export type Session = z.infer<typeof SessionSchema>
@@ -188,12 +202,12 @@ export type Session = z.infer<typeof SessionSchema>
 /**
  * 权限动作
  */
-export type PermissionAction = 
-  | 'create' 
-  | 'read' 
-  | 'update' 
-  | 'delete' 
-  | 'manage' 
+export type PermissionAction =
+  | 'create'
+  | 'read'
+  | 'update'
+  | 'delete'
+  | 'manage'
   | 'execute'
   | 'view'
   | 'edit'
@@ -203,9 +217,9 @@ export type PermissionAction =
 /**
  * 权限主体
  */
-export type PermissionSubject = 
-  | 'User' 
-  | 'Role' 
+export type PermissionSubject =
+  | 'User'
+  | 'Role'
   | 'Permission'
   | 'Category'
   | 'Tag'
@@ -227,7 +241,7 @@ export const RoleSchema = z.object({
   isSystemRole: z.boolean().default(false),
   tenantId: z.string().optional(),
   createdAt: z.date(),
-  updatedAt: z.date()
+  updatedAt: z.date(),
 })
 
 export type Role = z.infer<typeof RoleSchema>
@@ -247,7 +261,7 @@ export const PermissionSchema = z.object({
   description: z.string().optional(),
   isSystemPermission: z.boolean().default(false),
   createdAt: z.date(),
-  updatedAt: z.date()
+  updatedAt: z.date(),
 })
 
 export type Permission = z.infer<typeof PermissionSchema>
@@ -262,7 +276,7 @@ export const PermissionContextSchema = z.object({
   location: z.string().optional(),
   deviceType: z.enum(['desktop', 'mobile', 'tablet']).optional(),
   ipAddress: z.string().optional(),
-  currentTime: z.date().optional()
+  currentTime: z.date().optional(),
 })
 
 export type PermissionContext = z.infer<typeof PermissionContextSchema>
@@ -274,7 +288,7 @@ export const PermissionCheckSchema = z.object({
   userId: z.string(),
   action: z.string(),
   subject: z.union([z.string(), z.record(z.unknown())]),
-  context: PermissionContextSchema.optional()
+  context: PermissionContextSchema.optional(),
 })
 
 export type PermissionCheck = z.infer<typeof PermissionCheckSchema>
@@ -294,7 +308,7 @@ export type MFAMethod = 'totp' | 'sms' | 'email' | 'backup_codes'
 export const TOTPSetupSchema = z.object({
   secret: z.string(),
   qrCode: z.string(),
-  backupCodes: z.array(z.string())
+  backupCodes: z.array(z.string()),
 })
 
 export type TOTPSetup = z.infer<typeof TOTPSetupSchema>
@@ -305,7 +319,7 @@ export type TOTPSetup = z.infer<typeof TOTPSetupSchema>
 export const MFAVerificationSchema = z.object({
   userId: z.string(),
   method: z.string(),
-  token: z.string()
+  token: z.string(),
 })
 
 export type MFAVerification = z.infer<typeof MFAVerificationSchema>
@@ -317,7 +331,7 @@ export type MFAVerification = z.infer<typeof MFAVerificationSchema>
 /**
  * 审计事件类型
  */
-export type AuditEventType = 
+export type AuditEventType =
   | 'login_success'
   | 'login_failed'
   | 'logout'
@@ -344,7 +358,7 @@ export const AuditLogSchema = z.object({
   details: z.record(z.unknown()).optional(),
   result: z.enum(['success', 'failure', 'warning']),
   timestamp: z.date(),
-  tenantId: z.string().optional()
+  tenantId: z.string().optional(),
 })
 
 export type AuditLog = z.infer<typeof AuditLogSchema>
@@ -364,7 +378,7 @@ export const PasswordPolicyConfigSchema = z.object({
   requireNumbers: z.boolean().default(true),
   requireSymbols: z.boolean().default(false),
   preventReuse: z.number().min(0).default(3), // 防止重复使用最近N个密码
-  saltRounds: z.number().min(10).max(15).default(12)
+  saltRounds: z.number().min(10).max(15).default(12),
 })
 
 export type PasswordPolicyConfig = z.infer<typeof PasswordPolicyConfigSchema>
@@ -378,30 +392,34 @@ export const AuthConfigSchema = z.object({
     secret: z.string(),
     accessTokenExpiry: z.string().default('15m'),
     refreshTokenExpiry: z.string().default('7d'),
-    algorithm: z.enum(['HS256', 'HS384', 'HS512']).default('HS256')
+    algorithm: z.enum(['HS256', 'HS384', 'HS512']).default('HS256'),
   }),
-  
+
   // 会话配置
   session: z.object({
     maxConcurrentSessions: z.number().default(5),
     maxInactiveTime: z.string().default('30m'),
-    extendOnActivity: z.boolean().default(true)
+    extendOnActivity: z.boolean().default(true),
   }),
-  
+
   // 安全配置
   security: z.object({
     maxLoginAttempts: z.number().default(5),
     lockoutDuration: z.string().default('30m'),
     passwordPolicy: PasswordPolicyConfigSchema,
     requireEmailVerification: z.boolean().default(true),
-    mfaRequired: z.boolean().default(false)
+    mfaRequired: z.boolean().default(false),
   }),
-  
+
   // 提供商配置
-  providers: z.record(z.object({
-    enabled: z.boolean().default(false),
-    config: z.record(z.unknown()).optional()
-  })).optional()
+  providers: z
+    .record(
+      z.object({
+        enabled: z.boolean().default(false),
+        config: z.record(z.unknown()).optional(),
+      })
+    )
+    .optional(),
 })
 
 export type AuthConfig = z.infer<typeof AuthConfigSchema>
@@ -455,9 +473,22 @@ export interface IAuthProvider {
  * 权限检查器接口
  */
 export interface IPermissionChecker {
-  check(user: LinchKitUser, action: PermissionAction, subject: PermissionSubject | any, context?: PermissionContext): Promise<boolean>
-  checkMultiple(user: LinchKitUser, checks: PermissionCheck[], context?: PermissionContext): Promise<Record<string, boolean>>
-  getAccessibleResources(user: LinchKitUser, action: PermissionAction, resourceType: PermissionSubject): Promise<any>
+  check(
+    user: LinchKitUser,
+    action: PermissionAction,
+    subject: PermissionSubject | any,
+    context?: PermissionContext
+  ): Promise<boolean>
+  checkMultiple(
+    user: LinchKitUser,
+    checks: PermissionCheck[],
+    context?: PermissionContext
+  ): Promise<Record<string, boolean>>
+  getAccessibleResources(
+    user: LinchKitUser,
+    action: PermissionAction,
+    resourceType: PermissionSubject
+  ): Promise<any>
 }
 
 /**
@@ -476,5 +507,8 @@ export interface ISessionManager {
  */
 export interface IAuditLogger {
   log(event: Omit<AuditLog, 'id' | 'timestamp'>): Promise<void>
-  query(filters: Partial<AuditLog>, options?: { limit?: number; offset?: number }): Promise<AuditLog[]>
+  query(
+    filters: Partial<AuditLog>,
+    options?: { limit?: number; offset?: number }
+  ): Promise<AuditLog[]>
 }

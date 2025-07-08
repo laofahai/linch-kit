@@ -88,7 +88,7 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error('创建种子数据时出错:', e)
     process.exit(1)
   })

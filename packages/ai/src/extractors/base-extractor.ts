@@ -1,6 +1,6 @@
 /**
  * Base Extractor
- * 
+ *
  * 所有数据提取器的基类，提供统一的接口和公共功能
  */
 
@@ -8,18 +8,17 @@ import { isAbsolute, normalize } from 'path'
 
 import { createLogger } from '@linch-kit/core/server'
 
-import type { 
-  IExtractor, 
-  ExtractionResult, 
-  GraphNode, 
+import type {
+  IExtractor,
+  ExtractionResult,
+  GraphNode,
   GraphRelationship,
   NodeType,
   RelationType,
-  Logger
+  Logger,
 } from '../types/index.js'
 
 import { ExtractorConfig } from './extractor-config.js'
-
 
 /**
  * 抽象基础提取器
@@ -27,8 +26,11 @@ import { ExtractorConfig } from './extractor-config.js'
 export abstract class BaseExtractor<T = unknown> implements IExtractor<T> {
   protected logger: Logger
   protected config: ExtractorConfig
-  
-  constructor(public readonly name: string, workingDirectory?: string) {
+
+  constructor(
+    public readonly name: string,
+    workingDirectory?: string
+  ) {
     this.logger = createLogger({ name: `ai:extractor:${name}` })
     // 如果提供了工作目录，重置并使用新目录
     if (workingDirectory) {
@@ -45,48 +47,50 @@ export abstract class BaseExtractor<T = unknown> implements IExtractor<T> {
   async extract(): Promise<ExtractionResult<T>> {
     const startTime = Date.now()
     this.logger.info(`开始执行 ${this.name} 数据提取...`)
-    
+
     try {
       // 1. 预处理
       await this.preExtract()
-      
+
       // 2. 提取原始数据
       const rawData = await this.extractRawData()
-      
+
       // 3. 验证数据
       if (!this.validate(rawData)) {
         throw new Error(`${this.name} 数据验证失败`)
       }
-      
+
       // 4. 转换为图数据
       const { nodes, relationships } = await this.transformToGraph(rawData)
-      
+
       // 5. 后处理
       await this.postExtract()
-      
+
       const endTime = Date.now()
       const metadata = {
         extractor_name: this.name,
         extraction_time: new Date().toISOString(),
         source_count: this.getSourceCount(rawData),
         node_count: nodes.length,
-        relationship_count: relationships.length
+        relationship_count: relationships.length,
       }
-      
+
       this.logger.info(`${this.name} 数据提取完成`, {
         duration: endTime - startTime,
         nodeCount: nodes.length,
-        relationshipCount: relationships.length
+        relationshipCount: relationships.length,
       })
-      
+
       return {
         nodes,
         relationships,
         metadata,
-        raw_data: rawData
+        raw_data: rawData,
       }
     } catch (error) {
-      this.logger.error(`${this.name} 数据提取失败`, error instanceof Error ? error : undefined, { originalError: error })
+      this.logger.error(`${this.name} 数据提取失败`, error instanceof Error ? error : undefined, {
+        originalError: error,
+      })
       throw error
     }
   }
@@ -167,7 +171,7 @@ export abstract class BaseExtractor<T = unknown> implements IExtractor<T> {
       created_at: new Date().toISOString(),
       source_file: sourceFile ? this.normalizeFilePath(sourceFile) : undefined,
       package: packageName,
-      confidence: 1.0
+      confidence: 1.0,
     }
   }
 
@@ -177,12 +181,12 @@ export abstract class BaseExtractor<T = unknown> implements IExtractor<T> {
   protected normalizeFilePath(filePath: string): string {
     // 标准化路径格式（处理反斜杠等）
     const normalizedPath = normalize(filePath)
-    
+
     // 如果是绝对路径，转换为相对路径
     if (isAbsolute(normalizedPath)) {
       return this.config.getRelativePath(normalizedPath)
     }
-    
+
     // 如果已经是相对路径，直接返回
     return normalizedPath
   }

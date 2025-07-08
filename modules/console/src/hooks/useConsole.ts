@@ -1,6 +1,6 @@
 /**
  * Console 通用 Hooks
- * 
+ *
  * 提供 Console 模块的通用功能和状态管理
  */
 
@@ -25,7 +25,7 @@ export * from './useConsole-stubs'
 //   notifications: ['console', 'notifications'] as const,
 //   auditLogs: ['console', 'auditLogs'] as const
 // }
-// 
+//
 // /**
 //  * 获取仪表板数据
 //  */
@@ -37,7 +37,7 @@ export * from './useConsole-stubs'
 //     refetchInterval: 2 * 60 * 1000 // 2分钟自动刷新
 //   })
 // }
-// 
+//
 // /**
 //  * 获取系统统计
 //  */
@@ -49,7 +49,7 @@ export * from './useConsole-stubs'
 //     refetchInterval: 5 * 60 * 1000
 //   })
 // }
-// 
+//
 // /**
 //  * 获取系统监控数据
 //  */
@@ -63,7 +63,7 @@ export * from './useConsole-stubs'
 //     refetchInterval: 30 * 1000 // 30秒自动刷新
 //   })
 // }
-// 
+//
 // /**
 //  * 获取用户通知
 //  */
@@ -76,7 +76,7 @@ export * from './useConsole-stubs'
 //     refetchInterval: 30 * 1000 // 30秒自动刷新
 //   })
 // }
-// 
+//
 // /**
 //  * 获取审计日志
 //  */
@@ -96,14 +96,14 @@ export * from './useConsole-stubs'
 //     staleTime: 5 * 60 * 1000
 //   })
 // }
-// 
+//
 // /**
 //  * 标记通知为已读
 //  */
 // export function useMarkNotificationRead() {
 //   const queryClient = useQueryClient()
 //   const t = useConsoleTranslation()
-//   
+//
 //   return useMutation({
 //     mutationFn: (notificationId: string) =>
 //       trpc.console.notification.markRead.mutate({ notificationId }),
@@ -115,14 +115,14 @@ export * from './useConsole-stubs'
 //     }
 //   })
 // }
-// 
+//
 // /**
 //  * 创建系统通知
 //  */
 // export function useCreateNotification() {
 //   const queryClient = useQueryClient()
 //   const t = useConsoleTranslation()
-//   
+//
 //   return useMutation({
 //     mutationFn: (notification: {
 //       userId: string
@@ -142,7 +142,7 @@ export * from './useConsole-stubs'
 //     }
 //   })
 // }
-// 
+//
 // /**
 //  * 权限检查
 //  */
@@ -152,19 +152,19 @@ export * from './useConsole-stubs'
 //     queryFn: () => trpc.auth.user.getCurrentPermissions.query(),
 //     staleTime: 10 * 60 * 1000 // 10分钟
 //   })
-//   
+//
 //   const hasPermission = useCallback((permission: string) => {
 //     return user?.permissions?.includes(permission) || false
 //   }, [user?.permissions])
-//   
+//
 //   const hasAnyPermission = useCallback((permissions: string[]) => {
 //     return permissions.some(permission => hasPermission(permission))
 //   }, [hasPermission])
-//   
+//
 //   const hasAllPermissions = useCallback((permissions: string[]) => {
 //     return permissions.every(permission => hasPermission(permission))
 //   }, [hasPermission])
-//   
+//
 //   return {
 //     permissions: user?.permissions || [],
 //     hasPermission,
@@ -174,7 +174,7 @@ export * from './useConsole-stubs'
 //     isSystemAdmin: hasPermission('system:admin')
 //   }
 // }
-// 
+//
 // /**
 //  * 当前租户信息
 //  */
@@ -185,14 +185,14 @@ export * from './useConsole-stubs'
 //     staleTime: 5 * 60 * 1000
 //   })
 // }
-// 
+//
 // /**
 //  * 切换租户
 //  */
 // export function useSwitchTenant() {
 //   const queryClient = useQueryClient()
 //   const t = useConsoleTranslation()
-//   
+//
 //   return useMutation({
 //     mutationFn: (tenantId: string) =>
 //       trpc.auth.user.switchTenant.mutate({ tenantId }),
@@ -206,7 +206,7 @@ export * from './useConsole-stubs'
 //     }
 //   })
 // }
-// 
+//
 // /**
 //  * Console 配置管理
 //  */
@@ -216,7 +216,7 @@ export * from './useConsole-stubs'
 //     queryFn: () => trpc.console.config.get.query(),
 //     staleTime: 30 * 60 * 1000 // 30分钟
 //   })
-//   
+//
 //   const updateConfig = useMutation({
 //     mutationFn: (updates: Record<string, any>) =>
 //       trpc.console.config.update.mutate(updates),
@@ -224,14 +224,14 @@ export * from './useConsole-stubs'
 //       queryClient.invalidateQueries({ queryKey: ['console', 'config'] })
 //     }
 //   })
-//   
+//
 //   return {
 //     config: config || {},
 //     updateConfig: updateConfig.mutate,
 //     isUpdating: updateConfig.isPending
 //   }
 // }
-// 
+//
 // /**
 //  * 系统健康检查
 //  */
@@ -244,43 +244,43 @@ export * from './useConsole-stubs'
 //     retry: 3
 //   })
 // }
-// 
+//
 // /**
 //  * 实时数据订阅（WebSocket）
 //  */
 // export function useRealtimeData(subscriptions: string[] = []) {
 //   const queryClient = useQueryClient()
-//   
+//
 //   // 这里应该集成 WebSocket 订阅
 //   // 当收到实时数据时，更新相应的查询缓存
-//   
+//
 //   const subscribe = useCallback((subscription: string) => {
 //     // WebSocket 订阅逻辑
 //     console.log(`Subscribing to ${subscription}`)
 //   }, [])
-//   
+//
 //   const unsubscribe = useCallback((subscription: string) => {
 //     // WebSocket 取消订阅逻辑
 //     console.log(`Unsubscribing from ${subscription}`)
 //   }, [])
-//   
+//
 //   return {
 //     subscribe,
 //     unsubscribe
 //   }
 // }
-// 
+//
 // /**
 //  * 导出数据
 //  */
 // export function useExportData() {
 //   const t = useConsoleTranslation()
-//   
+//
 //   return useMutation({
-//     mutationFn: ({ 
-//       type, 
-//       format, 
-//       filters 
+//     mutationFn: ({
+//       type,
+//       format,
+//       filters
 //     }: {
 //       type: 'tenants' | 'users' | 'plugins' | 'logs'
 //       format: 'csv' | 'xlsx' | 'json'
@@ -296,7 +296,7 @@ export * from './useConsole-stubs'
 //       a.download = data.filename
 //       a.click()
 //       URL.revokeObjectURL(url)
-//       
+//
 //       toast.success(t('success.export.completed'))
 //     },
 //     onError: (error: Record<string, unknown>) => {
@@ -304,7 +304,7 @@ export * from './useConsole-stubs'
 //     }
 //   })
 // }
-// 
+//
 // /**
 //  * Console 总体状态
 //  */
@@ -314,19 +314,19 @@ export * from './useConsole-stubs'
 //   const systemHealth = useSystemHealth()
 //   const permissions = usePermissions()
 //   const currentTenant = useCurrentTenant()
-//   
+//
 //   const isLoading = useMemo(() => {
-//     return dashboard.isLoading || 
-//            systemStats.isLoading || 
+//     return dashboard.isLoading ||
+//            systemStats.isLoading ||
 //            systemHealth.isLoading
 //   }, [dashboard.isLoading, systemStats.isLoading, systemHealth.isLoading])
-//   
+//
 //   const hasErrors = useMemo(() => {
-//     return dashboard.isError || 
-//            systemStats.isError || 
+//     return dashboard.isError ||
+//            systemStats.isError ||
 //            systemHealth.isError
 //   }, [dashboard.isError, systemStats.isError, systemHealth.isError])
-//   
+//
 //   return {
 //     isLoading,
 //     hasErrors,

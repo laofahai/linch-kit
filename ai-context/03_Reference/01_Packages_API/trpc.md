@@ -1,52 +1,52 @@
 ---
-package: "@linch-kit/trpc"
-version: "2.0.2"
-layer: "L4"
-dependencies: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth"]
+package: '@linch-kit/trpc'
+version: '2.0.2'
+layer: 'L4'
+dependencies: ['@linch-kit/core', '@linch-kit/schema', '@linch-kit/auth']
 completeness: 80
 test_coverage: 85
-status: "production_ready"
-document_type: "api_reference"
-purpose: "Graph RAG knowledge base - 端到端类型安全的API开发，基于tRPC 11.4.3构建"
+status: 'production_ready'
+document_type: 'api_reference'
+purpose: 'Graph RAG knowledge base - 端到端类型安全的API开发，基于tRPC 11.4.3构建'
 api_exports:
-  - name: "createTRPCProxyClient"
-    type: "function"
-    status: "stable"
-  - name: "router"
-    type: "function"
-    status: "stable"
-  - name: "publicProcedure"
-    type: "object"
-    status: "stable"
-  - name: "protectedProcedure"
-    type: "object"
-    status: "stable"
-  - name: "adminProcedure"
-    type: "object"
-    status: "stable"
-  - name: "healthRouter"
-    type: "router"
-    status: "stable"
-  - name: "systemRouter"
-    type: "router"
-    status: "stable"
-  - name: "authRouter"
-    type: "router"
-    status: "stable"
-  - name: "crudRouter"
-    type: "router"
-    status: "stable"
-  - name: "createLinchKitContext"
-    type: "function"
-    status: "stable"
+  - name: 'createTRPCProxyClient'
+    type: 'function'
+    status: 'stable'
+  - name: 'router'
+    type: 'function'
+    status: 'stable'
+  - name: 'publicProcedure'
+    type: 'object'
+    status: 'stable'
+  - name: 'protectedProcedure'
+    type: 'object'
+    status: 'stable'
+  - name: 'adminProcedure'
+    type: 'object'
+    status: 'stable'
+  - name: 'healthRouter'
+    type: 'router'
+    status: 'stable'
+  - name: 'systemRouter'
+    type: 'router'
+    status: 'stable'
+  - name: 'authRouter'
+    type: 'router'
+    status: 'stable'
+  - name: 'crudRouter'
+    type: 'router'
+    status: 'stable'
+  - name: 'createLinchKitContext'
+    type: 'function'
+    status: 'stable'
 relationships:
-  - type: "depends_on"
-    targets: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth"]
-  - type: "provides_api_for"
-    targets: ["@linch-kit/ui"]
-  - type: "integrates_with"
-    targets: ["tRPC", "Zod", "superjson"]
-last_verified: "2025-07-07"
+  - type: 'depends_on'
+    targets: ['@linch-kit/core', '@linch-kit/schema', '@linch-kit/auth']
+  - type: 'provides_api_for'
+    targets: ['@linch-kit/ui']
+  - type: 'integrates_with'
+    targets: ['tRPC', 'Zod', 'superjson']
+last_verified: '2025-07-07'
 ---
 
 # @linch-kit/trpc API 文档
@@ -101,6 +101,7 @@ export type { CreateTRPCClientOptions } from '@trpc/client'
 ```
 
 **使用示例**:
+
 ```typescript
 import { createTRPCProxyClient, httpBatchLink } from '@linch-kit/trpc'
 import type { AppRouter } from '@linch-kit/trpc/server'
@@ -174,14 +175,13 @@ export { trpcCommands } from './cli/commands'
 ```
 
 **使用示例**:
+
 ```typescript
 import { trpcCommands } from '@linch-kit/trpc'
 
 // 在 CLI 应用中注册命令
 trpcCommands.forEach(command => {
-  program.command(command.name)
-    .description(command.description)
-    .action(command.handler)
+  program.command(command.name).description(command.description).action(command.handler)
 })
 ```
 
@@ -208,7 +208,7 @@ import { initTRPC } from '@trpc/server'
 import superjson from 'superjson'
 
 const t = initTRPC.context<LinchKitContext>().create({
-  transformer: superjson
+  transformer: superjson,
 })
 
 export const router = t.router
@@ -217,6 +217,7 @@ export const procedure = t.procedure
 ```
 
 **特性**:
+
 - 集成 superjson 进行数据序列化
 - 支持 LinchKit 上下文类型
 - 提供基础的路由器和中间件构建能力
@@ -240,8 +241,8 @@ export const protectedProcedure = t.procedure.use(
     return next({
       ctx: {
         ...ctx,
-        user: ctx.user
-      }
+        user: ctx.user,
+      },
     })
   })
 )
@@ -253,32 +254,31 @@ export const adminProcedure = protectedProcedure.use(
   t.middleware(({ ctx, next }) => {
     // 简化的管理员检查 - 实际应用中应该集成权限系统
     return next({
-      ctx
+      ctx,
     })
   })
 )
 ```
 
 **使用示例**:
+
 ```typescript
 import { publicProcedure, protectedProcedure, adminProcedure } from '@linch-kit/trpc/server'
 import { z } from 'zod'
 
 // 公共接口
 const publicRouter = router({
-  ping: publicProcedure
-    .output(z.string())
-    .query(() => 'pong'),
-    
+  ping: publicProcedure.output(z.string()).query(() => 'pong'),
+
   // 需要认证的接口
   getProfile: protectedProcedure
     .output(z.object({ id: z.string(), name: z.string() }))
     .query(({ ctx }) => ({ id: ctx.user.id, name: ctx.user.name })),
-    
+
   // 管理员接口
   adminStats: adminProcedure
     .output(z.object({ totalUsers: z.number() }))
-    .query(() => ({ totalUsers: 1000 }))
+    .query(() => ({ totalUsers: 1000 })),
 })
 ```
 
@@ -289,26 +289,30 @@ const publicRouter = router({
 ```typescript
 export const healthRouter = router({
   ping: publicProcedure
-    .output(z.object({
-      message: z.string(),
-      timestamp: z.string(),
-      uptime: z.number()
-    }))
+    .output(
+      z.object({
+        message: z.string(),
+        timestamp: z.string(),
+        uptime: z.number(),
+      })
+    )
     .query(() => ({
       message: 'pong',
       timestamp: new Date().toISOString(),
-      uptime: process.uptime()
+      uptime: process.uptime(),
     })),
-    
+
   status: publicProcedure
-    .output(z.object({
-      status: z.enum(['healthy', 'degraded', 'unhealthy']),
-      timestamp: z.string()
-    }))
+    .output(
+      z.object({
+        status: z.enum(['healthy', 'degraded', 'unhealthy']),
+        timestamp: z.string(),
+      })
+    )
     .query(() => ({
       status: 'healthy' as const,
-      timestamp: new Date().toISOString()
-    }))
+      timestamp: new Date().toISOString(),
+    })),
 })
 ```
 
@@ -317,22 +321,24 @@ export const healthRouter = router({
 ```typescript
 export const systemRouter = router({
   info: publicProcedure
-    .output(z.object({
-      name: z.string(),
-      version: z.string(),
-      environment: z.string(),
-      nodeVersion: z.string(),
-      uptime: z.number(),
-      timestamp: z.string()
-    }))
+    .output(
+      z.object({
+        name: z.string(),
+        version: z.string(),
+        environment: z.string(),
+        nodeVersion: z.string(),
+        uptime: z.number(),
+        timestamp: z.string(),
+      })
+    )
     .query(() => ({
       name: '@linch-kit/trpc',
       version: '0.1.0',
       environment: process.env.NODE_ENV || 'development',
       nodeVersion: process.version,
       uptime: process.uptime(),
-      timestamp: new Date().toISOString()
-    }))
+      timestamp: new Date().toISOString(),
+    })),
 })
 ```
 
@@ -341,7 +347,7 @@ export const systemRouter = router({
 ```typescript
 export const appRouter = router({
   health: healthRouter,
-  system: systemRouter
+  system: systemRouter,
 })
 
 export type AppRouter = typeof appRouter
@@ -368,7 +374,7 @@ export function createLinchKitContext(options: {
   return async (_opts: { req: unknown; res?: unknown }) => {
     return {
       user: undefined, // 在具体应用中实现认证逻辑
-      services: options.services
+      services: options.services,
     }
   }
 }
@@ -386,13 +392,14 @@ export const createTRPCContext = createLinchKitContext({
       error: (message: string, meta?: Record<string, unknown>) => console.error(message, meta),
     },
     config: {
-      get: (key: string) => process.env[key]
-    }
-  }
+      get: (key: string) => process.env[key],
+    },
+  },
 })
 ```
 
 **使用示例**:
+
 ```typescript
 import { createTRPCContext } from '@linch-kit/trpc/server'
 import { createTRPCMsgs } from '@trpc/server/adapters/next'
@@ -421,44 +428,43 @@ export type TRPCRouterFactory = {
 ```typescript
 export const authRouter = router({
   // 获取当前会话
-  getSession: publicProcedure
-    .query(async ({ ctx }) => {
-      return ctx.user || null
-    }),
+  getSession: publicProcedure.query(async ({ ctx }) => {
+    return ctx.user || null
+  }),
 
   // 获取用户信息
-  getUser: protectedProcedure
-    .query(async ({ ctx }) => {
-      return ctx.user
-    }),
+  getUser: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.user
+  }),
 
   // 用户登录状态检查
-  isAuthenticated: publicProcedure
-    .query(async ({ ctx }) => {
-      return !!ctx.user
-    }),
+  isAuthenticated: publicProcedure.query(async ({ ctx }) => {
+    return !!ctx.user
+  }),
 
   // 获取用户权限
-  getPermissions: protectedProcedure
-    .query(async ({ ctx: _ctx }) => {
-      // TODO: 实现权限获取逻辑
-      return []
-    }),
+  getPermissions: protectedProcedure.query(async ({ ctx: _ctx }) => {
+    // TODO: 实现权限获取逻辑
+    return []
+  }),
 
   // 检查特定权限
   hasPermission: protectedProcedure
-    .input(z.object({
-      action: z.string(),
-      resource: z.string()
-    }))
+    .input(
+      z.object({
+        action: z.string(),
+        resource: z.string(),
+      })
+    )
     .query(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现权限检查逻辑
       return false
-    })
+    }),
 })
 ```
 
 **使用示例**:
+
 ```typescript
 import { authRouter } from '@linch-kit/trpc/routers/auth'
 
@@ -474,13 +480,15 @@ const appRouter = router({
 export const crudRouter = router({
   // 通用查询
   findMany: protectedProcedure
-    .input(z.object({
-      model: z.string(),
-      where: z.record(z.any()).optional(),
-      orderBy: z.record(z.any()).optional(),
-      take: z.number().optional(),
-      skip: z.number().optional()
-    }))
+    .input(
+      z.object({
+        model: z.string(),
+        where: z.record(z.any()).optional(),
+        orderBy: z.record(z.any()).optional(),
+        take: z.number().optional(),
+        skip: z.number().optional(),
+      })
+    )
     .query(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用查询逻辑
       return []
@@ -488,10 +496,12 @@ export const crudRouter = router({
 
   // 通用创建
   create: protectedProcedure
-    .input(z.object({
-      model: z.string(),
-      data: z.record(z.any())
-    }))
+    .input(
+      z.object({
+        model: z.string(),
+        data: z.record(z.any()),
+      })
+    )
     .mutation(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用创建逻辑
       return {}
@@ -499,11 +509,13 @@ export const crudRouter = router({
 
   // 通用更新
   update: protectedProcedure
-    .input(z.object({
-      model: z.string(),
-      where: z.record(z.any()),
-      data: z.record(z.any())
-    }))
+    .input(
+      z.object({
+        model: z.string(),
+        where: z.record(z.any()),
+        data: z.record(z.any()),
+      })
+    )
     .mutation(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用更新逻辑
       return {}
@@ -511,10 +523,12 @@ export const crudRouter = router({
 
   // 通用删除
   delete: protectedProcedure
-    .input(z.object({
-      model: z.string(),
-      where: z.record(z.any())
-    }))
+    .input(
+      z.object({
+        model: z.string(),
+        where: z.record(z.any()),
+      })
+    )
     .mutation(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现通用删除逻辑
       return {}
@@ -522,18 +536,21 @@ export const crudRouter = router({
 
   // 统计查询
   count: protectedProcedure
-    .input(z.object({
-      model: z.string(),
-      where: z.record(z.any()).optional()
-    }))
+    .input(
+      z.object({
+        model: z.string(),
+        where: z.record(z.any()).optional(),
+      })
+    )
     .query(async ({ input: _input, ctx: _ctx }) => {
       // TODO: 实现统计查询逻辑
       return 0
-    })
+    }),
 })
 ```
 
 **使用示例**:
+
 ```typescript
 import { crudRouter } from '@linch-kit/trpc/routers/crud'
 
@@ -607,6 +624,7 @@ export const generateTrpcCommand: CLICommand = {
 ```
 
 **使用示例**:
+
 ```bash
 # 生成基础 tRPC 路由器
 linch trpc:generate --schema ./src/schema --output ./src/trpc
@@ -648,7 +666,9 @@ export const generateTrpcCommand: CLICommand = {
 
 ```typescript
 // 在代码生成中集成 Schema 定义
-async function loadSchemaEntities(schemaPath: string): Promise<Array<{ name: string; fields: Record<string, unknown> }>> {
+async function loadSchemaEntities(
+  schemaPath: string
+): Promise<Array<{ name: string; fields: Record<string, unknown> }>> {
   // 与 @linch-kit/schema 集成
   return []
 }
@@ -709,14 +729,14 @@ const appRouter = router({
   // 公共路由
   health: healthRouter,
   system: systemRouter,
-  
+
   // 认证路由
   auth: authRouter,
-  
+
   // 业务路由
   user: userRouter,
   post: postRouter,
-  
+
   // 管理路由
   admin: adminRouter,
 })
@@ -729,10 +749,10 @@ const appRouter = router({
 const userRouter = router({
   // 公共信息
   getProfile: publicProcedure.query(/* ... */),
-  
+
   // 需要认证
   updateProfile: protectedProcedure.mutation(/* ... */),
-  
+
   // 需要管理员权限
   deleteUser: adminProcedure.mutation(/* ... */),
 })
@@ -744,20 +764,24 @@ const userRouter = router({
 // 使用严格的类型定义
 const createUserRouter = router({
   create: protectedProcedure
-    .input(z.object({
-      name: z.string().min(1),
-      email: z.string().email(),
-      age: z.number().min(0).max(120)
-    }))
-    .output(z.object({
-      id: z.string(),
-      name: z.string(),
-      email: z.string(),
-      createdAt: z.date()
-    }))
+    .input(
+      z.object({
+        name: z.string().min(1),
+        email: z.string().email(),
+        age: z.number().min(0).max(120),
+      })
+    )
+    .output(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+        createdAt: z.date(),
+      })
+    )
     .mutation(async ({ input }) => {
       // 实现创建逻辑
-    })
+    }),
 })
 ```
 
@@ -843,6 +867,7 @@ const createUserRouter = router({
 @linch-kit/trpc 是 LinchKit 生态系统中的核心 API 层包，提供了完整的端到端类型安全 API 开发能力。通过分离式架构设计、自动代码生成和深度集成，为开发者提供了强大而灵活的 API 开发工具。
 
 **关键优势**:
+
 - 🔒 端到端类型安全
 - 🚀 自动代码生成
 - 🔧 企业级权限控制

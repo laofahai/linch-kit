@@ -1,6 +1,6 @@
 /**
  * 数据表格组件
- * 
+ *
  * 基于 @linch-kit/ui 的 SchemaTable，为 Console 模块定制
  */
 
@@ -8,7 +8,15 @@
 
 import { useState, useMemo } from 'react'
 import { SchemaTable } from '@linch-kit/ui'
-import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@linch-kit/ui'
+import {
+  Button,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@linch-kit/ui'
 import { cn } from '@linch-kit/ui/utils'
 import { Search, MoreHorizontal } from 'lucide-react'
 
@@ -136,23 +144,23 @@ export function DataTable<T = Record<string, unknown>>({
   onSelectionChange,
   batchActions,
   toolbarActions,
-  className
+  className,
 }: DataTableProps<T>) {
   const t = useConsoleTranslation()
   const [localSearchValue, setLocalSearchValue] = useState(searchValue || '')
-  
+
   // 处理搜索
   const handleSearch = (value: string) => {
     setLocalSearchValue(value)
     onSearch?.(value)
   }
-  
+
   // 处理筛选
   const handleFilterChange = (key: string, value: string) => {
     const newFilters = { ...filterValues, [key]: value }
     onFilterChange?.(newFilters)
   }
-  
+
   // 转换列配置为 SchemaTable 格式
   const schemaTableColumns = useMemo(() => {
     return columns.map(col => ({
@@ -163,16 +171,16 @@ export function DataTable<T = Record<string, unknown>>({
       sortable: col.sortable,
       width: col.width,
       align: col.align,
-      fixed: col.fixed
+      fixed: col.fixed,
     }))
   }, [columns])
-  
+
   // 添加操作列
   const finalColumns = useMemo(() => {
     if (!actions || actions.length === 0) {
       return schemaTableColumns
     }
-    
+
     return [
       ...schemaTableColumns,
       {
@@ -195,11 +203,11 @@ export function DataTable<T = Record<string, unknown>>({
               </Button>
             ))}
           </div>
-        )
-      }
+        ),
+      },
     ]
   }, [schemaTableColumns, actions, t])
-  
+
   return (
     <div className={cn('data-table', className)}>
       {/* 工具栏 */}
@@ -213,39 +221,38 @@ export function DataTable<T = Record<string, unknown>>({
                 <Input
                   placeholder={t('common.search')}
                   value={localSearchValue}
-                  onChange={(e) => handleSearch(e.target.value)}
+                  onChange={e => handleSearch(e.target.value)}
                   className="pl-10"
                 />
               </div>
             )}
-            
+
             {/* 筛选 */}
-            {filterable && filters?.map(filter => (
-              <Select
-                key={filter.key}
-                value={filterValues?.[filter.key] || ''}
-                onValueChange={(value) => handleFilterChange(filter.key, value)}
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder={filter.label} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">全部</SelectItem>
-                  {filter.options.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ))}
-            
+            {filterable &&
+              filters?.map(filter => (
+                <Select
+                  key={filter.key}
+                  value={filterValues?.[filter.key] || ''}
+                  onValueChange={value => handleFilterChange(filter.key, value)}
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder={filter.label} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">全部</SelectItem>
+                    {filter.options.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ))}
+
             {/* 批量操作 */}
             {batchActions && selectedRows.length > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  已选择 {selectedRows.length} 项
-                </span>
+                <span className="text-sm text-gray-600">已选择 {selectedRows.length} 项</span>
                 {batchActions.map(action => (
                   <Button
                     key={action.key}
@@ -260,7 +267,7 @@ export function DataTable<T = Record<string, unknown>>({
               </div>
             )}
           </div>
-          
+
           {/* 工具栏操作 */}
           {toolbarActions && (
             <div className="flex items-center gap-2">
@@ -279,7 +286,7 @@ export function DataTable<T = Record<string, unknown>>({
           )}
         </div>
       )}
-      
+
       {/* 表格 */}
       <SchemaTable
         data={data}
@@ -317,7 +324,7 @@ export function SimpleDataTable<T = Record<string, unknown>>({
   columns,
   loading = false,
   emptyText,
-  className
+  className,
 }: SimpleDataTableProps<T>) {
   return (
     <DataTable

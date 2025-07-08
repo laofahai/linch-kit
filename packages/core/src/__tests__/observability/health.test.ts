@@ -4,9 +4,13 @@
 
 import { Server } from 'http'
 
-import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, mock, type Mock } from 'bun:test'
 
-import { LinchKitHealthMonitor, createHealthMonitor, builtinCheckers } from '../../observability/health'
+import {
+  LinchKitHealthMonitor,
+  createHealthMonitor,
+  builtinCheckers,
+} from '../../observability/health'
 import type { HealthChecker, HealthStatus } from '../../types'
 
 // bun test 暂不支持 vi.mock，简化测试以避免外部依赖
@@ -18,15 +22,15 @@ describe('LinchKitHealthMonitor', () => {
 
   beforeEach(() => {
     healthMonitor = new LinchKitHealthMonitor()
-    
+
     mockChecker = {
       name: 'test-checker',
       timeout: 1000,
-      check: vi.fn().mockResolvedValue({
+      check: mock().mockResolvedValue({
         status: 'healthy',
         message: 'Test checker OK',
-        timestamp: Date.now()
-      })
+        timestamp: Date.now(),
+      }),
     }
   })
 
@@ -37,7 +41,7 @@ describe('LinchKitHealthMonitor', () => {
   describe('检查器管理', () => {
     it('should add health checkers', () => {
       healthMonitor.addChecker(mockChecker)
-      
+
       const checkerNames = healthMonitor.getCheckerNames()
       expect(checkerNames).toContain('test-checker')
     })
@@ -45,7 +49,7 @@ describe('LinchKitHealthMonitor', () => {
     it('should remove health checkers', () => {
       healthMonitor.addChecker(mockChecker)
       healthMonitor.removeChecker('test-checker')
-      
+
       const checkerNames = healthMonitor.getCheckerNames()
       expect(checkerNames).not.toContain('test-checker')
     })
@@ -53,10 +57,10 @@ describe('LinchKitHealthMonitor', () => {
     it('should get all checker names', () => {
       const checker1 = { ...mockChecker, name: 'checker1' }
       const checker2 = { ...mockChecker, name: 'checker2' }
-      
+
       healthMonitor.addChecker(checker1)
       healthMonitor.addChecker(checker2)
-      
+
       const names = healthMonitor.getCheckerNames()
       expect(names).toEqual(['checker1', 'checker2'])
     })
@@ -69,31 +73,31 @@ describe('LinchKitHealthMonitor', () => {
 
     it('should check individual checker', async () => {
       const result = await healthMonitor.check('test-checker')
-      
+
       expect(result).toEqual({
         status: 'healthy',
         message: 'Test checker OK',
-        timestamp: expect.any(Number)
+        timestamp: expect.any(Number),
       })
       expect(mockChecker.check).toHaveBeenCalled()
     })
 
     it('should return undefined for non-existent checker', async () => {
       const result = await healthMonitor.check('non-existent')
-      
+
       expect(result).toBeUndefined()
     })
 
     it('should handle checker errors', async () => {
       const error = new Error('Checker failed')
       ;(mockChecker.check as Mock).mockRejectedValue(error)
-      
+
       const result = await healthMonitor.check('test-checker')
-      
+
       expect(result).toEqual({
         status: 'unhealthy',
         message: 'Checker failed',
-        timestamp: expect.any(Number)
+        timestamp: expect.any(Number),
       })
     })
   })

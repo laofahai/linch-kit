@@ -31,11 +31,13 @@ Options:
 ## 创建后的步骤
 
 1. **进入项目目录**
+
    ```bash
    cd my-app
    ```
 
 2. **安装依赖** (如果使用了 --no-install)
+
    ```bash
    bun install
    # 或者
@@ -43,22 +45,26 @@ Options:
    ```
 
 3. **配置环境变量**
+
    ```bash
    cp .env.example .env.local
    # 编辑 .env.local 文件，配置数据库连接等
    ```
 
 4. **初始化数据库**
+
    ```bash
    bun db:push
    ```
 
 5. **创建管理员账户**
+
    ```bash
    bun create-admin
    ```
 
 6. **启动开发服务器**
+
    ```bash
    bun dev
    ```

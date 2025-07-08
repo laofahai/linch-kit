@@ -9,28 +9,33 @@ LinchKit Schema驱动开发引擎 - 基于TypeScript的企业级Schema定义和�
 ## 核心特性
 
 ### ✨ 双重定义方式
+
 - **函数式API**: 使用 `defineField` 和 `defineEntity` 进行Schema定义
 - **装饰器模式**: 支持基于class的装饰器定义方式
 
 ### 🔧 丰富的字段类型
+
 - **基础类型**: string, number, boolean, date
 - **特殊类型**: email, url, uuid, text, json
 - **高级类型**: enum, array, relation, i18n
 - **扩展支持**: 自定义字段类型和验证规则
 
 ### 🏗️ 强大的代码生成
+
 - **Prisma Schema**: 生成完整的数据库模型定义
 - **TypeScript类型**: 生成类型安全的接口定义
 - **Zod验证**: 自动生成运行时验证Schema
 - **可扩展**: 支持自定义生成器
 
 ### 🌍 企业级特性
+
 - **国际化支持**: 内置i18n字段类型和多语言Schema
 - **权限控制**: 字段级和实体级权限定义
 - **审计跟踪**: 自动时间戳和软删除支持
 - **索引优化**: 智能索引建议和优化
 
 ### 🏗️ 架构集成
+
 - **Core插件系统**: 完全集成LinchKit Core的插件架构
 - **统一基础设施**: 使用Core的日志、国际化、配置管理
 - **CLI集成**: Schema命令集成到Core的CLI框架
@@ -60,7 +65,7 @@ const User = defineEntity('User', {
   role: defineField.enum(['admin', 'user', 'guest']).default('user'),
   profile: defineField.json().optional(),
   createdAt: defineField.date().auto().required(),
-  updatedAt: defineField.date().auto().required()
+  updatedAt: defineField.date().auto().required(),
 })
 ```
 
@@ -71,11 +76,11 @@ import { Entity, Field, Required, Unique, Default } from '@linch-kit/schema'
 
 @Entity('User')
 export class User {
-  @Field.uuid().auto()
+  @(Field.uuid().auto())
   @Required()
   id: string
 
-  @Field.string().min(2).max(50)
+  @(Field.string().min(2).max(50))
   @Required()
   name: string
 
@@ -84,7 +89,7 @@ export class User {
   @Unique()
   email: string
 
-  @Field.number().min(0).max(120)
+  @(Field.number().min(0).max(120))
   age?: number
 
   @Field.enum(['admin', 'user', 'guest'])
@@ -94,11 +99,11 @@ export class User {
   @Field.json()
   profile?: Record<string, unknown>
 
-  @Field.date().auto()
+  @(Field.date().auto())
   @Required()
   createdAt: Date
 
-  @Field.date().auto()
+  @(Field.date().auto())
   @Required()
   updatedAt: Date
 }
@@ -114,14 +119,14 @@ const Post = defineEntity('Post', {
   content: defineField.text().required(),
   authorId: defineField.uuid().required(),
   author: defineField.relation('User').manyToOne(),
-  tags: defineField.array(defineField.string())
+  tags: defineField.array(defineField.string()),
 })
 
 // 多对多关系
 const Tag = defineEntity('Tag', {
   id: defineField.uuid().auto().required(),
   name: defineField.string().required().unique(),
-  posts: defineField.relation('Post').manyToMany()
+  posts: defineField.relation('Post').manyToMany(),
 })
 ```
 
@@ -130,15 +135,19 @@ const Tag = defineEntity('Tag', {
 ```typescript
 const Product = defineEntity('Product', {
   id: defineField.uuid().auto().required(),
-  name: defineField.i18n({
-    locales: ['en', 'zh-CN', 'ja'],
-    required: ['en'],
-    fallback: 'en'
-  }).required(),
-  description: defineField.i18n({
-    locales: ['en', 'zh-CN', 'ja'],
-    type: 'text'
-  }).optional()
+  name: defineField
+    .i18n({
+      locales: ['en', 'zh-CN', 'ja'],
+      required: ['en'],
+      fallback: 'en',
+    })
+    .required(),
+  description: defineField
+    .i18n({
+      locales: ['en', 'zh-CN', 'ja'],
+      type: 'text',
+    })
+    .optional(),
 })
 ```
 
@@ -157,6 +166,7 @@ console.log(prismaSchema[0].content)
 ```
 
 生成的Prisma Schema:
+
 ```prisma
 model User {
   id        String   @id @default(uuid())
@@ -189,6 +199,7 @@ const typeFiles = await generator.generate(entities)
 ```
 
 生成的TypeScript类型:
+
 ```typescript
 export interface User {
   id: string
@@ -258,38 +269,45 @@ const phoneField = defineCustomFieldType({
   },
   transform: (value: unknown) => {
     return String(value).replace(/\D/g, '')
-  }
+  },
 })
 
 // 使用自定义字段类型
 const Contact = defineEntity('Contact', {
   id: defineField.uuid().auto().required(),
-  phone: phoneField().required()
+  phone: phoneField().required(),
 })
 ```
 
 ### 权限控制
 
 ```typescript
-const User = defineEntity('User', {
-  id: defineField.uuid().auto().required(),
-  email: defineField.email().required().unique(),
-  password: defineField.string().required().permissions({
-    read: [{ role: 'admin' }],
-    write: [{ role: 'owner', condition: 'self' }]
-  }),
-  salary: defineField.number().permissions({
-    read: [{ role: 'admin' }, { role: 'hr' }],
-    write: [{ role: 'admin' }]
-  })
-}, {
-  permissions: {
-    read: [{ role: 'authenticated' }],
-    create: [{ role: 'admin' }],
-    update: [{ role: 'admin' }, { role: 'owner', condition: 'self' }],
-    delete: [{ role: 'admin' }]
+const User = defineEntity(
+  'User',
+  {
+    id: defineField.uuid().auto().required(),
+    email: defineField.email().required().unique(),
+    password: defineField
+      .string()
+      .required()
+      .permissions({
+        read: [{ role: 'admin' }],
+        write: [{ role: 'owner', condition: 'self' }],
+      }),
+    salary: defineField.number().permissions({
+      read: [{ role: 'admin' }, { role: 'hr' }],
+      write: [{ role: 'admin' }],
+    }),
+  },
+  {
+    permissions: {
+      read: [{ role: 'authenticated' }],
+      create: [{ role: 'admin' }],
+      update: [{ role: 'admin' }, { role: 'owner', condition: 'self' }],
+      delete: [{ role: 'admin' }],
+    },
   }
-})
+)
 ```
 
 ### Schema验证
@@ -327,7 +345,7 @@ await registry.register(schemaPlugin, {
   enableWatcher: false,
   defaultGenerators: ['typescript', 'prisma'],
   inputDir: './src/schema',
-  outputDir: './generated'
+  outputDir: './generated',
 })
 
 // 启动插件系统
@@ -339,12 +357,7 @@ await registry.startAll()
 Schema包完全依赖并复用Core包的基础设施，不重复实现底层功能：
 
 ```typescript
-import {
-  logger,
-  useSchemaTranslation,
-  logInfo,
-  logError
-} from '@linch-kit/schema'
+import { logger, useSchemaTranslation, logInfo, logError } from '@linch-kit/schema'
 
 // 使用Core的统一日志系统
 logger.info('Schema operation completed')
@@ -359,7 +372,8 @@ logError('Generation failed', error)
 ```
 
 **重要说明**：Schema包不提供独立的插件系统，所有插件相关功能都通过Core的插件系统实现。
-```
+
+````
 
 ## 配置选项
 
@@ -373,11 +387,11 @@ configureSchema({
   defaultTimestamps: true,
   defaultSoftDelete: true,
   defaultI18n: ['en', 'zh-CN'],
-  
+
   // 命名约定
   tableNamePattern: 'snake_case',
   fieldNamePattern: 'camelCase',
-  
+
   // 代码生成选项
   generators: {
     prisma: {
@@ -390,26 +404,30 @@ configureSchema({
     }
   }
 })
-```
+````
 
 ## 最佳实践
 
 ### 1. Schema组织
+
 - 将相关实体放在同一个文件中
 - 使用命名空间避免命名冲突
 - 合理使用Schema继承和组合
 
 ### 2. 字段设计
+
 - 优先使用具体的字段类型而非通用类型
 - 为所有字段添加适当的验证规则
 - 合理设置字段的可选性和默认值
 
 ### 3. 关系设计
+
 - 避免过度嵌套的关系
 - 使用适当的关系类型
 - 考虑查询性能优化索引
 
 ### 4. 国际化
+
 - 统一规划支持的语言
 - 设置合理的回退语言
 - 考虑内容的本地化需求
@@ -419,26 +437,33 @@ configureSchema({
 ### 核心API
 
 #### defineField
+
 字段定义的主入口，支持所有字段类型的链式调用。
 
 #### defineEntity
+
 实体定义函数，支持字段映射和选项配置。
 
 #### Entity装饰器
+
 基于class的实体定义装饰器。
 
 #### Field装饰器
+
 字段定义装饰器，支持所有字段类型。
 
 ### 生成器API
 
 #### BaseGenerator
+
 所有生成器的抽象基类。
 
 #### PrismaGenerator
+
 Prisma Schema生成器。
 
 #### TypeScriptGenerator
+
 TypeScript类型生成器。
 
 ## 开发状态
@@ -446,6 +471,7 @@ TypeScript类型生成器。
 当前版本: `0.1.0`
 
 ### ✅ 已完成功能
+
 - [x] 完整的字段类型系统 (string, number, boolean, date, email, url, uuid, text, json, enum, array, relation, i18n)
 - [x] 函数式 defineField API
 - [x] defineEntity 实体定义系统
@@ -456,6 +482,7 @@ TypeScript类型生成器。
 - [x] 基础测试框架
 
 ### 🚧 开发中功能
+
 - [ ] 完整的类型错误修复
 - [ ] Schema验证系统完善
 - [ ] 数据库迁移系统
@@ -463,6 +490,7 @@ TypeScript类型生成器。
 - [ ] CLI命令实现
 
 ### 📋 计划功能
+
 - [ ] 性能优化和缓存
 - [ ] 更多代码生成器 (GraphQL, OpenAPI)
 - [ ] 可视化Schema编辑器
@@ -472,12 +500,14 @@ TypeScript类型生成器。
 ## 技术架构
 
 ### 依赖关系
+
 - `@linch-kit/core`: 基础设施和工具
 - `zod`: 运行时类型验证
 - `ts-morph`: TypeScript代码操作
 - `reflect-metadata`: 装饰器元数据支持
 
 ### 兼容性
+
 - Node.js >= 18
 - TypeScript >= 5.0
 - 支持 ES2022+ 环境
@@ -485,6 +515,7 @@ TypeScript类型生成器。
 ## 贡献指南
 
 ### 开发环境
+
 ```bash
 # 克隆项目
 git clone <repository-url>
@@ -504,6 +535,7 @@ bun check-types
 ```
 
 ### 代码规范
+
 - 严格遵循 TypeScript strict 模式
 - 禁止使用 `any` 类型，必须使用 `unknown`
 - 所有公共 API 必须有 JSDoc 注释
@@ -516,6 +548,7 @@ MIT License
 ## 更新日志
 
 ### v0.1.0 (2025-06-25)
+
 - 🎉 初始版本发布
 - ✨ 完整的字段类型系统
 - ✨ 双重定义方式支持

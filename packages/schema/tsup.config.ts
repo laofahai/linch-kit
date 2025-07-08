@@ -7,5 +7,5 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   target: 'es2022',
-  external: ['reflect-metadata', '@linch-kit/core']
+  external: ['reflect-metadata', '@linch-kit/core'],
 })

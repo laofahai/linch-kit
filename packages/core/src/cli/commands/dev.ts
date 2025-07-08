@@ -1,6 +1,6 @@
 /**
  * linch dev 命令
- * 
+ *
  * 启动开发服务器
  */
 
@@ -20,35 +20,35 @@ const devCommand: CLICommand = {
       alias: 'p',
       description: '服务器端口',
       type: 'number',
-      defaultValue: 3000
+      defaultValue: 3000,
     },
     {
       name: 'host',
       alias: 'h',
       description: '服务器主机',
       type: 'string',
-      defaultValue: 'localhost'
+      defaultValue: 'localhost',
     },
     {
       name: 'turbo',
       description: '使用 Turbopack (实验性)',
       type: 'boolean',
-      defaultValue: false
-    }
+      defaultValue: false,
+    },
   ],
   handler: async ({ options }) => {
     try {
       // 检查项目类型
       const isNextApp = existsSync('next.config.js') || existsSync('next.config.ts')
       const isViteApp = existsSync('vite.config.js') || existsSync('vite.config.ts')
-      
+
       let command: string
       let args: string[] = []
 
       if (isNextApp) {
         command = 'next'
         args = ['dev']
-        
+
         if (options.port) {
           args.push('-p', String(options.port))
         }
@@ -61,7 +61,7 @@ const devCommand: CLICommand = {
       } else if (isViteApp) {
         command = 'vite'
         args = []
-        
+
         if (options.port) {
           args.push('--port', String(options.port))
         }
@@ -83,16 +83,16 @@ const devCommand: CLICommand = {
         shell: true,
         env: {
           ...process.env,
-          PORT: String(options.port || 3000)
-        }
+          PORT: String(options.port || 3000),
+        },
       })
 
-      child.on('error', (error) => {
+      child.on('error', error => {
         Logger.error('Failed to start dev server:', error)
         process.exit(1)
       })
 
-      child.on('exit', (code) => {
+      child.on('exit', code => {
         if (code !== 0) {
           process.exit(code || 1)
         }
@@ -111,15 +111,15 @@ const devCommand: CLICommand = {
 
       // 保持进程运行
       await new Promise(() => {})
-      
+
       return { success: true }
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       }
     }
-  }
+  },
 }
 
 export function registerDevCommand(cli: CLIManager) {

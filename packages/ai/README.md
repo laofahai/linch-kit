@@ -27,7 +27,7 @@ graph TD
     A --> C[Schema L1]
     A --> D[tRPC L3]
     A --> E[UI L3]
-    
+
     F[Neo4j Database] --> A
     G[AI Assistants] --> A
     H[CLI Tools] --> A
@@ -181,7 +181,7 @@ import { PackageExtractor } from '@linch-kit/ai'
 const extractor = new PackageExtractor({
   rootPath: './projects/my-app',
   includeDevDependencies: true,
-  extractVersions: true
+  extractVersions: true,
 })
 
 const result = await extractor.extract()
@@ -199,7 +199,7 @@ import { SchemaExtractor } from '@linch-kit/ai'
 const extractor = new SchemaExtractor({
   schemaPath: './src/schemas',
   includeValidation: true,
-  extractRelations: true
+  extractRelations: true,
 })
 
 const result = await extractor.extract()
@@ -217,7 +217,7 @@ import { DocumentExtractor } from '@linch-kit/ai'
 const extractor = new DocumentExtractor({
   docPaths: ['./docs', './README.md'],
   extractHeaders: true,
-  extractCodeBlocks: true
+  extractCodeBlocks: true,
 })
 
 const result = await extractor.extract()
@@ -233,7 +233,7 @@ import { FunctionExtractor } from '@linch-kit/ai'
 const extractor = new FunctionExtractor({
   sourcePaths: ['./src'],
   includePrivate: false,
-  extractCalls: true
+  extractCalls: true,
 })
 
 const result = await extractor.extract()
@@ -249,7 +249,7 @@ import { ImportExtractor } from '@linch-kit/ai'
 const extractor = new ImportExtractor({
   sourcePaths: ['./src'],
   resolveModules: true,
-  includeExternal: false
+  includeExternal: false,
 })
 
 const result = await extractor.extract()
@@ -268,7 +268,7 @@ const config: Neo4jConfig = {
   uri: 'bolt://localhost:7687',
   username: 'neo4j',
   password: 'password',
-  database: 'neo4j'
+  database: 'neo4j',
 }
 
 const service = new Neo4jService(config)
@@ -281,8 +281,8 @@ await service.saveNodes([
   {
     id: 'user-schema',
     type: 'Schema',
-    properties: { name: 'User', fields: ['id', 'email', 'name'] }
-  }
+    properties: { name: 'User', fields: ['id', 'email', 'name'] },
+  },
 ])
 
 // 保存关系
@@ -292,8 +292,8 @@ await service.saveRelationships([
     type: 'HAS_ONE',
     source: 'user-schema',
     target: 'profile-schema',
-    properties: { optional: false }
-  }
+    properties: { optional: false },
+  },
 ])
 
 // 查询节点
@@ -325,19 +325,19 @@ const entity = await engine.findEntity('UserSchema')
 const deps = await engine.findDependencies('auth', {
   direction: 'out',
   depth: 2,
-  types: ['DEPENDS_ON', 'USES']
+  types: ['DEPENDS_ON', 'USES'],
 })
 
 // 查找路径
 const path = await engine.findPath('auth', 'ui', {
   maxDepth: 5,
-  relationTypes: ['DEPENDS_ON']
+  relationTypes: ['DEPENDS_ON'],
 })
 
 // 查找模式
 const patterns = await engine.findPatterns('authentication', {
   includeExamples: true,
-  includeBestPractices: true
+  includeBestPractices: true,
 })
 ```
 
@@ -390,22 +390,22 @@ console.log(context.bestPractices) // 最佳实践
 interface Neo4jConfig {
   /** Neo4j 连接 URI */
   uri: string
-  
+
   /** 用户名 */
   username: string
-  
+
   /** 密码 */
   password: string
-  
+
   /** 数据库名 */
   database?: string
-  
+
   /** 连接池配置 */
   maxConnectionPoolSize?: number
-  
+
   /** 连接超时时间 (ms) */
   connectionTimeout?: number
-  
+
   /** 加密配置 */
   encrypted?: boolean
 }
@@ -417,19 +417,19 @@ interface Neo4jConfig {
 interface ExtractorConfig {
   /** 根路径 */
   rootPath?: string
-  
+
   /** 包含的文件模式 */
   include?: string[]
-  
+
   /** 排除的文件模式 */
   exclude?: string[]
-  
+
   /** 是否并行处理 */
   parallel?: boolean
-  
+
   /** 批处理大小 */
   batchSize?: number
-  
+
   /** 详细日志 */
   verbose?: boolean
 }
@@ -450,12 +450,12 @@ export default defineConfig({
       neo4j: {
         uri: process.env.NEO4J_URI,
         username: process.env.NEO4J_USERNAME,
-        password: process.env.NEO4J_PASSWORD
+        password: process.env.NEO4J_PASSWORD,
       },
       extractors: ['package', 'schema', 'document'],
-      autoSync: true
-    })
-  ]
+      autoSync: true,
+    }),
+  ],
 })
 ```
 
@@ -468,25 +468,25 @@ import { EnhancedContextTool, IntelligentQueryEngine } from '@linch-kit/ai'
 class AIAssistant {
   private contextTool: EnhancedContextTool
   private queryEngine: IntelligentQueryEngine
-  
+
   constructor(config: Neo4jConfig) {
     this.contextTool = new EnhancedContextTool(config)
     this.queryEngine = new IntelligentQueryEngine(config)
   }
-  
+
   async analyzeUserRequest(request: string) {
     // 获取增强上下文
     const context = await this.contextTool.getEnhancedContext(request)
-    
+
     // 查询相关实体
     const entities = await this.queryEngine.findRelevantEntities(request)
-    
+
     // 生成响应
     return {
       action: context.detectedAction,
       suggestedImplementation: context.implementationSteps,
       relatedCode: entities,
-      bestPractices: context.bestPractices
+      bestPractices: context.bestPractices,
     }
   }
 }
@@ -501,15 +501,15 @@ import { ContextQueryTool } from '@linch-kit/ai'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { query } = req.body
-  
+
   const contextTool = new ContextQueryTool({
     uri: process.env.NEO4J_URI!,
     username: process.env.NEO4J_USERNAME!,
-    password: process.env.NEO4J_PASSWORD!
+    password: process.env.NEO4J_PASSWORD!,
   })
-  
+
   const context = await contextTool.getEntityContext(query)
-  
+
   res.json(context)
 }
 ```
@@ -538,7 +538,7 @@ import { PackageExtractor } from '@linch-kit/ai'
 const extractor = new PackageExtractor({
   incrementalMode: true,
   lastUpdateTime: lastSyncTime,
-  trackChanges: true
+  trackChanges: true,
 })
 
 const result = await extractor.extract()
@@ -553,7 +553,7 @@ import { IntelligentQueryEngine } from '@linch-kit/ai'
 const engine = new IntelligentQueryEngine(config, {
   enableCache: true,
   cacheTimeout: 300000, // 5分钟
-  indexHints: ['Schema:name', 'Package:name']
+  indexHints: ['Schema:name', 'Package:name'],
 })
 ```
 
@@ -568,11 +568,11 @@ import { describe, test, expect } from 'bun:test'
 describe('PackageExtractor', () => {
   test('should extract package.json dependencies', async () => {
     const extractor = new PackageExtractor({
-      rootPath: './test-fixtures/simple-package'
+      rootPath: './test-fixtures/simple-package',
     })
-    
+
     const result = await extractor.extract()
-    
+
     expect(result.nodes).toHaveLength(3)
     expect(result.relationships).toHaveLength(2)
     expect(result.nodes[0].type).toBe('Package')
@@ -590,15 +590,15 @@ describe('Neo4j Integration', () => {
     const service = new Neo4jService({
       uri: 'bolt://localhost:7687',
       username: 'neo4j',
-      password: 'test'
+      password: 'test',
     })
-    
+
     await expect(service.testConnection()).resolves.toBe(true)
-    
+
     const result = await service.saveNodes([
-      { id: 'test-node', type: 'Test', properties: { name: 'test' } }
+      { id: 'test-node', type: 'Test', properties: { name: 'test' } },
     ])
-    
+
     expect(result.success).toBe(true)
   })
 })
@@ -615,6 +615,7 @@ Error: Failed to connect to Neo4j
 ```
 
 **解决方案**：
+
 1. 检查 Neo4j 服务是否运行
 2. 验证连接配置
 3. 检查网络连接和防火墙设置
@@ -634,6 +635,7 @@ Error: Extraction failed with code analysis error
 ```
 
 **解决方案**：
+
 1. 确保项目结构符合 LinchKit 规范
 2. 检查 TypeScript 编译配置
 3. 验证文件访问权限
@@ -653,6 +655,7 @@ Warning: Query took longer than expected
 ```
 
 **解决方案**：
+
 1. 创建适当的索引
 2. 优化查询条件
 3. 使用批量查询
@@ -711,7 +714,7 @@ export class MyExtractor extends BaseExtractor {
     // 实现提取逻辑
     return {
       nodes: [],
-      relationships: []
+      relationships: [],
     }
   }
 }

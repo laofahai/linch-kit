@@ -32,14 +32,14 @@
     "format": "turbo run format",
     "format:fix": "turbo run format:fix",
     "check-types": "turbo run check-types",
-    "test": "turbo run test",
+    "test": "turbo run test --concurrency=1",
     "test:watch": "turbo run test:watch",
     "test:coverage": "turbo run test:coverage",
     "clean": "turbo run clean && rm -rf node_modules/.cache",
     "clean:dist": "turbo run clean:dist",
     "clean:node_modules": "find . -name 'node_modules' -type d -exec rm -rf {} + 2>/dev/null || true",
     "reset": "bun run clean:dist && bun run clean:node_modules && bun install",
-    "deps:graph": "bun scripts/dev/deps-graph.js",
+    "deps:graph": "bun scripts/dev/deps-graph.ts",
     "deps:check": "bun scripts/dev-tools.js check",
     "changeset": "changeset",
     "changeset:version": "changeset version",
@@ -51,7 +51,13 @@
     "prepare": "husky install",
     "setup": "bun scripts/update-all-configs.js && bun install",
     "test:workflow": "bun scripts/test-workflow.js",
-    "validate": "bun run test:workflow",
+    "validate:light": "bun run format:fix && bun run lint:fix",
+    "validate": "bun run format:fix && bun run lint:fix && bun run check-types && bun run build:packages && bun run test",
+    "validate:ci": "bun run validate",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "format:all": "prettier --write \"**/*.{ts,tsx,md,json}\" --ignore-unknown",
+    "test:e2e": "playwright test",
+    "test:e2e:all": "tsx scripts/test-e2e-all.ts",
     "ai:session": "bun scripts/ai/session-tools.js",
     "docs:cleanup": "bun scripts/cleanup-docs.js",
     "docs:migrate": "bun scripts/migrate-docs.js",
@@ -62,6 +68,8 @@
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.5",
     "@eslint/js": "^9.30.0",
+    "@next/eslint-plugin-next": "^15.3.5",
+    "@playwright/test": "^1.53.2",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/parser": "^8.35.0",
     "chokidar": "^4.0.3",
@@ -86,7 +94,16 @@
     "node": ">=18",
     "bun": ">=1.0"
   },
+  "lint-staged": {
+    "**/*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "**/*.{md,json}": "prettier --write"
+  },
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "dayjs": "^1.11.13"
   },
   "workspaces": [

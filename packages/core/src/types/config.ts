@@ -187,7 +187,11 @@ export interface ConfigManager {
   /**
    * 监听配置变化
    */
-  watch(key: string, callback: (value: ConfigValue) => void, options?: ConfigWatchOptions): () => void
+  watch(
+    key: string,
+    callback: (value: ConfigValue) => void,
+    options?: ConfigWatchOptions
+  ): () => void
 
   /**
    * 取消监听

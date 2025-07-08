@@ -26,7 +26,7 @@ const translations = {
       success: '操作成功',
       error: '操作失败',
       confirm: '确认',
-      back: '返回'
+      back: '返回',
     },
     navigation: {
       home: '首页',
@@ -34,7 +34,7 @@ const translations = {
       users: '用户管理',
       settings: '设置',
       help: '帮助',
-      about: '关于我们'
+      about: '关于我们',
     },
     user: {
       profile: '个人资料',
@@ -46,21 +46,21 @@ const translations = {
       gender: '性别',
       male: '男',
       female: '女',
-      avatar: '头像'
+      avatar: '头像',
     },
     messages: {
       welcome_user: '欢迎，{name}！',
       item_count: '共有 {count} 个项目',
       last_login: '上次登录时间：{time}',
       file_size: '文件大小：{size}',
-      price_display: '价格：{price}'
+      price_display: '价格：{price}',
     },
     validation: {
       required: '此字段为必填项',
       email_invalid: '请输入有效的邮箱地址',
       password_weak: '密码强度不够',
-      confirm_password: '两次输入的密码不一致'
-    }
+      confirm_password: '两次输入的密码不一致',
+    },
   },
   'en-US': {
     common: {
@@ -78,7 +78,7 @@ const translations = {
       success: 'Operation successful',
       error: 'Operation failed',
       confirm: 'Confirm',
-      back: 'Back'
+      back: 'Back',
     },
     navigation: {
       home: 'Home',
@@ -86,7 +86,7 @@ const translations = {
       users: 'User Management',
       settings: 'Settings',
       help: 'Help',
-      about: 'About Us'
+      about: 'About Us',
     },
     user: {
       profile: 'Profile',
@@ -98,21 +98,21 @@ const translations = {
       gender: 'Gender',
       male: 'Male',
       female: 'Female',
-      avatar: 'Avatar'
+      avatar: 'Avatar',
     },
     messages: {
       welcome_user: 'Welcome, {name}!',
       item_count: 'Total {count} items',
       last_login: 'Last login: {time}',
       file_size: 'File size: {size}',
-      price_display: 'Price: {price}'
+      price_display: 'Price: {price}',
     },
     validation: {
       required: 'This field is required',
       email_invalid: 'Please enter a valid email address',
       password_weak: 'Password is too weak',
-      confirm_password: 'Passwords do not match'
-    }
+      confirm_password: 'Passwords do not match',
+    },
   },
   'ja-JP': {
     common: {
@@ -130,7 +130,7 @@ const translations = {
       success: '操作が成功しました',
       error: '操作が失敗しました',
       confirm: '確認',
-      back: '戻る'
+      back: '戻る',
     },
     navigation: {
       home: 'ホーム',
@@ -138,7 +138,7 @@ const translations = {
       users: 'ユーザー管理',
       settings: '設定',
       help: 'ヘルプ',
-      about: '会社概要'
+      about: '会社概要',
     },
     user: {
       profile: 'プロフィール',
@@ -150,21 +150,21 @@ const translations = {
       gender: '性別',
       male: '男性',
       female: '女性',
-      avatar: 'アバター'
+      avatar: 'アバター',
     },
     messages: {
       welcome_user: 'ようこそ、{name}さん！',
       item_count: '合計 {count} 項目',
       last_login: '最終ログイン：{time}',
       file_size: 'ファイルサイズ：{size}',
-      price_display: '価格：{price}'
+      price_display: '価格：{price}',
     },
     validation: {
       required: 'この項目は必須です',
       email_invalid: '有効なメールアドレスを入力してください',
       password_weak: 'パスワードが弱すぎます',
-      confirm_password: 'パスワードが一致しません'
-    }
+      confirm_password: 'パスワードが一致しません',
+    },
   },
   'ko-KR': {
     common: {
@@ -182,7 +182,7 @@ const translations = {
       success: '작업 성공',
       error: '작업 실패',
       confirm: '확인',
-      back: '뒤로'
+      back: '뒤로',
     },
     navigation: {
       home: '홈',
@@ -190,7 +190,7 @@ const translations = {
       users: '사용자 관리',
       settings: '설정',
       help: '도움말',
-      about: '회사 소개'
+      about: '회사 소개',
     },
     user: {
       profile: '프로필',
@@ -202,22 +202,22 @@ const translations = {
       gender: '성별',
       male: '남성',
       female: '여성',
-      avatar: '아바타'
+      avatar: '아바타',
     },
     messages: {
       welcome_user: '환영합니다, {name}님!',
       item_count: '총 {count}개 항목',
       last_login: '마지막 로그인: {time}',
       file_size: '파일 크기: {size}',
-      price_display: '가격: {price}'
+      price_display: '가격: {price}',
     },
     validation: {
       required: '이 필드는 필수입니다',
       email_invalid: '유효한 이메일 주소를 입력하세요',
       password_weak: '비밀번호가 너무 약합니다',
-      confirm_password: '비밀번호가 일치하지 않습니다'
-    }
-  }
+      confirm_password: '비밀번호가 일치하지 않습니다',
+    },
+  },
 }
 
 const languages = [
@@ -238,22 +238,28 @@ const demoSections = [
 export function I18nDemo() {
   const [currentLanguage, setCurrentLanguage] = useState<string>('zh-CN')
   const [selectedSection, setSelectedSection] = useState<string>('common')
-  const [_i18nManager] = useState(() => new I18nManager({
-    defaultLanguage: 'zh-CN',
-    fallbackLanguage: 'en-US',
-    supportedLanguages: ['zh-CN', 'en-US', 'ja-JP', 'ko-KR'],
-    autoDetect: true
-  }))
+  const [_i18nManager] = useState(
+    () =>
+      new I18nManager({
+        defaultLanguage: 'zh-CN',
+        fallbackLanguage: 'en-US',
+        supportedLanguages: ['zh-CN', 'en-US', 'ja-JP', 'ko-KR'],
+        autoDetect: true,
+      })
+  )
 
   // 翻译函数
   const t = (key: string, params?: Record<string, unknown>) => {
     const keys = key.split('.')
-    let value = translations[currentLanguage as keyof typeof translations] as Record<string, unknown>
-    
+    let value = translations[currentLanguage as keyof typeof translations] as Record<
+      string,
+      unknown
+    >
+
     for (const k of keys) {
       value = value?.[k]
     }
-    
+
     if (!value) {
       // 回退到英文
       value = translations['en-US'] as Record<string, unknown>
@@ -261,16 +267,16 @@ export function I18nDemo() {
         value = value?.[k]
       }
     }
-    
+
     if (!value) return key
-    
+
     // 参数替换
     if (params) {
       return value.replace(/\{(\w+)\}/g, (match: string, param: string) => {
         return params[param] || match
       })
     }
-    
+
     return value
   }
 
@@ -281,7 +287,7 @@ export function I18nDemo() {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(date)
   }
 
@@ -294,12 +300,12 @@ export function I18nDemo() {
       'zh-CN': 'CNY',
       'en-US': 'USD',
       'ja-JP': 'JPY',
-      'ko-KR': 'KRW'
+      'ko-KR': 'KRW',
     }
-    
+
     return new Intl.NumberFormat(currentLanguage, {
       style: 'currency',
-      currency: currencies[currentLanguage as keyof typeof currencies] || 'USD'
+      currency: currencies[currentLanguage as keyof typeof currencies] || 'USD',
     }).format(amount)
   }
 
@@ -314,7 +320,7 @@ export function I18nDemo() {
       <div className="lg:col-span-4 bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-4">🌐 语言切换</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {languages.map((lang) => (
+          {languages.map(lang => (
             <button
               key={lang.code}
               onClick={() => setCurrentLanguage(lang.code)}
@@ -335,7 +341,7 @@ export function I18nDemo() {
       {/* 演示分类 */}
       <div className="space-y-2">
         <h3 className="text-lg font-semibold mb-4">📋 内容分类</h3>
-        {demoSections.map((section) => (
+        {demoSections.map(section => (
           <button
             key={section.key}
             onClick={() => setSelectedSection(section.key)}
@@ -361,7 +367,7 @@ export function I18nDemo() {
             {demoSections.find(s => s.key === selectedSection)?.icon}{' '}
             {demoSections.find(s => s.key === selectedSection)?.name}
           </h3>
-          
+
           <div className="grid gap-4">
             {Object.entries(getCurrentTranslations()).map(([key, value]) => (
               <div key={key} className="border border-gray-200 rounded p-4">
@@ -369,22 +375,20 @@ export function I18nDemo() {
                   <code className="text-sm bg-gray-100 px-2 py-1 rounded">
                     {selectedSection}.{key}
                   </code>
-                  <span className="text-xs text-gray-500">
-                    {currentLanguage}
-                  </span>
+                  <span className="text-xs text-gray-500">{currentLanguage}</span>
                 </div>
                 <div className="text-lg">
-                  {selectedSection === 'messages' && key === 'welcome_user' 
+                  {selectedSection === 'messages' && key === 'welcome_user'
                     ? t(`${selectedSection}.${key}`, { name: 'LinchKit用户' })
                     : selectedSection === 'messages' && key === 'item_count'
-                    ? t(`${selectedSection}.${key}`, { count: formatNumber(1234) })
-                    : selectedSection === 'messages' && key === 'last_login'
-                    ? t(`${selectedSection}.${key}`, { time: formatDate(new Date()) })
-                    : selectedSection === 'messages' && key === 'file_size'
-                    ? t(`${selectedSection}.${key}`, { size: '2.5 MB' })
-                    : selectedSection === 'messages' && key === 'price_display'
-                    ? t(`${selectedSection}.${key}`, { price: formatCurrency(99.99) })
-                    : String(value)}
+                      ? t(`${selectedSection}.${key}`, { count: formatNumber(1234) })
+                      : selectedSection === 'messages' && key === 'last_login'
+                        ? t(`${selectedSection}.${key}`, { time: formatDate(new Date()) })
+                        : selectedSection === 'messages' && key === 'file_size'
+                          ? t(`${selectedSection}.${key}`, { size: '2.5 MB' })
+                          : selectedSection === 'messages' && key === 'price_display'
+                            ? t(`${selectedSection}.${key}`, { price: formatCurrency(99.99) })
+                            : String(value)}
                 </div>
               </div>
             ))}
@@ -394,7 +398,7 @@ export function I18nDemo() {
         {/* 本地化格式演示 */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold mb-4">🌍 本地化格式</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h4 className="font-medium text-gray-900 mb-3">日期时间格式</h4>
@@ -426,8 +430,8 @@ export function I18nDemo() {
                 <div className="flex justify-between">
                   <span className="text-gray-600">百分比:</span>
                   <span className="font-mono">
-                    {new Intl.NumberFormat(currentLanguage, { 
-                      style: 'percent' 
+                    {new Intl.NumberFormat(currentLanguage, {
+                      style: 'percent',
                     }).format(0.856)}
                   </span>
                 </div>
@@ -439,7 +443,7 @@ export function I18nDemo() {
         {/* 实际应用示例 */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold mb-4">🎯 实际应用示例</h3>
-          
+
           {/* 模拟用户界面 */}
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
             <div className="flex items-center justify-between mb-4">
@@ -453,7 +457,7 @@ export function I18nDemo() {
                 </button>
               </div>
             </div>
-            
+
             <nav className="mb-6">
               <div className="flex space-x-4 text-sm">
                 <a href="#" className="text-blue-600 hover:text-blue-800">
@@ -470,7 +474,7 @@ export function I18nDemo() {
                 </a>
               </div>
             </nav>
-            
+
             <div className="bg-gray-50 p-4 rounded">
               <h5 className="font-medium mb-2">{t('user.profile')}</h5>
               <div className="grid grid-cols-2 gap-2 text-sm">
@@ -483,7 +487,7 @@ export function I18nDemo() {
                   <span className="ml-2">user@example.com</span>
                 </div>
               </div>
-              
+
               <div className="mt-4 text-sm text-gray-600">
                 {t('messages.last_login', { time: formatDate(new Date(Date.now() - 86400000)) })}
               </div>
@@ -494,27 +498,21 @@ export function I18nDemo() {
         {/* 翻译管理工具 */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold mb-4">🛠️ 翻译管理工具</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="border border-green-200 rounded p-4 bg-green-50">
               <h4 className="font-medium text-green-800 mb-2">✅ 自动检测</h4>
-              <p className="text-green-700">
-                基于用户浏览器语言自动选择界面语言
-              </p>
+              <p className="text-green-700">基于用户浏览器语言自动选择界面语言</p>
             </div>
-            
+
             <div className="border border-blue-200 rounded p-4 bg-blue-50">
               <h4 className="font-medium text-blue-800 mb-2">🔄 热更新</h4>
-              <p className="text-blue-700">
-                翻译内容更新后无需重启应用即可生效
-              </p>
+              <p className="text-blue-700">翻译内容更新后无需重启应用即可生效</p>
             </div>
-            
+
             <div className="border border-purple-200 rounded p-4 bg-purple-50">
               <h4 className="font-medium text-purple-800 mb-2">🤖 AI辅助</h4>
-              <p className="text-purple-700">
-                集成AI翻译服务自动生成多语言内容
-              </p>
+              <p className="text-purple-700">集成AI翻译服务自动生成多语言内容</p>
             </div>
           </div>
         </div>

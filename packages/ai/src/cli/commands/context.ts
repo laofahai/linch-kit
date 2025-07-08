@@ -1,67 +1,63 @@
 /**
  * Context Query Command
- * 
+ *
  * 为 Claude Code 提供项目上下文查询功能
  */
 
 import { createLogger } from '@linch-kit/core/server'
 import chalk from 'chalk'
 
-import type {
-  CommandContext,
-  CommandResult,
-  CLICommand
-} from '../plugin.js'
+import type { CommandContext, CommandResult, CLICommand } from '../plugin.js'
 import { ContextQueryTool } from '../../context/context-query-tool.js'
 
 const logger = createLogger({ name: 'ai:context-command' })
 
 // 类型定义
 interface EntityResult {
-  id: string;
-  name: string;
-  type: string;
-  package?: string;
-  description?: string;
-  relevance?: number;
+  id: string
+  name: string
+  type: string
+  package?: string
+  description?: string
+  relevance?: number
 }
 
 interface RelationshipResult {
-  from: string;
-  to: string;
-  type: string;
+  from: string
+  to: string
+  type: string
 }
 
 interface ExampleResult {
-  title: string;
-  description: string;
-  code?: string;
+  title: string
+  description: string
+  code?: string
 }
 
 interface QueryMetadata {
-  total_results: number;
-  relevance_score: number;
+  total_results: number
+  relevance_score: number
 }
 
 interface ContextResult {
-  entities?: EntityResult[];
-  relationships?: RelationshipResult[];
-  examples?: ExampleResult[];
-  metadata?: QueryMetadata;
+  entities?: EntityResult[]
+  relationships?: RelationshipResult[]
+  examples?: ExampleResult[]
+  metadata?: QueryMetadata
 }
 
 interface PatternResult {
-  name: string;
-  description: string;
-  usage: string;
-  related_entities?: string[];
+  name: string
+  description: string
+  usage: string
+  related_entities?: string[]
 }
 
 interface PracticeResult {
-  name: string;
-  description: string;
-  category: string;
-  examples?: string[];
+  name: string
+  description: string
+  category: string
+  examples?: string[]
 }
 
 /**
@@ -75,47 +71,47 @@ async function executeContextQuery(
   }
 ): Promise<CommandResult> {
   const startTime = Date.now()
-  
+
   try {
     logger.info('执行上下文查询', { query, type: options.type })
-    
+
     const tool = new ContextQueryTool()
     await tool.initialize()
-    
+
     let result: unknown
-    
+
     switch (options.type) {
       case 'context':
         result = await tool.queryContext(query)
         break
-        
+
       case 'patterns':
         result = await tool.findPatterns(query)
         break
-        
+
       case 'practices':
         result = await tool.getBestPractices(query)
         break
-        
+
       default:
         throw new Error(`未知的查询类型: ${options.type}`)
     }
-    
+
     const duration = Date.now() - startTime
-    
+
     return {
       success: true,
       message: `查询完成 (${duration}ms)`,
       data: result,
-      duration
+      duration,
     }
   } catch (error) {
     logger.error('上下文查询失败', error instanceof Error ? error : undefined)
-    
+
     return {
       success: false,
       error: error instanceof Error ? error.message : '未知错误',
-      duration: Date.now() - startTime
+      duration: Date.now() - startTime,
     }
   }
 }
@@ -127,9 +123,9 @@ function outputContextResult(data: unknown, type: string): void {
   switch (type) {
     case 'context': {
       const context = data as ContextResult
-      
+
       console.log(chalk.cyan('\n📋 查询结果:\n'))
-      
+
       // 显示实体
       if (context.entities && context.entities.length > 0) {
         console.log(chalk.yellow('🔍 相关实体:'))
@@ -141,7 +137,7 @@ function outputContextResult(data: unknown, type: string): void {
         })
         console.log()
       }
-      
+
       // 显示关系
       if (context.relationships && context.relationships.length > 0) {
         console.log(chalk.yellow('🔗 关系:'))
@@ -150,7 +146,7 @@ function outputContextResult(data: unknown, type: string): void {
         })
         console.log()
       }
-      
+
       // 显示示例
       if (context.examples && context.examples.length > 0) {
         console.log(chalk.yellow('💡 示例:'))
@@ -162,7 +158,7 @@ function outputContextResult(data: unknown, type: string): void {
         })
         console.log()
       }
-      
+
       // 显示元数据
       if (context.metadata) {
         console.log(chalk.yellow('📊 统计:'))
@@ -171,10 +167,10 @@ function outputContextResult(data: unknown, type: string): void {
       }
       break
     }
-    
+
     case 'patterns': {
       const patterns = data as PatternResult[]
-      
+
       console.log(chalk.cyan('\n🎨 代码模式:\n'))
       patterns.forEach(pattern => {
         console.log(chalk.yellow(`📌 ${pattern.name}`))
@@ -187,10 +183,10 @@ function outputContextResult(data: unknown, type: string): void {
       })
       break
     }
-    
+
     case 'practices': {
       const practices = data as PracticeResult[]
-      
+
       console.log(chalk.cyan('\n✨ 最佳实践:\n'))
       practices.forEach(practice => {
         console.log(chalk.yellow(`🏆 ${practice.name}`))
@@ -221,50 +217,54 @@ export const contextCommand: CLICommand = {
       name: 'query',
       description: '查询内容',
       type: 'string',
-      required: true
+      required: true,
     },
     {
       name: 'type',
       description: '查询类型 (context,patterns,practices)',
       type: 'string',
       defaultValue: 'context',
-      required: false
+      required: false,
     },
     {
       name: 'limit',
       description: '结果数量限制',
       type: 'number',
       defaultValue: 10,
-      required: false
-    }
+      required: false,
+    },
   ],
-  
+
   async handler(context: CommandContext): Promise<CommandResult> {
-    const { query, type = 'context', limit = 10 } = context.options as {
+    const {
+      query,
+      type = 'context',
+      limit = 10,
+    } = context.options as {
       query?: string
       type?: string
       limit?: number
     }
-    
+
     if (!query) {
       return {
         success: false,
-        error: '请提供查询内容'
+        error: '请提供查询内容',
       }
     }
-    
+
     const result = await executeContextQuery(query, {
       type: type as 'context' | 'patterns' | 'practices',
-      limit
+      limit,
     })
-    
+
     if (result.success && result.data) {
       outputContextResult(result.data, type)
     }
-    
+
     return result
   },
-  
+
   examples: [
     '# 查询认证相关的上下文',
     'ai:context --query "认证系统" --type context',
@@ -273,6 +273,6 @@ export const contextCommand: CLICommand = {
     'ai:context --query "API开发" --type practices',
     '',
     '# 查找使用模式',
-    'ai:context --query "用户管理" --type patterns'
-  ]
+    'ai:context --query "用户管理" --type patterns',
+  ],
 }

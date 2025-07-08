@@ -16,33 +16,44 @@
 // 主入口 - @linch-kit/ai
 export {
   // 核心类型
-  GraphNode, GraphRelationship, NodeType, RelationType,
-  IExtractor, IGraphService, ExtractionResult, Neo4jConfig,
-  
+  GraphNode,
+  GraphRelationship,
+  NodeType,
+  RelationType,
+  IExtractor,
+  IGraphService,
+  ExtractionResult,
+  Neo4jConfig,
+
   // 数据提取器
-  BaseExtractor, PackageExtractor, CorrelationAnalyzer,
-  createExtractor, getAvailableExtractorTypes,
-  
+  BaseExtractor,
+  PackageExtractor,
+  CorrelationAnalyzer,
+  createExtractor,
+  getAvailableExtractorTypes,
+
   // Graph 服务
   Neo4jService,
-  
+
   // 查询引擎
   IntelligentQueryEngine,
-  
+
   // 上下文工具
-  ContextQueryTool, EnhancedContextTool,
-  
+  ContextQueryTool,
+  EnhancedContextTool,
+
   // 生成引擎（废弃中）
   VibeCodingEngine,
-  
+
   // 配置
-  loadNeo4jConfig, validateNeo4jConfig
+  loadNeo4jConfig,
+  validateNeo4jConfig,
 }
 
 // 子模块导出
-export * from '@linch-kit/ai/extractors'  // 数据提取器
-export * from '@linch-kit/ai/graph'       // 图数据库服务
-export * from '@linch-kit/ai/cli'         // CLI 工具
+export * from '@linch-kit/ai/extractors' // 数据提取器
+export * from '@linch-kit/ai/graph' // 图数据库服务
+export * from '@linch-kit/ai/cli' // CLI 工具
 ```
 
 ### 依赖关系
@@ -67,9 +78,9 @@ import { z } from 'zod'
 ```typescript
 abstract class BaseExtractor implements IExtractor {
   constructor(config?: ExtractorConfig)
-  
+
   abstract extract(): Promise<ExtractionResult>
-  
+
   protected log(message: string, data?: any): void
   protected validateConfig(): void
 }
@@ -97,9 +108,9 @@ interface ExtractionResult {
 ```typescript
 class PackageExtractor extends BaseExtractor {
   constructor(config?: PackageExtractorConfig)
-  
+
   async extract(): Promise<ExtractionResult>
-  
+
   private extractPackageJson(path: string): Promise<PackageNode>
   private extractDependencies(pkg: any): DependencyRelationship[]
   private resolveDependencyVersions(deps: string[]): Promise<ResolvedDependency[]>
@@ -115,7 +126,7 @@ interface PackageExtractorConfig extends ExtractorConfig {
 const extractor = new PackageExtractor({
   rootPath: './projects/my-app',
   includeDevDependencies: true,
-  extractVersions: true
+  extractVersions: true,
 })
 
 const result = await extractor.extract()
@@ -130,9 +141,9 @@ const result = await extractor.extract()
 ```typescript
 class SchemaExtractor extends BaseExtractor {
   constructor(config?: SchemaExtractorConfig)
-  
+
   async extract(): Promise<ExtractionResult>
-  
+
   private extractSchemaFiles(paths: string[]): Promise<SchemaFile[]>
   private parseSchemaDefinitions(file: SourceFile): SchemaDefinition[]
   private extractFieldRelations(schema: SchemaDefinition): FieldRelation[]
@@ -149,7 +160,7 @@ interface SchemaExtractorConfig extends ExtractorConfig {
 const extractor = new SchemaExtractor({
   schemaPath: './src/schemas',
   includeValidation: true,
-  extractRelations: true
+  extractRelations: true,
 })
 
 const result = await extractor.extract()
@@ -164,9 +175,9 @@ const result = await extractor.extract()
 ```typescript
 class DocumentExtractor extends BaseExtractor {
   constructor(config?: DocumentExtractorConfig)
-  
+
   async extract(): Promise<ExtractionResult>
-  
+
   private parseMarkdownFiles(paths: string[]): Promise<DocumentNode[]>
   private extractHeaders(content: string): HeaderNode[]
   private extractCodeBlocks(content: string): CodeBlockNode[]
@@ -185,7 +196,7 @@ interface DocumentExtractorConfig extends ExtractorConfig {
 const extractor = new DocumentExtractor({
   docPaths: ['./docs', './README.md'],
   extractHeaders: true,
-  extractCodeBlocks: true
+  extractCodeBlocks: true,
 })
 
 const result = await extractor.extract()
@@ -198,9 +209,9 @@ const result = await extractor.extract()
 ```typescript
 class FunctionExtractor extends BaseExtractor {
   constructor(config?: FunctionExtractorConfig)
-  
+
   async extract(): Promise<ExtractionResult>
-  
+
   private analyzeFunctions(files: SourceFile[]): FunctionNode[]
   private extractParameters(func: FunctionDeclaration): ParameterNode[]
   private findFunctionCalls(files: SourceFile[]): CallRelationship[]
@@ -218,7 +229,7 @@ interface FunctionExtractorConfig extends ExtractorConfig {
 const extractor = new FunctionExtractor({
   sourcePaths: ['./src'],
   includePrivate: false,
-  extractCalls: true
+  extractCalls: true,
 })
 
 const result = await extractor.extract()
@@ -231,9 +242,9 @@ const result = await extractor.extract()
 ```typescript
 class ImportExtractor extends BaseExtractor {
   constructor(config?: ImportExtractorConfig)
-  
+
   async extract(): Promise<ExtractionResult>
-  
+
   private analyzeImports(files: SourceFile[]): ImportNode[]
   private resolveModulePaths(imports: ImportDeclaration[]): ResolvedImport[]
   private extractExports(file: SourceFile): ExportNode[]
@@ -250,7 +261,7 @@ interface ImportExtractorConfig extends ExtractorConfig {
 const extractor = new ImportExtractor({
   sourcePaths: ['./src'],
   resolveModules: true,
-  includeExternal: false
+  includeExternal: false,
 })
 
 const result = await extractor.extract()
@@ -263,11 +274,9 @@ const result = await extractor.extract()
 ```typescript
 class CorrelationAnalyzer {
   constructor(config?: CorrelationConfig)
-  
-  async analyzeCorrelations(
-    extractionResults: ExtractionResult[]
-  ): Promise<CorrelationResult>
-  
+
+  async analyzeCorrelations(extractionResults: ExtractionResult[]): Promise<CorrelationResult>
+
   private findCrossReferences(nodes: GraphNode[]): CrossReference[]
   private analyzeSemanticSimilarity(nodes: GraphNode[]): SimilarityScore[]
   private detectPatterns(relationships: GraphRelationship[]): Pattern[]
@@ -282,13 +291,13 @@ interface CorrelationConfig {
 // 使用示例
 const analyzer = new CorrelationAnalyzer({
   enableSemanticAnalysis: true,
-  similarityThreshold: 0.8
+  similarityThreshold: 0.8,
 })
 
 const correlations = await analyzer.analyzeCorrelations([
   packageResult,
   schemaResult,
-  documentResult
+  documentResult,
 ])
 ```
 
@@ -301,12 +310,12 @@ Neo4j 图数据库操作服务。
 ```typescript
 class Neo4jService implements IGraphService {
   constructor(config: Neo4jConfig)
-  
+
   // 连接管理
   async connect(): Promise<void>
   async disconnect(): Promise<void>
   async testConnection(): Promise<boolean>
-  
+
   // 节点操作
   async saveNodes(nodes: GraphNode[]): Promise<SaveResult>
   async saveNodesBatch(nodes: GraphNode[], options?: BatchOptions): Promise<SaveResult>
@@ -314,19 +323,22 @@ class Neo4jService implements IGraphService {
   async findNodeById(id: string): Promise<GraphNode | null>
   async updateNode(id: string, properties: Record<string, any>): Promise<UpdateResult>
   async deleteNode(id: string): Promise<DeleteResult>
-  
+
   // 关系操作
   async saveRelationships(rels: GraphRelationship[]): Promise<SaveResult>
-  async saveRelationshipsBatch(rels: GraphRelationship[], options?: BatchOptions): Promise<SaveResult>
+  async saveRelationshipsBatch(
+    rels: GraphRelationship[],
+    options?: BatchOptions
+  ): Promise<SaveResult>
   async findRelationships(sourceId: string, type?: RelationType): Promise<GraphRelationship[]>
   async findPath(sourceId: string, targetId: string, options?: PathOptions): Promise<GraphPath[]>
   async deleteRelationship(id: string): Promise<DeleteResult>
-  
+
   // 查询操作
   async runCypher(query: string, params?: Record<string, any>): Promise<QueryResult>
   async getGraphStats(): Promise<GraphStats>
   async clearGraph(): Promise<void>
-  
+
   // 索引管理
   async createIndex(label: string, property: string): Promise<void>
   async dropIndex(label: string, property: string): Promise<void>
@@ -354,7 +366,7 @@ const config: Neo4jConfig = {
   uri: 'bolt://localhost:7687',
   username: 'neo4j',
   password: 'password',
-  database: 'neo4j'
+  database: 'neo4j',
 }
 
 const service = new Neo4jService(config)
@@ -367,8 +379,8 @@ await service.saveNodes([
   {
     id: 'user-schema',
     type: 'Schema',
-    properties: { name: 'User', fields: ['id', 'email', 'name'] }
-  }
+    properties: { name: 'User', fields: ['id', 'email', 'name'] },
+  },
 ])
 
 // 保存关系
@@ -378,8 +390,8 @@ await service.saveRelationships([
     type: 'HAS_ONE',
     source: 'user-schema',
     target: 'profile-schema',
-    properties: { optional: false }
-  }
+    properties: { optional: false },
+  },
 ])
 
 // 查询节点
@@ -401,53 +413,37 @@ const stats = await service.getGraphStats()
 ```typescript
 class IntelligentQueryEngine {
   constructor(config: Neo4jConfig, options?: QueryEngineOptions)
-  
+
   // 实体查询
   async findEntity(identifier: string): Promise<EntityInfo | null>
   async findEntitiesByType(type: string): Promise<EntityInfo[]>
   async searchEntities(query: string, options?: SearchOptions): Promise<EntityInfo[]>
-  
+
   // 依赖查询
-  async findDependencies(
-    entityId: string, 
-    options?: DependencyOptions
-  ): Promise<DependencyInfo[]>
-  
-  async findDependents(
-    entityId: string,
-    options?: DependencyOptions  
-  ): Promise<DependencyInfo[]>
-  
+  async findDependencies(entityId: string, options?: DependencyOptions): Promise<DependencyInfo[]>
+
+  async findDependents(entityId: string, options?: DependencyOptions): Promise<DependencyInfo[]>
+
   // 路径查询
-  async findPath(
-    sourceId: string,
-    targetId: string,
-    options?: PathOptions
-  ): Promise<GraphPath[]>
-  
+  async findPath(sourceId: string, targetId: string, options?: PathOptions): Promise<GraphPath[]>
+
   async findShortestPath(
     sourceId: string,
     targetId: string,
     options?: PathOptions
   ): Promise<GraphPath | null>
-  
+
   // 模式查询
-  async findPatterns(
-    query: string,
-    options?: PatternOptions
-  ): Promise<PatternInfo[]>
-  
+  async findPatterns(query: string, options?: PatternOptions): Promise<PatternInfo[]>
+
   async findSimilarEntities(
     entityId: string,
     options?: SimilarityOptions
   ): Promise<SimilarityResult[]>
-  
+
   // 上下文查询
-  async getEntityContext(
-    entityId: string,
-    options?: ContextOptions
-  ): Promise<EntityContext>
-  
+  async getEntityContext(entityId: string, options?: ContextOptions): Promise<EntityContext>
+
   async getRelationshipContext(
     sourceId: string,
     targetId: string,
@@ -497,19 +493,19 @@ const entity = await engine.findEntity('UserSchema')
 const deps = await engine.findDependencies('auth', {
   direction: 'out',
   depth: 2,
-  types: ['DEPENDS_ON', 'USES']
+  types: ['DEPENDS_ON', 'USES'],
 })
 
 // 查找路径
 const path = await engine.findPath('auth', 'ui', {
   maxDepth: 5,
-  relationTypes: ['DEPENDS_ON']
+  relationTypes: ['DEPENDS_ON'],
 })
 
 // 查找模式
 const patterns = await engine.findPatterns('authentication', {
   includeExamples: true,
-  includeBestPractices: true
+  includeBestPractices: true,
 })
 ```
 
@@ -522,36 +518,29 @@ const patterns = await engine.findPatterns('authentication', {
 ```typescript
 class ContextQueryTool implements IContextQueryTool {
   constructor(config: Neo4jConfig)
-  
+
   // 实体上下文
   async getEntityContext(entityId: string): Promise<ContextInfo>
   async getEntityUsage(entityId: string): Promise<UsageInfo[]>
   async getEntityDocumentation(entityId: string): Promise<DocReference[]>
-  
+
   // 关系上下文
-  async getRelationshipContext(
-    sourceId: string,
-    targetId: string
-  ): Promise<RelationshipInfo>
-  
+  async getRelationshipContext(sourceId: string, targetId: string): Promise<RelationshipInfo>
+
   async getRelationshipPath(
     sourceId: string,
     targetId: string,
     maxDepth?: number
   ): Promise<PathInfo[]>
-  
+
   // 搜索功能
   async searchRelevantContent(query: string): Promise<RelevantContent[]>
   async searchByIntent(intent: string): Promise<IntentResult>
-  
+
   // 模式查询
-  async findImplementationPatterns(
-    concept: string
-  ): Promise<Pattern[]>
-  
-  async findBestPractices(
-    domain: string
-  ): Promise<BestPractice[]>
+  async findImplementationPatterns(concept: string): Promise<Pattern[]>
+
+  async findBestPractices(domain: string): Promise<BestPractice[]>
 }
 
 interface ContextInfo {
@@ -598,9 +587,9 @@ const results = await tool.searchRelevantContent('user authentication')
 ```typescript
 class EnhancedContextTool {
   constructor(config: Neo4jConfig)
-  
+
   async getEnhancedContext(query: string): Promise<EnhancedContextResponse>
-  
+
   private analyzeIntent(query: string): Promise<DetectedAction>
   private suggestImplementation(action: DetectedAction): Promise<ImplementationStep[]>
   private findRelevantPatterns(query: string): Promise<Pattern[]>
@@ -611,26 +600,26 @@ interface EnhancedContextResponse {
   // 意图分析
   detectedAction: DetectedAction
   confidence: number
-  
+
   // 实体建议
   suggestedEntity?: string
   relatedEntities: EntityInfo[]
-  
+
   // 字段建议
   recommendedFields: FieldSuggestion[]
-  
+
   // 实现步骤
   implementationSteps: ImplementationStep[]
-  
+
   // 相关模式
   relatedPatterns: Pattern[]
-  
+
   // 最佳实践
   bestPractices: BestPractice[]
-  
+
   // 代码示例
   codeExamples: CodeExample[]
-  
+
   // 文档链接
   documentationLinks: DocReference[]
 }
@@ -683,12 +672,7 @@ console.log(context.bestPractices) // 最佳实践
 export const cliPlugin: CLIPlugin = {
   name: 'ai',
   description: 'AI 工具和 Graph RAG 功能',
-  commands: [
-    extractCommand,
-    queryCommand,
-    generateCommand,
-    contextCommand
-  ]
+  commands: [extractCommand, queryCommand, generateCommand, contextCommand],
 }
 
 // 使用方式
@@ -724,9 +708,9 @@ linch-kit-ai generate --intent "create user schema" --output suggestions.md
 
 ```typescript
 // 节点类型
-type NodeType = 
+type NodeType =
   | 'Package'
-  | 'Schema' 
+  | 'Schema'
   | 'Field'
   | 'Function'
   | 'Class'
@@ -795,7 +779,7 @@ const Neo4jConfigSchema = z.object({
   database: z.string().optional().default('neo4j'),
   maxConnectionPoolSize: z.number().optional().default(50),
   connectionTimeout: z.number().optional().default(30000),
-  encrypted: z.boolean().optional().default(true)
+  encrypted: z.boolean().optional().default(true),
 })
 
 type Neo4jConfig = z.infer<typeof Neo4jConfigSchema>
@@ -819,14 +803,14 @@ interface AIToolConfig {
 const extractor = new PackageExtractor({
   parallel: true,
   batchSize: 100,
-  verbose: true
+  verbose: true,
 })
 
 // 增量更新
 const lastSync = await getLastSyncTime()
 const result = await extractor.extract({
   incrementalMode: true,
-  since: lastSync
+  since: lastSync,
 })
 ```
 
@@ -841,7 +825,7 @@ await neo4jService.createIndex('Package', 'name')
 const engine = new IntelligentQueryEngine(config, {
   enableCache: true,
   cacheTimeout: 300000, // 5分钟
-  indexHints: ['Schema:name', 'Package:name']
+  indexHints: ['Schema:name', 'Package:name'],
 })
 ```
 
@@ -871,10 +855,10 @@ try {
 // 流式处理大型数据集
 const extractor = new PackageExtractor({
   streaming: true,
-  onBatch: async (batch) => {
+  onBatch: async batch => {
     await neo4jService.saveNodesBatch(batch.nodes)
     await neo4jService.saveRelationshipsBatch(batch.relationships)
-  }
+  },
 })
 ```
 
@@ -901,9 +885,9 @@ const extractor = new PackageExtractor({
 
 ```typescript
 // 启用详细日志
-const logger = createLogger({ 
+const logger = createLogger({
   name: 'ai-debug',
-  level: 'debug'
+  level: 'debug',
 })
 
 // 使用性能监控
@@ -920,6 +904,7 @@ logger.info('Memory usage:', memUsage)
 ## 更新历史
 
 ### v1.0.0 (2025-01-07)
+
 - 初始发布
 - 完整的 Graph RAG 架构
 - 5 种数据提取器（Package、Schema、Document、Function、Import）
@@ -929,6 +914,7 @@ logger.info('Memory usage:', memUsage)
 - CLI 工具集成
 
 ### 计划中的功能
+
 - 更多数据提取器类型
 - 向量搜索集成
 - AI 模型集成（OpenAI、Anthropic）

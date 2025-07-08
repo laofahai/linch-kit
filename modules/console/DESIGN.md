@@ -7,11 +7,13 @@
 ## 📋 核心定位
 
 ### Console 是什么
+
 - **功能库**：提供企业级管理控制台的完整功能组件和逻辑
 - **可插拔模块**：可被任何 LinchKit 应用集成使用
 - **UI + 逻辑**：包含完整的管理界面和业务逻辑，但不包含基础设施
 
 ### Console 不是什么
+
 - **不是独立应用**：不能单独运行，需要宿主应用提供运行环境
 - **不包含数据库**：Prisma schema 由宿主应用生成
 - **不处理认证**：使用宿主应用配置的认证系统
@@ -29,25 +31,25 @@ export const TenantEntity = defineEntity('Tenant', {
   name: defineField.string().required().min(2).max(100),
   domain: defineField.string().required().unique(),
   status: defineField.enum(['active', 'suspended', 'deleted']).default('active'),
-  
+
   // 配额管理
   quotas: defineField.json<TenantQuotas>().default({
     maxUsers: 100,
     maxStorage: 10737418240, // 10GB
-    maxProjects: 10
+    maxProjects: 10,
   }),
-  
+
   // 计费信息
   plan: defineField.string().default('free'),
   billingCycle: defineField.enum(['monthly', 'yearly']).optional(),
-  
+
   // 关系
   users: defineField.relation('User').oneToMany(),
   plugins: defineField.relation('Plugin').manyToMany(),
-  
+
   // 时间戳
   createdAt: defineField.datetime().default('now'),
-  updatedAt: defineField.datetime().updatedAt()
+  updatedAt: defineField.datetime().updatedAt(),
 })
 
 // 导出实体集合
@@ -55,7 +57,7 @@ export const ConsoleEntities = {
   Tenant: TenantEntity,
   Plugin: PluginEntity,
   SystemMetric: SystemMetricEntity,
-  AuditLog: AuditLogEntity
+  AuditLog: AuditLogEntity,
 }
 ```
 
@@ -67,7 +69,7 @@ export function createConsoleRoutes(config?: ConsoleConfig) {
   return {
     // 基础路径
     basePath: config?.basePath || '/admin',
-    
+
     // 路由定义
     routes: [
       { path: '/', component: lazy(() => import('./pages/dashboard')) },
@@ -76,14 +78,14 @@ export function createConsoleRoutes(config?: ConsoleConfig) {
       { path: '/permissions', component: lazy(() => import('./pages/permissions')) },
       { path: '/plugins', component: lazy(() => import('./pages/plugins')) },
       { path: '/monitoring', component: lazy(() => import('./pages/monitoring')) },
-      { path: '/schemas', component: lazy(() => import('./pages/schemas')) }
+      { path: '/schemas', component: lazy(() => import('./pages/schemas')) },
     ],
-    
+
     // 导航项
     navigation: getNavigationItems(config),
-    
+
     // 权限要求
-    permissions: getRequiredPermissions(config)
+    permissions: getRequiredPermissions(config),
   }
 }
 ```
@@ -100,29 +102,29 @@ export const createTenantService = (db: PrismaClient) => {
     entity: TenantEntity,
     db,
     hooks: {
-      beforeCreate: async (data) => {
+      beforeCreate: async data => {
         // 验证域名唯一性
         // 设置默认配额
       },
-      afterCreate: async (tenant) => {
+      afterCreate: async tenant => {
         // 创建默认角色
         // 发送欢迎邮件
-      }
-    }
+      },
+    },
   })
-  
+
   // 扩展特定业务逻辑
   return {
     ...baseService,
-    
+
     // 租户特定操作
     suspend: async (tenantId: string) => {
       // 暂停租户逻辑
     },
-    
+
     updateQuotas: async (tenantId: string, quotas: TenantQuotas) => {
       // 更新配额逻辑
-    }
+    },
   }
 }
 ```
@@ -136,7 +138,7 @@ import { TenantEntity } from '../../entities'
 
 export function TenantList() {
   const { data, isLoading } = useTenants()
-  
+
   return (
     <SchemaTable
       entity={TenantEntity}
@@ -165,11 +167,11 @@ export function useTenants(filters?: TenantFilters) {
 
 export function useCreateTenant() {
   const utils = api.useContext()
-  
+
   return api.console.tenant.create.useMutation({
     onSuccess: () => {
       utils.console.tenant.list.invalidate()
-    }
+    },
   })
 }
 ```
@@ -269,24 +271,28 @@ export const appRouter = createTRPCRouter({
 ## 🎯 开发计划
 
 ### Phase 1: 基础架构（当前）
+
 1. ✅ 实体定义（entities）
 2. ⏳ 服务层实现（services）
 3. ⏳ 基础组件（components）
 4. ⏳ 路由系统（routes）
 
 ### Phase 2: 核心功能
+
 1. ⏳ 仪表板页面
 2. ⏳ 租户管理
 3. ⏳ 用户管理
 4. ⏳ 权限管理
 
 ### Phase 3: 高级功能
+
 1. ⏳ 插件市场
 2. ⏳ 系统监控
 3. ⏳ Schema 管理器
 4. ⏳ 审计日志
 
 ### Phase 4: 优化完善
+
 1. ⏳ 性能优化
 2. ⏳ 测试覆盖
 3. ⏳ 文档完善

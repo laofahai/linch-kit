@@ -27,12 +27,12 @@ graph TD
     B[配置管理] --> F[多租户隔离]
     C[可观测性] --> G[企业级监控]
     D[CLI框架] --> H[命令扩展]
-    
+
     E --> I[LinchKit Core]
     F --> I
     G --> I
     H --> I
-    
+
     I --> J[其他 LinchKit 包]
 ```
 
@@ -58,7 +58,7 @@ import {
   createPluginRegistry,
   createSimpleTenantConfigManager,
   createCLIManager,
-  useTranslation
+  useTranslation,
 } from '@linch-kit/core'
 
 // 插件系统
@@ -68,9 +68,9 @@ await pluginRegistry.register({
   id: 'my-plugin',
   name: 'My Plugin',
   version: '1.0.0',
-  setup: async (context) => {
+  setup: async context => {
     console.log('插件初始化完成')
-  }
+  },
 })
 
 // 多租户配置管理
@@ -80,8 +80,8 @@ await configManager.createTenant({
   tenantId: 'tenant-1',
   initialConfig: {
     apiUrl: 'https://api.example.com',
-    maxRetries: 3
-  }
+    maxRetries: 3,
+  },
 })
 
 const apiUrl = configManager.get('apiUrl', '', { tenantId: 'tenant-1' })
@@ -96,7 +96,7 @@ cli.registerCommand({
   handler: async ({ args, t }) => {
     console.log(t('deploy.starting', { target: args[0] }))
     return { success: true }
-  }
+  },
 })
 
 // 国际化
@@ -121,18 +121,18 @@ await registry.register({
   name: 'Authentication Plugin',
   version: '1.0.0',
   dependencies: ['config-plugin'], // 依赖管理
-  setup: async (context) => {
+  setup: async context => {
     // 插件初始化逻辑
     context.logger.info('认证插件初始化')
   },
-  start: async (context) => {
+  start: async context => {
     // 插件启动逻辑
     return { success: true }
   },
-  stop: async (context) => {
+  stop: async context => {
     // 插件停止逻辑
     return { success: true }
-  }
+  },
 })
 
 // 启动所有插件（按依赖顺序）
@@ -149,10 +149,10 @@ registry.on('plugin:started', ({ plugin, result }) => {
 提供多租户配置隔离和 Next.js 兼容性：
 
 ```typescript
-import { 
+import {
   createSimpleTenantConfigManager,
   createNextjsEnvProvider,
-  createConfigWatcher
+  createConfigWatcher,
 } from '@linch-kit/core'
 
 // 多租户配置管理
@@ -169,10 +169,10 @@ const watcher = createConfigWatcher()
 
 const watcherId = watcher.watch({
   paths: ['./config.json', './.env.local'],
-  debounceDelay: 500
+  debounceDelay: 500,
 })
 
-watcher.on('file:changed', async (event) => {
+watcher.on('file:changed', async event => {
   console.log(`配置文件 ${event.path} 已变更`)
   // 重新加载配置
   await configManager.loadConfig(envSource)
@@ -184,11 +184,7 @@ watcher.on('file:changed', async (event) => {
 集成 Prometheus、OpenTelemetry 和健康检查：
 
 ```typescript
-import { 
-  createMetricsManager,
-  createLogger,
-  createHealthChecker 
-} from '@linch-kit/core'
+import { createMetricsManager, createLogger, createHealthChecker } from '@linch-kit/core'
 
 // Prometheus 指标
 const metrics = createMetricsManager()
@@ -196,7 +192,7 @@ const metrics = createMetricsManager()
 const requestCounter = metrics.createCounter({
   name: 'http_requests_total',
   help: 'Total HTTP requests',
-  labelNames: ['method', 'status']
+  labelNames: ['method', 'status'],
 })
 
 requestCounter.inc({ method: 'GET', status: '200' })
@@ -206,7 +202,7 @@ const logger = createLogger({ level: 'info' })
 
 logger.info('应用启动完成', {
   version: '1.0.0',
-  environment: 'production'
+  environment: 'production',
 })
 
 // 健康检查
@@ -239,20 +235,20 @@ cli.registerCommand({
       name: 'type',
       description: '生成类型 (component|api|page)',
       required: true,
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'name',
       description: '组件名称',
       required: true,
-      type: 'string'
-    }
+      type: 'string',
+    },
   ],
   handler: async ({ args, options, t }) => {
     const { type, name } = options
-    
+
     console.log(t('generate.starting', { type, name }))
-    
+
     // 代码生成逻辑
     switch (type) {
       case 'component':
@@ -264,12 +260,12 @@ cli.registerCommand({
       default:
         throw new Error(t('generate.unsupported.type', { type }))
     }
-    
-    return { 
-      success: true, 
-      data: { type, name, path: `./src/${type}s/${name}` }
+
+    return {
+      success: true,
+      data: { type, name, path: `./src/${type}s/${name}` },
     }
-  }
+  },
 })
 
 // 执行命令
@@ -290,13 +286,13 @@ const packageI18n = createPackageI18n({
   defaultMessages: {
     en: {
       'user.login.success': 'User {username} logged in successfully',
-      'user.login.failed': 'Login failed: {reason}'
+      'user.login.failed': 'Login failed: {reason}',
     },
     'zh-CN': {
       'user.login.success': '用户 {username} 登录成功',
-      'user.login.failed': '登录失败: {reason}'
-    }
-  }
+      'user.login.failed': '登录失败: {reason}',
+    },
+  },
 })
 
 // 获取翻译函数（支持用户传入自定义翻译）
@@ -345,8 +341,8 @@ const apiUrl = configManager.get('NEXT_PUBLIC_API_URL')
 const enterpriseConfig = createSimpleTenantConfigManager({
   cacheOptions: {
     max: 10000,
-    ttl: 1000 * 60 * 60 // 1小时缓存
-  }
+    ttl: 1000 * 60 * 60, // 1小时缓存
+  },
 })
 
 // 为每个客户创建独立配置
@@ -354,32 +350,32 @@ await enterpriseConfig.createTenant({
   tenantId: 'customer-001',
   initialConfig: {
     features: ['premium', 'analytics'],
-    limits: { apiCalls: 10000, storage: '100GB' }
-  }
+    limits: { apiCalls: 10000, storage: '100GB' },
+  },
 })
 
 // 监控和告警
 const metrics = createMetricsManager({
   prefix: 'linchkit_',
-  labels: { service: 'core', version: '1.0.0' }
+  labels: { service: 'core', version: '1.0.0' },
 })
 
 const tenantMetrics = metrics.createHistogram({
   name: 'tenant_config_access_duration',
   help: 'Time spent accessing tenant configuration',
-  labelNames: ['tenant_id', 'operation']
+  labelNames: ['tenant_id', 'operation'],
 })
 
 // 健康检查集成
 const health = createHealthChecker({
-  gracefulShutdownTimeout: 10000
+  gracefulShutdownTimeout: 10000,
 })
 
 health.addChecker('config-cache', async () => {
   const cacheSize = enterpriseConfig.getTenants().length
   return {
     status: cacheSize > 0 ? 'healthy' : 'degraded',
-    details: { activeTenants: cacheSize }
+    details: { activeTenants: cacheSize },
   }
 })
 ```
@@ -388,12 +384,12 @@ health.addChecker('config-cache', async () => {
 
 ### 基准测试结果
 
-| 功能 | 操作 | 延迟 | 吞吐量 |
-|------|------|------|--------|
-| 插件注册 | 100个插件 | < 10ms | 10,000 ops/s |
-| 配置读取 | 租户配置 | < 1ms | 100,000 ops/s |
+| 功能     | 操作         | 延迟    | 吞吐量          |
+| -------- | ------------ | ------- | --------------- |
+| 插件注册 | 100个插件    | < 10ms  | 10,000 ops/s    |
+| 配置读取 | 租户配置     | < 1ms   | 100,000 ops/s   |
 | 指标收集 | Counter 增量 | < 0.1ms | 1,000,000 ops/s |
-| CLI命令 | 简单命令 | < 50ms | 1,000 ops/s |
+| CLI命令  | 简单命令     | < 50ms  | 1,000 ops/s     |
 
 ### 内存使用
 
@@ -426,27 +422,30 @@ bun test cli
 
 ## 🔄 版本兼容性
 
-| @linch-kit/core | Node.js | TypeScript | 状态 |
-|-----------------|---------|------------|------|
-| 0.1.x | >=20.0.0 | >=5.0.0 | 开发中 |
-| 1.0.x | >=20.0.0 | >=5.0.0 | 规划中 |
+| @linch-kit/core | Node.js  | TypeScript | 状态   |
+| --------------- | -------- | ---------- | ------ |
+| 0.1.x           | >=20.0.0 | >=5.0.0    | 开发中 |
+| 1.0.x           | >=20.0.0 | >=5.0.0    | 规划中 |
 
 ## 🤝 开发指南
 
 ### 贡献代码
 
 1. **克隆仓库**:
+
    ```bash
    git clone https://github.com/linch-kit/linch-kit.git
    cd linch-kit
    ```
 
 2. **安装依赖**:
+
    ```bash
    bun install
    ```
 
 3. **开发模式**:
+
    ```bash
    bun dev:core
    ```

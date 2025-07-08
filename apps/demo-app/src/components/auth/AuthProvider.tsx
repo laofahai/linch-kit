@@ -23,13 +23,13 @@ class LinchKitAuthManager {
       tenantId: 'starter-app',
       enableMFA: false, // 演示应用暂时禁用 MFA
       enableAuditLog: true,
-      enableRoleBasedAccess: true
+      enableRoleBasedAccess: true,
     })
 
     this.mfaManager = new MFAManager({
       enabled: false,
       methods: ['totp'],
-      issuer: 'LinchKit Starter'
+      issuer: 'LinchKit Starter',
     })
   }
 
@@ -55,7 +55,7 @@ class LinchKitAuthManager {
       tenantId: 'starter-app',
       user,
       createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 3600000) // 1小时后过期
+      expiresAt: new Date(Date.now() + 3600000), // 1小时后过期
     }
     localStorage.setItem('linchkit-session', JSON.stringify(session))
     return session
@@ -109,12 +109,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<AuthSession | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [authManager] = useState(() => new LinchKitAuthManager({
-    tenantId: 'starter-app',
-    enableMFA: false,
-    enableAuditLog: true,
-    enableRoleBasedAccess: true
-  }))
+  const [authManager] = useState(
+    () =>
+      new LinchKitAuthManager({
+        tenantId: 'starter-app',
+        enableMFA: false,
+        enableAuditLog: true,
+        enableRoleBasedAccess: true,
+      })
+  )
 
   useEffect(() => {
     initializeAuth()
@@ -139,11 +142,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!session || !user) {
       return { isValid: false, message: '用户未登录' }
     }
-    
+
     if (session.expiresAt < new Date()) {
       return { isValid: false, message: '会话已过期' }
     }
-    
+
     return { isValid: true, message: '认证状态正常' }
   }
 
@@ -155,7 +158,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return {
       sessionCount: sessions,
       lastActivity,
-      permissions
+      permissions,
     }
   }
 
@@ -171,7 +174,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         tenantId: 'starter-app',
         status: 'active',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       // 验证用户访问权限
@@ -225,12 +228,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     signOut,
     refreshSession,
     validateAuth,
-    getAuthStats
+    getAuthStats,
   }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

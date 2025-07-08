@@ -24,7 +24,7 @@ export interface FileStoreConfig {
  */
 export class FileAuditStore implements AuditStore {
   readonly name = 'file'
-  
+
   private readonly maxFileSize: number
   private readonly rotationPolicy: 'daily' | 'weekly' | 'monthly' | 'size'
   private readonly compression: boolean
@@ -81,7 +81,7 @@ export class FileAuditStore implements AuditStore {
     events.sort((a, b) => {
       const orderBy = filter.orderBy || 'timestamp'
       const direction = filter.orderDirection || 'DESC'
-      
+
       const aValue = a[orderBy]
       const bValue = b[orderBy]
 
@@ -96,13 +96,13 @@ export class FileAuditStore implements AuditStore {
         if (aValue > bValue) comparison = 1
         if (aValue < bValue) comparison = -1
       }
-      
+
       return direction === 'DESC' ? -comparison : comparison
     })
 
     const offset = filter.offset || 0
     const limit = filter.limit || 100
-    
+
     return events.slice(offset, offset + limit)
   }
 
@@ -124,13 +124,13 @@ export class FileAuditStore implements AuditStore {
     switch (format) {
       case 'json':
         return JSON.stringify(events, null, 2)
-      
+
       case 'csv':
         return this.exportToCsv(events)
-      
+
       case 'xml':
         return this.exportToXml(events)
-      
+
       default:
         throw new Error(`Unsupported export format: ${format}`)
     }
@@ -143,7 +143,7 @@ export class FileAuditStore implements AuditStore {
     for (const file of files) {
       const events = await this.readEventsFromFile(file)
       const eventsToKeep = events.filter(event => event.timestamp >= beforeDate)
-      
+
       deletedCount += events.length - eventsToKeep.length
 
       if (eventsToKeep.length === 0) {
@@ -198,18 +198,23 @@ export class FileAuditStore implements AuditStore {
 
       switch (policy) {
         case 'daily':
-          return fileDate.getDate() !== now.getDate() || 
-                 fileDate.getMonth() !== now.getMonth() || 
-                 fileDate.getFullYear() !== now.getFullYear()
-        
+          return (
+            fileDate.getDate() !== now.getDate() ||
+            fileDate.getMonth() !== now.getMonth() ||
+            fileDate.getFullYear() !== now.getFullYear()
+          )
+
         case 'weekly': {
-          const weeksDiff = Math.floor((now.getTime() - fileDate.getTime()) / (7 * 24 * 60 * 60 * 1000))
+          const weeksDiff = Math.floor(
+            (now.getTime() - fileDate.getTime()) / (7 * 24 * 60 * 60 * 1000)
+          )
           return weeksDiff >= 1
         }
-        
+
         case 'monthly':
-          return fileDate.getMonth() !== now.getMonth() || 
-                 fileDate.getFullYear() !== now.getFullYear()
+          return (
+            fileDate.getMonth() !== now.getMonth() || fileDate.getFullYear() !== now.getFullYear()
+          )
       }
     } catch {
       return false
@@ -242,40 +247,37 @@ export class FileAuditStore implements AuditStore {
 
   private async compressFile(filePath: string): Promise<void> {
     const compressedPath = `${filePath}.gz`
-    
-    await pipeline(
-      createReadStream(filePath),
-      createGzip(),
-      createWriteStream(compressedPath)
-    )
+
+    await pipeline(createReadStream(filePath), createGzip(), createWriteStream(compressedPath))
   }
 
   private async cleanupOldBackups(): Promise<void> {
     const dir = dirname(this.config.filePath)
     const baseName = this.config.filePath.split('/').pop()!
-    
+
     try {
       const files = await fs.readdir(dir)
       const backupFiles = files
         .filter(file => file.startsWith(baseName) && file !== baseName)
         .map(file => ({
           name: file,
-          path: `${dir}/${file}`
+          path: `${dir}/${file}`,
         }))
 
       const backupStats = await Promise.all(
         backupFiles.map(async file => ({
           ...file,
-          stat: await fs.stat(file.path)
+          stat: await fs.stat(file.path),
         }))
       )
 
       // 按修改时间排序，保留最新的backupCount个文件
-      const sortedBackups = backupStats
-        .sort((a, b) => b.stat.mtime.getTime() - a.stat.mtime.getTime())
+      const sortedBackups = backupStats.sort(
+        (a, b) => b.stat.mtime.getTime() - a.stat.mtime.getTime()
+      )
 
       const filesToDelete = sortedBackups.slice(this.backupCount)
-      
+
       for (const file of filesToDelete) {
         await fs.unlink(file.path)
       }
@@ -287,7 +289,7 @@ export class FileAuditStore implements AuditStore {
   private async getAllLogFiles(): Promise<string[]> {
     const dir = dirname(this.config.filePath)
     const baseName = this.config.filePath.split('/').pop()!
-    
+
     try {
       const files = await fs.readdir(dir)
       const logFiles = files
@@ -304,10 +306,13 @@ export class FileAuditStore implements AuditStore {
   private async readEventsFromFile(filePath: string, filter?: AuditFilter): Promise<AuditEvent[]> {
     try {
       const content = await fs.readFile(filePath, 'utf8')
-      const lines = content.trim().split('\n').filter(line => line.trim())
-      
+      const lines = content
+        .trim()
+        .split('\n')
+        .filter(line => line.trim())
+
       const events: AuditEvent[] = []
-      
+
       for (const line of lines) {
         try {
           const event = JSON.parse(line) as AuditEvent
@@ -319,7 +324,7 @@ export class FileAuditStore implements AuditStore {
           continue
         }
       }
-      
+
       return events
     } catch {
       return []
@@ -329,23 +334,26 @@ export class FileAuditStore implements AuditStore {
   private matchesFilter(event: AuditEvent, filter: AuditFilter): boolean {
     if (filter.startDate && event.timestamp < filter.startDate) return false
     if (filter.endDate && event.timestamp > filter.endDate) return false
-    if (filter.userIds?.length && (!event.userId || !filter.userIds.includes(event.userId))) return false
+    if (filter.userIds?.length && (!event.userId || !filter.userIds.includes(event.userId)))
+      return false
     if (filter.eventTypes?.length && !filter.eventTypes.includes(event.eventType)) return false
     if (filter.categories?.length && !filter.categories.includes(event.category)) return false
     if (filter.severities?.length && !filter.severities.includes(event.severity)) return false
     if (filter.services?.length && !filter.services.includes(event.service)) return false
     if (filter.resources?.length && !filter.resources.includes(event.resource)) return false
     if (filter.success !== undefined && event.success !== filter.success) return false
-    
+
     if (filter.search) {
       const searchLower = filter.search.toLowerCase()
       const searchableText = [
         event.eventType,
         event.resource,
         event.errorMessage,
-        JSON.stringify(event.metadata)
-      ].join(' ').toLowerCase()
-      
+        JSON.stringify(event.metadata),
+      ]
+        .join(' ')
+        .toLowerCase()
+
       if (!searchableText.includes(searchLower)) return false
     }
 
@@ -356,44 +364,67 @@ export class FileAuditStore implements AuditStore {
     if (events.length === 0) return ''
 
     const headers = [
-      'id', 'timestamp', 'eventType', 'category', 'severity',
-      'operation', 'resource', 'resourceId', 'userId', 'userAgent',
-      'ipAddress', 'sessionId', 'success', 'errorCode', 'errorMessage',
-      'service', 'requestId', 'traceId', 'retentionPolicy', 'classification'
+      'id',
+      'timestamp',
+      'eventType',
+      'category',
+      'severity',
+      'operation',
+      'resource',
+      'resourceId',
+      'userId',
+      'userAgent',
+      'ipAddress',
+      'sessionId',
+      'success',
+      'errorCode',
+      'errorMessage',
+      'service',
+      'requestId',
+      'traceId',
+      'retentionPolicy',
+      'classification',
     ]
 
     const csvRows = [
       headers.join(','),
       ...events.map(event => {
-        return headers.map(header => {
-          const value = event[header as keyof AuditEvent]
-          if (value === null || value === undefined) return ''
-          if (typeof value === 'object') return `"${JSON.stringify(value).replace(/"/g, '""')}"`
-          if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
-            return `"${value.replace(/"/g, '""')}"`
-          }
-          return String(value)
-        }).join(',')
-      })
+        return headers
+          .map(header => {
+            const value = event[header as keyof AuditEvent]
+            if (value === null || value === undefined) return ''
+            if (typeof value === 'object') return `"${JSON.stringify(value).replace(/"/g, '""')}"`
+            if (
+              typeof value === 'string' &&
+              (value.includes(',') || value.includes('"') || value.includes('\n'))
+            ) {
+              return `"${value.replace(/"/g, '""')}"`
+            }
+            return String(value)
+          })
+          .join(',')
+      }),
     ]
 
     return csvRows.join('\n')
   }
 
   private exportToXml(events: AuditEvent[]): string {
-    const xmlEvents = events.map(event => {
-      const fields = Object.entries(event)
-        .filter(([_, value]) => value !== null && value !== undefined)
-        .map(([key, value]) => {
-          if (typeof value === 'object') {
-            return `    <${key}><![CDATA[${JSON.stringify(value)}]]></${key}>`
-          }
-          return `    <${key}><![CDATA[${String(value)}]]></${key}>`
-        })
-        .join('\n')
+    const xmlEvents = events
+      .map(event => {
+        const fields = Object.entries(event)
+          .filter(([_, value]) => value !== null && value !== undefined)
+          .map(([key, value]) => {
+            if (typeof value === 'object') {
+              return `    <${key}><![CDATA[${JSON.stringify(value)}]]></${key}>`
+            }
+            return `    <${key}><![CDATA[${String(value)}]]></${key}>`
+          })
+          .join('\n')
 
-      return `  <event>\n${fields}\n  </event>`
-    }).join('\n')
+        return `  <event>\n${fields}\n  </event>`
+      })
+      .join('\n')
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <auditEvents>

@@ -1,0 +1,151 @@
+name: PR Automation
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  pull_request_review:
+    types: [submitted]
+  check_suite:
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  # 自动添加标签
+  auto-label:
+    name: Auto Label
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label PR
+        uses: actions/labeler@v5
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  # 自动分配审查者
+  auto-assign:
+    name: Auto Assign
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    steps:
+      - name: Auto assign
+        uses: kentaro-m/auto-assign-action@v2.0.0
+        with:
+          configuration-path: '.github/auto-assign.yml'
+
+  # 自动合并 Dependabot PRs
+  dependabot-auto-merge:
+    name: Dependabot Auto Merge
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      
+      - name: Auto-merge non-major updates
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 自动合并符合条件的 PRs
+  auto-merge:
+    name: Auto Merge
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request_review' &&
+      github.event.review.state == 'approved' &&
+      !contains(github.event.pull_request.labels.*.name, 'do-not-merge')
+    steps:
+      - name: Check CI status
+        id: ci-status
+        run: |
+          # 获取 PR 的所有检查状态
+          checks=$(gh api repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }}/check-runs --jq '.check_runs[] | select(.name != "Auto Merge") | .conclusion')
+          
+          # 检查是否所有检查都通过
+          if echo "$checks" | grep -E 'failure|cancelled|timed_out|action_required'; then
+            echo "ci_passed=false" >> $GITHUB_OUTPUT
+          else
+            echo "ci_passed=true" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto merge
+        if: steps.ci-status.outputs.ci_passed == 'true'
+        run: |
+          # 启用自动合并
+          gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # PR 大小检查
+  pr-size-check:
+    name: PR Size Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Check PR size
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const { additions, deletions, changed_files } = pr;
+            const totalChanges = additions + deletions;
+            
+            let label = '';
+            if (totalChanges < 50) {
+              label = 'size/XS';
+            } else if (totalChanges < 200) {
+              label = 'size/S';
+            } else if (totalChanges < 500) {
+              label = 'size/M';
+            } else if (totalChanges < 1000) {
+              label = 'size/L';
+            } else {
+              label = 'size/XL';
+            }
+            
+            // 移除其他 size 标签
+            const labels = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+            
+            for (const l of labels.data) {
+              if (l.name.startsWith('size/')) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name: l.name
+                });
+              }
+            }
+            
+            // 添加新的 size 标签
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: [label]
+            });
+            
+            // 如果 PR 太大，添加警告评论
+            if (totalChanges > 1000) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: '⚠️ 这个 PR 包含超过 1000 行更改。请考虑将其拆分为更小的 PR，以便于审查。'
+              });
+            }

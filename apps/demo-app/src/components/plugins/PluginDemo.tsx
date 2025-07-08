@@ -42,8 +42,8 @@ const mockPlugins: MockPlugin[] = [
       host: 'smtp.gmail.com',
       port: 587,
       secure: false,
-      templatesEnabled: true
-    }
+      templatesEnabled: true,
+    },
   },
   {
     id: 'analytics',
@@ -61,8 +61,8 @@ const mockPlugins: MockPlugin[] = [
       trackingEnabled: true,
       retentionDays: 90,
       realtimeUpdates: true,
-      dashboardTheme: 'light'
-    }
+      dashboardTheme: 'light',
+    },
   },
   {
     id: 'payment-gateway',
@@ -75,7 +75,7 @@ const mockPlugins: MockPlugin[] = [
     dependencies: ['auth', 'logger'],
     permissions: ['network', 'crypto', 'database:write'],
     size: '2.5 MB',
-    installDate: '2025-06-15'
+    installDate: '2025-06-15',
   },
   {
     id: 'cache-redis',
@@ -93,8 +93,8 @@ const mockPlugins: MockPlugin[] = [
       host: 'localhost',
       port: 6379,
       cluster: false,
-      maxConnections: 10
-    }
+      maxConnections: 10,
+    },
   },
   {
     id: 'file-storage',
@@ -107,7 +107,7 @@ const mockPlugins: MockPlugin[] = [
     dependencies: ['config'],
     permissions: ['file:read', 'file:write', 'network'],
     size: '4.1 MB',
-    installDate: '2025-06-22'
+    installDate: '2025-06-22',
   },
   {
     id: 'notification',
@@ -120,8 +120,8 @@ const mockPlugins: MockPlugin[] = [
     dependencies: ['email-service', 'logger'],
     permissions: ['network', 'notification'],
     size: '1.9 MB',
-    installDate: '2025-06-26'
-  }
+    installDate: '2025-06-26',
+  },
 ]
 
 const categories = [
@@ -138,57 +138,71 @@ export function PluginDemo() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedPlugin, setSelectedPlugin] = useState<MockPlugin | null>(null)
   const [showInstallModal, setShowInstallModal] = useState(false)
-  const [_pluginManager] = useState(() => new PluginManager({
-    pluginDir: './plugins',
-    autoLoad: true,
-    security: {
-      sandbox: true,
-      permissionCheck: true
-    }
-  }))
+  const [_pluginManager] = useState(
+    () =>
+      new PluginManager({
+        pluginDir: './plugins',
+        autoLoad: true,
+        security: {
+          sandbox: true,
+          permissionCheck: true,
+        },
+      })
+  )
 
-  const filteredPlugins = selectedCategory === 'all' 
-    ? plugins 
-    : plugins.filter(p => p.category === selectedCategory)
+  const filteredPlugins =
+    selectedCategory === 'all' ? plugins : plugins.filter(p => p.category === selectedCategory)
 
   const togglePlugin = async (pluginId: string) => {
-    setPlugins(prev => prev.map(plugin => {
-      if (plugin.id === pluginId) {
-        const newStatus = plugin.status === 'active' ? 'inactive' : 'active'
-        
-        // 模拟插件加载过程
-        if (newStatus === 'active') {
-          setTimeout(() => {
-            setPlugins(current => current.map(p => 
-              p.id === pluginId ? { ...p, status: 'active' as const } : p
-            ))
-          }, 1500)
-          return { ...plugin, status: 'loading' as const }
+    setPlugins(prev =>
+      prev.map(plugin => {
+        if (plugin.id === pluginId) {
+          const newStatus = plugin.status === 'active' ? 'inactive' : 'active'
+
+          // 模拟插件加载过程
+          if (newStatus === 'active') {
+            setTimeout(() => {
+              setPlugins(current =>
+                current.map(p => (p.id === pluginId ? { ...p, status: 'active' as const } : p))
+              )
+            }, 1500)
+            return { ...plugin, status: 'loading' as const }
+          }
+
+          return { ...plugin, status: newStatus }
         }
-        
-        return { ...plugin, status: newStatus }
-      }
-      return plugin
-    }))
+        return plugin
+      })
+    )
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'inactive': return 'bg-gray-100 text-gray-800'
-      case 'error': return 'bg-red-100 text-red-800'
-      case 'loading': return 'bg-yellow-100 text-yellow-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active':
+        return 'bg-green-100 text-green-800'
+      case 'inactive':
+        return 'bg-gray-100 text-gray-800'
+      case 'error':
+        return 'bg-red-100 text-red-800'
+      case 'loading':
+        return 'bg-yellow-100 text-yellow-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active': return '✅'
-      case 'inactive': return '⏸️'
-      case 'error': return '❌'
-      case 'loading': return '⏳'
-      default: return '❓'
+      case 'active':
+        return '✅'
+      case 'inactive':
+        return '⏸️'
+      case 'error':
+        return '❌'
+      case 'loading':
+        return '⏳'
+      default:
+        return '❓'
     }
   }
 
@@ -197,7 +211,7 @@ export function PluginDemo() {
       {/* 插件分类 */}
       <div className="space-y-2">
         <h3 className="text-lg font-semibold mb-4">📋 插件分类</h3>
-        {categories.map((category) => (
+        {categories.map(category => (
           <button
             key={category.key}
             onClick={() => setSelectedCategory(category.key)}
@@ -230,11 +244,9 @@ export function PluginDemo() {
           <h3 className="text-lg font-semibold">
             {categories.find(c => c.key === selectedCategory)?.icon}{' '}
             {categories.find(c => c.key === selectedCategory)?.name}
-            <span className="text-sm text-gray-500 ml-2">
-              ({filteredPlugins.length} 个插件)
-            </span>
+            <span className="text-sm text-gray-500 ml-2">({filteredPlugins.length} 个插件)</span>
           </h3>
-          
+
           <div className="flex space-x-2">
             <button className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
               批量操作
@@ -245,22 +257,22 @@ export function PluginDemo() {
           </div>
         </div>
 
-        {filteredPlugins.map((plugin) => (
+        {filteredPlugins.map(plugin => (
           <div key={plugin.id} className="bg-white p-6 rounded-lg shadow-md border">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
-                  <h4 className="text-lg font-semibold text-gray-900">
-                    {plugin.name}
-                  </h4>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(plugin.status)}`}>
+                  <h4 className="text-lg font-semibold text-gray-900">{plugin.name}</h4>
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(plugin.status)}`}
+                  >
                     {getStatusIcon(plugin.status)} {plugin.status.toUpperCase()}
                   </span>
                   <span className="text-sm text-gray-500">v{plugin.version}</span>
                 </div>
-                
+
                 <p className="text-gray-600 mb-3">{plugin.description}</p>
-                
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-500">
                   <div>
                     <strong>作者:</strong> {plugin.author}
@@ -281,7 +293,10 @@ export function PluginDemo() {
                     <strong className="text-sm text-gray-700">依赖插件:</strong>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {plugin.dependencies.map(dep => (
-                        <span key={dep} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                        <span
+                          key={dep}
+                          className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
+                        >
                           {dep}
                         </span>
                       ))}
@@ -294,7 +309,10 @@ export function PluginDemo() {
                     <strong className="text-sm text-gray-700">权限要求:</strong>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {plugin.permissions.map(perm => (
-                        <span key={perm} className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded">
+                        <span
+                          key={perm}
+                          className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded"
+                        >
                           {perm}
                         </span>
                       ))}
@@ -311,24 +329,28 @@ export function PluginDemo() {
                     plugin.status === 'active'
                       ? 'bg-red-100 text-red-700 hover:bg-red-200'
                       : plugin.status === 'loading'
-                      ? 'bg-yellow-100 text-yellow-700 cursor-not-allowed'
-                      : plugin.status === 'error'
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-green-100 text-green-700 hover:bg-green-200'
+                        ? 'bg-yellow-100 text-yellow-700 cursor-not-allowed'
+                        : plugin.status === 'error'
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-green-100 text-green-700 hover:bg-green-200'
                   }`}
                 >
-                  {plugin.status === 'active' ? '停用' :
-                   plugin.status === 'loading' ? '加载中...' :
-                   plugin.status === 'error' ? '错误' : '启用'}
+                  {plugin.status === 'active'
+                    ? '停用'
+                    : plugin.status === 'loading'
+                      ? '加载中...'
+                      : plugin.status === 'error'
+                        ? '错误'
+                        : '启用'}
                 </button>
-                
+
                 <button
                   onClick={() => setSelectedPlugin(plugin)}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded text-sm font-medium hover:bg-gray-200"
                 >
                   配置
                 </button>
-                
+
                 <button className="px-4 py-2 bg-blue-100 text-blue-700 rounded text-sm font-medium hover:bg-blue-200">
                   详情
                 </button>
@@ -350,14 +372,12 @@ export function PluginDemo() {
                   ✕
                 </button>
               </div>
-              
+
               {selectedPlugin.config ? (
                 <div className="space-y-4">
                   {Object.entries(selectedPlugin.config).map(([key, value]) => (
                     <div key={key}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {key}
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{key}</label>
                       {typeof value === 'boolean' ? (
                         <input
                           type="checkbox"
@@ -411,12 +431,10 @@ export function PluginDemo() {
                   ✕
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    插件来源
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">插件来源</label>
                   <select className="w-full border border-gray-300 rounded px-3 py-2">
                     <option>NPM Registry</option>
                     <option>本地文件</option>
@@ -424,18 +442,16 @@ export function PluginDemo() {
                     <option>插件市场</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    插件标识
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">插件标识</label>
                   <input
                     type="text"
                     placeholder="例如: @linchkit/plugin-example"
                     className="w-full border border-gray-300 rounded px-3 py-2"
                   />
                 </div>
-                
+
                 <div className="flex space-x-2 pt-4">
                   <button className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
                     安装插件

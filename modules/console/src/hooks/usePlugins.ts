@@ -1,6 +1,6 @@
 /**
  * 插件管理 Hooks
- * 
+ *
  * 提供插件市场和插件管理的数据操作
  */
 
@@ -17,12 +17,13 @@ import type { PluginInput, TenantPlugin } from '../entities'
 export const pluginKeys = {
   all: ['plugins'] as const,
   marketplace: () => [...pluginKeys.all, 'marketplace'] as const,
-  marketplaceList: (filters?: Record<string, unknown>) => [...pluginKeys.marketplace(), filters] as const,
+  marketplaceList: (filters?: Record<string, unknown>) =>
+    [...pluginKeys.marketplace(), filters] as const,
   installed: () => [...pluginKeys.all, 'installed'] as const,
   installedList: (tenantId: string) => [...pluginKeys.installed(), tenantId] as const,
   details: () => [...pluginKeys.all, 'detail'] as const,
   detail: (id: string) => [...pluginKeys.details(), id] as const,
-  stats: () => [...pluginKeys.all, 'stats'] as const
+  stats: () => [...pluginKeys.all, 'stats'] as const,
 }
 
 /**
@@ -37,14 +38,14 @@ export function useMarketplacePlugins(filters?: {
   pageSize?: number
 }) {
   const t = useConsoleTranslation()
-  
+
   return useQuery({
     queryKey: pluginKeys.marketplaceList(filters),
     queryFn: () => trpc.console.plugin.marketplace.query(filters),
     staleTime: 10 * 60 * 1000, // 10分钟
     onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.plugin.loadFailed'))
-    }
+    },
   })
 }
 
@@ -53,7 +54,7 @@ export function useMarketplacePlugins(filters?: {
  */
 export function usePlugin(id: string) {
   const t = useConsoleTranslation()
-  
+
   return useQuery({
     queryKey: pluginKeys.detail(id),
     queryFn: () => trpc.console.plugin.get.query({ id }),
@@ -61,7 +62,7 @@ export function usePlugin(id: string) {
     staleTime: 5 * 60 * 1000,
     onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.plugin.notFound'))
-    }
+    },
   })
 }
 
@@ -70,7 +71,7 @@ export function usePlugin(id: string) {
  */
 export function useInstalledPlugins(tenantId: string) {
   const t = useConsoleTranslation()
-  
+
   return useQuery({
     queryKey: pluginKeys.installedList(tenantId),
     queryFn: () => trpc.console.plugin.installed.query({ tenantId }),
@@ -78,7 +79,7 @@ export function useInstalledPlugins(tenantId: string) {
     staleTime: 2 * 60 * 1000, // 2分钟
     onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.plugin.installedLoadFailed'))
-    }
+    },
   })
 }
 
@@ -90,7 +91,7 @@ export function usePluginStats() {
     queryKey: pluginKeys.stats(),
     queryFn: () => trpc.console.plugin.getStats.query(),
     staleTime: 10 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000
+    refetchInterval: 5 * 60 * 1000,
   })
 }
 
@@ -100,19 +101,18 @@ export function usePluginStats() {
 export function useCreatePlugin() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: (input: PluginInput) => 
-      trpc.console.plugin.create.mutate(input),
-    onSuccess: (_data) => {
+    mutationFn: (input: PluginInput) => trpc.console.plugin.create.mutate(input),
+    onSuccess: _data => {
       queryClient.invalidateQueries({ queryKey: pluginKeys.marketplace() })
       queryClient.invalidateQueries({ queryKey: pluginKeys.stats() })
-      
+
       toast.success(t('success.plugin.created'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.createFailed'))
-    }
+    },
   })
 }
 
@@ -122,20 +122,19 @@ export function useCreatePlugin() {
 export function usePublishPlugin() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: (id: string) => 
-      trpc.console.plugin.publish.mutate({ id }),
+    mutationFn: (id: string) => trpc.console.plugin.publish.mutate({ id }),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: pluginKeys.marketplace() })
       queryClient.invalidateQueries({ queryKey: pluginKeys.detail(variables) })
       queryClient.invalidateQueries({ queryKey: pluginKeys.stats() })
-      
+
       toast.success(t('success.plugin.published'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.publishFailed'))
-    }
+    },
   })
 }
 
@@ -145,13 +144,13 @@ export function usePublishPlugin() {
 export function useInstallPlugin() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: ({ 
-      tenantId, 
-      pluginId, 
-      version, 
-      config 
+    mutationFn: ({
+      tenantId,
+      pluginId,
+      version,
+      config,
     }: {
       tenantId: string
       pluginId: string
@@ -162,21 +161,21 @@ export function useInstallPlugin() {
         tenantId,
         pluginId,
         version,
-        config
+        config,
       }),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: pluginKeys.installedList(variables.tenantId) 
+      queryClient.invalidateQueries({
+        queryKey: pluginKeys.installedList(variables.tenantId),
       })
-      queryClient.invalidateQueries({ 
-        queryKey: pluginKeys.detail(variables.pluginId) 
+      queryClient.invalidateQueries({
+        queryKey: pluginKeys.detail(variables.pluginId),
       })
-      
+
       toast.success(t('success.plugin.installed'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.installFailed'))
-    }
+    },
   })
 }
 
@@ -186,29 +185,23 @@ export function useInstallPlugin() {
 export function useUninstallPlugin() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: ({ 
-      tenantId, 
-      pluginId 
-    }: {
-      tenantId: string
-      pluginId: string
-    }) =>
+    mutationFn: ({ tenantId, pluginId }: { tenantId: string; pluginId: string }) =>
       trpc.console.plugin.uninstall.mutate({
         tenantId,
-        pluginId
+        pluginId,
       }),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: pluginKeys.installedList(variables.tenantId) 
+      queryClient.invalidateQueries({
+        queryKey: pluginKeys.installedList(variables.tenantId),
       })
-      
+
       toast.success(t('success.plugin.uninstalled'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.uninstallFailed'))
-    }
+    },
   })
 }
 
@@ -218,29 +211,23 @@ export function useUninstallPlugin() {
 export function useActivatePlugin() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: ({ 
-      tenantId, 
-      pluginId 
-    }: {
-      tenantId: string
-      pluginId: string
-    }) =>
+    mutationFn: ({ tenantId, pluginId }: { tenantId: string; pluginId: string }) =>
       trpc.console.plugin.activate.mutate({
         tenantId,
-        pluginId
+        pluginId,
       }),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: pluginKeys.installedList(variables.tenantId) 
+      queryClient.invalidateQueries({
+        queryKey: pluginKeys.installedList(variables.tenantId),
       })
-      
+
       toast.success(t('success.plugin.activated'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.activateFailed'))
-    }
+    },
   })
 }
 
@@ -250,29 +237,23 @@ export function useActivatePlugin() {
 export function useDeactivatePlugin() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: ({ 
-      tenantId, 
-      pluginId 
-    }: {
-      tenantId: string
-      pluginId: string
-    }) =>
+    mutationFn: ({ tenantId, pluginId }: { tenantId: string; pluginId: string }) =>
       trpc.console.plugin.deactivate.mutate({
         tenantId,
-        pluginId
+        pluginId,
       }),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: pluginKeys.installedList(variables.tenantId) 
+      queryClient.invalidateQueries({
+        queryKey: pluginKeys.installedList(variables.tenantId),
       })
-      
+
       toast.success(t('success.plugin.deactivated'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.deactivateFailed'))
-    }
+    },
   })
 }
 
@@ -282,12 +263,12 @@ export function useDeactivatePlugin() {
 export function useConfigurePlugin() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: ({ 
-      tenantId, 
-      pluginId, 
-      config 
+    mutationFn: ({
+      tenantId,
+      pluginId,
+      config,
     }: {
       tenantId: string
       pluginId: string
@@ -296,18 +277,18 @@ export function useConfigurePlugin() {
       trpc.console.plugin.configure.mutate({
         tenantId,
         pluginId,
-        config
+        config,
       }),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: pluginKeys.installedList(variables.tenantId) 
+      queryClient.invalidateQueries({
+        queryKey: pluginKeys.installedList(variables.tenantId),
       })
-      
+
       toast.success(t('success.plugin.configured'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.plugin.configureFailed'))
-    }
+    },
   })
 }
 
@@ -322,7 +303,7 @@ export function usePluginOperations() {
   const activatePlugin = useActivatePlugin()
   const deactivatePlugin = useDeactivatePlugin()
   const configurePlugin = useConfigurePlugin()
-  
+
   return {
     create: createPlugin,
     publish: publishPlugin,
@@ -331,16 +312,16 @@ export function usePluginOperations() {
     activate: activatePlugin,
     deactivate: deactivatePlugin,
     configure: configurePlugin,
-    
+
     // 便捷方法
-    isLoading: 
+    isLoading:
       createPlugin.isPending ||
       publishPlugin.isPending ||
       installPlugin.isPending ||
       uninstallPlugin.isPending ||
       activatePlugin.isPending ||
       deactivatePlugin.isPending ||
-      configurePlugin.isPending
+      configurePlugin.isPending,
   }
 }
 
@@ -349,11 +330,9 @@ export function usePluginOperations() {
  */
 export function usePluginStatus(tenantId: string, pluginId: string) {
   const { data: installedPlugins } = useInstalledPlugins(tenantId)
-  
-  const installedPlugin = installedPlugins?.find(
-    (p: TenantPlugin) => p.pluginId === pluginId
-  )
-  
+
+  const installedPlugin = installedPlugins?.find((p: TenantPlugin) => p.pluginId === pluginId)
+
   return {
     isInstalled: !!installedPlugin,
     isActive: installedPlugin?.status === 'active',
@@ -361,7 +340,7 @@ export function usePluginStatus(tenantId: string, pluginId: string) {
     version: installedPlugin?.version,
     config: installedPlugin?.config,
     installedAt: installedPlugin?.installedAt,
-    lastError: installedPlugin?.lastError
+    lastError: installedPlugin?.lastError,
   }
 }
 
@@ -370,14 +349,14 @@ export function usePluginStatus(tenantId: string, pluginId: string) {
  */
 export function usePluginSearch() {
   const queryClient = useQueryClient()
-  
+
   const searchPlugins = (query: string, filters?: Record<string, unknown>) => {
     return queryClient.fetchQuery({
       queryKey: pluginKeys.marketplaceList({ search: query, ...filters }),
       queryFn: () => trpc.console.plugin.marketplace.query({ search: query, ...filters }),
-      staleTime: 30 * 1000 // 30秒
+      staleTime: 30 * 1000, // 30秒
     })
   }
-  
+
   return { searchPlugins }
 }

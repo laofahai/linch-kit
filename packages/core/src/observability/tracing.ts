@@ -3,20 +3,15 @@
  * @module observability/tracing
  */
 
-import { 
-  trace, 
-  context, 
-  SpanStatusCode, 
+import {
+  trace,
+  context,
+  SpanStatusCode,
   Span as OtelSpan,
-  Tracer as OtelTracer
+  Tracer as OtelTracer,
 } from '@opentelemetry/api'
 
-import type { 
-  Tracer, 
-  Span, 
-  SpanOptions, 
-  TraceContext 
-} from '../types'
+import type { Tracer, Span, SpanOptions, TraceContext } from '../types'
 
 /**
  * LinchKit Span 适配器
@@ -53,7 +48,7 @@ class LinchKitSpan implements Span {
     return {
       traceId: spanContext.traceId,
       spanId: spanContext.spanId,
-      flags: spanContext.traceFlags
+      flags: spanContext.traceFlags,
     }
   }
 }
@@ -93,9 +88,9 @@ export class LinchKitTracer implements Tracer {
         context: {
           traceId: link.context.traceId,
           spanId: link.context.spanId,
-          traceFlags: link.context.flags || 0
+          traceFlags: link.context.flags || 0,
         },
-        attributes: link.attributes
+        attributes: link.attributes,
       }))
     }
 
@@ -105,16 +100,16 @@ export class LinchKitTracer implements Tracer {
 
   async withSpan<T>(name: string, fn: (span: Span) => Promise<T> | T): Promise<T> {
     const span = this.startSpan(name)
-    
+
     try {
       const result = await fn(span)
       span.setStatus({ code: SpanStatusCode.OK })
       return result
     } catch (error) {
       span.recordException(error as Error)
-      span.setStatus({ 
-        code: SpanStatusCode.ERROR, 
-        message: (error as Error).message 
+      span.setStatus({
+        code: SpanStatusCode.ERROR,
+        message: (error as Error).message,
       })
       throw error
     } finally {

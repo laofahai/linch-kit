@@ -3,10 +3,8 @@ import { ConfigDemo } from '@/components/config/ConfigDemo'
 export default function ConfigPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
-        LinchKit 配置管理演示
-      </h1>
-      
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">LinchKit 配置管理演示</h1>
+
       <div className="bg-green-50 p-6 rounded-lg mb-8">
         <h2 className="text-xl font-semibold mb-4">⚙️ 企业级配置管理</h2>
         <p className="text-gray-700 mb-4">

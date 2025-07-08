@@ -63,17 +63,17 @@ export function Entity(name?: string, options?: EntityOptions) {
     // 添加静态方法到原型
     Object.defineProperty(target, 'entityName', {
       get: () => entityName,
-      configurable: true
+      configurable: true,
     })
 
     Object.defineProperty(target, 'entityOptions', {
       get: () => Reflect.getMetadata(OPTIONS_KEY, target) || {},
-      configurable: true
+      configurable: true,
     })
 
     Object.defineProperty(target, 'toEntity', {
       value: () => getEntityFromClass(target),
-      configurable: true
+      configurable: true,
     })
 
     return target as T & {
@@ -176,42 +176,36 @@ class FieldDecoratorFactory {
    * 一对一关系装饰器
    */
   oneToOne(target: string) {
-    return this.createFieldDecorator(
-      defineField.relation(target).oneToOne()
-    )
+    return this.createFieldDecorator(defineField.relation(target).oneToOne())
   }
 
   /**
    * 一对多关系装饰器
    */
   oneToMany(target: string) {
-    return this.createFieldDecorator(
-      defineField.relation(target).oneToMany()
-    )
+    return this.createFieldDecorator(defineField.relation(target).oneToMany())
   }
 
   /**
    * 多对一关系装饰器
    */
   manyToOne(target: string) {
-    return this.createFieldDecorator(
-      defineField.relation(target).manyToOne()
-    )
+    return this.createFieldDecorator(defineField.relation(target).manyToOne())
   }
 
   /**
    * 多对多关系装饰器
    */
   manyToMany(target: string, through?: string) {
-    return this.createFieldDecorator(
-      defineField.relation(target).manyToMany(through)
-    )
+    return this.createFieldDecorator(defineField.relation(target).manyToMany(through))
   }
 
   /**
    * 创建字段装饰器
    */
-  private createFieldDecorator<T extends BaseFieldDefinition>(fieldBuilder: FieldBuilder<T>): PropertyDecorator {
+  private createFieldDecorator<T extends BaseFieldDefinition>(
+    fieldBuilder: FieldBuilder<T>
+  ): PropertyDecorator {
     return (target: Record<string, unknown>, propertyKey: string) => {
       const fieldDef = fieldBuilder.build()
 

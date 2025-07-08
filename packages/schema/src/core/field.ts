@@ -20,7 +20,7 @@ import type {
   EnumFieldOptions,
   ArrayFieldOptions,
   RelationFieldOptions,
-  BaseFieldDefinition
+  BaseFieldDefinition,
 } from '../types'
 
 /**
@@ -173,14 +173,17 @@ abstract class FieldBuilder<T extends BaseFieldDefinition> {
   get defaultValue(): unknown {
     return this.definition.defaultValue
   }
-
-
 }
 
 /**
- * 字符串类型字段构建器  
+ * 字符串类型字段构建器
  */
-type StringLikeFieldOptions = StringFieldOptions | EmailFieldOptions | UrlFieldOptions | UuidFieldOptions | TextFieldOptions
+type StringLikeFieldOptions =
+  | StringFieldOptions
+  | EmailFieldOptions
+  | UrlFieldOptions
+  | UuidFieldOptions
+  | TextFieldOptions
 
 class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
   constructor(options: Partial<StringLikeFieldOptions> = {}) {
@@ -190,28 +193,27 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
     if (options.type) {
       this.definition.type = options.type
     }
-    
   }
 
   setMin(length: number): this {
-    (this.definition as StringFieldOptions & BaseFieldDefinition).minLength = length;
-    (this.definition as StringFieldOptions & BaseFieldDefinition).min = length
+    ;(this.definition as StringFieldOptions & BaseFieldDefinition).minLength = length
+    ;(this.definition as StringFieldOptions & BaseFieldDefinition).min = length
     return this
   }
 
   setMax(length: number): this {
-    (this.definition as StringFieldOptions & BaseFieldDefinition).maxLength = length;
-    (this.definition as StringFieldOptions & BaseFieldDefinition).max = length
+    ;(this.definition as StringFieldOptions & BaseFieldDefinition).maxLength = length
+    ;(this.definition as StringFieldOptions & BaseFieldDefinition).max = length
     return this
   }
 
   setPattern(regex: RegExp): this {
-    (this.definition as StringFieldOptions & BaseFieldDefinition).pattern = regex
+    ;(this.definition as StringFieldOptions & BaseFieldDefinition).pattern = regex
     return this
   }
 
   transform(fn: (value: string) => string): this {
-    (this.definition as StringFieldOptions & BaseFieldDefinition).transform = fn
+    ;(this.definition as StringFieldOptions & BaseFieldDefinition).transform = fn
     return this
   }
 
@@ -239,21 +241,26 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
 
   // Getters for test compatibility
   get minLength(): number | undefined {
-    return 'minLength' in this.definition ? (this.definition as StringFieldOptions & BaseFieldDefinition).minLength : undefined
+    return 'minLength' in this.definition
+      ? (this.definition as StringFieldOptions & BaseFieldDefinition).minLength
+      : undefined
   }
 
   get maxLength(): number | undefined {
-    return 'maxLength' in this.definition ? (this.definition as StringFieldOptions & BaseFieldDefinition).maxLength : undefined
+    return 'maxLength' in this.definition
+      ? (this.definition as StringFieldOptions & BaseFieldDefinition).maxLength
+      : undefined
   }
 
   get regexPattern(): string | RegExp | undefined {
-    return 'pattern' in this.definition ? (this.definition as StringFieldOptions & BaseFieldDefinition).pattern : undefined
+    return 'pattern' in this.definition
+      ? (this.definition as StringFieldOptions & BaseFieldDefinition).pattern
+      : undefined
   }
 
   get isAuto(): boolean {
     return this.definition.auto ?? false
   }
-
 }
 
 /**
@@ -262,7 +269,6 @@ class StringFieldBuilder extends FieldBuilder<StringLikeFieldOptions> {
 class NumberFieldBuilder extends FieldBuilder<NumberFieldOptions> {
   constructor(options: Partial<NumberFieldOptions> = {}) {
     super({ type: 'number', required: false, ...options } as NumberFieldOptions)
-    
   }
 
   setMin(value: number): this {
@@ -352,7 +358,6 @@ class NumberFieldBuilder extends FieldBuilder<NumberFieldOptions> {
   get precisionDigits(): number | undefined {
     return this.definition.precision
   }
-
 }
 
 /**
@@ -410,12 +415,21 @@ class EnumFieldBuilder<T extends readonly string[]> extends FieldBuilder<EnumFie
  * 数组字段构建器
  */
 class ArrayFieldBuilder extends FieldBuilder<ArrayFieldOptions> {
-  constructor(items: FieldDefinition | { build(): FieldDefinition }, options: Partial<ArrayFieldOptions> = {}) {
+  constructor(
+    items: FieldDefinition | { build(): FieldDefinition },
+    options: Partial<ArrayFieldOptions> = {}
+  ) {
     // 如果传入的是构建器，先构建出定义
-    const itemDefinition = items && typeof items === 'object' && 'build' in items && typeof items.build === 'function'
-      ? items.build()
-      : items as FieldDefinition
-    super({ type: 'array', items: itemDefinition, required: false, ...options } as ArrayFieldOptions)
+    const itemDefinition =
+      items && typeof items === 'object' && 'build' in items && typeof items.build === 'function'
+        ? items.build()
+        : (items as FieldDefinition)
+    super({
+      type: 'array',
+      items: itemDefinition,
+      required: false,
+      ...options,
+    } as ArrayFieldOptions)
   }
 
   min(length: number): this {
@@ -447,12 +461,12 @@ class ArrayFieldBuilder extends FieldBuilder<ArrayFieldOptions> {
  */
 class RelationFieldBuilder extends FieldBuilder<RelationFieldOptions> {
   constructor(target: string, options: Partial<RelationFieldOptions> = {}) {
-    super({ 
-      type: 'relation', 
-      target, 
+    super({
+      type: 'relation',
+      target,
       relationType: 'manyToOne',
       required: false,
-      ...options 
+      ...options,
     } as RelationFieldOptions)
   }
 
@@ -544,12 +558,12 @@ class JsonFieldBuilder extends FieldBuilder<JsonFieldOptions> {
  */
 class I18nFieldBuilder extends FieldBuilder<I18nFieldOptions> {
   constructor(locales: string[] = ['en', 'zh-CN'], options: Partial<I18nFieldOptions> = {}) {
-    super({ 
-      type: 'i18n', 
+    super({
+      type: 'i18n',
       baseType: 'string',
       locales,
-      required: false, 
-      ...options 
+      required: false,
+      ...options,
     } as I18nFieldOptions)
   }
 
@@ -621,25 +635,38 @@ export const defineField = {
   /**
    * 定义枚举字段
    */
-  enum<T extends readonly string[]>(values: T, options?: Partial<EnumFieldOptions<T>>): EnumFieldBuilder<T> {
+  enum<T extends readonly string[]>(
+    values: T,
+    options?: Partial<EnumFieldOptions<T>>
+  ): EnumFieldBuilder<T> {
     return new EnumFieldBuilder(values, options)
   },
 
   /**
    * 定义数组字段
    */
-  array(items: FieldDefinition | { build(): FieldDefinition }, options?: Partial<ArrayFieldOptions>): ArrayFieldBuilder {
+  array(
+    items: FieldDefinition | { build(): FieldDefinition },
+    options?: Partial<ArrayFieldOptions>
+  ): ArrayFieldBuilder {
     return new ArrayFieldBuilder(items, options)
   },
 
   /**
    * 定义关系字段
    */
-  relation(target: string, relationTypeOrOptions?: string | Partial<RelationFieldOptions>): RelationFieldBuilder {
+  relation(
+    target: string,
+    relationTypeOrOptions?: string | Partial<RelationFieldOptions>
+  ): RelationFieldBuilder {
     // 兼容性处理：如果第二个参数是字符串，则作为 relationType
     if (typeof relationTypeOrOptions === 'string') {
-      return new RelationFieldBuilder(target, { 
-        relationType: relationTypeOrOptions as 'oneToOne' | 'oneToMany' | 'manyToOne' | 'manyToMany'
+      return new RelationFieldBuilder(target, {
+        relationType: relationTypeOrOptions as
+          | 'oneToOne'
+          | 'oneToMany'
+          | 'manyToOne'
+          | 'manyToMany',
       })
     }
     return new RelationFieldBuilder(target, relationTypeOrOptions)
@@ -651,7 +678,7 @@ export const defineField = {
   email(options?: Partial<EmailFieldOptions>): StringFieldBuilder {
     return new StringFieldBuilder({
       ...options,
-      type: 'email'
+      type: 'email',
     }).description('Email address')
   },
 
@@ -661,7 +688,7 @@ export const defineField = {
   url(options?: Partial<UrlFieldOptions>): StringFieldBuilder {
     return new StringFieldBuilder({
       ...options,
-      type: 'url'
+      type: 'url',
     }).description('URL')
   },
 
@@ -671,7 +698,7 @@ export const defineField = {
   uuid(options?: Partial<UuidFieldOptions>): StringFieldBuilder {
     return new StringFieldBuilder({
       ...options,
-      type: 'uuid'
+      type: 'uuid',
     }).description('UUID')
   },
 
@@ -687,7 +714,7 @@ export const defineField = {
    */
   i18n(locales?: string[], options?: Partial<I18nFieldOptions>): I18nFieldBuilder {
     return new I18nFieldBuilder(locales || ['en', 'zh-CN'], options)
-  }
+  },
 }
 
 /**
@@ -700,10 +727,13 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
     case 'string':
     case 'text':
       schema = z.string()
-      if ('minLength' in field && field.minLength !== undefined) schema = (schema as z.ZodString).min(field.minLength)
-      if ('maxLength' in field && field.maxLength !== undefined) schema = (schema as z.ZodString).max(field.maxLength)
+      if ('minLength' in field && field.minLength !== undefined)
+        schema = (schema as z.ZodString).min(field.minLength)
+      if ('maxLength' in field && field.maxLength !== undefined)
+        schema = (schema as z.ZodString).max(field.maxLength)
       if ('pattern' in field && field.pattern) {
-        const pattern = typeof field.pattern === 'string' ? new RegExp(field.pattern) : field.pattern
+        const pattern =
+          typeof field.pattern === 'string' ? new RegExp(field.pattern) : field.pattern
         schema = (schema as z.ZodString).regex(pattern)
       }
       if ('transform' in field && field.transform) schema = schema.transform(field.transform)
@@ -711,15 +741,19 @@ export function fieldToZod(field: FieldDefinition): z.ZodSchema {
 
     case 'email':
       schema = z.string().email()
-      if ('minLength' in field && typeof field.minLength === 'number') schema = (schema as z.ZodString).min(field.minLength)
-      if ('maxLength' in field && typeof field.maxLength === 'number') schema = (schema as z.ZodString).max(field.maxLength)
+      if ('minLength' in field && typeof field.minLength === 'number')
+        schema = (schema as z.ZodString).min(field.minLength)
+      if ('maxLength' in field && typeof field.maxLength === 'number')
+        schema = (schema as z.ZodString).max(field.maxLength)
       if ('transform' in field && field.transform) schema = schema.transform(field.transform)
       break
 
     case 'url':
       schema = z.string().url()
-      if ('minLength' in field && typeof field.minLength === 'number') schema = (schema as z.ZodString).min(field.minLength)
-      if ('maxLength' in field && typeof field.maxLength === 'number') schema = (schema as z.ZodString).max(field.maxLength)
+      if ('minLength' in field && typeof field.minLength === 'number')
+        schema = (schema as z.ZodString).min(field.minLength)
+      if ('maxLength' in field && typeof field.maxLength === 'number')
+        schema = (schema as z.ZodString).max(field.maxLength)
       if ('transform' in field && field.transform) schema = schema.transform(field.transform)
       break
 

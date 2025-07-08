@@ -1,0 +1,94 @@
+name: Vercel Deploy Status
+
+on:
+  deployment_status:
+
+jobs:
+  check-deployment:
+    name: Check Vercel Deployment
+    runs-on: ubuntu-latest
+    if: github.event.deployment_status.state == 'success'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get deployment info
+        id: deployment
+        run: |
+          echo "Deployment URL: ${{ github.event.deployment_status.target_url }}"
+          echo "Environment: ${{ github.event.deployment_status.environment }}"
+          
+          # 判断是哪个应用
+          if [[ "${{ github.event.deployment_status.target_url }}" == *"linchkit-starter"* ]]; then
+            echo "app=starter" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.deployment_status.target_url }}" == *"linchkit.vercel.app"* ]]; then
+            echo "app=website" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.deployment_status.target_url }}" == *"linchkit-demo"* ]]; then
+            echo "app=demo-app" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install Playwright
+        run: |
+          bun add -D @playwright/test
+          bun playwright install chromium
+
+      - name: Run smoke tests
+        run: |
+          export PLAYWRIGHT_BASE_URL="${{ github.event.deployment_status.target_url }}"
+          bun playwright test e2e/${{ steps.deployment.outputs.app }}/smoke.spec.ts --project=chromium --reporter=json > test-results.json
+        continue-on-error: true
+
+      - name: Comment on PR
+        if: github.event.deployment_status.environment == 'Preview'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let testResults = { passed: 0, failed: 0 };
+            
+            try {
+              const results = JSON.parse(fs.readFileSync('test-results.json', 'utf8'));
+              testResults.passed = results.stats.passed || 0;
+              testResults.failed = results.stats.failed || 0;
+            } catch (e) {
+              console.log('Could not parse test results');
+            }
+            
+            const status = testResults.failed === 0 ? '✅' : '❌';
+            const appName = '${{ steps.deployment.outputs.app }}';
+            
+            const comment = `## ${status} Vercel 预览部署完成
+            
+            **应用**: ${appName}
+            **URL**: ${{ github.event.deployment_status.target_url }}
+            **环境**: ${{ github.event.deployment_status.environment }}
+            
+            ### 🧪 自动化测试结果
+            - ✅ 通过: ${testResults.passed}
+            - ❌ 失败: ${testResults.failed}
+            
+            [查看部署]({{ github.event.deployment_status.target_url }})
+            `;
+            
+            // 查找相关的 PR
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${context.ref}`
+            });
+            
+            if (pulls.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pulls[0].number,
+                body: comment
+              });
+            }

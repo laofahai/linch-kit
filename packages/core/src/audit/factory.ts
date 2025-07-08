@@ -28,7 +28,7 @@ export function createAuditManager(
     batchSize: 100,
     flushInterval: 5000,
     dataMasking: true,
-    compression: false
+    compression: false,
   }
 
   const auditManager = new DefaultAuditManager(logger, metrics, policy)
@@ -42,7 +42,9 @@ export function createAuditManager(
   if (config?.stores?.file?.enabled && config.stores.file.filePath) {
     // 文件存储配置已找到，但 FileAuditStore 仅在服务端可用
     // 请从 '@linch-kit/core/server' 导入 createFileAuditManager
-    throw new Error('File audit store requires server environment. Use createFileAuditManager from @linch-kit/core/server')
+    throw new Error(
+      'File audit store requires server environment. Use createFileAuditManager from @linch-kit/core/server'
+    )
   }
 
   // 添加告警规则
@@ -63,13 +65,26 @@ export function createAuditManager(
 export function createDatabaseAuditManager(
   logger: Logger,
   metrics: MetricCollector,
-  prisma: { $queryRaw: (query: TemplateStringsArray) => Promise<unknown>; $disconnect: () => Promise<void>; audit_logs: { create: (data: { data: Record<string, unknown> }) => Promise<Record<string, unknown>>; createMany: (data: { data: Record<string, unknown>[]; skipDuplicates?: boolean }) => Promise<{ count: number }>; findMany: (query: Record<string, unknown>) => Promise<Record<string, unknown>[]>; count: (query: Record<string, unknown>) => Promise<number>; deleteMany: (query: Record<string, unknown>) => Promise<{ count: number }> } },
+  prisma: {
+    $queryRaw: (query: TemplateStringsArray) => Promise<unknown>
+    $disconnect: () => Promise<void>
+    audit_logs: {
+      create: (data: { data: Record<string, unknown> }) => Promise<Record<string, unknown>>
+      createMany: (data: {
+        data: Record<string, unknown>[]
+        skipDuplicates?: boolean
+      }) => Promise<{ count: number }>
+      findMany: (query: Record<string, unknown>) => Promise<Record<string, unknown>[]>
+      count: (query: Record<string, unknown>) => Promise<number>
+      deleteMany: (query: Record<string, unknown>) => Promise<{ count: number }>
+    }
+  },
   policy?: Partial<AuditPolicy>
 ): AuditManager {
   const auditManager = new DefaultAuditManager(logger, metrics, policy)
-  
+
   const dbStore = new DatabaseAuditStore(prisma)
   auditManager.addStore(dbStore)
-  
+
   return auditManager
 }

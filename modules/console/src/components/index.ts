@@ -1,6 +1,6 @@
 /**
  * Console 组件导出
- * 
+ *
  * 提供所有 Console 模块的 React 组件
  */
 
@@ -26,13 +26,13 @@ export default {
   ConsolePageHeader: require('./shared/ConsoleLayout').ConsolePageHeader,
   ConsoleContent: require('./shared/ConsoleLayout').ConsoleContent,
   ConsoleSidebarLayout: require('./shared/ConsoleLayout').ConsoleSidebarLayout,
-  
+
   // 统计
   StatCard: require('./shared/StatCard').StatCard,
   StatGrid: require('./shared/StatGrid').StatGrid,
   MiniStatCard: require('./shared/StatCard').MiniStatCard,
-  
+
   // 表格
   DataTable: require('./shared/DataTable').DataTable,
-  SimpleDataTable: require('./shared/DataTable').SimpleDataTable
+  SimpleDataTable: require('./shared/DataTable').SimpleDataTable,
 }

@@ -33,14 +33,14 @@ export class LinchKitLogger implements Logger {
   }
 
   error(message: string, error?: Error, data?: Record<string, unknown>): void {
-    const errorData = error 
+    const errorData = error
       ? { ...data, error: { message: error.message, stack: error.stack } }
       : data
     this.pinoLogger.error(errorData, message)
   }
 
   fatal(message: string, error?: Error, data?: Record<string, unknown>): void {
-    const errorData = error 
+    const errorData = error
       ? { ...data, error: { message: error.message, stack: error.stack } }
       : data
     this.pinoLogger.fatal(errorData, message)
@@ -83,7 +83,7 @@ export function createLogger(config: LoggerConfig = {}): Logger {
     destination,
     redact = ['password', 'token', 'secret', 'authorization'],
     serializers,
-    base = { pid: process.pid, hostname: hostname() }
+    base = { pid: process.pid, hostname: hostname() },
   } = config
 
   // 配置 Pino 选项
@@ -95,25 +95,27 @@ export function createLogger(config: LoggerConfig = {}): Logger {
     base,
     timestamp: pino.stdTimeFunctions.isoTime,
     formatters: {
-      level: (label) => ({ level: label }),
-      log: (object) => object
-    }
+      level: label => ({ level: label }),
+      log: object => object,
+    },
   }
 
   // 开发环境启用美化输出
-  const transport = prettyPrint ? {
-    target: 'pino-pretty',
-    options: {
-      colorize: true,
-      translateTime: 'yyyy-mm-dd HH:MM:ss',
-      ignore: 'pid,hostname'
-    }
-  } : undefined
+  const transport = prettyPrint
+    ? {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+          translateTime: 'yyyy-mm-dd HH:MM:ss',
+          ignore: 'pid,hostname',
+        },
+      }
+    : undefined
 
   // 创建 Pino 实例
-  const pinoLogger = destination 
+  const pinoLogger = destination
     ? pino(pinoOptions, pino.destination(destination))
-    : transport 
+    : transport
       ? pino(pinoOptions, pino.transport(transport))
       : pino(pinoOptions)
 
@@ -124,5 +126,5 @@ export function createLogger(config: LoggerConfig = {}): Logger {
  * 默认日志器实例
  */
 export const logger = createLogger({
-  name: 'linchkit-core'
+  name: 'linchkit-core',
 })

@@ -7,7 +7,7 @@ export const en = {
     // 模块名称
     name: 'Console',
     description: 'Enterprise management console',
-    
+
     // 导航菜单
     nav: {
       dashboard: 'Dashboard',
@@ -17,9 +17,9 @@ export const en = {
       plugins: 'Plugins',
       monitoring: 'Monitoring',
       schemas: 'Schemas',
-      settings: 'Settings'
+      settings: 'Settings',
     },
-    
+
     // 实体相关
     entities: {
       // 租户实体
@@ -40,22 +40,22 @@ export const en = {
           metadata: 'Metadata',
           createdAt: 'Created At',
           updatedAt: 'Updated At',
-          deletedAt: 'Deleted At'
+          deletedAt: 'Deleted At',
         },
         status: {
           active: 'Active',
           suspended: 'Suspended',
           deleted: 'Deleted',
-          pending: 'Pending'
+          pending: 'Pending',
         },
         plan: {
           free: 'Free',
           starter: 'Starter',
           professional: 'Professional',
-          enterprise: 'Enterprise'
-        }
+          enterprise: 'Enterprise',
+        },
       },
-      
+
       // 租户配额实体
       tenantQuotas: {
         name: 'Tenant Quotas',
@@ -73,10 +73,10 @@ export const en = {
           maxSchemas: 'Max Schemas',
           currentSchemas: 'Current Schemas',
           createdAt: 'Created At',
-          updatedAt: 'Updated At'
-        }
+          updatedAt: 'Updated At',
+        },
       },
-      
+
       // 插件实体
       plugin: {
         name: 'Plugin',
@@ -111,7 +111,7 @@ export const en = {
           reviewedBy: 'Reviewed By',
           createdAt: 'Created At',
           updatedAt: 'Updated At',
-          publishedAt: 'Published At'
+          publishedAt: 'Published At',
         },
         category: {
           ui: 'UI Components',
@@ -121,16 +121,16 @@ export const en = {
           monitoring: 'Monitoring',
           automation: 'Automation',
           workflow: 'Workflow',
-          other: 'Other'
+          other: 'Other',
         },
         status: {
           draft: 'Draft',
           published: 'Published',
           deprecated: 'Deprecated',
-          removed: 'Removed'
-        }
+          removed: 'Removed',
+        },
       },
-      
+
       // 系统指标实体
       systemMetric: {
         name: 'System Metric',
@@ -142,7 +142,7 @@ export const en = {
           source: 'Source',
           hostname: 'Hostname',
           tenant: 'Tenant',
-          timestamp: 'Timestamp'
+          timestamp: 'Timestamp',
         },
         type: {
           cpu: 'CPU',
@@ -153,10 +153,10 @@ export const en = {
           api: 'API',
           cache: 'Cache',
           queue: 'Queue',
-          custom: 'Custom'
-        }
+          custom: 'Custom',
+        },
       },
-      
+
       // 审计日志实体
       auditLog: {
         name: 'Audit Log',
@@ -171,15 +171,15 @@ export const en = {
           context: 'Context',
           user: 'User',
           tenant: 'Tenant',
-          createdAt: 'Created At'
+          createdAt: 'Created At',
         },
         status: {
           success: 'Success',
           failure: 'Failure',
-          warning: 'Warning'
-        }
+          warning: 'Warning',
+        },
       },
-      
+
       // 告警规则实体
       alertRule: {
         name: 'Alert Rule',
@@ -196,16 +196,16 @@ export const en = {
           notificationChannels: 'Notification Channels',
           tenant: 'Tenant',
           createdAt: 'Created At',
-          updatedAt: 'Updated At'
+          updatedAt: 'Updated At',
         },
         severity: {
           low: 'Low',
           medium: 'Medium',
           high: 'High',
-          critical: 'Critical'
-        }
+          critical: 'Critical',
+        },
       },
-      
+
       // 告警事件实体
       alertEvent: {
         name: 'Alert Event',
@@ -219,15 +219,15 @@ export const en = {
           acknowledgedAt: 'Acknowledged At',
           resolvedBy: 'Resolved By',
           resolvedAt: 'Resolved At',
-          triggeredAt: 'Triggered At'
+          triggeredAt: 'Triggered At',
         },
         status: {
           triggered: 'Triggered',
           acknowledged: 'Acknowledged',
-          resolved: 'Resolved'
-        }
+          resolved: 'Resolved',
+        },
       },
-      
+
       // 用户扩展字段
       user: {
         fields: {
@@ -240,10 +240,10 @@ export const en = {
           isSystemAdmin: 'System Admin',
           apiKey: 'API Key',
           apiKeyCreatedAt: 'API Key Created At',
-          apiKeyLastUsedAt: 'API Key Last Used At'
-        }
+          apiKeyLastUsedAt: 'API Key Last Used At',
+        },
       },
-      
+
       // 用户活动实体
       userActivity: {
         name: 'User Activity',
@@ -258,7 +258,7 @@ export const en = {
           ipAddress: 'IP Address',
           userAgent: 'User Agent',
           metadata: 'Metadata',
-          createdAt: 'Created At'
+          createdAt: 'Created At',
         },
         type: {
           login: 'Login',
@@ -268,10 +268,10 @@ export const en = {
           data_export: 'Data Export',
           settings_change: 'Settings Change',
           password_change: 'Password Change',
-          role_change: 'Role Change'
-        }
+          role_change: 'Role Change',
+        },
       },
-      
+
       // 用户通知实体
       userNotification: {
         name: 'User Notification',
@@ -287,7 +287,7 @@ export const en = {
           readAt: 'Read At',
           metadata: 'Metadata',
           createdAt: 'Created At',
-          expiresAt: 'Expires At'
+          expiresAt: 'Expires At',
         },
         type: {
           info: 'Information',
@@ -295,11 +295,11 @@ export const en = {
           error: 'Error',
           success: 'Success',
           system: 'System',
-          security: 'Security'
-        }
-      }
+          security: 'Security',
+        },
+      },
     },
-    
+
     // 通用操作
     actions: {
       create: 'Create',
@@ -319,9 +319,9 @@ export const en = {
       uninstall: 'Uninstall',
       configure: 'Configure',
       acknowledge: 'Acknowledge',
-      resolve: 'Resolve'
+      resolve: 'Resolve',
     },
-    
+
     // 消息提示
     messages: {
       success: {
@@ -331,7 +331,7 @@ export const en = {
         suspended: 'Tenant suspended successfully',
         activated: 'Tenant activated successfully',
         installed: 'Plugin installed successfully',
-        uninstalled: 'Plugin uninstalled successfully'
+        uninstalled: 'Plugin uninstalled successfully',
       },
       error: {
         createFailed: 'Failed to create {{entity}}',
@@ -339,15 +339,15 @@ export const en = {
         deleteFailed: 'Failed to delete {{entity}}',
         notFound: '{{entity}} not found',
         unauthorized: 'You are not authorized to perform this action',
-        quotaExceeded: 'Quota exceeded for {{resource}}'
+        quotaExceeded: 'Quota exceeded for {{resource}}',
       },
       confirm: {
         delete: 'Are you sure you want to delete this {{entity}}?',
         suspend: 'Are you sure you want to suspend this tenant?',
-        uninstall: 'Are you sure you want to uninstall this plugin?'
-      }
+        uninstall: 'Are you sure you want to uninstall this plugin?',
+      },
     },
-    
+
     // 仪表板
     dashboard: {
       title: 'Dashboard',
@@ -358,16 +358,16 @@ export const en = {
         totalUsers: 'Total Users',
         activeUsers: 'Active Users',
         installedPlugins: 'Installed Plugins',
-        systemHealth: 'System Health'
+        systemHealth: 'System Health',
       },
       charts: {
         userGrowth: 'User Growth',
         apiUsage: 'API Usage',
         resourceUsage: 'Resource Usage',
-        tenantActivity: 'Tenant Activity'
-      }
+        tenantActivity: 'Tenant Activity',
+      },
     },
-    
+
     // 租户管理
     tenants: {
       title: 'Tenant Management',
@@ -375,9 +375,9 @@ export const en = {
       editTenant: 'Edit Tenant',
       tenantDetails: 'Tenant Details',
       quotaManagement: 'Quota Management',
-      billingInfo: 'Billing Information'
+      billingInfo: 'Billing Information',
     },
-    
+
     // 用户管理
     users: {
       title: 'User Management',
@@ -385,9 +385,9 @@ export const en = {
       editUser: 'Edit User',
       userProfile: 'User Profile',
       roleAssignment: 'Role Assignment',
-      activityLog: 'Activity Log'
+      activityLog: 'Activity Log',
     },
-    
+
     // 权限管理
     permissions: {
       title: 'Permission Management',
@@ -395,9 +395,9 @@ export const en = {
       createRole: 'Create Role',
       editRole: 'Edit Role',
       permissions: 'Permissions',
-      assignPermissions: 'Assign Permissions'
+      assignPermissions: 'Assign Permissions',
     },
-    
+
     // 插件市场
     plugins: {
       title: 'Plugin Marketplace',
@@ -408,9 +408,9 @@ export const en = {
       details: 'Plugin Details',
       reviews: 'Reviews',
       installation: 'Installation',
-      configuration: 'Configuration'
+      configuration: 'Configuration',
     },
-    
+
     // 系统监控
     monitoring: {
       title: 'System Monitoring',
@@ -420,9 +420,9 @@ export const en = {
       health: 'Health Check',
       performance: 'Performance',
       createAlert: 'Create Alert Rule',
-      alertHistory: 'Alert History'
+      alertHistory: 'Alert History',
     },
-    
+
     // Schema 管理
     schemas: {
       title: 'Schema Management',
@@ -431,7 +431,7 @@ export const en = {
       createEntity: 'Create Entity',
       editEntity: 'Edit Entity',
       generateCode: 'Generate Code',
-      migrations: 'Migrations'
-    }
-  }
+      migrations: 'Migrations',
+    },
+  },
 }

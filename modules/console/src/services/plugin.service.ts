@@ -1,8 +1,8 @@
 /**
  * 插件管理服务
- * 
+ *
  * 基于 @linch-kit/crud 和 @linch-kit/core 的插件管理业务逻辑
- * 
+ *
  * TODO: 当 CRUD 和 Core 插件系统 API 稳定后重新实现
  */
 
@@ -15,7 +15,7 @@ export const InstallPluginInput = z.object({
   pluginId: z.string(),
   version: z.string().optional(),
   config: z.record(z.unknown()).optional(),
-  tenantId: z.string().optional()
+  tenantId: z.string().optional(),
 })
 
 export type InstallPluginInputType = z.infer<typeof InstallPluginInput>
@@ -59,7 +59,11 @@ export class PluginService {
   /**
    * 更新插件
    */
-  async updatePlugin(pluginId: string, version: string, _tenantId?: string): Promise<Record<string, unknown>> {
+  async updatePlugin(
+    pluginId: string,
+    version: string,
+    _tenantId?: string
+  ): Promise<Record<string, unknown>> {
     // TODO: 实现真实的插件更新逻辑
     return { pluginId, version, status: 'updated' }
   }
@@ -75,7 +79,11 @@ export class PluginService {
   /**
    * 更新插件配置
    */
-  async updatePluginConfig(pluginId: string, config: Record<string, unknown>, _tenantId?: string): Promise<Record<string, unknown>> {
+  async updatePluginConfig(
+    pluginId: string,
+    config: Record<string, unknown>,
+    _tenantId?: string
+  ): Promise<Record<string, unknown>> {
     // TODO: 实现真实的插件配置更新逻辑
     return { pluginId, config }
   }

@@ -44,7 +44,7 @@ export function LoginForm() {
           </div>
           <p className="text-green-700 mt-2">欢迎，{user.name}！</p>
         </div>
-        
+
         <button
           onClick={handleSignOut}
           disabled={isLoading}
@@ -66,13 +66,13 @@ export function LoginForm() {
           type="email"
           id="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           placeholder="请输入邮箱"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={isLoading}
         />
       </div>
-      
+
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
           密码
@@ -81,19 +81,19 @@ export function LoginForm() {
           type="password"
           id="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           placeholder="请输入密码"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={isLoading}
         />
       </div>
-      
+
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3">
           <span className="text-red-600 text-sm">{error}</span>
         </div>
       )}
-      
+
       <button
         type="submit"
         disabled={isLoading}
@@ -101,7 +101,7 @@ export function LoginForm() {
       >
         {isLoading ? '登录中...' : '登录'}
       </button>
-      
+
       <div className="text-xs text-gray-500 mt-2">
         <p>演示账号: 任意邮箱格式 + 任意密码</p>
         <p>例如: demo@example.com / 123456</p>

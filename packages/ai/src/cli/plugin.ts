@@ -1,6 +1,6 @@
 /**
  * LinchKit AI CLI Plugin
- * 
+ *
  * 为 LinchKit 提供 AI 相关的命令行工具
  * 包含图数据提取、查询等功能
  */
@@ -60,5 +60,5 @@ export const cliPlugin = {
     cli.registerCommand(queryCommand)
     cli.registerCommand(generateCommand)
     cli.registerCommand(contextCommand)
-  }
+  },
 }

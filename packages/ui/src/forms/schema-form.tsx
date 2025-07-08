@@ -28,16 +28,16 @@ export function SchemaForm({
   mode = 'create',
   validation = 'strict',
   className,
-  children
+  children,
 }: SchemaFormProps) {
   const { t } = useUITranslation()
-  
+
   // 创建Schema实体用于验证
   const entity = React.useMemo(() => {
     try {
       return defineEntity(schema.name, {
         fields: schema.fields,
-        options: schema.options
+        options: schema.options,
       })
     } catch (error) {
       logger.error('创建Schema实体失败: ' + schema.name + ' error: ' + String(error))
@@ -47,10 +47,10 @@ export function SchemaForm({
 
   const form = useForm<Record<string, unknown>>({
     defaultValues: initialData,
-    mode: validation === 'strict' ? 'onChange' : 'onSubmit'
+    mode: validation === 'strict' ? 'onChange' : 'onSubmit',
   })
 
-  const handleSubmit = form.handleSubmit(async (data) => {
+  const handleSubmit = form.handleSubmit(async data => {
     try {
       // 使用Schema实体进行验证
       if (entity) {
@@ -62,10 +62,10 @@ export function SchemaForm({
           await entity.validate(data)
         }
       }
-      
+
       logger.info('提交表单数据: ' + schema.name + ' mode: ' + mode)
       await onSubmit(data)
-      
+
       if (mode === 'create') {
         form.reset()
       }
@@ -76,14 +76,15 @@ export function SchemaForm({
   })
 
   const isReadonly = mode === 'view'
-  const submitButtonText = mode === 'create' ? t('form.create') : 
-                          mode === 'edit' ? t('form.update') : ''
+  const submitButtonText =
+    mode === 'create' ? t('form.create') : mode === 'edit' ? t('form.update') : ''
 
   return (
     <Card className={className}>
       <CardHeader>
         <CardTitle>
-          {mode === 'create' && t('form.create_title', { entity: schema.displayName || schema.name })}
+          {mode === 'create' &&
+            t('form.create_title', { entity: schema.displayName || schema.name })}
           {mode === 'edit' && t('form.edit_title', { entity: schema.displayName || schema.name })}
           {mode === 'view' && t('form.view_title', { entity: schema.displayName || schema.name })}
         </CardTitle>
@@ -102,7 +103,7 @@ export function SchemaForm({
               error={form.formState.errors[fieldName]?.message as string}
             />
           ))}
-          
+
           {/* 自定义子元素 */}
           {children}
         </CardContent>
@@ -110,18 +111,11 @@ export function SchemaForm({
         {!isReadonly && (
           <CardFooter className="flex justify-end space-x-2">
             {onCancel && (
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={onCancel}
-              >
+              <Button type="button" variant="outline" onClick={onCancel}>
                 {t('form.cancel')}
               </Button>
             )}
-            <Button 
-              type="submit" 
-              disabled={form.formState.isSubmitting}
-            >
+            <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? t('form.submitting') : submitButtonText}
             </Button>
           </CardFooter>

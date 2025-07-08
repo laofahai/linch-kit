@@ -9,12 +9,12 @@ interface LoadingProps {
 export const Loading: React.FC<LoadingProps> = ({
   size = 'md',
   text = '加载中...',
-  className = ''
+  className = '',
 }) => {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',
-    lg: 'w-8 h-8'
+    lg: 'w-8 h-8',
   }
 
   return (
@@ -24,11 +24,7 @@ export const Loading: React.FC<LoadingProps> = ({
         role="status"
         aria-label="加载中"
       />
-      {text && (
-        <span className="text-sm text-gray-600 dark:text-gray-400">
-          {text}
-        </span>
-      )}
+      {text && <span className="text-sm text-gray-600 dark:text-gray-400">{text}</span>}
     </div>
   )
 }
@@ -38,10 +34,7 @@ interface SkeletonProps {
   className?: string
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({
-  lines = 3,
-  className = ''
-}) => {
+export const Skeleton: React.FC<SkeletonProps> = ({ lines = 3, className = '' }) => {
   return (
     <div className={`space-y-3 ${className}`}>
       {Array.from({ length: lines }).map((_, index) => (
@@ -60,19 +53,13 @@ interface PageLoadingProps {
   message?: string
 }
 
-export const PageLoading: React.FC<PageLoadingProps> = ({
-  message = '页面加载中...'
-}) => {
+export const PageLoading: React.FC<PageLoadingProps> = ({ message = '页面加载中...' }) => {
   return (
     <div className="fixed inset-0 bg-white dark:bg-gray-900 flex items-center justify-center z-50">
       <div className="text-center">
         <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-600 dark:text-gray-400 text-lg">
-          {message}
-        </p>
-        <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">
-          请稍候片刻...
-        </p>
+        <p className="text-gray-600 dark:text-gray-400 text-lg">{message}</p>
+        <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">请稍候片刻...</p>
       </div>
     </div>
   )

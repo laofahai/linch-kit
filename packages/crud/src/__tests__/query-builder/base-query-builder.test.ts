@@ -5,7 +5,6 @@ import type { PluginManager } from '@linch-kit/core'
 import { BaseQueryBuilder } from '../../core/query-builder/base-query-builder'
 import type { SchemaRegistry, Logger } from '../../types'
 
-
 // Mock 测试用的具体实现类
 class TestQueryBuilder extends BaseQueryBuilder<any> {
   async execute(): Promise<any[]> {
@@ -58,7 +57,7 @@ const mockEntity: Entity = {
     id: { type: 'string', required: true },
     name: { type: 'string', required: true },
     email: { type: 'string', required: false },
-    age: { type: 'number', required: false }
+    age: { type: 'number', required: false },
   },
   options: {},
   validate: async () => true,
@@ -67,7 +66,7 @@ const mockEntity: Entity = {
   validateUpdate: (data: unknown) => data,
   clone: () => mockEntity,
   extend: () => mockEntity,
-  withOptions: () => mockEntity
+  withOptions: () => mockEntity,
 }
 
 const mockSchemaRegistry: SchemaRegistry = {
@@ -87,7 +86,7 @@ const mockSchemaRegistry: SchemaRegistry = {
   createTableSchema: mock(() => ({})),
   createValidationSchema: mock(() => ({})),
   createRulesSchema: mock(() => ({})),
-  createSeederSchema: mock(() => ({}))
+  createSeederSchema: mock(() => ({})),
 }
 
 const mockLogger: Logger = {
@@ -97,15 +96,15 @@ const mockLogger: Logger = {
   error: mock(() => {}),
   trace: mock(() => {}),
   fatal: mock(() => {}),
-  child: mock(() => mockLogger)
+  child: mock(() => mockLogger),
 }
 
 const mockPrisma = {
   testEntity: {
     findMany: mock(() => []),
     findFirst: mock(() => null),
-    count: mock(() => 0)
-  }
+    count: mock(() => 0),
+  },
 }
 
 const mockPluginManager: PluginManager = {
@@ -115,7 +114,7 @@ const mockPluginManager: PluginManager = {
   getAll: mock(() => []),
   clear: mock(() => {}),
   initialize: mock(() => Promise.resolve()),
-  shutdown: mock(() => Promise.resolve())
+  shutdown: mock(() => Promise.resolve()),
 }
 
 describe('BaseQueryBuilder', () => {
@@ -149,7 +148,7 @@ describe('BaseQueryBuilder', () => {
     it('should throw error when entity not found', () => {
       const mockRegistryWithoutEntity: SchemaRegistry = {
         ...mockSchemaRegistry,
-        getEntity: mock(() => null)
+        getEntity: mock(() => null),
       }
 
       expect(() => {
@@ -197,7 +196,7 @@ describe('BaseQueryBuilder', () => {
     it('should add include relation', () => {
       const result = queryBuilder.include('profile')
       expect(result).toBe(queryBuilder)
-      
+
       const query = queryBuilder.build()
       expect(query.include).toBeDefined()
       expect((query.include as any).profile).toBe(true)
@@ -205,7 +204,7 @@ describe('BaseQueryBuilder', () => {
 
     it('should add multiple includes', () => {
       queryBuilder.include('profile').include('posts')
-      
+
       const query = queryBuilder.build()
       expect(query.include).toBeDefined()
       expect((query.include as any).profile).toBe(true)
@@ -215,7 +214,7 @@ describe('BaseQueryBuilder', () => {
     it('should add orderBy', () => {
       const result = queryBuilder.orderBy('name', 'asc')
       expect(result).toBe(queryBuilder)
-      
+
       const query = queryBuilder.build()
       expect(query.orderBy).toBeDefined()
       expect(Array.isArray(query.orderBy)).toBe(true)
@@ -224,7 +223,7 @@ describe('BaseQueryBuilder', () => {
 
     it('should add multiple orderBy', () => {
       queryBuilder.orderBy('name', 'asc').orderBy('age', 'desc')
-      
+
       const query = queryBuilder.build()
       expect(query.orderBy).toBeDefined()
       expect((query.orderBy as any).length).toBe(2)
@@ -235,7 +234,7 @@ describe('BaseQueryBuilder', () => {
     it('should add limit', () => {
       const result = queryBuilder.limit(10)
       expect(result).toBe(queryBuilder)
-      
+
       const query = queryBuilder.build()
       expect(query.take).toBe(10)
     })
@@ -243,7 +242,7 @@ describe('BaseQueryBuilder', () => {
     it('should add offset', () => {
       const result = queryBuilder.offset(5)
       expect(result).toBe(queryBuilder)
-      
+
       const query = queryBuilder.build()
       expect(query.skip).toBe(5)
     })
@@ -251,7 +250,7 @@ describe('BaseQueryBuilder', () => {
     it('should add pagination', () => {
       const result = queryBuilder.paginate(2, 10)
       expect(result).toBe(queryBuilder)
-      
+
       const query = queryBuilder.build()
       expect(query.skip).toBe(10) // (2-1) * 10
       expect(query.take).toBe(10)
@@ -260,7 +259,7 @@ describe('BaseQueryBuilder', () => {
     it('should add distinct', () => {
       const result = queryBuilder.distinct(['name', 'email'])
       expect(result).toBe(queryBuilder)
-      
+
       const query = queryBuilder.build()
       expect(query.distinct).toEqual(['name', 'email'])
     })
@@ -300,7 +299,7 @@ describe('BaseQueryBuilder', () => {
         .offset(5)
         .orderBy('name', 'asc')
         .include('profile')
-      
+
       const query = queryBuilder.build()
       expect(query).toBeDefined()
       expect(query.take).toBe(10)
@@ -310,17 +309,14 @@ describe('BaseQueryBuilder', () => {
     })
 
     it('should reset query', () => {
-      queryBuilder
-        .where('name', '=', 'test')
-        .limit(10)
-        .include('profile')
-      
+      queryBuilder.where('name', '=', 'test').limit(10).include('profile')
+
       let query = queryBuilder.build()
       expect(Object.keys(query).length).toBeGreaterThan(0)
-      
+
       const result = queryBuilder.reset()
       expect(result).toBe(queryBuilder)
-      
+
       query = queryBuilder.build()
       expect(Object.keys(query).length).toBe(0)
     })
@@ -347,7 +343,7 @@ describe('BaseQueryBuilder', () => {
         .distinct(['name', 'email'])
         .limit(20)
         .offset(10)
-      
+
       const query = queryBuilder.build()
       expect(query).toBeDefined()
       expect(query.take).toBe(20)

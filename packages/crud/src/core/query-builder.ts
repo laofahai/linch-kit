@@ -1,6 +1,6 @@
 /**
  * 查询构建器 - 基于 Prisma 查询语法
- * 
+ *
  * 设计原则：
  * - 提供链式 API，最终转换为 Prisma 查询
  * - 利用 Prisma 的类型推导和查询优化
@@ -16,7 +16,7 @@ import type {
   Operator,
   PaginatedResult,
   FindOptions as _FindOptions,
-  PerformanceMetrics
+  PerformanceMetrics,
 } from '../types'
 import { PermissionChecker } from '../permissions/permission-checker'
 
@@ -86,7 +86,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
       case 'like':
         where[field as string] = {
           contains: value,
-          mode: 'insensitive'
+          mode: 'insensitive',
         }
         break
       case 'in':
@@ -187,7 +187,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
 
     const orderBy = this.query.orderBy as Array<Record<string, string>>
     orderBy.push({
-      [field as string]: direction
+      [field as string]: direction,
     })
 
     return this
@@ -255,7 +255,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         duration: Date.now() - startTime,
         recordsAffected: results.length,
         queryComplexity: this.calculateQueryComplexity(),
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return results as T[]
@@ -264,7 +264,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         entityName: this.entityName,
         query: this.query,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -286,7 +286,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         duration: Date.now() - startTime,
         recordsAffected: result ? 1 : 0,
         queryComplexity: this.calculateQueryComplexity(),
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return result as T | null
@@ -295,7 +295,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         entityName: this.entityName,
         query: this.query,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -318,7 +318,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
     try {
       const model = this.getPrismaModel()
       const countQuery = {
-        where: this.query.where
+        where: this.query.where,
       }
       const count = await model.count(countQuery)
 
@@ -326,7 +326,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         operation: 'count',
         entityName: this.entityName,
         duration: Date.now() - startTime,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return count
@@ -335,7 +335,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         entityName: this.entityName,
         query: countQuery,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -353,14 +353,14 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
       const model = this.getPrismaModel()
       const result = await model.aggregate({
         where: this.query.where,
-        _sum: { [field as string]: true }
+        _sum: { [field as string]: true },
       })
 
       await this.recordMetrics({
         operation: 'sum',
         entityName: this.entityName,
         duration: Date.now() - startTime,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return result._sum[field as string] || 0
@@ -369,7 +369,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         entityName: this.entityName,
         field: field as string,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -385,14 +385,14 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
       const model = this.getPrismaModel()
       const result = await model.aggregate({
         where: this.query.where,
-        _avg: { [field as string]: true }
+        _avg: { [field as string]: true },
       })
 
       await this.recordMetrics({
         operation: 'avg',
         entityName: this.entityName,
         duration: Date.now() - startTime,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return result._avg[field as string] || 0
@@ -401,7 +401,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         entityName: this.entityName,
         field: field as string,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -417,14 +417,14 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
       const model = this.getPrismaModel()
       const result = await model.aggregate({
         where: this.query.where,
-        _min: { [field as string]: true }
+        _min: { [field as string]: true },
       })
 
       await this.recordMetrics({
         operation: 'min',
         entityName: this.entityName,
         duration: Date.now() - startTime,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return result._min[field as string] || 0
@@ -433,7 +433,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         entityName: this.entityName,
         field: field as string,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -449,14 +449,14 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
       const model = this.getPrismaModel()
       const result = await model.aggregate({
         where: this.query.where,
-        _max: { [field as string]: true }
+        _max: { [field as string]: true },
       })
 
       await this.recordMetrics({
         operation: 'max',
         entityName: this.entityName,
         duration: Date.now() - startTime,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return result._max[field as string] || 0
@@ -465,7 +465,7 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         entityName: this.entityName,
         field: field as string,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -492,8 +492,8 @@ export class PrismaQueryBuilder<T = unknown> implements IQueryBuilder<T> {
         total,
         totalPages,
         hasNext: page < totalPages,
-        hasPrevious: page > 1
-      }
+        hasPrevious: page > 1,
+      },
     }
   }
 

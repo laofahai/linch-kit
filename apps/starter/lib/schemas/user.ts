@@ -22,7 +22,7 @@ export type UserUpdate = Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>
 export const UserEntity = {
   type: {} as User,
   createSchema: {} as UserCreate,
-  updateSchema: {} as UserUpdate
+  updateSchema: {} as UserUpdate,
 }
 
 export const UserCreateSchema = UserEntity.createSchema

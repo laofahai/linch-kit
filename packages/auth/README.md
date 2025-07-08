@@ -34,7 +34,7 @@ export const { auth, handlers, signIn, signOut } = createAuth({
   ],
   callbacks: {
     // 自定义回调
-  }
+  },
 })
 ```
 
@@ -48,7 +48,7 @@ const canRead = await PermissionChecker.check(user, 'read', 'Post')
 const canEdit = await PermissionChecker.check(user, 'update', post)
 
 // 在 API 中使用
-if (!await PermissionChecker.check(session.user, 'delete', 'User')) {
+if (!(await PermissionChecker.check(session.user, 'delete', 'User'))) {
   throw new Error('Unauthorized')
 }
 ```
@@ -61,7 +61,7 @@ import { TenantManager } from '@linch-kit/auth'
 // 创建租户
 const tenant = await TenantManager.create({
   name: 'Acme Corp',
-  domain: 'acme.example.com'
+  domain: 'acme.example.com',
 })
 
 // 切换租户上下文
@@ -104,9 +104,9 @@ const engine = createPermissionEngine({
       actions: ['read', 'update'],
       conditions: (user, resource) => {
         return resource.authorId === user.id
-      }
-    }
-  ]
+      },
+    },
+  ],
 })
 ```
 
@@ -119,7 +119,7 @@ import { AuditLogger } from '@linch-kit/auth'
 await AuditLogger.log({
   action: 'user.login',
   userId: user.id,
-  metadata: { ip: request.ip }
+  metadata: { ip: request.ip },
 })
 ```
 

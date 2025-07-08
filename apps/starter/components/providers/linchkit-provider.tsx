@@ -33,9 +33,7 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
         <div className="max-w-md rounded-lg bg-white p-6 shadow-lg">
           <h2 className="mb-2 text-xl font-bold text-red-600">初始化错误</h2>
           <p className="text-gray-700">{error.message}</p>
-          <p className="mt-4 text-sm text-gray-500">
-            请检查环境变量配置是否正确
-          </p>
+          <p className="mt-4 text-sm text-gray-500">请检查环境变量配置是否正确</p>
         </div>
       </div>
     )

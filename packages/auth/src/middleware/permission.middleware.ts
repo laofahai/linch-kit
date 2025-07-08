@@ -16,27 +16,27 @@ export interface PermissionMiddlewareConfig {
    * 获取当前用户的函数
    */
   getUser: (request: Request) => Promise<LinchKitUser | null>
-  
+
   /**
    * 权限引擎实例
    */
   permissionEngine?: EnhancedPermissionEngine
-  
+
   /**
    * 获取权限上下文的函数
    */
   getContext?: (request: Request) => Promise<PermissionContext | undefined>
-  
+
   /**
    * 未认证时的重定向路径
    */
   unauthorizedRedirect?: string
-  
+
   /**
    * 无权限时的重定向路径
    */
   forbiddenRedirect?: string
-  
+
   /**
    * 是否返回 JSON 响应而不是重定向
    */
@@ -64,7 +64,7 @@ export interface PermissionCheckOptions {
  */
 export function createPermissionMiddleware(config: PermissionMiddlewareConfig) {
   const engine = config.permissionEngine || new EnhancedPermissionEngine()
-  
+
   return async function checkPermission(
     request: Request,
     options: PermissionCheckOptions
@@ -77,49 +77,43 @@ export function createPermissionMiddleware(config: PermissionMiddlewareConfig) {
   }> {
     // 获取当前用户
     const user = await config.getUser(request)
-    
+
     if (!user) {
       return {
         allowed: false,
-        reason: 'User not authenticated'
+        reason: 'User not authenticated',
       }
     }
-    
+
     // 获取权限上下文
     const context = config.getContext ? await config.getContext(request) : undefined
-    
+
     // 执行权限检查
-    const result = await engine.checkEnhanced(
-      user,
-      options.action,
-      options.subject,
-      context
-    )
-    
+    const result = await engine.checkEnhanced(user, options.action, options.subject, context)
+
     // 检查字段级权限
     if (options.checkFields && options.requiredFields && result.granted) {
-      const hasAllFields = options.requiredFields.every(field => 
-        result.allowedFields?.includes(field) && 
-        !result.deniedFields?.includes(field)
+      const hasAllFields = options.requiredFields.every(
+        field => result.allowedFields?.includes(field) && !result.deniedFields?.includes(field)
       )
-      
+
       if (!hasAllFields) {
         return {
           allowed: false,
           user,
           reason: 'Missing required field permissions',
           allowedFields: result.allowedFields,
-          deniedFields: result.deniedFields
+          deniedFields: result.deniedFields,
         }
       }
     }
-    
+
     return {
       allowed: result.granted,
       user,
       reason: result.reason,
       allowedFields: result.allowedFields,
-      deniedFields: result.deniedFields
+      deniedFields: result.deniedFields,
     }
   }
 }
@@ -127,35 +121,33 @@ export function createPermissionMiddleware(config: PermissionMiddlewareConfig) {
 /**
  * Express/Connect 风格的中间件
  */
-export function permissionMiddleware(
-  config: PermissionMiddlewareConfig & PermissionCheckOptions
-) {
+export function permissionMiddleware(config: PermissionMiddlewareConfig & PermissionCheckOptions) {
   const checkPermission = createPermissionMiddleware(config)
-  
+
   return async (req: any, res: any, next: any) => {
     const result = await checkPermission(req, {
       action: config.action,
       subject: config.subject,
       checkFields: config.checkFields,
-      requiredFields: config.requiredFields
+      requiredFields: config.requiredFields,
     })
-    
+
     if (!result.allowed) {
       if (config.jsonResponse) {
         return res.status(result.user ? 403 : 401).json({
           error: result.reason || 'Permission denied',
           allowedFields: result.allowedFields,
-          deniedFields: result.deniedFields
+          deniedFields: result.deniedFields,
         })
       }
-      
-      const redirectPath = result.user 
+
+      const redirectPath = result.user
         ? config.forbiddenRedirect || '/forbidden'
         : config.unauthorizedRedirect || '/login'
-      
+
       return res.redirect(redirectPath)
     }
-    
+
     // 将权限结果附加到请求对象
     req.permission = result
     next()
@@ -168,14 +160,14 @@ export function permissionMiddleware(
 export function requirePermission(options: PermissionCheckOptions) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value
-    
+
     descriptor.value = async function (...args: any[]) {
       const ctx = args[0] // tRPC context
-      
+
       if (!ctx.user) {
         throw new Error('Unauthorized')
       }
-      
+
       const engine = new EnhancedPermissionEngine()
       const result = await engine.checkEnhanced(
         ctx.user,
@@ -183,17 +175,17 @@ export function requirePermission(options: PermissionCheckOptions) {
         options.subject,
         ctx.permissionContext
       )
-      
+
       if (!result.granted) {
         throw new Error(result.reason || 'Permission denied')
       }
-      
+
       // 将权限结果添加到上下文
       ctx.permission = result
-      
+
       return originalMethod.apply(this, args)
     }
-    
+
     return descriptor
   }
 }
@@ -207,24 +199,24 @@ export function createUsePermission(config: {
   getContext?: () => PermissionContext | undefined
 }) {
   const engine = config.permissionEngine || new EnhancedPermissionEngine()
-  
+
   return function usePermission(options: PermissionCheckOptions) {
     const [result, setResult] = useState({
       loading: true,
       allowed: false,
       allowedFields: undefined as string[] | undefined,
-      deniedFields: undefined as string[] | undefined
+      deniedFields: undefined as string[] | undefined,
     })
-    
+
     useEffect(() => {
       const checkPermission = async () => {
         const user = config.getUser()
-        
+
         if (!user) {
           setResult({ loading: false, allowed: false })
           return
         }
-        
+
         const context = config.getContext?.()
         const permissionResult = await engine.checkEnhanced(
           user,
@@ -232,18 +224,18 @@ export function createUsePermission(config: {
           options.subject,
           context
         )
-        
+
         setResult({
           loading: false,
           allowed: permissionResult.granted,
           allowedFields: permissionResult.allowedFields,
-          deniedFields: permissionResult.deniedFields
+          deniedFields: permissionResult.deniedFields,
         })
       }
-      
+
       checkPermission()
     }, [options.action, options.subject])
-    
+
     return result
   }
 }

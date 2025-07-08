@@ -2,13 +2,13 @@
  * @linch-kit/schema 代码生成器基础框架
  */
 
-import type { 
-  Entity, 
-  GeneratedFile, 
-  Generator, 
+import type {
+  Entity,
+  GeneratedFile,
+  Generator,
   CodeGeneratorOptions,
   GeneratorContext,
-  GeneratorHooks 
+  GeneratorHooks,
 } from '../types'
 
 /**
@@ -52,14 +52,14 @@ export abstract class BaseGenerator implements Generator {
    * 创建生成文件对象
    */
   protected createGeneratedFile(
-    path: string, 
-    content: string, 
+    path: string,
+    content: string,
     type: GeneratedFile['type']
   ): GeneratedFile {
     return {
       path,
       content: this.generateHeader() + this.formatContent(content),
-      type
+      type,
     }
   }
 
@@ -131,7 +131,7 @@ export class CodeGenerator {
   constructor(options: CodeGeneratorOptions) {
     this.options = options
     this.hooks = options.hooks || {}
-    
+
     this.validateOptions()
   }
 
@@ -177,9 +177,9 @@ export class CodeGenerator {
         name: 'default',
         version: '1.0.0',
         entities: this.options.entities,
-        config: this.options.config || {}
+        config: this.options.config || {},
       },
-      options: this.options
+      options: this.options,
     }
 
     // 执行生成前钩子
@@ -193,7 +193,7 @@ export class CodeGenerator {
     for (const generator of this.generators.values()) {
       try {
         const files = await generator.generate(context)
-        
+
         // 执行文件生成后钩子
         for (const file of files) {
           if (this.hooks.afterFileGenerated) {
@@ -202,7 +202,9 @@ export class CodeGenerator {
           allFiles.push(file)
         }
       } catch (error) {
-        throw new Error(`Generator ${generator.name} failed: ${error instanceof Error ? error.message : String(error)}`)
+        throw new Error(
+          `Generator ${generator.name} failed: ${error instanceof Error ? error.message : String(error)}`
+        )
       }
     }
 
@@ -231,9 +233,9 @@ export class CodeGenerator {
         name: 'default',
         version: '1.0.0',
         entities: this.options.entities,
-        config: this.options.config || {}
+        config: this.options.config || {},
       },
-      options: this.options
+      options: this.options,
     }
     return generator.generate(context)
   }
@@ -243,7 +245,7 @@ export class CodeGenerator {
    */
   async generateToFiles(): Promise<void> {
     const files = await this.generate()
-    
+
     if (!this.options.outputDir) {
       throw new Error('Output directory not specified')
     }
@@ -267,19 +269,19 @@ export class CodeGenerator {
 
 /**
  * 创建代码生成器
- * 
+ *
  * @example
  * ```typescript
  * const generator = createGenerator({
  *   entities: [User, Post, Comment],
  *   outputDir: './generated'
  * })
- * 
+ *
  * generator
  *   .registerGenerator(new TypeScriptGenerator())
  *   .registerGenerator(new PrismaGenerator())
  *   .registerGenerator(new ZodGenerator())
- * 
+ *
  * await generator.generate()
  * ```
  */
@@ -328,7 +330,7 @@ export class GeneratorRegistry {
 
 /**
  * 快速创建并运行代码生成器
- * 
+ *
  * @example
  * ```typescript
  * await quickGenerate({
@@ -347,7 +349,7 @@ export async function quickGenerate(options: {
   const generator = createGenerator({
     entities: options.entities,
     outputDir: options.outputDir,
-    hooks: options.hooks
+    hooks: options.hooks,
   })
 
   // 注册指定的生成器

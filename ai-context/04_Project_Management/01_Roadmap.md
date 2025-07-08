@@ -2,7 +2,7 @@
 
 **版本**: v7.2 → v8.0  
 **更新**: 2025-07-07  
-**状态**: 与实际开发进展同步  
+**状态**: 与实际开发进展同步
 
 ## 🎯 总体愿景
 
@@ -11,6 +11,7 @@
 ## 📊 当前状态 (v7.2)
 
 ### ✅ 已完成的核心架构 (100%)
+
 ```
 L0: @linch-kit/core      ✅ 基础设施 (100%)
 L1: @linch-kit/schema    ✅ Schema引擎 (100%)
@@ -22,17 +23,20 @@ L4: modules/console      ✅ 管理平台 (100%)
 ```
 
 ### ✅ 已完成的应用生态
+
 - **apps/starter**: 生产级多标签工作台 (100%)
 - **apps/website**: 文档平台 Nextra 4 + i18n (100%)
 - **apps/demo-app**: 功能演示应用 (100%)
 
 ### ✅ 已完成的 AI 集成 (基础版)
+
 - **Neo4j 知识图谱**: 5,446+ 节点，7,969+ 关系 (✅)
 - **AI Session 工具**: `bun run ai:session` 命令套件 (✅)
 - **Graph RAG 查询**: 基础查询引擎 (✅)
 - **智能分支管理**: 自动生成分支名 (✅)
 
 ### 📈 技术栈现状
+
 - **前端**: Next.js 15.3.4 + React 19.0.0 + TypeScript 5.8.3 ✅
 - **UI**: Tailwind CSS 4 + shadcn/ui + 主题系统 ✅
 - **API**: tRPC + 端到端类型安全 ✅
@@ -43,10 +47,12 @@ L4: modules/console      ✅ 管理平台 (100%)
 ## 🚀 发展路线 (v7.2 → v8.0)
 
 ### 🔴 Phase 1: 文档标准化与工具优化 (当前)
+
 **目标**: 建立完善的文档体系和 AI 工具生态  
 **时间**: 2025-07 (1-2 周)
 
 #### 1.1 文档架构重新梳理 ⏳
+
 - [x] ✅ 创建统一的 manifest.json 入口
 - [x] ✅ 消除 CLAUDE.md 与 ai-context 结构不一致
 - [x] ✅ 整合分散的 AI Session 工具文档
@@ -54,7 +60,8 @@ L4: modules/console      ✅ 管理平台 (100%)
 - [ ] 🔄 完成新文档结构迁移
 - [ ] 🔄 简化 CLAUDE.md 为高级指令文档
 
-#### 1.2 AI Session 工具增强 
+#### 1.2 AI Session 工具增强
+
 - [x] ✅ 基础查询引擎 (实体、符号、模式查询)
 - [x] ✅ 智能分支管理
 - [x] ✅ 图谱数据同步
@@ -63,91 +70,104 @@ L4: modules/console      ✅ 管理平台 (100%)
 - [ ] 📋 添加查询性能优化和缓存
 
 #### 1.3 开发体验优化
+
 - [ ] 📋 创建 `scripts/ai/check-reuse.mjs` 包复用检查脚本
 - [ ] 📋 配置 husky + lint-staged 自动化检查
 - [ ] 📋 建立 CI/CD 质量门禁
 - [ ] 📋 文档链接自动验证
 
 ### 🟡 Phase 2: AI 能力深化 (2025-08)
+
 **目标**: 提升 AI 对代码的理解深度和查询准确性  
 **时间**: 2025-08 (3-4 周)
 
 #### 2.1 Graph RAG 查询引擎增强
+
 - [ ] 📋 **代码使用关系提取**: 补充 CALLS/USES 关系数据
 - [ ] 📋 **复杂查询支持**: 影响分析、使用模式查询
 - [ ] 📋 **多跳关系查询**: 深度依赖关系分析
 - [ ] 📋 **查询性能优化**: 缓存机制和索引优化
 
 #### 2.2 高级数据提取器开发
+
 - [ ] 📋 **TypeScript AST解析器**: 提取函数、类、接口的使用关系
 - [ ] 📋 **设计文档解析器**: 解析 DESIGN.md 和 README.md 中的概念
 - [ ] 📋 **代码关系分析**: 识别完整的调用链和依赖关系
 - [ ] 📋 **增量更新机制**: 只更新变更的代码部分
 
 #### 2.3 智能查询服务
+
 ```typescript
 interface EnhancedQueryService {
   // 代码影响分析
-  analyzeCodeImpact(changes: CodeChange[]): Promise<ImpactAnalysis>;
-  
+  analyzeCodeImpact(changes: CodeChange[]): Promise<ImpactAnalysis>
+
   // 使用模式查询
-  findUsagePatterns(entityName: string): Promise<UsagePattern[]>;
-  
+  findUsagePatterns(entityName: string): Promise<UsagePattern[]>
+
   // 架构依赖分析
-  analyzeDependencies(packageName: string): Promise<DependencyGraph>;
-  
+  analyzeDependencies(packageName: string): Promise<DependencyGraph>
+
   // 重构建议
-  suggestRefactoring(codeBlock: string): Promise<RefactoringPlan>;
+  suggestRefactoring(codeBlock: string): Promise<RefactoringPlan>
 }
 ```
 
 ### 🟢 Phase 3: 智能代码生成 (2025-09 - 10)
+
 **目标**: 基于项目上下文的智能代码生成能力  
 **时间**: 2025-09 - 10 (6-8 周)
 
 #### 3.1 架构感知代码生成
+
 - [ ] 📋 **Schema 驱动生成**: 基于 Schema 自动生成 CRUD API
 - [ ] 📋 **组件模板生成**: 基于设计系统生成 UI 组件
 - [ ] 📋 **测试用例生成**: 为新功能自动生成测试用例
 - [ ] 📋 **文档同步生成**: 自动更新 API 文档
 
 #### 3.2 上下文增强生成
+
 - [ ] 📋 **项目风格学习**: 学习项目代码风格和模式
 - [ ] 📋 **依赖优化建议**: 自动选择最优的包和函数
 - [ ] 📋 **性能优化建议**: 基于架构分析提供性能建议
 - [ ] 📋 **安全检查集成**: 自动检测常见安全问题
 
 #### 3.3 集成开发体验
+
 ```typescript
 interface CodeGenerationService {
   // 基于 Schema 生成完整功能
-  generateFeature(schema: Schema, options: GenerationOptions): Promise<FeatureCode>;
-  
+  generateFeature(schema: Schema, options: GenerationOptions): Promise<FeatureCode>
+
   // 生成符合项目架构的代码
-  generateArchitecturalCode(prompt: string, context: ProjectContext): Promise<CodeGenResult>;
-  
+  generateArchitecturalCode(prompt: string, context: ProjectContext): Promise<CodeGenResult>
+
   // 自动重构建议
-  suggestImprovements(codeBlock: string): Promise<Improvement[]>;
+  suggestImprovements(codeBlock: string): Promise<Improvement[]>
 }
 ```
 
 ### 🔵 Phase 4: 自动化工作流 (2025-11 - 12)
+
 **目标**: 完全自动化的 AI-First 开发体验  
 **时间**: 2025-11 - 12 (6-8 周)
 
 #### 4.1 智能开发助手
+
 - [ ] 📋 **任务理解**: 从自然语言描述生成开发计划
 - [ ] 📋 **自动实施**: 基于计划自动执行开发任务
 - [ ] 📋 **质量验证**: 自动运行测试和构建验证
 - [ ] 📋 **文档更新**: 自动同步代码变更和文档
 
 #### 4.2 持续集成增强
+
 - [ ] 📋 **智能构建**: 基于变更影响分析优化构建过程
 - [ ] 📋 **自动化测试**: 智能选择相关测试用例
 - [ ] 📋 **性能监控**: 自动检测性能回归
 - [ ] 📋 **安全审计**: 自动化安全漏洞检测
 
 #### 4.3 学习与优化
+
 - [ ] 📋 **使用模式学习**: 从开发行为中学习优化策略
 - [ ] 📋 **错误模式识别**: 自动识别和预防常见错误
 - [ ] 📋 **知识库自更新**: 基于代码变更自动更新知识库
@@ -156,21 +176,25 @@ interface CodeGenerationService {
 ## 🎯 版本里程碑
 
 ### v7.3 (2025-07 月底)
+
 - ✅ 文档架构标准化完成
 - ✅ AI Session 工具增强
 - ✅ 开发体验优化工具就位
 
 ### v7.5 (2025-08 月底)
+
 - ✅ Graph RAG 查询引擎大幅增强
 - ✅ 代码使用关系完整提取
 - ✅ 智能查询准确率达到 90%+
 
 ### v7.8 (2025-10 月底)
+
 - ✅ 基础代码生成能力
 - ✅ 架构感知生成
 - ✅ 自动测试和文档生成
 
 ### v8.0 (2025-12 月底)
+
 - ✅ 完整的 AI-First 开发体验
 - ✅ 自动化工作流
 - ✅ 智能开发助手
@@ -178,24 +202,28 @@ interface CodeGenerationService {
 ## 📊 成功指标
 
 ### Phase 1 指标
+
 - [ ] **文档完整性**: 所有核心文档 100% 覆盖
 - [ ] **文档质量**: 零冗余，单一信息源
 - [ ] **AI 工具可用性**: 95% 查询成功率
 - [ ] **开发体验**: 自动化检查覆盖率 80%
 
 ### Phase 2 指标
+
 - [ ] **查询准确率**: 90% 以上查询结果准确
 - [ ] **性能优化**: 查询响应时间 <1秒
 - [ ] **数据完整性**: 95% 代码关系覆盖
 - [ ] **实时性**: 代码变更 5分钟内同步
 
 ### Phase 3 指标
+
 - [ ] **代码生成质量**: 85% 生成代码符合架构
 - [ ] **测试覆盖**: 生成代码测试覆盖率 >90%
 - [ ] **开发效率**: 减少重复工作 60%
 - [ ] **错误率**: 生成代码错误率 <5%
 
 ### Phase 4 指标
+
 - [ ] **自动化率**: 80% 开发任务自动化
 - [ ] **质量提升**: 代码质量和安全性提升
 - [ ] **学习能力**: 系统自我优化能力
@@ -204,12 +232,14 @@ interface CodeGenerationService {
 ## 🔄 迭代策略
 
 ### 敏捷开发原则
+
 - **小步快跑**: 每个 Phase 内部采用 2周迭代
 - **持续反馈**: 每个功能完成后立即收集反馈
 - **快速调整**: 基于反馈快速调整优先级
 - **质量优先**: 质量第一，功能第二
 
 ### 风险管控
+
 - **技术风险**: 复杂功能分阶段实施，降低技术风险
 - **范围控制**: 严格控制每个 Phase 的功能范围
 - **质量保证**: 每个里程碑都有明确的质量标准
@@ -218,11 +248,13 @@ interface CodeGenerationService {
 ## 🤝 协作模式
 
 ### AI 协作分工
+
 - **Claude Code**: 执行具体实现，编写代码，处理技术集成
 - **Gemini**: 架构设计，需求分析，策略规划，质量监督
 - **人类开发者**: 需求确认，设计审查，质量验收，方向调整
 
 ### 开发节奏
+
 - **每日进展**: 通过 TodoWrite/TodoRead 跟踪日常进展
 - **周度回顾**: 每周回顾进展，调整计划
 - **月度里程碑**: 每月重要功能里程碑检查

@@ -1,6 +1,6 @@
 /**
  * Prisma 查询构建器 - 具体实现
- * 
+ *
  * 继承基础查询构建器，实现具体的查询执行逻辑
  */
 
@@ -50,7 +50,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   async execute(): Promise<T[]> {
     const finalQuery = await this.buildFinalQuery()
     const { data, metrics } = await this.executor.findMany(finalQuery)
-    
+
     await this.recordMetrics(metrics)
     return data
   }
@@ -61,7 +61,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   async first(): Promise<T | null> {
     const finalQuery = await this.buildFinalQuery()
     const { data, metrics } = await this.executor.findFirst(finalQuery)
-    
+
     await this.recordMetrics(metrics)
     return data
   }
@@ -72,7 +72,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   async exists(): Promise<boolean> {
     const finalQuery = await this.buildFinalQuery()
     const { data, metrics } = await this.executor.exists(finalQuery)
-    
+
     await this.recordMetrics(metrics)
     return data
   }
@@ -83,7 +83,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   async count(): Promise<number> {
     const finalQuery = await this.buildFinalQuery()
     const { data, metrics } = await this.executor.count(finalQuery)
-    
+
     await this.recordMetrics(metrics)
     return data
   }
@@ -94,7 +94,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   async sum(field: keyof T): Promise<number> {
     const finalQuery = await this.buildFinalQuery()
     const { data, metrics } = await this.executor.aggregate(finalQuery, 'sum', field as string)
-    
+
     await this.recordMetrics(metrics)
     return data
   }
@@ -105,7 +105,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   async avg(field: keyof T): Promise<number> {
     const finalQuery = await this.buildFinalQuery()
     const { data, metrics } = await this.executor.aggregate(finalQuery, 'avg', field as string)
-    
+
     await this.recordMetrics(metrics)
     return data
   }
@@ -116,7 +116,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   async min(field: keyof T): Promise<number> {
     const finalQuery = await this.buildFinalQuery()
     const { data, metrics } = await this.executor.aggregate(finalQuery, 'min', field as string)
-    
+
     await this.recordMetrics(metrics)
     return data
   }
@@ -127,7 +127,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
   async max(field: keyof T): Promise<number> {
     const finalQuery = await this.buildFinalQuery()
     const { data, metrics } = await this.executor.aggregate(finalQuery, 'max', field as string)
-    
+
     await this.recordMetrics(metrics)
     return data
   }
@@ -153,8 +153,8 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
         total,
         totalPages,
         hasNext: page < totalPages,
-        hasPrevious: page > 1
-      }
+        hasPrevious: page > 1,
+      },
     }
   }
 
@@ -168,7 +168,7 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
 
     const include = this.query.include as Record<string, unknown>
     const relationEntity = this.getRelationEntity(relation)
-    
+
     if (relationEntity) {
       const subQuery = new PrismaQueryBuilder(
         relationEntity.name,
@@ -217,7 +217,9 @@ export class PrismaQueryBuilder<T = unknown> extends BaseQueryBuilder<T> {
 
   private getRelationEntity(relationName: string): Entity | null {
     const field = Object.values(this.entity.fields).find(
-      field => field.type === 'relation' && (field as unknown as Record<string, unknown>).target === relationName
+      field =>
+        field.type === 'relation' &&
+        (field as unknown as Record<string, unknown>).target === relationName
     )
 
     if ((field as unknown as Record<string, unknown>)?.target) {
@@ -243,13 +245,7 @@ export class QueryBuilderFactory {
     logger: Logger,
     pluginManager?: PluginManager
   ): PrismaQueryBuilder<T> {
-    return PrismaQueryBuilder.create<T>(
-      entityName,
-      prisma,
-      schemaRegistry,
-      logger,
-      pluginManager
-    )
+    return PrismaQueryBuilder.create<T>(entityName, prisma, schemaRegistry, logger, pluginManager)
   }
 
   /**

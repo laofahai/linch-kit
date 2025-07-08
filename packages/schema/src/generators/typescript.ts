@@ -16,12 +16,15 @@ export class TypeScriptGenerator extends BaseGenerator {
    * 生成TypeScript类型文件
    */
   async generate(context: GeneratorContext): Promise<GeneratedFile[]> {
-    const entities = context.entities.map(def => ({
-      name: def.name,
-      fields: def.fields,
-      options: def.options || {},
-      definition: def
-    } as unknown as Entity))
+    const entities = context.entities.map(
+      def =>
+        ({
+          name: def.name,
+          fields: def.fields,
+          options: def.options || {},
+          definition: def,
+        }) as unknown as Entity
+    )
     this.validateEntities(entities)
 
     const files: GeneratedFile[] = []
@@ -59,7 +62,7 @@ export class TypeScriptGenerator extends BaseGenerator {
       this.generateUpdateInput(entity),
       this.generatePartialTypes(entity),
       this.generateFilterTypes(entity),
-      this.generateRelationTypes(entity)
+      this.generateRelationTypes(entity),
     ].filter(Boolean)
 
     return sections.join('\n\n')
@@ -70,7 +73,7 @@ export class TypeScriptGenerator extends BaseGenerator {
    */
   private generateImports(entity: Entity): string {
     const imports: string[] = []
-    
+
     // 检查是否需要导入其他实体类型
     const relationTargets = new Set<string>()
     Object.values(entity.fields).forEach(field => {
@@ -88,7 +91,9 @@ export class TypeScriptGenerator extends BaseGenerator {
     }
 
     // 导入通用类型
-    imports.push("import type { BaseEntity, TimestampFields, SoftDeleteFields } from './common.types'")
+    imports.push(
+      "import type { BaseEntity, TimestampFields, SoftDeleteFields } from './common.types'"
+    )
 
     return imports.join('\n')
   }
@@ -98,24 +103,24 @@ export class TypeScriptGenerator extends BaseGenerator {
    */
   private generateBaseInterface(entity: Entity): string {
     const fields: string[] = []
-    
+
     // 用户定义的字段
     Object.entries(entity.fields).forEach(([name, field]) => {
       const fieldType = this.mapFieldTypeToTypeScript(field as FieldDefinition)
       const optional = field.required ? '' : '?'
       const comment = field.description ? `\n  /** ${field.description} */` : ''
-      
+
       fields.push(`${comment}
   ${name}${optional}: ${fieldType}`)
     })
 
     let extendsClause = 'BaseEntity'
-    
+
     // 添加时间戳
     if (entity.options.timestamps) {
       extendsClause += ', TimestampFields'
     }
-    
+
     // 添加软删除
     if (entity.options.softDelete) {
       extendsClause += ', SoftDeleteFields'
@@ -134,17 +139,17 @@ export interface ${entity.name} extends ${extendsClause} {${fieldsString}}`
    */
   private generateCreateInput(entity: Entity): string {
     const fields: string[] = []
-    
+
     Object.entries(entity.fields).forEach(([name, field]) => {
       // 跳过反向关系字段
       if (field.type === 'relation' && field.relationType === 'oneToMany') {
         return
       }
-      
+
       const fieldType = this.mapFieldTypeToTypeScript(field as FieldDefinition, 'create')
       const optional = field.required ? '' : '?'
       const comment = field.description ? `\n  /** ${field.description} */` : ''
-      
+
       fields.push(`${comment}
   ${name}${optional}: ${fieldType}`)
     })
@@ -179,7 +184,11 @@ export type Partial${entity.name} = Partial<${entity.name}>
 /**
  * ${entity.name} without relations
  */
-export type ${entity.name}WithoutRelations = Omit<${entity.name}, ${this.getRelationFieldNames(entity).map(name => `'${name}'`).join(' | ') || 'never'}>
+export type ${entity.name}WithoutRelations = Omit<${entity.name}, ${
+      this.getRelationFieldNames(entity)
+        .map(name => `'${name}'`)
+        .join(' | ') || 'never'
+    }>
 
 /**
  * ${entity.name} with selected fields
@@ -192,11 +201,11 @@ export type ${entity.name}Select<T extends keyof ${entity.name}> = Pick<${entity
    */
   private generateFilterTypes(entity: Entity): string {
     const filterFields: string[] = []
-    
+
     Object.entries(entity.fields).forEach(([name, field]) => {
       const baseType = this.mapFieldTypeToTypeScript(field as FieldDefinition)
       let filterType = baseType
-      
+
       // 根据字段类型生成不同的过滤选项
       switch (field.type) {
         case 'string':
@@ -220,7 +229,7 @@ export type ${entity.name}Select<T extends keyof ${entity.name}> = Pick<${entity
         default:
           filterType = `${baseType} | null`
       }
-      
+
       filterFields.push(`  ${name}?: ${filterType}`)
     })
 
@@ -246,21 +255,24 @@ export interface ${entity.name}Where extends ${entity.name}Filter {
    */
   private generateRelationTypes(entity: Entity): string {
     const relationFields = this.getRelationFields(entity)
-    
+
     if (relationFields.length === 0) {
       return ''
     }
 
-    const includeFields = relationFields.map(([name, field]) => {
-      if (field.type === 'relation' && 'target' in field && 'relationType' in field) {
-        if (field.relationType === 'oneToMany' || field.relationType === 'manyToMany') {
-          return `  ${name}?: boolean | ${field.target}FindManyArgs`
-        } else {
-          return `  ${name}?: boolean | ${field.target}FindUniqueArgs`
+    const includeFields = relationFields
+      .map(([name, field]) => {
+        if (field.type === 'relation' && 'target' in field && 'relationType' in field) {
+          if (field.relationType === 'oneToMany' || field.relationType === 'manyToMany') {
+            return `  ${name}?: boolean | ${field.target}FindManyArgs`
+          } else {
+            return `  ${name}?: boolean | ${field.target}FindUniqueArgs`
+          }
         }
-      }
-      return ''
-    }).filter(Boolean).join('\n')
+        return ''
+      })
+      .filter(Boolean)
+      .join('\n')
 
     return `/**
  * Include relations for ${entity.name}
@@ -285,10 +297,12 @@ export type ${entity.name}WithRelations<T extends ${entity.name}Include = {}> = 
    * 生成索引文件
    */
   private generateIndexFile(entities: Entity[]): string {
-    const exports = entities.map(entity => {
-      const fileName = this.toKebabCase(entity.name)
-      return `export * from './${fileName}.types'`
-    }).join('\n')
+    const exports = entities
+      .map(entity => {
+        const fileName = this.toKebabCase(entity.name)
+        return `export * from './${fileName}.types'`
+      })
+      .join('\n')
 
     return `${exports}
 export * from './common.types'`
@@ -422,7 +436,10 @@ export interface FindUniqueArgs<T = any> {
   /**
    * 映射字段类型到TypeScript类型
    */
-  private mapFieldTypeToTypeScript(field: FieldDefinition, context: 'read' | 'create' = 'read'): string {
+  private mapFieldTypeToTypeScript(
+    field: FieldDefinition,
+    context: 'read' | 'create' = 'read'
+  ): string {
     switch (field.type) {
       case 'string':
       case 'email':
@@ -430,36 +447,39 @@ export interface FindUniqueArgs<T = any> {
       case 'uuid':
       case 'text':
         return 'string'
-      
+
       case 'number':
         return 'number'
-      
+
       case 'boolean':
         return 'boolean'
-      
+
       case 'date':
         return 'Date'
-      
+
       case 'json':
         return 'Record<string, unknown>'
-      
+
       case 'enum':
         return field.values.map(v => `'${v}'`).join(' | ')
-      
+
       case 'array': {
         const itemType = this.mapFieldTypeToTypeScript(field.items, context)
         return `${itemType}[]`
       }
-      
+
       case 'relation':
         if (context === 'create') {
           // 创建时通常只需要ID
-          if ('relationType' in field && (field.relationType === 'oneToMany' || field.relationType === 'manyToMany')) {
+          if (
+            'relationType' in field &&
+            (field.relationType === 'oneToMany' || field.relationType === 'manyToMany')
+          ) {
             return 'string[]'
           }
           return 'string'
         }
-        
+
         // 读取时返回完整对象
         if ('relationType' in field && 'target' in field) {
           if (field.relationType === 'oneToMany' || field.relationType === 'manyToMany') {
@@ -468,14 +488,14 @@ export interface FindUniqueArgs<T = any> {
           return field.target
         }
         return 'unknown'
-      
+
       case 'i18n':
         if (field.i18n) {
           const locales = field.i18n.locales.map(l => `'${l}'`).join(' | ')
           return `Partial<Record<${locales}, string>>`
         }
         return 'Record<string, string>'
-      
+
       default:
         return 'unknown'
     }
@@ -485,8 +505,9 @@ export interface FindUniqueArgs<T = any> {
    * 获取关系字段
    */
   private getRelationFields(entity: Entity): Array<[string, FieldDefinition]> {
-    return Object.entries(entity.fields)
-      .filter(([_, field]) => field.type === 'relation') as Array<[string, FieldDefinition]>
+    return Object.entries(entity.fields).filter(([_, field]) => field.type === 'relation') as Array<
+      [string, FieldDefinition]
+    >
   }
 
   /**

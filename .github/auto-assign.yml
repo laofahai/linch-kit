@@ -1,0 +1,15 @@
+# 自动分配审查者配置
+addReviewers: true
+addAssignees: author
+
+# 审查者配置
+reviewers:
+  - laofahai
+
+# 分配者数量
+numberOfReviewers: 1
+
+# 跳过某些关键词
+skipKeywords:
+  - wip
+  - draft

@@ -46,11 +46,13 @@ export function createConsoleRouter(trpc: TRPCRouterBuilder) {
   return router({
     tenant: router({
       list: protectedProcedure
-        .input(z.object({
-          page: z.number().default(1),
-          pageSize: z.number().default(10),
-          search: z.string().optional()
-        }))
+        .input(
+          z.object({
+            page: z.number().default(1),
+            pageSize: z.number().default(10),
+            search: z.string().optional(),
+          })
+        )
         .query(async (opts: unknown) => {
           const { input } = opts as { input: RouterInput }
           // TODO: 实现租户列表查询
@@ -58,16 +60,18 @@ export function createConsoleRouter(trpc: TRPCRouterBuilder) {
             data: [],
             total: 0,
             page: input.page,
-            pageSize: input.pageSize
+            pageSize: input.pageSize,
           }
         }),
 
       create: protectedProcedure
-        .input(z.object({
-          name: z.string(),
-          domain: z.string().optional(),
-          description: z.string().optional()
-        }))
+        .input(
+          z.object({
+            name: z.string(),
+            domain: z.string().optional(),
+            description: z.string().optional(),
+          })
+        )
         .mutation(async (opts: unknown) => {
           const { input } = opts as { input: CreateInput }
           // TODO: 实现租户创建
@@ -75,12 +79,14 @@ export function createConsoleRouter(trpc: TRPCRouterBuilder) {
         }),
 
       update: protectedProcedure
-        .input(z.object({
-          id: z.string(),
-          name: z.string().optional(),
-          domain: z.string().optional(),
-          description: z.string().optional()
-        }))
+        .input(
+          z.object({
+            id: z.string(),
+            name: z.string().optional(),
+            domain: z.string().optional(),
+            description: z.string().optional(),
+          })
+        )
         .mutation(async (opts: unknown) => {
           const { input } = opts as { input: UpdateInput }
           // TODO: 实现租户更新
@@ -88,14 +94,16 @@ export function createConsoleRouter(trpc: TRPCRouterBuilder) {
         }),
 
       delete: protectedProcedure
-        .input(z.object({
-          id: z.string()
-        }))
+        .input(
+          z.object({
+            id: z.string(),
+          })
+        )
         .mutation(async (opts: unknown) => {
           const { input: _input } = opts as { input: DeleteInput }
           // TODO: 实现租户删除
           return { success: true }
-        })
-    })
+        }),
+    }),
   })
 }

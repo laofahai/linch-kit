@@ -2,7 +2,7 @@
 
 /**
  * LinchKit 管理员创建工具
- * 
+ *
  * 使用方法:
  * bunx tsx scripts/create-admin.ts
  * 或
@@ -26,22 +26,22 @@ interface AdminData {
 async function createAdmin(data: AdminData) {
   try {
     Logger.info('开始创建超级管理员...', { email: data.email })
-    
+
     // 检查邮箱是否已存在
     const existingUser = await prisma.user.findUnique({
-      where: { email: data.email }
+      where: { email: data.email },
     })
-    
+
     if (existingUser) {
       Logger.error('用户已存在', new Error(`邮箱 ${data.email} 已被使用`))
       console.error(`❌ 邮箱 ${data.email} 已被使用`)
       process.exit(1)
     }
-    
+
     // 加密密码
     const saltRounds = 12
     const hashedPassword = await bcrypt.hash(data.password, saltRounds)
-    
+
     // 创建超级管理员
     const admin = await prisma.user.create({
       data: {
@@ -52,15 +52,15 @@ async function createAdmin(data: AdminData) {
         status: 'ACTIVE',
         emailVerified: new Date(), // 直接标记为已验证
         avatar: `https://avatar.vercel.sh/${encodeURIComponent(data.name)}`,
-      }
+      },
     })
-    
-    Logger.info('超级管理员创建成功', { 
-      id: admin.id, 
+
+    Logger.info('超级管理员创建成功', {
+      id: admin.id,
       email: admin.email,
-      role: admin.role 
+      role: admin.role,
     })
-    
+
     console.log('\n🎉 超级管理员创建成功!')
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
     console.log(`📧 邮箱: ${admin.email}`)
@@ -71,7 +71,6 @@ async function createAdmin(data: AdminData) {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
     console.log('\n现在你可以使用这个账户登录 LinchKit 平台了!')
     console.log(`🌐 登录地址: http://localhost:3000/sign-in`)
-    
   } catch (error) {
     Logger.error('创建管理员失败', error instanceof Error ? error : new Error(String(error)))
     console.error('❌ 创建管理员失败:', error)
@@ -86,39 +85,39 @@ async function promptForData(): Promise<AdminData> {
   const readline = require('readline')
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   })
-  
+
   const question = (prompt: string): Promise<string> => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       rl.question(prompt, resolve)
     })
   }
-  
+
   try {
     console.log('🚀 LinchKit 超级管理员创建工具')
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
     console.log('请输入管理员信息:\n')
-    
+
     const email = await question('📧 邮箱地址: ')
     const name = await question('👤 姓名: ')
     const password = await question('🔒 密码 (最少8位): ')
-    
+
     console.log('')
-    
+
     // 基本验证
     if (!email || !email.includes('@')) {
       throw new Error('请输入有效的邮箱地址')
     }
-    
+
     if (!name || name.length < 2) {
       throw new Error('姓名至少需要2个字符')
     }
-    
+
     if (!password || password.length < 8) {
       throw new Error('密码至少需要8个字符')
     }
-    
+
     return { email: email.trim(), name: name.trim(), password: password.trim() }
   } finally {
     rl.close()
@@ -133,29 +132,29 @@ program
   .option('-e, --email <email>', '管理员邮箱')
   .option('-n, --name <name>', '管理员姓名')
   .option('-p, --password <password>', '管理员密码')
-  .action(async (options) => {
+  .action(async options => {
     try {
       let adminData: AdminData
-      
+
       if (options.email && options.name && options.password) {
         // 命令行参数模式
         adminData = {
           email: options.email,
           name: options.name,
-          password: options.password
+          password: options.password,
         }
-        
+
         // 基本验证
         if (!adminData.email.includes('@')) {
           console.error('❌ 请输入有效的邮箱地址')
           process.exit(1)
         }
-        
+
         if (adminData.name.length < 2) {
           console.error('❌ 姓名至少需要2个字符')
           process.exit(1)
         }
-        
+
         if (adminData.password.length < 8) {
           console.error('❌ 密码至少需要8个字符')
           process.exit(1)
@@ -164,9 +163,8 @@ program
         // 交互式模式
         adminData = await promptForData()
       }
-      
+
       await createAdmin(adminData)
-      
     } catch (error) {
       console.error('❌ 操作失败:', error instanceof Error ? error.message : String(error))
       process.exit(1)

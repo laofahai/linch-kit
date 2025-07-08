@@ -60,7 +60,11 @@ export interface Gauge {
 export interface Histogram {
   observe(value: number, labels?: Record<string, string>): void
   startTimer(labels?: Record<string, string>): () => void
-  get(labels?: Record<string, string>): { buckets: Record<string, number>; count: number; sum: number }
+  get(labels?: Record<string, string>): {
+    buckets: Record<string, number>
+    count: number
+    sum: number
+  }
   reset(): void
 }
 
@@ -69,7 +73,11 @@ export interface Histogram {
  */
 export interface Summary {
   observe(value: number, labels?: Record<string, string>): void
-  get(labels?: Record<string, string>): { quantiles: Record<string, number>; count: number; sum: number }
+  get(labels?: Record<string, string>): {
+    quantiles: Record<string, number>
+    count: number
+    sum: number
+  }
   reset(): void
 }
 

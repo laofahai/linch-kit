@@ -1,6 +1,6 @@
 /**
  * QueryOptimizer 测试套件
- * 
+ *
  * 测试查询优化器的各种功能，包括：
  * - WHERE条件优化
  * - ORDER BY优化
@@ -23,64 +23,64 @@ const mockLogger: Logger = {
   warn: jest.fn(),
   debug: jest.fn(),
   fatal: jest.fn(),
-  child: jest.fn(() => mockLogger)
+  child: jest.fn(() => mockLogger),
 }
 
 // Mock Entity
 const mockUserEntity: Entity = {
   name: 'User',
   fields: {
-    id: { 
+    id: {
       name: 'id',
       type: 'string',
       required: true,
       unique: true,
-      index: true
+      index: true,
     },
     email: {
-      name: 'email', 
+      name: 'email',
       type: 'string',
       required: true,
       unique: true,
-      index: true
+      index: true,
     },
     name: {
       name: 'name',
       type: 'string',
-      required: true
+      required: true,
     },
     age: {
       name: 'age',
-      type: 'number'
+      type: 'number',
     },
     status: {
       name: 'status',
       type: 'string',
-      index: true
+      index: true,
     },
     tenantId: {
       name: 'tenantId',
       type: 'string',
       required: true,
-      index: true
+      index: true,
     },
     createdAt: {
       name: 'createdAt',
       type: 'date',
       required: true,
-      index: true
+      index: true,
     },
     updatedAt: {
       name: 'updatedAt',
       type: 'date',
-      required: true
+      required: true,
     },
     bio: {
       name: 'bio',
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
-  description: 'User entity for testing'
+  description: 'User entity for testing',
 }
 
 describe('QueryOptimizer', () => {
@@ -95,7 +95,7 @@ describe('QueryOptimizer', () => {
     it('should optimize simple query without hints when all conditions are optimal', () => {
       const query = {
         where: { id: 'user-123' },
-        take: 10
+        take: 10,
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
@@ -103,7 +103,7 @@ describe('QueryOptimizer', () => {
       expect(result.query).toEqual(query)
       expect(result.hints.length).toBeGreaterThanOrEqual(1) // Should have at least one hint
       expect(result.estimatedCost).toBeGreaterThanOrEqual(0)
-      
+
       // Check for index hint for id field
       const indexHint = result.hints.find(h => h.type === 'index' && h.field === 'id')
       expect(indexHint).toBeDefined()
@@ -114,15 +114,11 @@ describe('QueryOptimizer', () => {
       const simpleQuery = { where: { id: 'user-123' } }
       const complexQuery = {
         where: {
-          AND: [
-            { name: { contains: 'John' } },
-            { age: { gt: 18 } },
-            { status: 'active' }
-          ]
+          AND: [{ name: { contains: 'John' } }, { age: { gt: 18 } }, { status: 'active' }],
         },
         orderBy: [{ name: 'asc' }, { age: 'desc' }],
         include: { posts: true, profile: true },
-        take: 100
+        take: 100,
       }
 
       const simpleResult = optimizer.optimize(simpleQuery, mockUserEntity)
@@ -142,13 +138,13 @@ describe('QueryOptimizer', () => {
           userId: {
             name: 'userId',
             type: 'string',
-            required: true
-          }
-        }
+            required: true,
+          },
+        },
       }
 
       const query = {
-        where: { userId: 'user-123' }
+        where: { userId: 'user-123' },
       }
 
       const result = optimizer.optimize(query, testEntity)
@@ -162,7 +158,7 @@ describe('QueryOptimizer', () => {
     it('should warn about large IN clauses', () => {
       const largeInArray = Array.from({ length: 150 }, (_, i) => `item-${i}`)
       const query = {
-        where: { id: { in: largeInArray } }
+        where: { id: { in: largeInArray } },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
@@ -175,16 +171,16 @@ describe('QueryOptimizer', () => {
 
     it('should warn about text search without index', () => {
       const query = {
-        where: { 
+        where: {
           name: { contains: 'John' },
-          bio: { startsWith: 'Software' }
-        }
+          bio: { startsWith: 'Software' },
+        },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const textSearchHints = result.hints.filter(h => 
-        h.type === 'filter' && h.suggestion.includes('Text search')
+      const textSearchHints = result.hints.filter(
+        h => h.type === 'filter' && h.suggestion.includes('Text search')
       )
       expect(textSearchHints).toHaveLength(2) // name and bio fields
       expect(textSearchHints.every(h => h.impact === 'medium')).toBe(true)
@@ -199,15 +195,15 @@ describe('QueryOptimizer', () => {
             { status: 'active' },
             { tenantId: 'tenant-1' },
             { email: { contains: '@example.com' } },
-            { createdAt: { gt: new Date('2023-01-01') } }
-          ]
-        }
+            { createdAt: { gt: new Date('2023-01-01') } },
+          ],
+        },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const complexHint = result.hints.find(h => 
-        h.type === 'filter' && h.suggestion.includes('Complex AND condition')
+      const complexHint = result.hints.find(
+        h => h.type === 'filter' && h.suggestion.includes('Complex AND condition')
       )
       expect(complexHint).toBeDefined()
       expect(complexHint?.impact).toBe('medium')
@@ -216,17 +212,14 @@ describe('QueryOptimizer', () => {
     it('should warn about OR conditions', () => {
       const query = {
         where: {
-          OR: [
-            { name: 'John' },
-            { email: 'john@example.com' }
-          ]
-        }
+          OR: [{ name: 'John' }, { email: 'john@example.com' }],
+        },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const orHint = result.hints.find(h => 
-        h.type === 'filter' && h.suggestion.includes('OR conditions')
+      const orHint = result.hints.find(
+        h => h.type === 'filter' && h.suggestion.includes('OR conditions')
       )
       expect(orHint).toBeDefined()
       expect(orHint?.impact).toBe('medium')
@@ -234,10 +227,10 @@ describe('QueryOptimizer', () => {
 
     it('should handle indexed fields correctly', () => {
       const query = {
-        where: { 
+        where: {
           email: 'john@example.com',
-          status: 'active'
-        }
+          status: 'active',
+        },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
@@ -251,7 +244,7 @@ describe('QueryOptimizer', () => {
   describe('ORDER BY优化', () => {
     it('should warn about sorting by non-indexed fields', () => {
       const query = {
-        orderBy: { name: 'asc', age: 'desc' }
+        orderBy: { name: 'asc', age: 'desc' },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
@@ -263,11 +256,7 @@ describe('QueryOptimizer', () => {
 
     it('should handle array format orderBy', () => {
       const query = {
-        orderBy: [
-          { name: 'asc' },
-          { age: 'desc' },
-          { bio: 'asc' }
-        ]
+        orderBy: [{ name: 'asc' }, { age: 'desc' }, { bio: 'asc' }],
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
@@ -278,18 +267,13 @@ describe('QueryOptimizer', () => {
 
     it('should warn about sorting by many fields', () => {
       const query = {
-        orderBy: [
-          { name: 'asc' },
-          { age: 'desc' },
-          { bio: 'asc' },
-          { updatedAt: 'desc' }
-        ]
+        orderBy: [{ name: 'asc' }, { age: 'desc' }, { bio: 'asc' }, { updatedAt: 'desc' }],
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const manyFieldsHint = result.hints.find(h => 
-        h.suggestion.includes('Sorting by') && h.suggestion.includes('fields may impact')
+      const manyFieldsHint = result.hints.find(
+        h => h.suggestion.includes('Sorting by') && h.suggestion.includes('fields may impact')
       )
       expect(manyFieldsHint).toBeDefined()
       expect(manyFieldsHint?.impact).toBe('low')
@@ -303,14 +287,17 @@ describe('QueryOptimizer', () => {
           posts: true,
           profile: true,
           comments: true,
-          followers: true
-        }
+          followers: true,
+        },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const joinHint = result.hints.find(h => 
-        h.type === 'join' && h.suggestion.includes('Including') && h.suggestion.includes('relations')
+      const joinHint = result.hints.find(
+        h =>
+          h.type === 'join' &&
+          h.suggestion.includes('Including') &&
+          h.suggestion.includes('relations')
       )
       expect(joinHint).toBeDefined()
       expect(joinHint?.impact).toBe('high')
@@ -323,18 +310,18 @@ describe('QueryOptimizer', () => {
             include: {
               comments: {
                 include: {
-                  author: true
-                }
-              }
-            }
-          }
-        }
+                  author: true,
+                },
+              },
+            },
+          },
+        },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const depthHint = result.hints.find(h => 
-        h.type === 'join' && h.suggestion.includes('Deep nesting')
+      const depthHint = result.hints.find(
+        h => h.type === 'join' && h.suggestion.includes('Deep nesting')
       )
       expect(depthHint).toBeDefined()
       expect(depthHint?.impact).toBe('high')
@@ -344,8 +331,8 @@ describe('QueryOptimizer', () => {
       const shallowQuery = {
         include: {
           posts: true,
-          profile: true
-        }
+          profile: true,
+        },
       }
 
       const deepQuery = {
@@ -356,14 +343,14 @@ describe('QueryOptimizer', () => {
                 include: {
                   author: {
                     include: {
-                      profile: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+                      profile: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       }
 
       const shallowResult = optimizer.optimize(shallowQuery, mockUserEntity)
@@ -377,13 +364,13 @@ describe('QueryOptimizer', () => {
     it('should warn about large offsets', () => {
       const query = {
         skip: 15000,
-        take: 20
+        take: 20,
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const offsetHint = result.hints.find(h => 
-        h.type === 'limit' && h.suggestion.includes('Large offset')
+      const offsetHint = result.hints.find(
+        h => h.type === 'limit' && h.suggestion.includes('Large offset')
       )
       expect(offsetHint).toBeDefined()
       expect(offsetHint?.impact).toBe('high')
@@ -392,13 +379,13 @@ describe('QueryOptimizer', () => {
 
     it('should warn about large limits', () => {
       const query = {
-        take: 2000
+        take: 2000,
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const limitHint = result.hints.find(h => 
-        h.type === 'limit' && h.suggestion.includes('Large limit')
+      const limitHint = result.hints.find(
+        h => h.type === 'limit' && h.suggestion.includes('Large limit')
       )
       expect(limitHint).toBeDefined()
       expect(limitHint?.impact).toBe('medium')
@@ -407,13 +394,13 @@ describe('QueryOptimizer', () => {
     it('should warn about pagination without ordering', () => {
       const query = {
         skip: 20,
-        take: 10
+        take: 10,
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const orderHint = result.hints.find(h => 
-        h.type === 'limit' && h.suggestion.includes('Pagination without ORDER BY')
+      const orderHint = result.hints.find(
+        h => h.type === 'limit' && h.suggestion.includes('Pagination without ORDER BY')
       )
       expect(orderHint).toBeDefined()
       expect(orderHint?.impact).toBe('medium')
@@ -423,14 +410,12 @@ describe('QueryOptimizer', () => {
       const query = {
         skip: 20,
         take: 10,
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const orderHint = result.hints.find(h => 
-        h.suggestion.includes('Pagination without ORDER BY')
-      )
+      const orderHint = result.hints.find(h => h.suggestion.includes('Pagination without ORDER BY'))
       expect(orderHint).toBeUndefined()
     })
   })
@@ -441,14 +426,14 @@ describe('QueryOptimizer', () => {
       const query = {
         select: {
           id: true,
-          name: true // Only 2 out of 9 fields = ~22%
-        }
+          name: true, // Only 2 out of 9 fields = ~22%
+        },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const selectHint = result.hints.find(h => 
-        h.type === 'filter' && h.suggestion.includes('Selecting specific fields')
+      const selectHint = result.hints.find(
+        h => h.type === 'filter' && h.suggestion.includes('Selecting specific fields')
       )
       expect(selectHint).toBeDefined()
       expect(selectHint?.impact).toBe('low')
@@ -462,10 +447,10 @@ describe('QueryOptimizer', () => {
           posts: {
             select: {
               id: true,
-              title: true
-            }
-          }
-        }
+              title: true,
+            },
+          },
+        },
       }
 
       const result = optimizer.optimize(query, mockUserEntity)
@@ -478,13 +463,13 @@ describe('QueryOptimizer', () => {
       const queries = [
         { query: { where: { tenantId: 'tenant-1' } }, entity: mockUserEntity },
         { query: { where: { tenantId: 'tenant-2' } }, entity: mockUserEntity },
-        { query: { where: { status: 'active' } }, entity: mockUserEntity }
+        { query: { where: { status: 'active' } }, entity: mockUserEntity },
       ]
 
       const results = optimizer.batchOptimize(queries)
 
       expect(results).toHaveLength(3)
-      const batchHint = results[0].hints.find(h => 
+      const batchHint = results[0].hints.find(h =>
         h.suggestion.includes('similar queries that could be combined')
       )
       expect(batchHint).toBeDefined()
@@ -493,20 +478,20 @@ describe('QueryOptimizer', () => {
 
     it('should optimize each query in batch independently', () => {
       const queries = [
-        { 
-          query: { 
+        {
+          query: {
             where: { id: 'user-1' },
-            orderBy: { name: 'asc' }
-          }, 
-          entity: mockUserEntity 
+            orderBy: { name: 'asc' },
+          },
+          entity: mockUserEntity,
         },
-        { 
-          query: { 
+        {
+          query: {
             where: { name: { contains: 'John' } },
-            take: 1500
-          }, 
-          entity: mockUserEntity 
-        }
+            take: 1500,
+          },
+          entity: mockUserEntity,
+        },
       ]
 
       const results = optimizer.batchOptimize(queries)
@@ -526,10 +511,10 @@ describe('QueryOptimizer', () => {
           userId: {
             name: 'userId',
             type: 'string',
-            required: true
+            required: true,
             // No index property, so it should trigger the hint
-          }
-        }
+          },
+        },
       }
 
       const frequentQuery = { where: { userId: 'user-123' } }
@@ -539,14 +524,14 @@ describe('QueryOptimizer', () => {
       const infrequentResult = optimizer.optimize(infrequentQuery, mockUserEntity)
 
       // userId should be considered frequently queried
-      const frequentHint = frequentResult.hints.find(h => 
-        h.field === 'userId' && h.suggestion.includes('frequently queried')
+      const frequentHint = frequentResult.hints.find(
+        h => h.field === 'userId' && h.suggestion.includes('frequently queried')
       )
       expect(frequentHint).toBeDefined()
 
       // bio should not trigger the frequently queried hint
-      const infrequentHint = infrequentResult.hints.find(h => 
-        h.field === 'bio' && h.suggestion.includes('frequently queried')
+      const infrequentHint = infrequentResult.hints.find(
+        h => h.field === 'bio' && h.suggestion.includes('frequently queried')
       )
       expect(infrequentHint).toBeUndefined()
     })
@@ -559,27 +544,27 @@ describe('QueryOptimizer', () => {
               include: {
                 author: {
                   include: {
-                    profile: true
-                  }
+                    profile: true,
+                  },
                 },
                 replies: {
                   include: {
-                    author: true
-                  }
-                }
-              }
+                    author: true,
+                  },
+                },
+              },
             },
-            tags: true
-          }
+            tags: true,
+          },
         },
-        followers: true
+        followers: true,
       }
 
       const query = { include: complexInclude }
       const result = optimizer.optimize(query, mockUserEntity)
 
-      const depthHint = result.hints.find(h => 
-        h.suggestion.includes('Deep nesting') && h.suggestion.includes('4 levels')
+      const depthHint = result.hints.find(
+        h => h.suggestion.includes('Deep nesting') && h.suggestion.includes('4 levels')
       )
       expect(depthHint).toBeDefined()
     })
@@ -593,15 +578,15 @@ describe('QueryOptimizer', () => {
             select: {
               id: true,
               title: true,
-              content: true
-            }
+              content: true,
+            },
           },
           profile: {
             select: {
-              bio: true
-            }
-          }
-        }
+              bio: true,
+            },
+          },
+        },
       }
 
       const result = optimizer.optimize(selectQuery, mockUserEntity)
@@ -622,7 +607,7 @@ describe('QueryOptimizer', () => {
       const query = {
         where: { name: null },
         orderBy: undefined,
-        include: null
+        include: null,
       }
 
       expect(() => optimizer.optimize(query, mockUserEntity)).not.toThrow()
@@ -632,7 +617,7 @@ describe('QueryOptimizer', () => {
       const emptyEntity: Entity = {
         name: 'Empty',
         fields: {},
-        description: 'Empty entity'
+        description: 'Empty entity',
       }
 
       const query = { where: { someField: 'value' } }

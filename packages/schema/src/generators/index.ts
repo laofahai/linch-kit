@@ -12,8 +12,11 @@
  * 包含抽象基类、注册表、工厂函数等
  */
 export {
-    BaseGenerator,
-    CodeGenerator, createGenerator, GeneratorRegistry, quickGenerate
+  BaseGenerator,
+  CodeGenerator,
+  createGenerator,
+  GeneratorRegistry,
+  quickGenerate,
 } from './base'
 
 // ==================== 具体生成器实现 ====================

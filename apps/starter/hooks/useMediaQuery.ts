@@ -12,7 +12,7 @@ export function useMediaQuery(query: string): boolean {
 
   useEffect(() => {
     setMounted(true)
-    
+
     const mediaQuery = window.matchMedia(query)
     setMatches(mediaQuery.matches)
 
@@ -22,7 +22,7 @@ export function useMediaQuery(query: string): boolean {
 
     // 使用现代 API
     mediaQuery.addEventListener('change', handler)
-    
+
     return () => mediaQuery.removeEventListener('change', handler)
   }, [query])
 
@@ -38,7 +38,7 @@ export function useMediaQuery(query: string): boolean {
  * 预定义的断点 Hooks
  * 断点定义：
  * - Mobile: < 640px
- * - Tablet: 640px - 1023px  
+ * - Tablet: 640px - 1023px
  * - Desktop: >= 1024px
  */
 export const useIsDesktop = () => useMediaQuery('(min-width: 1024px)')

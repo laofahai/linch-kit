@@ -1,6 +1,6 @@
 /**
  * @linch-kit/schema 核心模块导出
- * 
+ *
  * @description 导出核心的实体、字段和模式定义功能
  * @author LinchKit Team
  * @since 0.1.0

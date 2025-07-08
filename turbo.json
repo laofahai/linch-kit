@@ -9,12 +9,7 @@
     "bun.lock",
     ".changeset/**"
   ],
-  "globalEnv": [
-    "NODE_ENV",
-    "CI",
-    "TURBO_TOKEN",
-    "TURBO_TEAM"
-  ],
+  "globalEnv": ["NODE_ENV", "CI", "TURBO_TOKEN", "TURBO_TEAM"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -25,11 +20,7 @@
         "tsconfig.build.json",
         "tsup.config.ts"
       ],
-      "outputs": [
-        "dist/**",
-        ".next/**",
-        "!.next/cache/**"
-      ]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "build:packages": {
       "dependsOn": ["^build:packages"],
@@ -44,29 +35,15 @@
     },
     "check-types": {
       "dependsOn": ["^build:packages"],
-      "inputs": [
-        "src/**",
-        "tsconfig.json",
-        "package.json"
-      ],
+      "inputs": ["src/**", "tsconfig.json", "package.json"],
       "outputs": []
     },
     "lint": {
-      "inputs": [
-        "src/**",
-        ".eslintrc*",
-        "eslint.config.*",
-        "package.json"
-      ],
+      "inputs": ["src/**", ".eslintrc*", "eslint.config.*", "package.json"],
       "outputs": []
     },
     "lint:fix": {
-      "inputs": [
-        "src/**",
-        ".eslintrc*",
-        "eslint.config.*",
-        "package.json"
-      ],
+      "inputs": ["src/**", ".eslintrc*", "eslint.config.*", "package.json"],
       "outputs": [],
       "cache": false
     },
@@ -105,21 +82,11 @@
       "outputs": []
     },
     "format": {
-      "inputs": [
-        "src/**",
-        "**/*.{ts,tsx,js,jsx,json,md}",
-        ".prettierrc*",
-        "prettier.config.*"
-      ],
+      "inputs": ["src/**", "**/*.{ts,tsx,js,jsx,json,md}", ".prettierrc*", "prettier.config.*"],
       "outputs": []
     },
     "format:fix": {
-      "inputs": [
-        "src/**",
-        "**/*.{ts,tsx,js,jsx,json,md}",
-        ".prettierrc*",
-        "prettier.config.*"
-      ],
+      "inputs": ["src/**", "**/*.{ts,tsx,js,jsx,json,md}", ".prettierrc*", "prettier.config.*"],
       "outputs": [],
       "cache": false
     },

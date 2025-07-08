@@ -1,16 +1,16 @@
 /**
  * 租户列表页面
- * 
+ *
  * 显示所有租户的列表，支持搜索、筛选和操作
  */
 
 'use client'
 
 import React, { useState } from 'react'
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
+import {
+  Card,
+  CardContent,
+  CardHeader,
   CardTitle,
   Button,
   Input,
@@ -31,12 +31,11 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@linch-kit/ui'
-import { 
-  Plus, 
-  Search, 
- 
+import {
+  Plus,
+  Search,
   MoreHorizontal,
   Edit,
   Trash2,
@@ -45,7 +44,7 @@ import {
   Users,
   Building2,
   Crown,
-  Calendar
+  Calendar,
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -65,59 +64,75 @@ export function TenantList() {
   const canEdit = useConsolePermission('tenant:edit')
   const canDelete = useConsolePermission('tenant:delete')
   const canSuspend = useConsolePermission('tenant:suspend')
-  
+
   // 状态管理
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [planFilter, setPlanFilter] = useState<string>('all')
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; tenant?: Record<string, unknown> }>({ open: false })
-  const [suspendDialog, setSuspendDialog] = useState<{ open: boolean; tenant?: Record<string, unknown> }>({ open: false })
-  
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean
+    tenant?: Record<string, unknown>
+  }>({ open: false })
+  const [suspendDialog, setSuspendDialog] = useState<{
+    open: boolean
+    tenant?: Record<string, unknown>
+  }>({ open: false })
+
   // 数据获取
-  const { 
-    data: tenantsData, 
+  const {
+    data: tenantsData,
     isLoading,
-    error 
+    error,
   } = useTenants({
     search: searchTerm,
     status: statusFilter === 'all' ? undefined : statusFilter,
     plan: planFilter === 'all' ? undefined : planFilter,
     page: 1,
-    pageSize: 20
+    pageSize: 20,
   })
-  
+
   // 操作hooks
   const { deleteTenant, suspendTenant, activateTenant } = useTenantOperations()
-  
+
   const tenants = tenantsData?.data || []
   const stats = tenantsData?.stats || {}
-  
+
   // 获取状态颜色
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'default'
-      case 'suspended': return 'secondary'
-      case 'deleted': return 'destructive'
-      case 'pending': return 'outline'
-      default: return 'outline'
+      case 'active':
+        return 'default'
+      case 'suspended':
+        return 'secondary'
+      case 'deleted':
+        return 'destructive'
+      case 'pending':
+        return 'outline'
+      default:
+        return 'outline'
     }
   }
-  
+
   // 获取计划颜色
   const getPlanColor = (plan: string) => {
     switch (plan) {
-      case 'enterprise': return 'default'
-      case 'professional': return 'secondary'
-      case 'starter': return 'outline'
-      case 'free': return 'outline'
-      default: return 'outline'
+      case 'enterprise':
+        return 'default'
+      case 'professional':
+        return 'secondary'
+      case 'starter':
+        return 'outline'
+      case 'free':
+        return 'outline'
+      default:
+        return 'outline'
     }
   }
-  
+
   // 处理删除
   const handleDelete = async () => {
     if (!deleteDialog.tenant) return
-    
+
     try {
       await deleteTenant.mutateAsync(deleteDialog.tenant.id)
       setDeleteDialog({ open: false })
@@ -125,11 +140,11 @@ export function TenantList() {
       console.error('Delete tenant failed:', error)
     }
   }
-  
+
   // 处理暂停/激活
   const handleSuspend = async () => {
     if (!suspendDialog.tenant) return
-    
+
     try {
       if (suspendDialog.tenant.status === 'active') {
         await suspendTenant.mutateAsync(suspendDialog.tenant.id)
@@ -154,22 +169,15 @@ export function TenantList() {
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <Link 
-                href={`/admin/tenants/${tenant.id}`}
-                className="font-medium hover:underline"
-              >
+              <Link href={`/admin/tenants/${tenant.id}`} className="font-medium hover:underline">
                 {tenant.name}
               </Link>
-              {tenant.plan === 'enterprise' && (
-                <Crown className="h-4 w-4 text-yellow-500" />
-              )}
+              {tenant.plan === 'enterprise' && <Crown className="h-4 w-4 text-yellow-500" />}
             </div>
-            <div className="text-sm text-muted-foreground">
-              {tenant.domain || tenant.slug}
-            </div>
+            <div className="text-sm text-muted-foreground">{tenant.domain || tenant.slug}</div>
           </div>
         </div>
-      )
+      ),
     },
     {
       key: 'status',
@@ -178,7 +186,7 @@ export function TenantList() {
         <Badge variant={getStatusColor(tenant.status)}>
           {t(`console.entities.tenant.status.${tenant.status}`)}
         </Badge>
-      )
+      ),
     },
     {
       key: 'plan',
@@ -187,7 +195,7 @@ export function TenantList() {
         <Badge variant={getPlanColor(tenant.plan)}>
           {t(`console.entities.tenant.plan.${tenant.plan}`)}
         </Badge>
-      )
+      ),
     },
     {
       key: 'users',
@@ -196,11 +204,9 @@ export function TenantList() {
         <div className="flex items-center space-x-2">
           <Users className="h-4 w-4 text-muted-foreground" />
           <span>{tenant.userCount || 0}</span>
-          {tenant.maxUsers && (
-            <span className="text-muted-foreground">/ {tenant.maxUsers}</span>
-          )}
+          {tenant.maxUsers && <span className="text-muted-foreground">/ {tenant.maxUsers}</span>}
         </div>
-      )
+      ),
     },
     {
       key: 'createdAt',
@@ -208,11 +214,9 @@ export function TenantList() {
       render: (tenant: Record<string, unknown>) => (
         <div className="flex items-center space-x-2">
           <Calendar className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm">
-            {format(new Date(tenant.createdAt), 'yyyy-MM-dd')}
-          </span>
+          <span className="text-sm">{format(new Date(tenant.createdAt), 'yyyy-MM-dd')}</span>
         </div>
-      )
+      ),
     },
     {
       key: 'actions',
@@ -227,9 +231,7 @@ export function TenantList() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>操作</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href={`/admin/tenants/${tenant.id}`}>
-                查看详情
-              </Link>
+              <Link href={`/admin/tenants/${tenant.id}`}>查看详情</Link>
             </DropdownMenuItem>
             {canEdit && (
               <DropdownMenuItem asChild>
@@ -241,9 +243,7 @@ export function TenantList() {
             )}
             <DropdownMenuSeparator />
             {canSuspend && (
-              <DropdownMenuItem
-                onClick={() => setSuspendDialog({ open: true, tenant })}
-              >
+              <DropdownMenuItem onClick={() => setSuspendDialog({ open: true, tenant })}>
                 {tenant.status === 'active' ? (
                   <>
                     <Pause className="mr-2 h-4 w-4" />
@@ -271,8 +271,8 @@ export function TenantList() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
-      )
-    }
+      ),
+    },
   ]
 
   if (error) {
@@ -280,9 +280,7 @@ export function TenantList() {
       <div className="p-6">
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center text-destructive">
-              加载租户列表失败: {error.message}
-            </div>
+            <div className="text-center text-destructive">加载租户列表失败: {error.message}</div>
           </CardContent>
         </Card>
       </div>
@@ -294,14 +292,10 @@ export function TenantList() {
       {/* 页面标题和操作 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {t('console.tenants.title')}
-          </h1>
-          <p className="text-muted-foreground">
-            管理系统中的所有租户
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">{t('console.tenants.title')}</h1>
+          <p className="text-muted-foreground">管理系统中的所有租户</p>
         </div>
-        
+
         {canCreate && (
           <Button asChild>
             <Link href="/admin/tenants/create">
@@ -314,30 +308,10 @@ export function TenantList() {
 
       {/* 统计卡片 */}
       <div className="grid gap-4 md:grid-cols-4">
-        <StatCard
-          title="总租户数"
-          value={stats.total || 0}
-          icon={Building2}
-          color="blue"
-        />
-        <StatCard
-          title="活跃租户"
-          value={stats.active || 0}
-          icon={Users}
-          color="green"
-        />
-        <StatCard
-          title="暂停租户"
-          value={stats.suspended || 0}
-          icon={Pause}
-          color="orange"
-        />
-        <StatCard
-          title="企业版租户"
-          value={stats.enterprise || 0}
-          icon={Crown}
-          color="purple"
-        />
+        <StatCard title="总租户数" value={stats.total || 0} icon={Building2} color="blue" />
+        <StatCard title="活跃租户" value={stats.active || 0} icon={Users} color="green" />
+        <StatCard title="暂停租户" value={stats.suspended || 0} icon={Pause} color="orange" />
+        <StatCard title="企业版租户" value={stats.enterprise || 0} icon={Crown} color="purple" />
       </div>
 
       {/* 搜索和筛选 */}
@@ -353,12 +327,12 @@ export function TenantList() {
                 <Input
                   placeholder="搜索租户名称或域名..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="pl-10"
                 />
               </div>
             </div>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="状态筛选" />
@@ -371,7 +345,7 @@ export function TenantList() {
                 <SelectItem value="deleted">已删除</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select value={planFilter} onValueChange={setPlanFilter}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="计划筛选" />
@@ -397,7 +371,7 @@ export function TenantList() {
       </Card>
 
       {/* 删除确认对话框 */}
-      <Dialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ open })}>
+      <Dialog open={deleteDialog.open} onOpenChange={open => setDeleteDialog({ open })}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>确认删除</DialogTitle>
@@ -406,17 +380,10 @@ export function TenantList() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialog({ open: false })}
-            >
+            <Button variant="outline" onClick={() => setDeleteDialog({ open: false })}>
               取消
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleteTenant.isPending}
-            >
+            <Button variant="destructive" onClick={handleDelete} disabled={deleteTenant.isPending}>
               {deleteTenant.isPending ? '删除中...' : '确认删除'}
             </Button>
           </DialogFooter>
@@ -424,31 +391,30 @@ export function TenantList() {
       </Dialog>
 
       {/* 暂停/激活确认对话框 */}
-      <Dialog open={suspendDialog.open} onOpenChange={(open) => setSuspendDialog({ open })}>
+      <Dialog open={suspendDialog.open} onOpenChange={open => setSuspendDialog({ open })}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
               {suspendDialog.tenant?.status === 'active' ? '暂停租户' : '激活租户'}
             </DialogTitle>
             <DialogDescription>
-              确定要{suspendDialog.tenant?.status === 'active' ? '暂停' : '激活'}租户 "{suspendDialog.tenant?.name}" 吗？
+              确定要{suspendDialog.tenant?.status === 'active' ? '暂停' : '激活'}租户 "
+              {suspendDialog.tenant?.name}" 吗？
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setSuspendDialog({ open: false })}
-            >
+            <Button variant="outline" onClick={() => setSuspendDialog({ open: false })}>
               取消
             </Button>
             <Button
               onClick={handleSuspend}
               disabled={suspendTenant.isPending || activateTenant.isPending}
             >
-              {(suspendTenant.isPending || activateTenant.isPending) 
-                ? '处理中...' 
-                : suspendDialog.tenant?.status === 'active' ? '确认暂停' : '确认激活'
-              }
+              {suspendTenant.isPending || activateTenant.isPending
+                ? '处理中...'
+                : suspendDialog.tenant?.status === 'active'
+                  ? '确认暂停'
+                  : '确认激活'}
             </Button>
           </DialogFooter>
         </DialogContent>

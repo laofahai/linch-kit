@@ -6,12 +6,12 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { 
-  Button, 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
   Input,
   Label,
@@ -21,7 +21,7 @@ import {
   TabsList,
   TabsTrigger,
   useToast,
-  Separator
+  Separator,
 } from '@linch-kit/ui'
 import { Logger } from '@linch-kit/core'
 import { Save, RefreshCw, Shield, Settings as SettingsIcon } from 'lucide-react'
@@ -41,23 +41,23 @@ export default function SettingsPage() {
   const { isAdmin, isAuthenticated } = useTokenCache()
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
-  
+
   // 基础设置
   const [appName, setAppName] = useState('LinchKit Starter')
   const [appDescription, setAppDescription] = useState('AI-First 全栈开发框架')
   const [adminEmail, setAdminEmail] = useState('admin@linchkit.dev')
-  
+
   // 功能开关
   const [enableRegistration, setEnableRegistration] = useState(true)
   const [enableEmailVerification, setEnableEmailVerification] = useState(true)
   const [enableTwoFactor, setEnableTwoFactor] = useState(false)
   const [maintenanceMode, setMaintenanceMode] = useState(false)
-  
+
   // 限制设置
   const [maxLoginAttempts, setMaxLoginAttempts] = useState('5')
   const [sessionTimeout, setSessionTimeout] = useState('30')
   const [passwordMinLength, setPasswordMinLength] = useState('8')
-  
+
   // 通知设置
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [systemAlerts, setSystemAlerts] = useState(true)
@@ -71,10 +71,10 @@ export default function SettingsPage() {
     try {
       setLoading(true)
       Logger.info('加载租户设置')
-      
+
       // 模拟从API加载配置
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       // 设置默认配置项
       setConfigs([
         {
@@ -102,7 +102,7 @@ export default function SettingsPage() {
           isPublic: false,
         },
       ])
-      
+
       toast({
         title: '设置加载成功',
         description: '租户配置已加载',
@@ -128,10 +128,10 @@ export default function SettingsPage() {
         enableRegistration,
         maxLoginAttempts,
       })
-      
+
       // 模拟API调用
       await new Promise(resolve => setTimeout(resolve, 1500))
-      
+
       toast({
         title: '保存成功',
         description: '租户设置已更新',
@@ -164,9 +164,7 @@ export default function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">
-              请先登录以访问设置页面
-            </p>
+            <p className="text-muted-foreground">请先登录以访问设置页面</p>
           </CardContent>
         </Card>
       </div>
@@ -191,9 +189,7 @@ export default function SettingsPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">租户设置</h1>
-            <p className="text-muted-foreground mt-2">
-              管理租户的配置和系统设置
-            </p>
+            <p className="text-muted-foreground mt-2">管理租户的配置和系统设置</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={loadSettings}>
@@ -223,9 +219,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>基础设置</CardTitle>
-              <CardDescription>
-                配置应用的基本信息
-              </CardDescription>
+              <CardDescription>配置应用的基本信息</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
@@ -233,28 +227,28 @@ export default function SettingsPage() {
                 <Input
                   id="appName"
                   value={appName}
-                  onChange={(e) => setAppName(e.target.value)}
+                  onChange={e => setAppName(e.target.value)}
                   placeholder="输入应用名称"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="appDescription">应用描述</Label>
                 <Input
                   id="appDescription"
                   value={appDescription}
-                  onChange={(e) => setAppDescription(e.target.value)}
+                  onChange={e => setAppDescription(e.target.value)}
                   placeholder="输入应用描述"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="adminEmail">管理员邮箱</Label>
                 <Input
                   id="adminEmail"
                   type="email"
                   value={adminEmail}
-                  onChange={(e) => setAdminEmail(e.target.value)}
+                  onChange={e => setAdminEmail(e.target.value)}
                   placeholder="admin@example.com"
                 />
               </div>
@@ -264,14 +258,9 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>维护模式</Label>
-                  <p className="text-sm text-muted-foreground">
-                    启用后，只有管理员可以访问系统
-                  </p>
+                  <p className="text-sm text-muted-foreground">启用后，只有管理员可以访问系统</p>
                 </div>
-                <Switch
-                  checked={maintenanceMode}
-                  onCheckedChange={setMaintenanceMode}
-                />
+                <Switch checked={maintenanceMode} onCheckedChange={setMaintenanceMode} />
               </div>
             </CardContent>
           </Card>
@@ -282,30 +271,21 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>认证与安全</CardTitle>
-              <CardDescription>
-                管理用户认证和安全设置
-              </CardDescription>
+              <CardDescription>管理用户认证和安全设置</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>允许用户注册</Label>
-                  <p className="text-sm text-muted-foreground">
-                    允许新用户自行注册账号
-                  </p>
+                  <p className="text-sm text-muted-foreground">允许新用户自行注册账号</p>
                 </div>
-                <Switch
-                  checked={enableRegistration}
-                  onCheckedChange={setEnableRegistration}
-                />
+                <Switch checked={enableRegistration} onCheckedChange={setEnableRegistration} />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>邮箱验证</Label>
-                  <p className="text-sm text-muted-foreground">
-                    要求用户验证邮箱地址
-                  </p>
+                  <p className="text-sm text-muted-foreground">要求用户验证邮箱地址</p>
                 </div>
                 <Switch
                   checked={enableEmailVerification}
@@ -316,14 +296,9 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>双因素认证</Label>
-                  <p className="text-sm text-muted-foreground">
-                    启用双因素认证增强安全性
-                  </p>
+                  <p className="text-sm text-muted-foreground">启用双因素认证增强安全性</p>
                 </div>
-                <Switch
-                  checked={enableTwoFactor}
-                  onCheckedChange={setEnableTwoFactor}
-                />
+                <Switch checked={enableTwoFactor} onCheckedChange={setEnableTwoFactor} />
               </div>
             </CardContent>
           </Card>
@@ -334,9 +309,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>限制配置</CardTitle>
-              <CardDescription>
-                设置系统的各项限制参数
-              </CardDescription>
+              <CardDescription>设置系统的各项限制参数</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
@@ -345,13 +318,11 @@ export default function SettingsPage() {
                   id="maxLoginAttempts"
                   type="number"
                   value={maxLoginAttempts}
-                  onChange={(e) => setMaxLoginAttempts(e.target.value)}
+                  onChange={e => setMaxLoginAttempts(e.target.value)}
                   min="1"
                   max="10"
                 />
-                <p className="text-sm text-muted-foreground">
-                  超过此次数后账号将被临时锁定
-                </p>
+                <p className="text-sm text-muted-foreground">超过此次数后账号将被临时锁定</p>
               </div>
 
               <div className="space-y-2">
@@ -360,13 +331,11 @@ export default function SettingsPage() {
                   id="sessionTimeout"
                   type="number"
                   value={sessionTimeout}
-                  onChange={(e) => setSessionTimeout(e.target.value)}
+                  onChange={e => setSessionTimeout(e.target.value)}
                   min="5"
                   max="1440"
                 />
-                <p className="text-sm text-muted-foreground">
-                  用户无操作后自动退出登录
-                </p>
+                <p className="text-sm text-muted-foreground">用户无操作后自动退出登录</p>
               </div>
 
               <div className="space-y-2">
@@ -375,13 +344,11 @@ export default function SettingsPage() {
                   id="passwordMinLength"
                   type="number"
                   value={passwordMinLength}
-                  onChange={(e) => setPasswordMinLength(e.target.value)}
+                  onChange={e => setPasswordMinLength(e.target.value)}
                   min="6"
                   max="32"
                 />
-                <p className="text-sm text-muted-foreground">
-                  用户密码的最小字符数要求
-                </p>
+                <p className="text-sm text-muted-foreground">用户密码的最小字符数要求</p>
               </div>
             </CardContent>
           </Card>
@@ -392,48 +359,31 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>通知设置</CardTitle>
-              <CardDescription>
-                配置系统通知和邮件设置
-              </CardDescription>
+              <CardDescription>配置系统通知和邮件设置</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>邮件通知</Label>
-                  <p className="text-sm text-muted-foreground">
-                    接收重要的系统邮件通知
-                  </p>
+                  <p className="text-sm text-muted-foreground">接收重要的系统邮件通知</p>
                 </div>
-                <Switch
-                  checked={emailNotifications}
-                  onCheckedChange={setEmailNotifications}
-                />
+                <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>系统告警</Label>
-                  <p className="text-sm text-muted-foreground">
-                    接收系统异常和告警通知
-                  </p>
+                  <p className="text-sm text-muted-foreground">接收系统异常和告警通知</p>
                 </div>
-                <Switch
-                  checked={systemAlerts}
-                  onCheckedChange={setSystemAlerts}
-                />
+                <Switch checked={systemAlerts} onCheckedChange={setSystemAlerts} />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>营销邮件</Label>
-                  <p className="text-sm text-muted-foreground">
-                    接收产品更新和推广邮件
-                  </p>
+                  <p className="text-sm text-muted-foreground">接收产品更新和推广邮件</p>
                 </div>
-                <Switch
-                  checked={marketingEmails}
-                  onCheckedChange={setMarketingEmails}
-                />
+                <Switch checked={marketingEmails} onCheckedChange={setMarketingEmails} />
               </div>
             </CardContent>
           </Card>
@@ -448,9 +398,7 @@ export default function SettingsPage() {
                   <Shield className="h-5 w-5 mr-2" />
                   管理员设置
                 </CardTitle>
-                <CardDescription>
-                  高级系统配置和管理员功能
-                </CardDescription>
+                <CardDescription>高级系统配置和管理员功能</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -459,9 +407,7 @@ export default function SettingsPage() {
                       <SettingsIcon className="h-5 w-5 text-primary" />
                       <h4 className="font-medium">系统配置</h4>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      管理全局系统配置和环境变量
-                    </p>
+                    <p className="text-sm text-muted-foreground mb-3">管理全局系统配置和环境变量</p>
                     <Button variant="outline" size="sm">
                       配置管理
                     </Button>
@@ -472,9 +418,7 @@ export default function SettingsPage() {
                       <Shield className="h-5 w-5 text-primary" />
                       <h4 className="font-medium">权限管理</h4>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      管理用户角色和权限分配
-                    </p>
+                    <p className="text-sm text-muted-foreground mb-3">管理用户角色和权限分配</p>
                     <Button variant="outline" size="sm">
                       权限配置
                     </Button>
@@ -482,7 +426,7 @@ export default function SettingsPage() {
                 </div>
 
                 <Separator />
-                
+
                 <div className="space-y-4">
                   <h4 className="font-medium text-destructive">危险操作</h4>
                   <div className="p-4 border border-destructive/20 rounded-lg bg-destructive/5">
@@ -493,13 +437,15 @@ export default function SettingsPage() {
                           将所有配置重置为默认值，此操作不可逆
                         </p>
                       </div>
-                      <Button 
-                        variant="destructive" 
+                      <Button
+                        variant="destructive"
                         size="sm"
-                        onClick={() => toast({
-                          title: '功能开发中',
-                          description: '重置功能正在开发中'
-                        })}
+                        onClick={() =>
+                          toast({
+                            title: '功能开发中',
+                            description: '重置功能正在开发中',
+                          })
+                        }
                       >
                         重置设置
                       </Button>

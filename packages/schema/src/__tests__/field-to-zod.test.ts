@@ -1,6 +1,6 @@
 /**
  * @linch-kit/schema fieldToZod 转换功能测试
- * 
+ *
  * 测试 fieldToZod 函数将字段定义转换为 Zod Schema 的功能
  */
 
@@ -8,15 +8,15 @@ import { describe, it, expect } from 'bun:test'
 import { z } from 'zod'
 
 import { fieldToZod } from '../core/field'
-import type { 
-  FieldDefinition, 
-  StringFieldOptions, 
-  NumberFieldOptions, 
+import type {
+  FieldDefinition,
+  StringFieldOptions,
+  NumberFieldOptions,
   BooleanFieldOptions,
   DateFieldOptions,
   EnumFieldOptions,
   ArrayFieldOptions,
-  RelationFieldOptions
+  RelationFieldOptions,
 } from '../types'
 
 describe('fieldToZod Conversion', () => {
@@ -24,10 +24,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert basic string field', () => {
       const field: StringFieldOptions = {
         type: 'string',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('test')).toBe('test')
       expect(() => schema.parse(123)).toThrow()
       expect(() => schema.parse(null)).toThrow()
@@ -36,10 +36,10 @@ describe('fieldToZod Conversion', () => {
     it('should handle optional string field', () => {
       const field: StringFieldOptions = {
         type: 'string',
-        required: false
+        required: false,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('test')).toBe('test')
       expect(schema.parse(undefined)).toBeUndefined()
     })
@@ -48,10 +48,10 @@ describe('fieldToZod Conversion', () => {
       const field: StringFieldOptions = {
         type: 'string',
         required: true,
-        minLength: 3
+        minLength: 3,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('test')).toBe('test')
       expect(() => schema.parse('ab')).toThrow()
     })
@@ -60,10 +60,10 @@ describe('fieldToZod Conversion', () => {
       const field: StringFieldOptions = {
         type: 'string',
         required: true,
-        maxLength: 5
+        maxLength: 5,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('test')).toBe('test')
       expect(() => schema.parse('toolong')).toThrow()
     })
@@ -72,10 +72,10 @@ describe('fieldToZod Conversion', () => {
       const field: StringFieldOptions = {
         type: 'string',
         required: true,
-        pattern: '^[a-zA-Z]+$'
+        pattern: '^[a-zA-Z]+$',
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('test')).toBe('test')
       expect(() => schema.parse('test123')).toThrow()
     })
@@ -84,10 +84,10 @@ describe('fieldToZod Conversion', () => {
       const field: StringFieldOptions = {
         type: 'string',
         required: true,
-        pattern: /^[a-zA-Z]+$/
+        pattern: /^[a-zA-Z]+$/,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('test')).toBe('test')
       expect(() => schema.parse('test123')).toThrow()
     })
@@ -96,10 +96,10 @@ describe('fieldToZod Conversion', () => {
       const field: StringFieldOptions = {
         type: 'string',
         required: true,
-        transform: (value: string) => value.toUpperCase()
+        transform: (value: string) => value.toUpperCase(),
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('test')).toBe('TEST')
     })
 
@@ -107,10 +107,10 @@ describe('fieldToZod Conversion', () => {
       const field: StringFieldOptions = {
         type: 'string',
         required: false,
-        defaultValue: 'default'
+        defaultValue: 'default',
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(undefined)).toBe('default')
       expect(schema.parse('custom')).toBe('custom')
     })
@@ -120,10 +120,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert email field', () => {
       const field: FieldDefinition = {
         type: 'email',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('test@example.com')).toBe('test@example.com')
       expect(() => schema.parse('invalid-email')).toThrow()
     })
@@ -133,10 +133,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert url field', () => {
       const field: FieldDefinition = {
         type: 'url',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('https://example.com')).toBe('https://example.com')
       expect(() => schema.parse('invalid-url')).toThrow()
     })
@@ -146,10 +146,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert uuid field', () => {
       const field: FieldDefinition = {
         type: 'uuid',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       const validUuid = '123e4567-e89b-12d3-a456-426614174000'
       expect(schema.parse(validUuid)).toBe(validUuid)
       expect(() => schema.parse('invalid-uuid')).toThrow()
@@ -160,10 +160,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert text field', () => {
       const field: FieldDefinition = {
         type: 'text',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('long text content')).toBe('long text content')
       expect(() => schema.parse(123)).toThrow()
     })
@@ -173,10 +173,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert basic number field', () => {
       const field: NumberFieldOptions = {
         type: 'number',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(123)).toBe(123)
       expect(schema.parse(123.45)).toBe(123.45)
       expect(() => schema.parse('123')).toThrow()
@@ -186,10 +186,10 @@ describe('fieldToZod Conversion', () => {
       const field: NumberFieldOptions = {
         type: 'number',
         required: true,
-        min: 10
+        min: 10,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(15)).toBe(15)
       expect(() => schema.parse(5)).toThrow()
     })
@@ -198,10 +198,10 @@ describe('fieldToZod Conversion', () => {
       const field: NumberFieldOptions = {
         type: 'number',
         required: true,
-        max: 100
+        max: 100,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(50)).toBe(50)
       expect(() => schema.parse(150)).toThrow()
     })
@@ -210,10 +210,10 @@ describe('fieldToZod Conversion', () => {
       const field: NumberFieldOptions = {
         type: 'number',
         required: true,
-        integer: true
+        integer: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(123)).toBe(123)
       expect(() => schema.parse(123.45)).toThrow()
     })
@@ -222,10 +222,10 @@ describe('fieldToZod Conversion', () => {
       const field: NumberFieldOptions = {
         type: 'number',
         required: true,
-        positive: true
+        positive: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(1)).toBe(1)
       expect(() => schema.parse(-1)).toThrow()
       expect(() => schema.parse(0)).toThrow()
@@ -235,10 +235,10 @@ describe('fieldToZod Conversion', () => {
       const field: NumberFieldOptions = {
         type: 'number',
         required: true,
-        negative: true
+        negative: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(-1)).toBe(-1)
       expect(() => schema.parse(1)).toThrow()
       expect(() => schema.parse(0)).toThrow()
@@ -251,10 +251,10 @@ describe('fieldToZod Conversion', () => {
         min: 10,
         max: 100,
         integer: true,
-        positive: true
+        positive: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(50)).toBe(50)
       expect(() => schema.parse(5)).toThrow() // below min
       expect(() => schema.parse(150)).toThrow() // above max
@@ -267,10 +267,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert boolean field', () => {
       const field: BooleanFieldOptions = {
         type: 'boolean',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(true)).toBe(true)
       expect(schema.parse(false)).toBe(false)
       expect(() => schema.parse('true')).toThrow()
@@ -280,10 +280,10 @@ describe('fieldToZod Conversion', () => {
     it('should handle optional boolean field', () => {
       const field: BooleanFieldOptions = {
         type: 'boolean',
-        required: false
+        required: false,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(true)).toBe(true)
       expect(schema.parse(undefined)).toBeUndefined()
     })
@@ -292,10 +292,10 @@ describe('fieldToZod Conversion', () => {
       const field: BooleanFieldOptions = {
         type: 'boolean',
         required: false,
-        defaultValue: false
+        defaultValue: false,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(undefined)).toBe(false)
       expect(schema.parse(true)).toBe(true)
     })
@@ -305,10 +305,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert basic date field', () => {
       const field: DateFieldOptions = {
         type: 'date',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       const date = new Date()
       expect(schema.parse(date)).toEqual(date)
       expect(() => schema.parse('2023-01-01')).toThrow()
@@ -319,10 +319,10 @@ describe('fieldToZod Conversion', () => {
       const field: DateFieldOptions = {
         type: 'date',
         required: true,
-        min: minDate
+        min: minDate,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(new Date('2023-06-01'))).toEqual(new Date('2023-06-01'))
       expect(() => schema.parse(new Date('2022-01-01'))).toThrow()
     })
@@ -332,10 +332,10 @@ describe('fieldToZod Conversion', () => {
       const field: DateFieldOptions = {
         type: 'date',
         required: true,
-        max: maxDate
+        max: maxDate,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(new Date('2023-06-01'))).toEqual(new Date('2023-06-01'))
       expect(() => schema.parse(new Date('2024-01-01'))).toThrow()
     })
@@ -347,10 +347,10 @@ describe('fieldToZod Conversion', () => {
         type: 'date',
         required: true,
         min: minDate,
-        max: maxDate
+        max: maxDate,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(new Date('2023-06-01'))).toEqual(new Date('2023-06-01'))
       expect(() => schema.parse(new Date('2022-01-01'))).toThrow()
       expect(() => schema.parse(new Date('2024-01-01'))).toThrow()
@@ -362,10 +362,10 @@ describe('fieldToZod Conversion', () => {
       const field: EnumFieldOptions = {
         type: 'enum',
         required: true,
-        values: ['active', 'inactive', 'pending']
+        values: ['active', 'inactive', 'pending'],
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('active')).toBe('active')
       expect(schema.parse('inactive')).toBe('inactive')
       expect(schema.parse('pending')).toBe('pending')
@@ -376,10 +376,10 @@ describe('fieldToZod Conversion', () => {
       const field: EnumFieldOptions = {
         type: 'enum',
         required: false,
-        values: ['active', 'inactive']
+        values: ['active', 'inactive'],
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('active')).toBe('active')
       expect(schema.parse(undefined)).toBeUndefined()
     })
@@ -389,10 +389,10 @@ describe('fieldToZod Conversion', () => {
         type: 'enum',
         required: false,
         values: ['active', 'inactive'],
-        defaultValue: 'inactive'
+        defaultValue: 'inactive',
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(undefined)).toBe('inactive')
       expect(schema.parse('active')).toBe('active')
     })
@@ -405,11 +405,11 @@ describe('fieldToZod Conversion', () => {
         required: true,
         items: {
           type: 'string',
-          required: true
-        }
+          required: true,
+        },
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(['a', 'b', 'c'])).toEqual(['a', 'b', 'c'])
       expect(() => schema.parse([1, 2, 3])).toThrow()
       expect(() => schema.parse('not-array')).toThrow()
@@ -421,11 +421,11 @@ describe('fieldToZod Conversion', () => {
         required: true,
         items: {
           type: 'number',
-          required: true
-        }
+          required: true,
+        },
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse([1, 2, 3])).toEqual([1, 2, 3])
       expect(() => schema.parse(['a', 'b', 'c'])).toThrow()
     })
@@ -437,11 +437,11 @@ describe('fieldToZod Conversion', () => {
         min: 2,
         items: {
           type: 'string',
-          required: true
-        }
+          required: true,
+        },
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(['a', 'b'])).toEqual(['a', 'b'])
       expect(() => schema.parse(['a'])).toThrow()
     })
@@ -453,11 +453,11 @@ describe('fieldToZod Conversion', () => {
         max: 3,
         items: {
           type: 'string',
-          required: true
-        }
+          required: true,
+        },
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(['a', 'b', 'c'])).toEqual(['a', 'b', 'c'])
       expect(() => schema.parse(['a', 'b', 'c', 'd'])).toThrow()
     })
@@ -471,14 +471,27 @@ describe('fieldToZod Conversion', () => {
           required: true,
           items: {
             type: 'string',
-            required: true
-          }
-        }
+            required: true,
+          },
+        },
       }
       const schema = fieldToZod(field)
-      
-      expect(schema.parse([['a', 'b'], ['c', 'd']])).toEqual([['a', 'b'], ['c', 'd']])
-      expect(() => schema.parse([['a', 'b'], [1, 2]])).toThrow()
+
+      expect(
+        schema.parse([
+          ['a', 'b'],
+          ['c', 'd'],
+        ])
+      ).toEqual([
+        ['a', 'b'],
+        ['c', 'd'],
+      ])
+      expect(() =>
+        schema.parse([
+          ['a', 'b'],
+          [1, 2],
+        ])
+      ).toThrow()
     })
   })
 
@@ -486,10 +499,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert json field', () => {
       const field: FieldDefinition = {
         type: 'json',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse({ key: 'value' })).toEqual({ key: 'value' })
       expect(schema.parse({ nested: { key: 'value' } })).toEqual({ nested: { key: 'value' } })
       expect(schema.parse({})).toEqual({})
@@ -498,10 +511,10 @@ describe('fieldToZod Conversion', () => {
     it('should handle optional json field', () => {
       const field: FieldDefinition = {
         type: 'json',
-        required: false
+        required: false,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse({ key: 'value' })).toEqual({ key: 'value' })
       expect(schema.parse(undefined)).toBeUndefined()
     })
@@ -513,10 +526,10 @@ describe('fieldToZod Conversion', () => {
         type: 'relation',
         required: true,
         target: 'User',
-        relationType: 'manyToOne'
+        relationType: 'manyToOne',
       }
       const schema = fieldToZod(field)
-      
+
       const validUuid = '123e4567-e89b-12d3-a456-426614174000'
       expect(schema.parse(validUuid)).toBe(validUuid)
       expect(() => schema.parse('invalid-uuid')).toThrow()
@@ -527,10 +540,10 @@ describe('fieldToZod Conversion', () => {
         type: 'relation',
         required: false,
         target: 'User',
-        relationType: 'manyToOne'
+        relationType: 'manyToOne',
       }
       const schema = fieldToZod(field)
-      
+
       const validUuid = '123e4567-e89b-12d3-a456-426614174000'
       expect(schema.parse(validUuid)).toBe(validUuid)
       expect(schema.parse(undefined)).toBeUndefined()
@@ -546,11 +559,11 @@ describe('fieldToZod Conversion', () => {
         required: true,
         i18n: {
           locales: ['en', 'zh', 'ja'],
-          required: ['en']
-        }
+          required: ['en'],
+        },
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse({ en: 'Hello', zh: '你好' })).toEqual({ en: 'Hello', zh: '你好' })
       expect(() => schema.parse({ zh: '你好' })).toThrow() // missing required 'en'
     })
@@ -560,10 +573,10 @@ describe('fieldToZod Conversion', () => {
         type: 'i18n',
         baseType: 'string',
         locales: ['en'],
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse({ en: 'Hello' })).toEqual({ en: 'Hello' })
     })
 
@@ -575,11 +588,11 @@ describe('fieldToZod Conversion', () => {
         required: false,
         i18n: {
           locales: ['en', 'zh'],
-          required: []
-        }
+          required: [],
+        },
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse({ en: 'Hello' })).toEqual({ en: 'Hello' })
       expect(schema.parse(undefined)).toBeUndefined()
     })
@@ -589,10 +602,10 @@ describe('fieldToZod Conversion', () => {
     it('should convert unknown field type to z.unknown()', () => {
       const field: FieldDefinition = {
         type: 'unknown' as any,
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('anything')).toBe('anything')
       expect(schema.parse(123)).toBe(123)
       expect(schema.parse({})).toEqual({})
@@ -606,10 +619,10 @@ describe('fieldToZod Conversion', () => {
         required: true,
         minLength: 3,
         maxLength: 10,
-        pattern: '^[a-zA-Z]+$'
+        pattern: '^[a-zA-Z]+$',
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('hello')).toBe('hello')
       expect(() => schema.parse('ab')).toThrow() // too short
       expect(() => schema.parse('verylongstring')).toThrow() // too long
@@ -622,10 +635,10 @@ describe('fieldToZod Conversion', () => {
         required: false,
         defaultValue: 'default',
         minLength: 3,
-        maxLength: 10
+        maxLength: 10,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(undefined)).toBe('default')
       expect(schema.parse('hello')).toBe('hello')
       expect(() => schema.parse('ab')).toThrow() // too short
@@ -636,50 +649,50 @@ describe('fieldToZod Conversion', () => {
     it('should handle null values for required fields', () => {
       const field: StringFieldOptions = {
         type: 'string',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(() => schema.parse(null)).toThrow()
     })
 
     it('should handle undefined values for required fields', () => {
       const field: StringFieldOptions = {
         type: 'string',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(() => schema.parse(undefined)).toThrow()
     })
 
     it('should handle empty string for required string field', () => {
       const field: StringFieldOptions = {
         type: 'string',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse('')).toBe('')
     })
 
     it('should handle zero for required number field', () => {
       const field: NumberFieldOptions = {
         type: 'number',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(0)).toBe(0)
     })
 
     it('should handle false for required boolean field', () => {
       const field: BooleanFieldOptions = {
         type: 'boolean',
-        required: true
+        required: true,
       }
       const schema = fieldToZod(field)
-      
+
       expect(schema.parse(false)).toBe(false)
     })
   })

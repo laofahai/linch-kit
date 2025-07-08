@@ -1,6 +1,6 @@
 /**
  * 查询执行器 - 专门处理查询执行
- * 
+ *
  * 使用命令模式封装查询执行逻辑
  */
 
@@ -40,7 +40,7 @@ abstract class BaseQueryCommand implements QueryCommand {
       entityName: this.entityName,
       duration: Date.now() - this.startTime,
       queryComplexity: this.calculateComplexity(),
-      timestamp: new Date()
+      timestamp: new Date(),
     }
   }
 
@@ -68,12 +68,14 @@ abstract class BaseQueryCommand implements QueryCommand {
 
   private countConditions(where: Record<string, unknown>): number {
     let count = 0
-    
+
     for (const [key, value] of Object.entries(where)) {
       if (key === 'AND' || key === 'OR') {
         if (Array.isArray(value)) {
-          count += value.reduce((acc, condition) => 
-            acc + this.countConditions(condition as Record<string, unknown>), 0)
+          count += value.reduce(
+            (acc, condition) => acc + this.countConditions(condition as Record<string, unknown>),
+            0
+          )
         }
       } else {
         count += 1
@@ -94,17 +96,22 @@ class FindManyCommand extends BaseQueryCommand {
 
   async execute(): Promise<unknown[]> {
     try {
-      const result = await (this.model as { findMany: (query: unknown) => Promise<unknown[]> })
-        .findMany(this.query)
-      
+      const result = await (
+        this.model as { findMany: (query: unknown) => Promise<unknown[]> }
+      ).findMany(this.query)
+
       const metrics = this.getMetrics()
       metrics.recordsAffected = result.length
       return result
     } catch (error) {
-      this.logger.error('FindMany execution failed', error instanceof Error ? error : new Error('Unknown error'), {
-        entityName: this.entityName,
-        query: this.query
-      })
+      this.logger.error(
+        'FindMany execution failed',
+        error instanceof Error ? error : new Error('Unknown error'),
+        {
+          entityName: this.entityName,
+          query: this.query,
+        }
+      )
       throw error
     }
   }
@@ -120,17 +127,22 @@ class FindFirstCommand extends BaseQueryCommand {
 
   async execute(): Promise<unknown> {
     try {
-      const result = await (this.model as { findFirst: (query: unknown) => Promise<unknown> })
-        .findFirst(this.query)
-      
+      const result = await (
+        this.model as { findFirst: (query: unknown) => Promise<unknown> }
+      ).findFirst(this.query)
+
       const metrics = this.getMetrics()
       metrics.recordsAffected = result ? 1 : 0
       return result
     } catch (error) {
-      this.logger.error('FindFirst execution failed', error instanceof Error ? error : new Error('Unknown error'), {
-        entityName: this.entityName,
-        query: this.query
-      })
+      this.logger.error(
+        'FindFirst execution failed',
+        error instanceof Error ? error : new Error('Unknown error'),
+        {
+          entityName: this.entityName,
+          query: this.query,
+        }
+      )
       throw error
     }
   }
@@ -147,15 +159,20 @@ class CountCommand extends BaseQueryCommand {
   async execute(): Promise<number> {
     try {
       const countQuery = { where: this.query.where }
-      const result = await (this.model as { count: (query: unknown) => Promise<number> })
-        .count(countQuery)
-      
+      const result = await (this.model as { count: (query: unknown) => Promise<number> }).count(
+        countQuery
+      )
+
       return result
     } catch (error) {
-      this.logger.error('Count execution failed', error instanceof Error ? error : new Error('Unknown error'), {
-        entityName: this.entityName,
-        query: this.query
-      })
+      this.logger.error(
+        'Count execution failed',
+        error instanceof Error ? error : new Error('Unknown error'),
+        {
+          entityName: this.entityName,
+          query: this.query,
+        }
+      )
       throw error
     }
   }
@@ -184,18 +201,25 @@ class AggregateCommand extends BaseQueryCommand {
     try {
       const aggregateQuery = {
         where: this.query.where,
-        [`_${this.operation}`]: { [this.field]: true }
+        [`_${this.operation}`]: { [this.field]: true },
       }
 
-      const result = await (this.model as { aggregate: (query: unknown) => Promise<Record<string, Record<string, number>>> })
-        .aggregate(aggregateQuery)
-      
+      const result = await (
+        this.model as {
+          aggregate: (query: unknown) => Promise<Record<string, Record<string, number>>>
+        }
+      ).aggregate(aggregateQuery)
+
       return result[`_${this.operation}`][this.field] || 0
     } catch (error) {
-      this.logger.error(`${this.operation} execution failed`, error instanceof Error ? error : new Error('Unknown error'), {
-        entityName: this.entityName,
-        field: this.field
-      })
+      this.logger.error(
+        `${this.operation} execution failed`,
+        error instanceof Error ? error : new Error('Unknown error'),
+        {
+          entityName: this.entityName,
+          field: this.field,
+        }
+      )
       throw error
     }
   }
@@ -214,39 +238,45 @@ export class QueryExecutor<T = unknown> {
   /**
    * 执行查找多条记录
    */
-  async findMany(query: Record<string, unknown>): Promise<{ data: T[]; metrics: PerformanceMetrics }> {
+  async findMany(
+    query: Record<string, unknown>
+  ): Promise<{ data: T[]; metrics: PerformanceMetrics }> {
     const model = this.getPrismaModel()
     const command = new FindManyCommand(this.entityName, model, query, this.logger)
-    
-    const data = await command.execute() as T[]
+
+    const data = (await command.execute()) as T[]
     const metrics = command.getMetrics()
-    
+
     return { data, metrics }
   }
 
   /**
    * 执行查找第一条记录
    */
-  async findFirst(query: Record<string, unknown>): Promise<{ data: T | null; metrics: PerformanceMetrics }> {
+  async findFirst(
+    query: Record<string, unknown>
+  ): Promise<{ data: T | null; metrics: PerformanceMetrics }> {
     const model = this.getPrismaModel()
     const command = new FindFirstCommand(this.entityName, model, query, this.logger)
-    
-    const data = await command.execute() as T | null
+
+    const data = (await command.execute()) as T | null
     const metrics = command.getMetrics()
-    
+
     return { data, metrics }
   }
 
   /**
    * 执行计数
    */
-  async count(query: Record<string, unknown>): Promise<{ data: number; metrics: PerformanceMetrics }> {
+  async count(
+    query: Record<string, unknown>
+  ): Promise<{ data: number; metrics: PerformanceMetrics }> {
     const model = this.getPrismaModel()
     const command = new CountCommand(this.entityName, model, query, this.logger)
-    
-    const data = await command.execute() as number
+
+    const data = (await command.execute()) as number
     const metrics = command.getMetrics()
-    
+
     return { data, metrics }
   }
 
@@ -259,25 +289,34 @@ export class QueryExecutor<T = unknown> {
     field: string
   ): Promise<{ data: number; metrics: PerformanceMetrics }> {
     const model = this.getPrismaModel()
-    const command = new AggregateCommand(this.entityName, model, query, this.logger, operation, field)
-    
-    const data = await command.execute() as number
+    const command = new AggregateCommand(
+      this.entityName,
+      model,
+      query,
+      this.logger,
+      operation,
+      field
+    )
+
+    const data = (await command.execute()) as number
     const metrics = command.getMetrics()
-    
+
     return { data, metrics }
   }
 
   /**
    * 检查是否存在
    */
-  async exists(query: Record<string, unknown>): Promise<{ data: boolean; metrics: PerformanceMetrics }> {
+  async exists(
+    query: Record<string, unknown>
+  ): Promise<{ data: boolean; metrics: PerformanceMetrics }> {
     const { data: count, metrics } = await this.count(query)
-    return { 
-      data: count > 0, 
+    return {
+      data: count > 0,
       metrics: {
         ...metrics,
-        operation: 'exists'
-      }
+        operation: 'exists',
+      },
     }
   }
 
@@ -300,11 +339,7 @@ export class QueryExecutor<T = unknown> {
  * 查询执行器工厂
  */
 export class QueryExecutorFactory {
-  static create<T>(
-    entityName: string,
-    prisma: PrismaClient,
-    logger: Logger
-  ): QueryExecutor<T> {
+  static create<T>(entityName: string, prisma: PrismaClient, logger: Logger): QueryExecutor<T> {
     return new QueryExecutor<T>(entityName, prisma, logger)
   }
 }

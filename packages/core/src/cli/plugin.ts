@@ -1,6 +1,6 @@
 /**
  * LinchKit CLI 插件系统
- * 
+ *
  * 允许各个包动态注册自己的 CLI 命令
  */
 
@@ -13,12 +13,12 @@ export interface CLIPlugin {
    * 插件名称（通常是包名）
    */
   name: string
-  
+
   /**
    * 插件版本
    */
   version?: string
-  
+
   /**
    * 注册命令的函数
    */
@@ -46,10 +46,10 @@ export class CLIPluginManager {
     }
 
     this.plugins.set(plugin.name, plugin)
-    
+
     // 调用插件的注册函数
     await plugin.register(this.cli)
-    
+
     Logger.debug(`CLI plugin ${plugin.name} registered`)
   }
 
@@ -65,14 +65,14 @@ export class CLIPluginManager {
       '@linch-kit/trpc',
       '@linch-kit/ui',
       '@linch-kit/console',
-      '@linch-kit/ai'
+      '@linch-kit/ai',
     ]
 
     for (const packageName of packageNames) {
       try {
         // 尝试导入包的 CLI 插件
         const module = await import(`${packageName}/cli`)
-        
+
         if (module.cliPlugin) {
           await this.registerPlugin(module.cliPlugin)
         }
@@ -110,11 +110,11 @@ export function createCLIPlugin(options: {
   return {
     name: options.name,
     version: options.version,
-    register: (cli) => {
+    register: cli => {
       options.commands.forEach(command => {
         cli.registerCommand(command)
       })
-    }
+    },
   }
 }
 
@@ -129,5 +129,5 @@ export const coreCLIPlugin: CLIPlugin = {
     // 导入并注册核心命令
     const { registerCoreCLICommands } = require('./index')
     registerCoreCLICommands(cli)
-  }
+  },
 }

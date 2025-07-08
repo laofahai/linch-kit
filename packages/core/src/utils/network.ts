@@ -10,13 +10,13 @@ import { networkInterfaces } from 'os'
  * 检查端口是否可用
  */
 export async function isPortAvailable(port: number, host = '127.0.0.1'): Promise<boolean> {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const server = createServer()
-    
+
     server.listen(port, host, () => {
       server.close(() => resolve(true))
     })
-    
+
     server.on('error', () => resolve(false))
   })
 }
@@ -25,8 +25,8 @@ export async function isPortAvailable(port: number, host = '127.0.0.1'): Promise
  * 查找可用端口
  */
 export async function findAvailablePort(
-  startPort: number, 
-  endPort = startPort + 100, 
+  startPort: number,
+  endPort = startPort + 100,
   host = '127.0.0.1'
 ): Promise<number | null> {
   for (let port = startPort; port <= endPort; port++) {
@@ -44,12 +44,12 @@ export async function isUrlAccessible(url: string, timeout = 5000): Promise<bool
   try {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), timeout)
-    
+
     const response = await fetch(url, {
       signal: controller.signal,
-      method: 'HEAD'
+      method: 'HEAD',
     })
-    
+
     clearTimeout(timeoutId)
     return response.ok
   } catch {
@@ -62,7 +62,7 @@ export async function isUrlAccessible(url: string, timeout = 5000): Promise<bool
  */
 export function getLocalIpAddress(): string {
   const nets = networkInterfaces()
-  
+
   for (const name of Object.keys(nets)) {
     for (const net of nets[name]!) {
       // IPv4 && 非内部地址 && 非loopback
@@ -71,7 +71,7 @@ export function getLocalIpAddress(): string {
       }
     }
   }
-  
+
   return '127.0.0.1'
 }
 
@@ -97,7 +97,7 @@ export async function request(url: string, options: RequestOptions = {}): Promis
     body,
     timeout = 10000,
     retries = 0,
-    retryDelay = 1000
+    retryDelay = 1000,
   } = options
 
   let lastError: Error
@@ -111,17 +111,17 @@ export async function request(url: string, options: RequestOptions = {}): Promis
         method,
         headers: {
           'User-Agent': '@linch-kit/core',
-          ...headers
+          ...headers,
         },
         body,
-        signal: controller.signal
+        signal: controller.signal,
       })
 
       clearTimeout(timeoutId)
       return response
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('Unknown error')
-      
+
       if (attempt < retries) {
         await new Promise(resolve => setTimeout(resolve, retryDelay))
       }
@@ -134,38 +134,32 @@ export async function request(url: string, options: RequestOptions = {}): Promis
 /**
  * 下载文件
  */
-export async function downloadFile(
-  url: string, 
-  options?: RequestOptions
-): Promise<ArrayBuffer> {
+export async function downloadFile(url: string, options?: RequestOptions): Promise<ArrayBuffer> {
   const response = await request(url, options)
-  
+
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`)
   }
-  
+
   return response.arrayBuffer()
 }
 
 /**
  * 获取JSON响应
  */
-export async function fetchJson<T = unknown>(
-  url: string, 
-  options?: RequestOptions
-): Promise<T> {
+export async function fetchJson<T = unknown>(url: string, options?: RequestOptions): Promise<T> {
   const response = await request(url, {
     ...options,
     headers: {
-      'Accept': 'application/json',
-      ...options?.headers
-    }
+      Accept: 'application/json',
+      ...options?.headers,
+    },
   })
-  
+
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`)
   }
-  
+
   return response.json() as Promise<T>
 }
 
@@ -173,8 +167,8 @@ export async function fetchJson<T = unknown>(
  * 发送JSON数据
  */
 export async function postJson<T = unknown>(
-  url: string, 
-  data: unknown, 
+  url: string,
+  data: unknown,
   options?: Omit<RequestOptions, 'method' | 'body'>
 ): Promise<T> {
   const response = await request(url, {
@@ -182,15 +176,15 @@ export async function postJson<T = unknown>(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      ...options?.headers
+      Accept: 'application/json',
+      ...options?.headers,
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   })
-  
+
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`)
   }
-  
+
   return response.json() as Promise<T>
 }

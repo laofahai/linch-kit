@@ -25,7 +25,7 @@ describe('Schema Builder', () => {
     it('should add single field', () => {
       const builder = new SchemaBuilder()
       const nameField = defineField.string().required().build()
-      
+
       const newBuilder = builder.field('name', nameField)
       expect(newBuilder).toBeDefined()
       expect(newBuilder).not.toBe(builder) // Should return new instance
@@ -33,26 +33,26 @@ describe('Schema Builder', () => {
 
     it('should add multiple fields', () => {
       const builder = new SchemaBuilder()
-      
+
       const result = builder.fields({
         name: defineField.string().required().build(),
         email: defineField.email().required().build(),
-        age: defineField.number().min(0).build()
+        age: defineField.number().min(0).build(),
       })
-      
+
       expect(result).toBeDefined()
       expect(result).not.toBe(builder)
     })
 
     it('should support method chaining', () => {
       const builder = new SchemaBuilder('User')
-      
+
       const result = builder
         .field('name', defineField.string().required().build())
         .field('email', defineField.email().required().build())
         .timestamps(true)
         .softDelete(false)
-      
+
       expect(result).toBeDefined()
     })
   })
@@ -60,41 +60,41 @@ describe('Schema Builder', () => {
   describe('Entity Options', () => {
     it('should set timestamps option', () => {
       const builder = new SchemaBuilder('User')
-      
+
       const withTimestamps = builder.timestamps(true)
       const withoutTimestamps = builder.timestamps(false)
-      
+
       expect(withTimestamps).toBeDefined()
       expect(withoutTimestamps).toBeDefined()
     })
 
     it('should set soft delete option', () => {
       const builder = new SchemaBuilder('User')
-      
+
       const withSoftDelete = builder.softDelete(true)
       const withoutSoftDelete = builder.softDelete(false)
-      
+
       expect(withSoftDelete).toBeDefined()
       expect(withoutSoftDelete).toBeDefined()
     })
 
     it('should set custom options', () => {
       const builder = new SchemaBuilder('User')
-      
+
       const withOptions = builder.options({
         timestamps: false,
         softDelete: true,
-        tableName: 'users'
+        tableName: 'users',
       })
-      
+
       expect(withOptions).toBeDefined()
     })
 
     it('should set table name', () => {
       const builder = new SchemaBuilder('User')
-      
+
       const withTableName = builder.tableName('custom_users')
-      
+
       expect(withTableName).toBeDefined()
     })
   })
@@ -104,13 +104,13 @@ describe('Schema Builder', () => {
       const baseBuilder = new SchemaBuilder()
         .field('id', defineField.uuid().required().build())
         .field('createdAt', defineField.date().required().build())
-      
+
       const userBuilder = new SchemaBuilder('User')
         .field('name', defineField.string().required().build())
         .field('email', defineField.email().required().build())
-      
+
       const extended = userBuilder.extend(baseBuilder)
-      
+
       expect(extended).toBeDefined()
       expect(extended).not.toBe(userBuilder)
       expect(extended).not.toBe(baseBuilder)
@@ -120,13 +120,13 @@ describe('Schema Builder', () => {
       const baseSchema = new SchemaBuilder('Base')
         .field('id', defineField.uuid().required().build())
         .field('createdAt', defineField.date().required().build())
-      
+
       const baseEntity = baseSchema.build('Base') as Entity<Record<string, FieldDefinition>>
-      
+
       const userBuilder = new SchemaBuilder('User')
         .field('name', defineField.string().required().build())
         .extend(baseEntity)
-      
+
       expect(userBuilder).toBeDefined()
     })
   })
@@ -136,9 +136,9 @@ describe('Schema Builder', () => {
       const builder = new SchemaBuilder()
         .field('name', defineField.string().required().build())
         .field('email', defineField.email().required().build())
-      
+
       const entity = builder.build('User')
-      
+
       expect(entity).toBeDefined()
       expect(entity.name).toBe('User')
       expect(entity.fields.name).toBeDefined()
@@ -149,17 +149,16 @@ describe('Schema Builder', () => {
       const builder = new SchemaBuilder('User')
         .field('name', defineField.string().required().build())
         .field('email', defineField.email().required().build())
-      
+
       const entity = builder.build()
-      
+
       expect(entity).toBeDefined()
       expect(entity.name).toBe('User')
     })
 
     it('should throw error when no name provided', () => {
-      const builder = new SchemaBuilder()
-        .field('name', defineField.string().required().build())
-      
+      const builder = new SchemaBuilder().field('name', defineField.string().required().build())
+
       expect(() => builder.build()).toThrow('Entity name is required')
     })
 
@@ -168,9 +167,9 @@ describe('Schema Builder', () => {
         .field('name', defineField.string().required().build())
         .timestamps(false)
         .softDelete(true)
-      
+
       const entity = builder.build()
-      
+
       expect(entity.options.timestamps).toBe(false)
       expect(entity.options.softDelete).toBe(true)
     })
@@ -180,23 +179,22 @@ describe('Schema Builder', () => {
     it('should return new instance when adding fields', () => {
       const original = new SchemaBuilder('User')
       const withField = original.field('name', defineField.string().required().build())
-      
+
       expect(withField).not.toBe(original)
     })
 
     it('should return new instance when setting options', () => {
       const original = new SchemaBuilder('User')
       const withOptions = original.timestamps(true)
-      
+
       expect(withOptions).not.toBe(original)
     })
 
     it('should not modify original when extending', () => {
-      const base = new SchemaBuilder('Base')
-        .field('id', defineField.uuid().required().build())
-      
+      const base = new SchemaBuilder('Base').field('id', defineField.uuid().required().build())
+
       const extended = base.field('name', defineField.string().required().build())
-      
+
       expect(extended).not.toBe(base)
     })
   })
@@ -213,9 +211,9 @@ describe('Schema Builder', () => {
         .timestamps(true)
         .softDelete(true)
         .tableName('users')
-      
+
       const entity = userSchema.build()
-      
+
       expect(entity.name).toBe('User')
       expect(entity.fields.id).toBeDefined()
       expect(entity.fields.name).toBeDefined()
@@ -234,15 +232,15 @@ describe('Schema Builder', () => {
         .field('createdAt', defineField.date().required().build())
         .field('updatedAt', defineField.date().required().build())
         .timestamps(true)
-      
+
       const userSchema = new SchemaBuilder('User')
         .extend(baseSchema)
         .field('name', defineField.string().required().build())
         .field('email', defineField.email().required().unique().build())
         .softDelete(true)
-      
+
       const entity = userSchema.build()
-      
+
       expect(entity.name).toBe('User')
       expect(entity.fields.id).toBeDefined()
       expect(entity.fields.createdAt).toBeDefined()

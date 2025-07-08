@@ -1,53 +1,53 @@
 ---
-package: "@linch-kit/ui"
-version: "2.0.2"
-layer: "L5"
-dependencies: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth", "@linch-kit/crud"]
+package: '@linch-kit/ui'
+version: '2.0.2'
+layer: 'L5'
+dependencies: ['@linch-kit/core', '@linch-kit/schema', '@linch-kit/auth', '@linch-kit/crud']
 completeness: 85
 test_coverage: 80
-status: "production_ready"
-document_type: "api_reference"
-purpose: "Graph RAG knowledge base - Schema驱动的企业级React组件库，基于shadcn/ui构建"
+status: 'production_ready'
+document_type: 'api_reference'
+purpose: 'Graph RAG knowledge base - Schema驱动的企业级React组件库，基于shadcn/ui构建'
 api_exports:
-  - name: "SchemaForm"
-    type: "component"
-    status: "stable"
-  - name: "SchemaTable"
-    type: "component"
-    status: "stable"
-  - name: "SchemaFieldRenderer"
-    type: "component"
-    status: "stable"
-  - name: "Button"
-    type: "component"
-    status: "stable"
-  - name: "Card"
-    type: "component"
-    status: "stable"
-  - name: "Input"
-    type: "component"
-    status: "stable"
-  - name: "Table"
-    type: "component"
-    status: "stable"
-  - name: "Dialog"
-    type: "component"
-    status: "stable"
-  - name: "useUITranslation"
-    type: "hook"
-    status: "stable"
-  - name: "useToast"
-    type: "hook"
-    status: "stable"
-  - name: "cn"
-    type: "function"
-    status: "stable"
+  - name: 'SchemaForm'
+    type: 'component'
+    status: 'stable'
+  - name: 'SchemaTable'
+    type: 'component'
+    status: 'stable'
+  - name: 'SchemaFieldRenderer'
+    type: 'component'
+    status: 'stable'
+  - name: 'Button'
+    type: 'component'
+    status: 'stable'
+  - name: 'Card'
+    type: 'component'
+    status: 'stable'
+  - name: 'Input'
+    type: 'component'
+    status: 'stable'
+  - name: 'Table'
+    type: 'component'
+    status: 'stable'
+  - name: 'Dialog'
+    type: 'component'
+    status: 'stable'
+  - name: 'useUITranslation'
+    type: 'hook'
+    status: 'stable'
+  - name: 'useToast'
+    type: 'hook'
+    status: 'stable'
+  - name: 'cn'
+    type: 'function'
+    status: 'stable'
 relationships:
-  - type: "depends_on"
-    targets: ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth", "@linch-kit/crud"]
-  - type: "integrates_with"
-    targets: ["React", "Radix UI", "Tailwind CSS", "shadcn/ui"]
-last_verified: "2025-07-07"
+  - type: 'depends_on'
+    targets: ['@linch-kit/core', '@linch-kit/schema', '@linch-kit/auth', '@linch-kit/crud']
+  - type: 'integrates_with'
+    targets: ['React', 'Radix UI', 'Tailwind CSS', 'shadcn/ui']
+last_verified: '2025-07-07'
 ---
 
 # LinchKit UI 包 API 文档
@@ -118,7 +118,7 @@ export * from './plugin'
 // 基础组件
 export * from './components'
 
-// Schema驱动组件  
+// Schema驱动组件
 export * from './forms'
 export * from './tables'
 
@@ -162,7 +162,7 @@ import { useUITranslation } from '@linch-kit/ui/infrastructure'
 
 function MyComponent() {
   const { t } = useUITranslation()
-  
+
   return (
     <div>
       <button>{t('form.create')}</button>
@@ -306,14 +306,30 @@ interface SchemaTableProps extends BaseComponentProps {
 
 ```typescript
 // 导入方式
-import { 
-  Button, 
-  Card, CardContent, CardFooter, CardHeader, CardTitle,
-  Input, 
+import {
+  Button,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Input,
   Label,
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-  Dialog, DialogContent, DialogHeader, DialogTitle,
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   // ... 更多组件
 } from '@linch-kit/ui/components'
 
@@ -339,9 +355,9 @@ import { useToast, useMobile } from '@linch-kit/ui/components'
 // Toast Hook
 const { toast } = useToast()
 toast({
-  title: "成功",
-  description: "操作已完成",
-  variant: "default"
+  title: '成功',
+  description: '操作已完成',
+  variant: 'default',
 })
 
 // 移动端检测Hook
@@ -356,11 +372,7 @@ const isMobile = useMobile()
 import { cn } from '@linch-kit/ui/utils'
 
 // 合并Tailwind CSS类名
-const className = cn(
-  "base-class",
-  condition && "conditional-class",
-  "override-class"
-)
+const className = cn('base-class', condition && 'conditional-class', 'override-class')
 ```
 
 ### 6. 类型定义 (`types`)
@@ -368,14 +380,14 @@ const className = cn(
 #### 核心类型
 
 ```typescript
-import type { 
+import type {
   BaseComponentProps,
   UIEntityDefinition,
   SchemaFormProps,
   SchemaTableProps,
   FieldRendererProps,
   Variant,
-  Size
+  Size,
 } from '@linch-kit/ui/types'
 
 // 基础组件属性
@@ -452,15 +464,27 @@ const uiPlugin: Plugin = {
     name: 'LinchKit UI Components',
     version: '1.0.0',
     description: 'LinchKit UI组件库 - Schema驱动的企业级React组件',
-    dependencies: ['@linch-kit/core', '@linch-kit/schema']
+    dependencies: ['@linch-kit/core', '@linch-kit/schema'],
   },
   // 生命周期方法
-  async init() { /* 初始化逻辑 */ },
-  async setup() { /* 设置逻辑 */ },
-  async start() { /* 启动逻辑 */ },
-  async ready() { /* 就绪逻辑 */ },
-  async stop() { /* 停止逻辑 */ },
-  async destroy() { /* 销毁逻辑 */ }
+  async init() {
+    /* 初始化逻辑 */
+  },
+  async setup() {
+    /* 设置逻辑 */
+  },
+  async start() {
+    /* 启动逻辑 */
+  },
+  async ready() {
+    /* 就绪逻辑 */
+  },
+  async stop() {
+    /* 停止逻辑 */
+  },
+  async destroy() {
+    /* 销毁逻辑 */
+  },
 }
 
 // 注册插件
@@ -473,6 +497,7 @@ await pluginSystem.register(uiPlugin)
 ### 架构设计
 
 UI包采用LinchKit统一的国际化架构：
+
 - **统一基础设施**: 使用 `@linch-kit/core` 提供的国际化基础设施
 - **包级命名空间**: 独立的UI翻译空间，避免与其他包冲突
 - **传入翻译函数模式**: 宿主应用提供翻译函数，包使用统一接口
@@ -484,18 +509,22 @@ UI包采用LinchKit统一的国际化架构：
 // UI包国际化配置
 const uiI18n = createPackageI18n({
   packageName: 'ui',
-  defaultLocale: 'zh-CN',  // 默认中文
+  defaultLocale: 'zh-CN', // 默认中文
   defaultMessages: {
-    'zh-CN': { /* 中文翻译 */ },
-    'en': { /* 英文翻译 */ }
-  }
+    'zh-CN': {
+      /* 中文翻译 */
+    },
+    en: {
+      /* 英文翻译 */
+    },
+  },
 })
 
 // 获取翻译函数
 export function useUITranslation() {
-  const coreT = coreUseTranslation()  // 获取用户提供的翻译函数
+  const coreT = coreUseTranslation() // 获取用户提供的翻译函数
   return {
-    t: uiI18n.getTranslation(coreT)  // 结合用户翻译和默认翻译
+    t: uiI18n.getTranslation(coreT), // 结合用户翻译和默认翻译
   }
 }
 ```
@@ -503,6 +532,7 @@ export function useUITranslation() {
 ### 内置翻译
 
 #### 中文翻译 (zh-CN)
+
 ```typescript
 const zhCN = {
   // 表单相关
@@ -513,7 +543,7 @@ const zhCN = {
   'form.create_title': '创建{entity}',
   'form.edit_title': '编辑{entity}',
   'form.view_title': '查看{entity}',
-  
+
   // 表格相关
   'table.actions': '操作',
   'table.view': '查看',
@@ -528,14 +558,15 @@ const zhCN = {
   'table.page': '第',
   'table.previous': '上一页',
   'table.next': '下一页',
-  
+
   // 通用
   'common.yes': '是',
-  'common.no': '否'
+  'common.no': '否',
 }
 ```
 
 #### 英文翻译 (en)
+
 ```typescript
 const enUS = {
   // 表单相关
@@ -546,7 +577,7 @@ const enUS = {
   'form.create_title': 'Create {entity}',
   'form.edit_title': 'Edit {entity}',
   'form.view_title': 'View {entity}',
-  
+
   // 表格相关
   'table.actions': 'Actions',
   'table.view': 'View',
@@ -561,10 +592,10 @@ const enUS = {
   'table.page': 'Page',
   'table.previous': 'Previous',
   'table.next': 'Next',
-  
+
   // 通用
   'common.yes': 'Yes',
-  'common.no': 'No'
+  'common.no': 'No',
 }
 ```
 
@@ -602,7 +633,7 @@ export default defineConfig({
     'src/tables/index.ts',
     'src/utils/index.ts',
     'src/components/ui/button.tsx',
-    'src/components/ui/card.tsx'
+    'src/components/ui/card.tsx',
   ],
   format: ['cjs', 'esm'],
   dts: true,
@@ -616,15 +647,15 @@ export default defineConfig({
     '@linch-kit/core',
     '@linch-kit/crud',
     '@linch-kit/schema',
-    'react-hook-form'
+    'react-hook-form',
   ],
   treeshake: true,
   target: 'es2020',
   esbuildOptions(options) {
     options.banner = {
-      js: '"use client"'
+      js: '"use client"',
     }
-  }
+  },
 })
 ```
 
@@ -762,10 +793,10 @@ const buttonClass = cn(
 ### 完整CRUD示例
 
 ```typescript
-import { 
-  SchemaForm, 
-  SchemaTable, 
-  useUITranslation 
+import {
+  SchemaForm,
+  SchemaTable,
+  useUITranslation
 } from '@linch-kit/ui'
 
 function UserManagement() {

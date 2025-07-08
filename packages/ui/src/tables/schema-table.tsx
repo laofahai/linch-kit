@@ -12,7 +12,7 @@ import {
   createColumnHelper,
   type ColumnDef,
   type SortingState,
-  type ColumnFiltersState
+  type ColumnFiltersState,
 } from '@tanstack/react-table'
 
 import { useUITranslation } from '../infrastructure'
@@ -44,7 +44,7 @@ export function SchemaTable({
   sorting,
   filtering: _filtering,
   className,
-  children
+  children,
 }: SchemaTableProps) {
   const { t } = useUITranslation()
   const [tableSorting, setTableSorting] = React.useState<SortingState>([])
@@ -64,7 +64,7 @@ export function SchemaTable({
           return formatFieldValue(value, fieldDef.type)
         },
         enableSorting: true,
-        enableColumnFilter: true
+        enableColumnFilter: true,
       })
     })
 
@@ -75,20 +75,12 @@ export function SchemaTable({
       cell: ({ row }) => (
         <div className="flex items-center space-x-2">
           {onView && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onView(row.original)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => onView(row.original)}>
               {t('table.view')}
             </Button>
           )}
           {onEdit && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(row.original)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => onEdit(row.original)}>
               {t('table.edit')}
             </Button>
           )}
@@ -108,7 +100,7 @@ export function SchemaTable({
         </div>
       ),
       enableSorting: false,
-      enableColumnFilter: false
+      enableColumnFilter: false,
     })
 
     return [...schemaColumns, actionColumn]
@@ -121,10 +113,10 @@ export function SchemaTable({
     getPaginationRowModel: pagination ? getPaginationRowModel() : undefined,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: (updater) => {
+    onSortingChange: updater => {
       const newSorting = typeof updater === 'function' ? updater(tableSorting) : updater
       setTableSorting(newSorting)
-      
+
       if (sorting && newSorting.length > 0) {
         const { id, desc } = newSorting[0]
         sorting.onSort(id, desc ? 'desc' : 'asc')
@@ -136,14 +128,16 @@ export function SchemaTable({
       sorting: tableSorting,
       columnFilters,
       globalFilter,
-      pagination: pagination ? {
-        pageIndex: pagination.page - 1,
-        pageSize: pagination.pageSize
-      } : undefined
+      pagination: pagination
+        ? {
+            pageIndex: pagination.page - 1,
+            pageSize: pagination.pageSize,
+          }
+        : undefined,
     },
     pageCount: pagination ? Math.ceil(pagination.total / pagination.pageSize) : undefined,
     manualPagination: !!pagination,
-    manualSorting: !!sorting
+    manualSorting: !!sorting,
   })
 
   const formatFieldValue = (value: unknown, fieldType?: string): React.ReactNode => {
@@ -154,22 +148,22 @@ export function SchemaTable({
     switch (fieldType) {
       case 'boolean':
         return value ? t('common.yes') : t('common.no')
-      
+
       case 'datetime':
         return new Date(value as string).toLocaleString()
-      
+
       case 'date':
         return new Date(value as string).toLocaleDateString()
-      
+
       case 'array': {
         const arrayValue = value as unknown[]
         return arrayValue?.length > 0 ? `[${arrayValue.length} items]` : '[]'
       }
-      
+
       case 'object':
       case 'json':
         return <span className="font-mono text-xs">JSON</span>
-      
+
       default:
         return String(value)
     }
@@ -179,14 +173,16 @@ export function SchemaTable({
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span>{schema.name} {t('table.list')}</span>
-          
+          <span>
+            {schema.name} {t('table.list')}
+          </span>
+
           {/* 全局搜索 */}
           <div className="flex items-center space-x-2">
             <Input
               placeholder={t('table.search')}
               value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
+              onChange={e => setGlobalFilter(e.target.value)}
               className="max-w-sm"
             />
           </div>
@@ -198,14 +194,14 @@ export function SchemaTable({
         <div className="rounded-md border">
           <Table>
             <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
+              {table.getHeaderGroups().map(headerGroup => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
+                  {headerGroup.headers.map(header => (
                     <TableHead
                       key={header.id}
                       className={cn(
-                        header.column.getCanSort() && "cursor-pointer select-none hover:bg-muted",
-                        header.column.getIsSorted() && "bg-muted"
+                        header.column.getCanSort() && 'cursor-pointer select-none hover:bg-muted',
+                        header.column.getIsSorted() && 'bg-muted'
                       )}
                       onClick={header.column.getToggleSortingHandler()}
                     >
@@ -232,16 +228,13 @@ export function SchemaTable({
             </TableHeader>
             <TableBody>
               {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
+                table.getRowModel().rows.map(row => (
+                  <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                    {row.getVisibleCells().map(cell => (
                       <TableCell key={cell.id}>
                         {typeof cell.column.columnDef.cell === 'function'
                           ? cell.column.columnDef.cell(cell.getContext())
-                          : cell.getValue() as React.ReactNode}
+                          : (cell.getValue() as React.ReactNode)}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -265,7 +258,7 @@ export function SchemaTable({
               {Math.min(pagination.page * pagination.pageSize, pagination.total)} {t('table.of')}{' '}
               {pagination.total} {t('table.entries')}
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
@@ -275,12 +268,12 @@ export function SchemaTable({
               >
                 {t('table.previous')}
               </Button>
-              
+
               <span className="text-sm">
                 {t('table.page')} {pagination.page} {t('table.of')}{' '}
                 {Math.ceil(pagination.total / pagination.pageSize)}
               </span>
-              
+
               <Button
                 variant="outline"
                 size="sm"

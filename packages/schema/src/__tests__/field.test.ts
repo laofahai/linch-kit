@@ -187,7 +187,7 @@ describe('Field System', () => {
 
   describe('Field Transformers', () => {
     it('should create field with custom transform', () => {
-      const field = defineField.string().transform((value) => value.toUpperCase())
+      const field = defineField.string().transform(value => value.toUpperCase())
       const definition = field.build()
       expect(definition.transform).toBeDefined()
       expect(typeof definition.transform).toBe('function')
@@ -233,15 +233,16 @@ describe('Field System', () => {
 
   describe('Field Chaining', () => {
     it('should support complex field chaining', () => {
-      const field = defineField.string()
+      const field = defineField
+        .string()
         .required()
         .min(3)
         .max(50)
         .unique()
         .index()
         .description('User email field')
-        .transform((value) => value.toLowerCase().trim())
-      
+        .transform(value => value.toLowerCase().trim())
+
       const definition = field.build()
       expect(definition.type).toBe('string')
       expect(definition.required).toBe(true)

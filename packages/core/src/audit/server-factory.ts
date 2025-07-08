@@ -19,15 +19,15 @@ export function createSimpleFileAuditManager(
   policy?: Partial<AuditPolicy>
 ): AuditManager {
   const auditManager = new DefaultAuditManager(logger, metrics, policy)
-  
+
   const fileStore = new FileAuditStore({
     filePath,
     maxFileSize: 50 * 1024 * 1024, // 50MB
     rotationPolicy: 'daily',
     compression: true,
-    backupCount: 7
+    backupCount: 7,
   })
-  
+
   auditManager.addStore(fileStore)
   return auditManager
 }
@@ -48,9 +48,9 @@ export function createFileAuditManager(
   policy?: Partial<AuditPolicy>
 ): AuditManager {
   const auditManager = new DefaultAuditManager(logger, metrics, policy)
-  
+
   const fileStore = new FileAuditStore(config)
   auditManager.addStore(fileStore)
-  
+
   return auditManager
 }

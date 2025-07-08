@@ -1,6 +1,6 @@
 /**
  * @linch-kit/schema 插件类型定义
- * 
+ *
  * @description 插件系统相关的类型定义
  * @author LinchKit Team
  * @since 0.1.0
@@ -66,13 +66,13 @@ export interface Generator {
   name: string
   description?: string
   version?: string
-  
+
   // 生成器方法
   generate(context: GeneratorContext): Promise<GeneratedFile[]>
-  
+
   // 生成器钩子
   hooks?: GeneratorHooks
-  
+
   // 生成器配置
   options?: CodeGeneratorOptions
 }
@@ -84,19 +84,19 @@ export interface SchemaPlugin {
   name: string
   version: string
   description?: string
-  
+
   // 插件初始化
   initialize?(context: SchemaContext): Promise<void> | void
-  
+
   // 插件销毁
   destroy?(): Promise<void> | void
-  
+
   // 提供的生成器
   generators?: Generator[]
-  
+
   // 插件配置
   config?: Record<string, unknown>
-  
+
   // 插件钩子
   hooks?: {
     beforeSchemaLoad?: (schema: SchemaContext) => Promise<SchemaContext> | SchemaContext

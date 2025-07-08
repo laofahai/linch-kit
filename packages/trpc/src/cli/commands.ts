@@ -93,16 +93,7 @@ export const generateTrpcCommand: CLICommand = {
     const t = useTrpcTranslation()
 
     try {
-      const {
-        schema,
-        output,
-        crud,
-        auth,
-        permissions,
-        validation,
-        openapi,
-        client,
-      } = options as {
+      const { schema, output, crud, auth, permissions, validation, openapi, client } = options as {
         schema: string
         output: string
         crud: boolean
@@ -117,7 +108,7 @@ export const generateTrpcCommand: CLICommand = {
 
       // 读取Schema定义
       const entities = await loadSchemaEntities(schema)
-      
+
       if (entities.length === 0) {
         console.warn(t('trpc.generate.noEntities'))
         return { success: true, entities: [], files: [] }
@@ -149,11 +140,11 @@ export const generateTrpcCommand: CLICommand = {
       for (const file of files) {
         const filePath = join(output, file.path)
         const dir = join(filePath, '..')
-        
+
         if (!existsSync(dir)) {
           mkdirSync(dir, { recursive: true })
         }
-        
+
         writeFileSync(filePath, file.content, 'utf8')
         console.log(t('trpc.generate.fileGenerated', { path: file.path }))
       }
@@ -178,7 +169,9 @@ export const generateTrpcCommand: CLICommand = {
 /**
  * 加载Schema实体
  */
-async function loadSchemaEntities(_schemaPath: string): Promise<Array<{ name: string; fields: Record<string, unknown> }>> {
+async function loadSchemaEntities(
+  _schemaPath: string
+): Promise<Array<{ name: string; fields: Record<string, unknown> }>> {
   // 这里应该实现实际的Schema加载逻辑
   // 与 @linch-kit/schema 集成
   return []
@@ -261,9 +254,7 @@ function generateRootRouter(config: {
   auth: boolean
   permissions: boolean
 }): string {
-  const imports = [
-    `import { createTRPCRouter } from '@linch-kit/trpc'`,
-  ]
+  const imports = [`import { createTRPCRouter } from '@linch-kit/trpc'`]
 
   if (config.auth) {
     imports.push(`import { authMiddleware } from './middleware/auth'`)
@@ -274,13 +265,14 @@ function generateRootRouter(config: {
   }
 
   // 导入实体路由器
-  const entityImports = config.entities.map(entity => 
-    `import { ${entity.name.toLowerCase()}Router } from './routers/${entity.name.toLowerCase()}'`
+  const entityImports = config.entities.map(
+    entity =>
+      `import { ${entity.name.toLowerCase()}Router } from './routers/${entity.name.toLowerCase()}'`
   )
 
-  const entityRouters = config.entities.map(entity => 
-    `  ${entity.name.toLowerCase()}: ${entity.name.toLowerCase()}Router,`
-  ).join('\n')
+  const entityRouters = config.entities
+    .map(entity => `  ${entity.name.toLowerCase()}: ${entity.name.toLowerCase()}Router,`)
+    .join('\n')
 
   return `${imports.join('\n')}
 ${entityImports.join('\n')}
@@ -309,10 +301,7 @@ function generateEntityRouter(
     validation: boolean
   }
 ): string {
-  const imports = [
-    `import { createTRPCRouter } from '@linch-kit/trpc'`,
-    `import { z } from 'zod'`,
-  ]
+  const imports = [`import { createTRPCRouter } from '@linch-kit/trpc'`, `import { z } from 'zod'`]
 
   if (config.crud) {
     imports.push(`import { ${entity.name.toLowerCase()}Crud } from '@linch-kit/crud'`)
@@ -329,9 +318,8 @@ function generateEntityRouter(
   const middleware = []
   if (config.auth) middleware.push('authMiddleware')
   if (config.permissions) middleware.push('permissionsMiddleware')
-  
-  const middlewareChain = middleware.length > 0 ? 
-    `.use(${middleware.join(').use(')})` : ''
+
+  const middlewareChain = middleware.length > 0 ? `.use(${middleware.join(').use(')})` : ''
 
   return `${imports.join('\n')}
 
@@ -464,7 +452,9 @@ export const permissionsMiddleware = middleware(async ({ ctx, next }) => {
 function generateTrpcTypes(config: {
   entities: Array<{ name: string; fields: Record<string, unknown> }>
 }): string {
-  const entityTypes = config.entities.map(entity => `
+  const entityTypes = config.entities
+    .map(
+      entity => `
 export interface ${entity.name}CreateInput {
   // 根据Schema生成
 }
@@ -480,7 +470,9 @@ export interface ${entity.name}WhereInput {
 export interface ${entity.name}OrderByInput {
   // 根据Schema生成
 }
-`).join('\n')
+`
+    )
+    .join('\n')
 
   return `/**
  * tRPC类型定义
@@ -547,6 +539,4 @@ export type TRPCClient = typeof trpcClient
 /**
  * 所有tRPC相关命令
  */
-export const trpcCommands: CLICommand[] = [
-  generateTrpcCommand,
-]
+export const trpcCommands: CLICommand[] = [generateTrpcCommand]

@@ -19,7 +19,7 @@ export const trpc = createTRPCNext<AppRouter>({
       transformer: superjson,
       links: [
         loggerLink({
-          enabled: (opts) =>
+          enabled: opts =>
             process.env.NODE_ENV === 'development' ||
             (opts.direction === 'down' && opts.result instanceof Error),
         }),
@@ -27,12 +27,13 @@ export const trpc = createTRPCNext<AppRouter>({
           url: `${getBaseUrl()}/api/trpc`,
           // 可选: 添加认证头
           headers() {
-            const token = typeof window !== 'undefined' ? 
-              localStorage.getItem('authToken') : null
-            
-            return token ? {
-              authorization: `Bearer ${token}`,
-            } : {}
+            const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null
+
+            return token
+              ? {
+                  authorization: `Bearer ${token}`,
+                }
+              : {}
           },
         }),
       ],

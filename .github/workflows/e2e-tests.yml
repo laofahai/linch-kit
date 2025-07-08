@@ -1,0 +1,181 @@
+name: E2E Tests
+
+on:
+  # 暂时禁用自动触发，只保留手动触发
+  # push:
+  #   branches: [main, develop]
+  # pull_request:
+  #   branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: 'Target URL to test (optional)'
+        required: false
+        type: string
+
+jobs:
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox, webkit]
+        app: [starter, website, demo-app]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright
+        run: bun playwright install --with-deps ${{ matrix.project }}
+
+      - name: Build packages first
+        run: bun run build:packages
+
+      - name: Build and start application
+        run: |
+          case "${{ matrix.app }}" in
+            starter)
+              cd apps/starter
+              PORT=3000 bun run build
+              PORT=3000 bun run start &
+              APP_PID=$!
+              echo "APP_PID=$APP_PID" >> $GITHUB_ENV
+              echo "PLAYWRIGHT_BASE_URL=http://localhost:3000" >> $GITHUB_ENV
+              ;;
+            demo-app)
+              cd apps/demo-app
+              PORT=3001 bun run build  
+              PORT=3001 bun run start &
+              APP_PID=$!
+              echo "APP_PID=$APP_PID" >> $GITHUB_ENV
+              echo "PLAYWRIGHT_BASE_URL=http://localhost:3001" >> $GITHUB_ENV
+              ;;
+            website)
+              cd apps/website
+              PORT=3002 bun run build
+              PORT=3002 bun run start &
+              APP_PID=$!
+              echo "APP_PID=$APP_PID" >> $GITHUB_ENV
+              echo "PLAYWRIGHT_BASE_URL=http://localhost:3002" >> $GITHUB_ENV
+              ;;
+          esac
+          
+          # 等待应用启动
+          sleep 15
+
+      - name: Health check
+        run: |
+          timeout 30 bash -c 'until curl -f $PLAYWRIGHT_BASE_URL; do echo "Waiting for server..."; sleep 2; done'
+
+      - name: Run E2E tests
+        run: |
+          if [ "${{ inputs.target_url }}" != "" ]; then
+            export PLAYWRIGHT_BASE_URL="${{ inputs.target_url }}"
+          fi
+          
+          bun playwright test e2e/${{ matrix.app }}/*.e2e.ts --project=${{ matrix.project }}
+          
+      - name: Stop application
+        if: always()
+        run: |
+          if [ -n "$APP_PID" ]; then
+            kill $APP_PID || true
+          fi
+        env:
+          CI: true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ matrix.app }}-${{ matrix.project }}
+          path: |
+            playwright-report/
+            test-results/
+            e2e/screenshots/
+
+  deployment-validation:
+    name: Deployment Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [e2e-tests]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          bun install --frozen-lockfile
+          bun playwright install chromium
+
+      - name: Wait for Vercel deployment
+        run: |
+          echo "Waiting for Vercel deployments to be ready..."
+          sleep 60
+
+      - name: Run deployment validation
+        run: bun run scripts/deployment-validation.ts
+        env:
+          STARTER_APP_URL: ${{ secrets.STARTER_APP_URL || 'https://linchkit-starter.vercel.app' }}
+          WEBSITE_URL: ${{ secrets.WEBSITE_URL || 'https://linchkit.vercel.app' }}
+          DEMO_APP_URL: ${{ secrets.DEMO_APP_URL || 'https://linchkit-demo.vercel.app' }}
+
+      - name: Report validation results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const results = fs.readFileSync('validation-results.json', 'utf8');
+            const data = JSON.parse(results);
+            
+            let comment = '## 🚀 部署验证报告\n\n';
+            
+            for (const app of data.apps) {
+              const icon = app.status === 'success' ? '✅' : '❌';
+              comment += `### ${icon} ${app.name}\n`;
+              comment += `URL: ${app.url}\n\n`;
+              
+              comment += '| 检查项 | 状态 | 详情 |\n';
+              comment += '|-------|------|------|\n';
+              
+              for (const check of app.checks) {
+                const checkIcon = check.passed ? '✅' : '❌';
+                comment += `| ${check.name} | ${checkIcon} | ${check.message || '-'} |\n`;
+              }
+              
+              if (app.performanceMetrics) {
+                comment += `\n**性能指标:**\n`;
+                comment += `- 加载时间: ${app.performanceMetrics.loadTime}ms\n`;
+                if (app.performanceMetrics.firstContentfulPaint) {
+                  comment += `- FCP: ${app.performanceMetrics.firstContentfulPaint}ms\n`;
+                }
+              }
+              comment += '\n';
+            }
+            
+            // 如果是 PR，添加评论
+            if (context.payload.pull_request) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: comment
+              });
+            }

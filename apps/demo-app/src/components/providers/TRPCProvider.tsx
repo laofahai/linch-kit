@@ -21,14 +21,17 @@ const getBaseUrl = () => {
 }
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 60 * 1000, // 1 minute
-      },
-    },
-  }))
-  
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000, // 1 minute
+          },
+        },
+      })
+  )
+
   const [trpcClient] = useState(() =>
     trpc.createClient({
       transformer: superjson,
@@ -37,12 +40,13 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
           url: `${getBaseUrl()}/api/trpc`,
           // 添加认证头
           headers() {
-            const token = typeof window !== 'undefined' ? 
-              localStorage.getItem('authToken') : null
-            
-            return token ? {
-              authorization: `Bearer ${token}`,
-            } : {}
+            const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null
+
+            return token
+              ? {
+                  authorization: `Bearer ${token}`,
+                }
+              : {}
           },
         }),
       ],
@@ -51,9 +55,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </trpc.Provider>
   )
 }

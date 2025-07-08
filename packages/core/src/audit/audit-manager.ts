@@ -13,7 +13,7 @@ import type {
   AuditStore,
   AuditAlert,
   AuditAlertRule,
-  DataMasker
+  DataMasker,
 } from './types'
 import { DEFAULT_AUDIT_POLICY } from './types'
 import { DefaultDataMasker } from './data-masker'
@@ -47,26 +47,38 @@ export class DefaultAuditManager implements AuditManager {
   }
 
   private initializeCounters(): void {
-    this.counters.set('audit_events_queued', this.metrics.createCounter({
-      name: 'audit_events_queued',
-      type: 'counter',
-      help: 'Number of audit events queued for processing'
-    }))
-    this.counters.set('audit_events_processed', this.metrics.createCounter({
-      name: 'audit_events_processed',
-      type: 'counter',
-      help: 'Number of audit events successfully processed'
-    }))
-    this.counters.set('audit_events_failed', this.metrics.createCounter({
-      name: 'audit_events_failed',
-      type: 'counter',
-      help: 'Number of audit events that failed to process'
-    }))
-    this.counters.set('audit_alerts_triggered', this.metrics.createCounter({
-      name: 'audit_alerts_triggered',
-      type: 'counter',
-      help: 'Number of audit alerts triggered'
-    }))
+    this.counters.set(
+      'audit_events_queued',
+      this.metrics.createCounter({
+        name: 'audit_events_queued',
+        type: 'counter',
+        help: 'Number of audit events queued for processing',
+      })
+    )
+    this.counters.set(
+      'audit_events_processed',
+      this.metrics.createCounter({
+        name: 'audit_events_processed',
+        type: 'counter',
+        help: 'Number of audit events successfully processed',
+      })
+    )
+    this.counters.set(
+      'audit_events_failed',
+      this.metrics.createCounter({
+        name: 'audit_events_failed',
+        type: 'counter',
+        help: 'Number of audit events that failed to process',
+      })
+    )
+    this.counters.set(
+      'audit_alerts_triggered',
+      this.metrics.createCounter({
+        name: 'audit_alerts_triggered',
+        type: 'counter',
+        help: 'Number of audit alerts triggered',
+      })
+    )
   }
 
   private getCounter(name: string): Counter {
@@ -84,7 +96,10 @@ export class DefaultAuditManager implements AuditManager {
         await store.initialize?.()
         this.logger.info(`Audit store ${store.name} initialized`)
       } catch (error) {
-        this.logger.error(`Failed to initialize audit store ${store.name}`, error instanceof Error ? error : new Error(String(error)))
+        this.logger.error(
+          `Failed to initialize audit store ${store.name}`,
+          error instanceof Error ? error : new Error(String(error))
+        )
         throw error
       }
     })
@@ -95,7 +110,7 @@ export class DefaultAuditManager implements AuditManager {
 
   async destroy(): Promise<void> {
     this.isDestroyed = true
-    
+
     // 停止刷新定时器
     if (this.flushTimer) {
       clearInterval(this.flushTimer)
@@ -111,7 +126,10 @@ export class DefaultAuditManager implements AuditManager {
         await store.destroy?.()
         this.logger.info(`Audit store ${store.name} destroyed`)
       } catch (error) {
-        this.logger.error(`Failed to destroy audit store ${store.name}`, error instanceof Error ? error : new Error(String(error)))
+        this.logger.error(
+          `Failed to destroy audit store ${store.name}`,
+          error instanceof Error ? error : new Error(String(error))
+        )
       }
     })
 
@@ -126,7 +144,7 @@ export class DefaultAuditManager implements AuditManager {
     }
 
     const fullEvent = this.enrichEvent(event)
-    
+
     if (!this.shouldLog(fullEvent)) {
       return
     }
@@ -139,7 +157,7 @@ export class DefaultAuditManager implements AuditManager {
     if (this.policy.asyncProcessing) {
       this.eventQueue.push(fullEvent)
       this.getCounter('audit_events_queued').inc()
-      
+
       // 如果队列过长，强制刷新
       if (this.eventQueue.length >= this.policy.batchSize) {
         await this.flush()
@@ -160,7 +178,7 @@ export class DefaultAuditManager implements AuditManager {
     }
 
     const fullEvent = this.enrichEvent(event)
-    
+
     if (!this.shouldLog(fullEvent)) {
       return
     }
@@ -187,15 +205,15 @@ export class DefaultAuditManager implements AuditManager {
     )
 
     const results = await Promise.allSettled(storePromises)
-    
+
     // 处理存储失败的情况
-    const failures = results.filter((result): result is PromiseRejectedResult => 
-      result.status === 'rejected'
+    const failures = results.filter(
+      (result): result is PromiseRejectedResult => result.status === 'rejected'
     )
 
     if (failures.length > 0) {
       this.logger.warn(`${failures.length} audit stores failed during flush`, {
-        failures: failures.map(f => f.reason?.message || 'Unknown error')
+        failures: failures.map(f => f.reason?.message || 'Unknown error'),
       })
     }
 
@@ -212,13 +230,17 @@ export class DefaultAuditManager implements AuditManager {
     // 使用第一个可用的存储进行查询
     // TODO: 实现多存储聚合查询
     const primaryStore = stores[0]
-    
+
     try {
       const results = await primaryStore.query(filter)
       this.getCounter('audit_events_processed').inc()
       return results
     } catch (error) {
-      this.logger.error('Audit query failed', error instanceof Error ? error : new Error(String(error)), { filter })
+      this.logger.error(
+        'Audit query failed',
+        error instanceof Error ? error : new Error(String(error)),
+        { filter }
+      )
       this.getCounter('audit_events_failed').inc()
       throw error
     }
@@ -231,11 +253,15 @@ export class DefaultAuditManager implements AuditManager {
     }
 
     const primaryStore = stores[0]
-    
+
     try {
       return await primaryStore.count(filter)
     } catch (error) {
-      this.logger.error('Audit count failed', error instanceof Error ? error : new Error(String(error)), { filter })
+      this.logger.error(
+        'Audit count failed',
+        error instanceof Error ? error : new Error(String(error)),
+        { filter }
+      )
       throw error
     }
   }
@@ -247,13 +273,17 @@ export class DefaultAuditManager implements AuditManager {
     }
 
     const primaryStore = stores[0]
-    
+
     try {
       const result = await primaryStore.export(filter, format)
       this.getCounter('audit_events_processed').inc()
       return result
     } catch (error) {
-      this.logger.error('Audit export failed', error instanceof Error ? error : new Error(String(error)), { filter, format })
+      this.logger.error(
+        'Audit export failed',
+        error instanceof Error ? error : new Error(String(error)),
+        { filter, format }
+      )
       this.getCounter('audit_events_failed').inc()
       throw error
     }
@@ -266,15 +296,15 @@ export class DefaultAuditManager implements AuditManager {
   async updatePolicy(policy: Partial<AuditPolicy>): Promise<void> {
     const oldPolicy = { ...this.policy }
     this.policy = { ...this.policy, ...policy }
-    
+
     // 如果刷新间隔改变，重启定时器
     if (policy.flushInterval && policy.flushInterval !== oldPolicy.flushInterval) {
       this.restartFlushTimer()
     }
 
-    this.logger.info('Audit policy updated', { 
-      oldPolicy, 
-      newPolicy: this.policy 
+    this.logger.info('Audit policy updated', {
+      oldPolicy,
+      newPolicy: this.policy,
     })
   }
 
@@ -312,7 +342,8 @@ export class DefaultAuditManager implements AuditManager {
         if (filter.id && alert.id !== filter.id) return false
         if (filter.ruleName && alert.ruleName !== filter.ruleName) return false
         if (filter.level && alert.level !== filter.level) return false
-        if (filter.acknowledged !== undefined && alert.acknowledged !== filter.acknowledged) return false
+        if (filter.acknowledged !== undefined && alert.acknowledged !== filter.acknowledged)
+          return false
         return true
       })
     }
@@ -337,7 +368,10 @@ export class DefaultAuditManager implements AuditManager {
         health[name] = isHealthy
       } catch (error) {
         health[name] = false
-        this.logger.error(`Health check failed for audit store ${name}`, error instanceof Error ? error : new Error(String(error)))
+        this.logger.error(
+          `Health check failed for audit store ${name}`,
+          error instanceof Error ? error : new Error(String(error))
+        )
       }
     })
 
@@ -361,7 +395,7 @@ export class DefaultAuditManager implements AuditManager {
       resource: event.resource || 'unknown',
       service: event.service || 'unknown',
       success: event.success ?? true,
-      ...event
+      ...event,
     } as AuditEvent
   }
 
@@ -373,11 +407,11 @@ export class DefaultAuditManager implements AuditManager {
     if (!this.policy.categories.includes(event.category)) {
       return false
     }
-    
+
     const severityLevels = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
     const eventLevel = severityLevels.indexOf(event.severity)
     const minLevel = severityLevels.indexOf(this.policy.minSeverity)
-    
+
     return eventLevel >= minLevel
   }
 
@@ -389,7 +423,7 @@ export class DefaultAuditManager implements AuditManager {
     const storePromises = Array.from(this.stores.values()).map(store =>
       this.storeEventsInStore(store, events)
     )
-    
+
     await Promise.allSettled(storePromises)
   }
 
@@ -398,7 +432,11 @@ export class DefaultAuditManager implements AuditManager {
       await store.store(events)
       this.getCounter('audit_events_processed').inc(events.length)
     } catch (error) {
-      this.logger.error(`Audit store ${store.name} failed`, error instanceof Error ? error : new Error(String(error)), { eventCount: events.length })
+      this.logger.error(
+        `Audit store ${store.name} failed`,
+        error instanceof Error ? error : new Error(String(error)),
+        { eventCount: events.length }
+      )
       this.getCounter('audit_events_failed').inc(1)
       throw error
     }
@@ -436,14 +474,14 @@ export class DefaultAuditManager implements AuditManager {
       alertTime: new Date(),
       level: rule.level,
       message: this.formatAlertMessage(rule.messageTemplate, event),
-      acknowledged: false
+      acknowledged: false,
     }
 
     this.alerts.push(alert)
     this.logger.warn(`Audit alert triggered: ${rule.name}`, {
       alertId: alert.id,
       event: event.id,
-      level: alert.level
+      level: alert.level,
     })
 
     this.getCounter('audit_alerts_triggered').inc(1)
@@ -467,7 +505,10 @@ export class DefaultAuditManager implements AuditManager {
 
     this.flushTimer = setInterval(() => {
       this.flush().catch(error => {
-        this.logger.error('Scheduled flush failed', error instanceof Error ? error : new Error(String(error)))
+        this.logger.error(
+          'Scheduled flush failed',
+          error instanceof Error ? error : new Error(String(error))
+        )
       })
     }, this.policy.flushInterval)
   }

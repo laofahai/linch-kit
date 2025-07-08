@@ -1,6 +1,6 @@
 /**
  * linch help 命令
- * 
+ *
  * 显示所有可用命令的帮助信息
  */
 
@@ -14,14 +14,14 @@ const helpCommand: CLICommand = {
     {
       name: 'command',
       description: '显示特定命令的详细帮助',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'category',
       alias: '-c',
       description: '仅显示特定分类的命令',
-      type: 'string'
-    }
+      type: 'string',
+    },
   ],
   handler: async ({ options, cli }) => {
     try {
@@ -51,10 +51,10 @@ const helpCommand: CLICommand = {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       }
     }
-  }
+  },
 }
 
 function showCommandHelp(command: CLICommand) {
@@ -64,14 +64,15 @@ function showCommandHelp(command: CLICommand) {
 
   console.log(`描述: ${command.description}`)
   console.log(`分类: ${command.category}`)
-  
+
   if (command.options && command.options.length > 0) {
     console.log('\n选项:')
     command.options.forEach(option => {
       const alias = option.alias ? `, ${option.alias}` : ''
-      const defaultValue = option.defaultValue !== undefined ? ` (默认: ${option.defaultValue})` : ''
+      const defaultValue =
+        option.defaultValue !== undefined ? ` (默认: ${option.defaultValue})` : ''
       const type = option.type === 'boolean' ? ' [flag]' : ''
-      
+
       console.log(`  --${option.name}${alias}${type}`)
       console.log(`    ${option.description}${defaultValue}`)
     })
@@ -79,14 +80,14 @@ function showCommandHelp(command: CLICommand) {
 
   console.log(`\n用法示例:`)
   console.log(`  pnpm linch ${command.name}`)
-  
+
   if (command.options && command.options.length > 0) {
     const exampleOptions = command.options
       .filter(opt => opt.type !== 'boolean')
       .slice(0, 2)
       .map(opt => `--${opt.name} <value>`)
       .join(' ')
-    
+
     if (exampleOptions) {
       console.log(`  pnpm linch ${command.name} ${exampleOptions}`)
     }
@@ -107,16 +108,16 @@ function showAllCommandsHelp(commands: CLICommand[], filterCategory?: string) {
   Object.entries(categories).forEach(([cat, cmds]) => {
     const categoryName = getCategoryDisplayName(cat)
     const categoryIcon = getCategoryIcon(cat)
-    
+
     console.log(`${categoryIcon} ${categoryName}`)
     console.log('─'.repeat(40))
-    
+
     cmds.forEach(cmd => {
       const nameWidth = 20
       const paddedName = cmd.name.padEnd(nameWidth)
       console.log(`  ${paddedName} ${cmd.description}`)
     })
-    
+
     console.log('')
   })
 
@@ -141,40 +142,43 @@ function showAllCommandsHelp(commands: CLICommand[], filterCategory?: string) {
 }
 
 function groupCommandsByCategory(
-  commands: CLICommand[], 
+  commands: CLICommand[],
   filterCategory?: string
 ): Record<string, CLICommand[]> {
-  return commands.reduce((acc, cmd) => {
-    if (filterCategory && cmd.category !== filterCategory) {
+  return commands.reduce(
+    (acc, cmd) => {
+      if (filterCategory && cmd.category !== filterCategory) {
+        return acc
+      }
+
+      if (!acc[cmd.category]) {
+        acc[cmd.category] = []
+      }
+      acc[cmd.category].push(cmd)
       return acc
-    }
-    
-    if (!acc[cmd.category]) {
-      acc[cmd.category] = []
-    }
-    acc[cmd.category].push(cmd)
-    return acc
-  }, {} as Record<string, CLICommand[]>)
+    },
+    {} as Record<string, CLICommand[]>
+  )
 }
 
 function getCategoryDisplayName(category: string): string {
   const names: Record<string, string> = {
-    'core': '核心命令 (Core)',
-    'schema': 'Schema 引擎',
-    'crud': 'CRUD 操作',
-    'trpc': 'tRPC API层',
-    'system': '系统工具'
+    core: '核心命令 (Core)',
+    schema: 'Schema 引擎',
+    crud: 'CRUD 操作',
+    trpc: 'tRPC API层',
+    system: '系统工具',
   }
   return names[category] || category
 }
 
 function getCategoryIcon(category: string): string {
   const icons: Record<string, string> = {
-    'core': '🚀',
-    'schema': '📋',
-    'crud': '⚡',
-    'trpc': '🔌',
-    'system': '🔧'
+    core: '🚀',
+    schema: '📋',
+    crud: '⚡',
+    trpc: '🔌',
+    system: '🔧',
   }
   return icons[category] || '📦'
 }

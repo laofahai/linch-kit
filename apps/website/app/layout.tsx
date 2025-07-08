@@ -1,25 +1,26 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { WebVitals } from '../components/performance/WebVitals'
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
   display: 'swap',
   preload: true,
 })
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
   display: 'swap',
   preload: false,
 })
 
 export const metadata: Metadata = {
   title: 'LinchKit - AI-First Full-Stack Development Framework',
-  description: 'Enterprise-ready development framework with Schema-driven architecture and end-to-end type safety, designed for AI era.',
+  description:
+    'Enterprise-ready development framework with Schema-driven architecture and end-to-end type safety, designed for AI era.',
   keywords: ['LinchKit', 'AI-First', 'Full-Stack', 'TypeScript', 'Framework', 'Enterprise'],
   authors: [{ name: 'LinchKit Team' }],
   creator: 'LinchKit Team',
@@ -33,13 +34,14 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
     languages: {
-      'en': '/en',
-      'zh': '/zh',
+      en: '/en',
+      zh: '/zh',
     },
   },
   openGraph: {
     title: 'LinchKit - AI-First Full-Stack Development Framework',
-    description: 'Enterprise-ready development framework with Schema-driven architecture and end-to-end type safety, designed for AI era.',
+    description:
+      'Enterprise-ready development framework with Schema-driven architecture and end-to-end type safety, designed for AI era.',
     url: 'https://linchkit.dev',
     siteName: 'LinchKit',
     images: [
@@ -75,11 +77,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

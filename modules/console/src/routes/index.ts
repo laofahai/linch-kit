@@ -1,17 +1,17 @@
 /**
  * Console 路由系统
- * 
+ *
  * 提供路由配置和导航生成功能，供 Starter 应用集成使用
  */
 
 import { useConsoleTranslation } from '../i18n'
 
-import type { 
-  ConsoleConfig, 
-  ConsoleRoute, 
-  ConsoleRouteConfig, 
+import type {
+  ConsoleConfig,
+  ConsoleRoute,
+  ConsoleRouteConfig,
   NavigationItem,
-  ConsoleFeature 
+  ConsoleFeature,
 } from './types'
 import { defaultRoutes, defaultFeatures, permissionMap } from './config'
 
@@ -24,7 +24,7 @@ export function createConsoleRoutes(config?: ConsoleConfig): ConsoleRouteConfig 
     features = defaultFeatures,
     _permissions = {},
     customRoutes = [],
-    disabledRoutes = []
+    disabledRoutes = [],
   } = config || {}
 
   // 获取启用功能的路由
@@ -37,9 +37,7 @@ export function createConsoleRoutes(config?: ConsoleConfig): ConsoleRouteConfig 
   const allRoutes = [...enabledRoutes, ...customRoutes]
 
   // 过滤被禁用的路由
-  const filteredRoutes = allRoutes.filter(route => 
-    !disabledRoutes.includes(route.path)
-  )
+  const filteredRoutes = allRoutes.filter(route => !disabledRoutes.includes(route.path))
 
   // 标准化路由路径（添加 basePath 前缀）
   const normalizedRoutes = normalizeRoutePaths(filteredRoutes, basePath)
@@ -58,7 +56,7 @@ export function createConsoleRoutes(config?: ConsoleConfig): ConsoleRouteConfig 
     routes: normalizedRoutes,
     navigation,
     permissions: allPermissions,
-    routeMap
+    routeMap,
   }
 }
 
@@ -71,15 +69,13 @@ function normalizeRoutePaths(routes: ConsoleRoute[], basePath: string): ConsoleR
     path: route.path === '/' ? basePath : `${basePath}${route.path}`,
     meta: {
       ...route.meta,
-      parent: route.meta?.parent 
-        ? route.meta.parent === '/' 
-          ? basePath 
+      parent: route.meta?.parent
+        ? route.meta.parent === '/'
+          ? basePath
           : `${basePath}${route.meta.parent}`
-        : undefined
+        : undefined,
     },
-    children: route.children 
-      ? normalizeRoutePaths(route.children, basePath)
-      : undefined
+    children: route.children ? normalizeRoutePaths(route.children, basePath) : undefined,
   }))
 }
 
@@ -88,7 +84,7 @@ function normalizeRoutePaths(routes: ConsoleRoute[], basePath: string): ConsoleR
  */
 function createRouteMap(routes: ConsoleRoute[]): Map<string, ConsoleRoute> {
   const map = new Map<string, ConsoleRoute>()
-  
+
   function addRoutes(routeList: ConsoleRoute[]) {
     routeList.forEach(route => {
       map.set(route.path, route)
@@ -97,7 +93,7 @@ function createRouteMap(routes: ConsoleRoute[]): Map<string, ConsoleRoute> {
       }
     })
   }
-  
+
   addRoutes(routes)
   return map
 }
@@ -107,17 +103,17 @@ function createRouteMap(routes: ConsoleRoute[]): Map<string, ConsoleRoute> {
  */
 function generateNavigation(routes: ConsoleRoute[]): NavigationItem[] {
   const t = useConsoleTranslation()
-  
+
   // 只包含不隐藏的路由
   const visibleRoutes = routes.filter(route => !route.meta?.hidden)
-  
+
   // 按 order 排序
   const sortedRoutes = visibleRoutes.sort((a, b) => {
     const orderA = a.meta?.order || 999
     const orderB = b.meta?.order || 999
     return orderA - orderB
   })
-  
+
   return sortedRoutes.map(route => ({
     id: route.path,
     title: route.meta?.title ? t(route.meta.title) : route.path,
@@ -125,7 +121,7 @@ function generateNavigation(routes: ConsoleRoute[]): NavigationItem[] {
     icon: route.meta?.icon,
     order: route.meta?.order,
     permissions: route.meta?.permissions,
-    children: route.children ? generateNavigation(route.children) : undefined
+    children: route.children ? generateNavigation(route.children) : undefined,
   }))
 }
 
@@ -134,12 +130,12 @@ function generateNavigation(routes: ConsoleRoute[]): NavigationItem[] {
  */
 function collectPermissions(features: ConsoleFeature[]): string[] {
   const permissions = new Set<string>()
-  
+
   features.forEach(feature => {
     const featurePermissions = permissionMap[feature] || []
     featurePermissions.forEach(permission => permissions.add(permission))
   })
-  
+
   return Array.from(permissions)
 }
 
@@ -218,9 +214,7 @@ export class ConsoleRouter {
       return true
     }
 
-    return route.meta.permissions.some(permission => 
-      userPermissions.includes(permission)
-    )
+    return route.meta.permissions.some(permission => userPermissions.includes(permission))
   }
 
   /**
@@ -229,7 +223,7 @@ export class ConsoleRouter {
   getBreadcrumbs(path: string): NavigationItem[] {
     const breadcrumbs: NavigationItem[] = []
     const route = this.match(path)
-    
+
     if (!route) return breadcrumbs
 
     // 构建面包屑路径
@@ -241,7 +235,7 @@ export class ConsoleRouter {
           id: parentRoute.path,
           title: parentRoute.meta?.title || parentRoute.path,
           path: parentRoute.path,
-          icon: parentRoute.meta?.icon
+          icon: parentRoute.meta?.icon,
         })
       }
       currentPath = parentRoute?.meta?.parent
@@ -253,7 +247,7 @@ export class ConsoleRouter {
         id: route.path,
         title: route.meta?.title || route.path,
         path: route.path,
-        icon: route.meta?.icon
+        icon: route.meta?.icon,
       })
     }
 

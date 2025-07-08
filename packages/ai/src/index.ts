@@ -1,6 +1,6 @@
 /**
  * LinchKit AI Package
- * 
+ *
  * L4 AI 集成层 - Graph RAG 知识图谱和 AI 工具
  */
 
@@ -16,7 +16,7 @@ export type {
   Neo4jConfig,
   QueryResult,
   GraphStats,
-  AIToolConfig
+  AIToolConfig,
 } from './types/index.js'
 
 export {
@@ -25,7 +25,7 @@ export {
   GraphNodeSchema,
   GraphRelationshipSchema,
   Neo4jConfigSchema,
-  QueryResultSchema
+  QueryResultSchema,
 } from './types/index.js'
 
 // 数据提取器
@@ -36,7 +36,7 @@ export {
   createExtractor,
   getAvailableExtractorTypes,
   AVAILABLE_EXTRACTORS,
-  type ExtractorType
+  type ExtractorType,
 } from './extractors/index.js'
 
 // Graph 服务
@@ -56,13 +56,13 @@ export type {
   Example,
   BestPractice,
   Pattern,
-  IContextQueryTool
+  IContextQueryTool,
 } from './context/context-query-tool.js'
 export type {
   EnhancedContextResponse,
   DetectedAction,
   FieldSuggestion,
-  ImplementationStep
+  ImplementationStep,
 } from './context/enhanced-context-tool.js'
 
 // 生成引擎 (将被废弃)

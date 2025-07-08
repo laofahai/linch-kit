@@ -1,16 +1,12 @@
 /**
  * AI Query Command
- * 
+ *
  * 查询知识图谱中的节点、关系和路径
  */
 
 import { createLogger } from '@linch-kit/core/server'
 
-import type {
-  CommandContext,
-  CommandResult,
-  CLICommand
-} from '../plugin.js'
+import type { CommandContext, CommandResult, CLICommand } from '../plugin.js'
 import { Neo4jService } from '../../graph/neo4j-service.js'
 import { loadNeo4jConfig } from '../../config/neo4j-config.js'
 import type { GraphNode, GraphRelationship, NodeType, RelationType } from '../../types/index.js'
@@ -37,53 +33,53 @@ async function executeQuery(
   }
 ): Promise<CommandResult> {
   const startTime = Date.now()
-  
+
   try {
     logger.info('执行图查询', {
       queryType,
       searchTerm,
-      options
+      options,
     })
 
     const config = await loadNeo4jConfig()
     const neo4jService = new Neo4jService(config)
-    
+
     try {
       await neo4jService.connect()
-      
+
       let result: unknown
-      
+
       switch (queryType) {
         case 'node':
           result = await queryNodes(neo4jService, searchTerm, options)
           break
-          
+
         case 'relations':
           result = await queryRelations(neo4jService, searchTerm, options)
           break
-          
+
         case 'path':
           result = await queryPaths(neo4jService, searchTerm, options)
           break
-          
+
         case 'stats':
           result = await queryStats(neo4jService)
           break
-          
+
         default:
           throw new Error(`未支持的查询类型: ${queryType}`)
       }
-      
+
       // 输出结果
       outputQueryResult(result, options.format || 'table', queryType)
-      
+
       const duration = Date.now() - startTime
       logger.info('查询完成', { queryType, duration })
-      
+
       return {
         success: true,
         data: result,
-        duration
+        duration,
       }
     } finally {
       await neo4jService.disconnect()
@@ -93,7 +89,7 @@ async function executeQuery(
     return {
       success: false,
       error: error instanceof Error ? error.message : String(error),
-      duration: Date.now() - startTime
+      duration: Date.now() - startTime,
     }
   }
 }
@@ -127,7 +123,7 @@ async function queryNodes(
     searchTerm,
     nodeType,
     limit: options.limit || 10,
-    exact: options.exact || false
+    exact: options.exact || false,
   })
 }
 
@@ -168,7 +164,7 @@ async function queryRelations(
     depth: options.depth || 1,
     direction: options.direction || 'both',
     relationshipType,
-    limit: options.limit || 20
+    limit: options.limit || 20,
   })
 }
 
@@ -197,15 +193,15 @@ async function queryPaths(
   if (terms.length < 2) {
     throw new Error('路径查询需要两个节点，格式: "节点1 节点2" 或 "节点1ID 节点2ID"')
   }
-  
+
   const startTerm = terms[0]
   const endTerm = terms[1]
-  
+
   // 使用 Neogma OGM 查询路径
   return await neo4jService.findPathsOGM(startTerm, endTerm, {
     maxLength: options.maxLength || 6,
     limit: options.limit || 5,
-    includeAllPaths: options.includeAllPaths || false
+    includeAllPaths: options.includeAllPaths || false,
   })
 }
 
@@ -219,12 +215,12 @@ async function queryStats(neo4jService: Neo4jService): Promise<{
   relationshipTypes: Record<string, number>
 }> {
   const stats = await neo4jService.getStatsOGM()
-  
+
   return {
     nodeCount: stats.node_count,
     relationshipCount: stats.relationship_count,
     nodeTypes: stats.node_types,
-    relationshipTypes: stats.relationship_types
+    relationshipTypes: stats.relationship_types,
   }
 }
 
@@ -240,15 +236,15 @@ function outputQueryResult(
     case 'ai-context':
       outputAIContextFormat(result, queryType)
       break
-      
+
     case 'json':
       console.log(JSON.stringify(result, null, 2))
       break
-      
+
     case 'tree':
       outputTreeFormat(result, queryType)
       break
-      
+
     case 'table':
     default:
       outputTableFormat(result, queryType)
@@ -268,7 +264,10 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
         console.log('---|------|------|------')
         result.forEach((node: GraphNode) => {
           const description = node.properties?.description || node.properties?.file_path || '-'
-          const truncatedDesc = String(description).length > 40 ? String(description).substring(0, 40) + '...' : String(description)
+          const truncatedDesc =
+            String(description).length > 40
+              ? String(description).substring(0, 40) + '...'
+              : String(description)
           console.log(`${node.id} | ${node.type} | ${node.name} | ${truncatedDesc}`)
         })
         console.log(`\n📊 总计: ${result.length} 个节点`)
@@ -276,30 +275,33 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
         console.log('\n❌ 未找到匹配的节点')
       }
       break
-      
+
     case 'relations': {
-      const relResult = result as { 
-        nodes: GraphNode[]; 
-        relationships: GraphRelationship[];
+      const relResult = result as {
+        nodes: GraphNode[]
+        relationships: GraphRelationship[]
         stats: {
-          totalNodes: number;
-          totalRelationships: number;
-          maxDepth: number;
-          relationshipTypes: Record<string, number>;
+          totalNodes: number
+          totalRelationships: number
+          maxDepth: number
+          relationshipTypes: Record<string, number>
         }
       }
-      
+
       if (relResult.nodes.length > 0) {
         console.log('\n🔗 关联的节点:')
         console.log('ID | 类型 | 名称 | 描述')
         console.log('---|------|------|------')
         relResult.nodes.forEach((node: GraphNode) => {
           const description = node.properties?.description || node.properties?.file_path || '-'
-          const truncatedDesc = String(description).length > 40 ? String(description).substring(0, 40) + '...' : String(description)
+          const truncatedDesc =
+            String(description).length > 40
+              ? String(description).substring(0, 40) + '...'
+              : String(description)
           console.log(`${node.id} | ${node.type} | ${node.name} | ${truncatedDesc}`)
         })
       }
-      
+
       if (relResult.relationships.length > 0) {
         console.log('\n🔗 关系:')
         console.log('源节点 | 关系类型 | 目标节点 | 属性')
@@ -309,13 +311,13 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
           console.log(`${rel.source} | ${rel.type} | ${rel.target} | ${props}个属性`)
         })
       }
-      
+
       // 显示统计信息
       console.log('\n📊 关系查询统计:')
       console.log(`📦 节点数: ${relResult.stats.totalNodes}`)
       console.log(`🔗 关系数: ${relResult.stats.totalRelationships}`)
       console.log(`📏 最大深度: ${relResult.stats.maxDepth}`)
-      
+
       if (Object.keys(relResult.stats.relationshipTypes).length > 0) {
         console.log('\n🔗 关系类型分布:')
         Object.entries(relResult.stats.relationshipTypes).forEach(([type, count]) => {
@@ -324,18 +326,18 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
       }
       break
     }
-      
+
     case 'path': {
-      const pathResult = result as { 
-        paths: Array<{ 
-          nodes: GraphNode[]; 
-          relationships: GraphRelationship[]; 
-          length: number; 
-          weight: number; 
-          pathType: 'shortest' | 'all' 
-        }> 
+      const pathResult = result as {
+        paths: Array<{
+          nodes: GraphNode[]
+          relationships: GraphRelationship[]
+          length: number
+          weight: number
+          pathType: 'shortest' | 'all'
+        }>
       }
-      
+
       if (pathResult.paths.length > 0) {
         console.log('\n🛤️ 找到的路径:')
         pathResult.paths.forEach((path, index) => {
@@ -344,7 +346,7 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
           console.log(`  ⚖️ 权重: ${path.weight}`)
           console.log(`  📦 节点数: ${path.nodes.length}`)
           console.log(`  🔗 关系数: ${path.relationships.length}`)
-          
+
           // 显示路径详情
           if (path.nodes.length > 0) {
             console.log('  📋 路径节点:')
@@ -352,7 +354,7 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
               console.log(`    ${nodeIndex + 1}. ${node.name} (${node.type})`)
             })
           }
-          
+
           if (path.relationships.length > 0) {
             console.log('  🔗 路径关系:')
             path.relationships.forEach((rel, relIndex) => {
@@ -365,20 +367,25 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
       }
       break
     }
-      
+
     case 'stats': {
-      const statsResult = result as { nodeCount: number; relationshipCount: number; nodeTypes: Record<string, number>; relationshipTypes: Record<string, number> }
+      const statsResult = result as {
+        nodeCount: number
+        relationshipCount: number
+        nodeTypes: Record<string, number>
+        relationshipTypes: Record<string, number>
+      }
       console.log('\n📊 图数据库统计信息:')
       console.log(`📦 节点总数: ${statsResult.nodeCount}`)
       console.log(`🔗 关系总数: ${statsResult.relationshipCount}`)
-      
+
       if (Object.keys(statsResult.nodeTypes).length > 0) {
         console.log('\n📋 节点类型分布:')
         Object.entries(statsResult.nodeTypes).forEach(([type, count]) => {
           console.log(`  ${type}: ${count}`)
         })
       }
-      
+
       if (Object.keys(statsResult.relationshipTypes).length > 0) {
         console.log('\n🔗 关系类型分布:')
         Object.entries(statsResult.relationshipTypes).forEach(([type, count]) => {
@@ -404,88 +411,88 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
             central_nodes: nodes.slice(0, 5), // 核心节点（前5个）
             total_count: nodes.length,
             node_types: [...new Set(nodes.map(n => n.type))],
-            file_paths: [...new Set(nodes.map(n => n.properties?.file_path).filter(Boolean))]
+            file_paths: [...new Set(nodes.map(n => n.properties?.file_path).filter(Boolean))],
           },
           metadata: {
             query_type: queryType,
             confidence: nodes.length > 0 ? 0.8 : 0.3,
             result_count: nodes.length,
-            data_source: 'neo4j_graph'
+            data_source: 'neo4j_graph',
           },
           follow_up_suggestions: [
-            "Query relationships for these nodes with: --type relations --search <node_id>",
-            "Find usage patterns with: --type relations --search <node_name> --direction in",
-            "Explore dependencies with: --type relations --search <node_name> --direction out"
-          ]
+            'Query relationships for these nodes with: --type relations --search <node_id>',
+            'Find usage patterns with: --type relations --search <node_name> --direction in',
+            'Explore dependencies with: --type relations --search <node_name> --direction out',
+          ],
         }
         console.log(JSON.stringify(contextPacket, null, 2))
       } else {
         const emptyPacket = {
-          summary: "No nodes found matching your query",
+          summary: 'No nodes found matching your query',
           data: { central_nodes: [], total_count: 0 },
           metadata: { query_type: queryType, confidence: 0.1, result_count: 0 },
           follow_up_suggestions: [
-            "Try broader search terms",
-            "Check spelling of entity names",
-            "Use --type stats to see available node types"
-          ]
+            'Try broader search terms',
+            'Check spelling of entity names',
+            'Use --type stats to see available node types',
+          ],
         }
         console.log(JSON.stringify(emptyPacket, null, 2))
       }
       break
-      
+
     case 'relations': {
-      const relResult = result as { 
-        nodes: GraphNode[]; 
-        relationships: GraphRelationship[];
+      const relResult = result as {
+        nodes: GraphNode[]
+        relationships: GraphRelationship[]
         stats: {
-          nodeTypes?: Record<string, number>;
-          relationshipTypes?: Record<string, number>;
-          totalNodes?: number;
-          totalRelationships?: number;
-          maxDepth?: number;
-        };
+          nodeTypes?: Record<string, number>
+          relationshipTypes?: Record<string, number>
+          totalNodes?: number
+          totalRelationships?: number
+          maxDepth?: number
+        }
       }
-      
+
       const contextPacket = {
         summary: `Found ${relResult.relationships.length} relationships connecting ${relResult.nodes.length} nodes`,
         data: {
           central_node: relResult.nodes[0] || null,
-          dependencies: relResult.relationships.filter(r => 
+          dependencies: relResult.relationships.filter(r =>
             ['IMPORTS', 'DEPENDS_ON', 'EXTENDS'].includes(r.type)
           ),
-          dependents: relResult.relationships.filter(r => 
+          dependents: relResult.relationships.filter(r =>
             ['CALLS', 'USES', 'IMPLEMENTS'].includes(r.type)
           ),
           siblings: relResult.nodes.slice(1, 6), // 相关节点
-          relationship_summary: relResult.stats.relationshipTypes
+          relationship_summary: relResult.stats.relationshipTypes,
         },
         metadata: {
           query_type: queryType,
           confidence: 0.9,
           result_count: relResult.relationships.length,
-          max_depth: relResult.stats.maxDepth
+          max_depth: relResult.stats.maxDepth,
         },
         follow_up_suggestions: [
           "Explore specific relationships: --type path --search '<source> <target>'",
-          "Find function definitions: --type node --search <function_name> --node-type Function",
-          "Analyze dependency chains: --type relations --depth 2"
-        ]
+          'Find function definitions: --type node --search <function_name> --node-type Function',
+          'Analyze dependency chains: --type relations --depth 2',
+        ],
       }
       console.log(JSON.stringify(contextPacket, null, 2))
       break
     }
-      
+
     case 'path': {
-      const pathResult = result as { 
-        paths: Array<{ 
-          nodes: GraphNode[]; 
-          relationships: GraphRelationship[]; 
-          length: number; 
-          weight: number; 
-        }> 
+      const pathResult = result as {
+        paths: Array<{
+          nodes: GraphNode[]
+          relationships: GraphRelationship[]
+          length: number
+          weight: number
+        }>
       }
-      
+
       const contextPacket = {
         summary: `Found ${pathResult.paths.length} connection paths`,
         data: {
@@ -495,32 +502,32 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
             start_node: p.nodes[0]?.name,
             end_node: p.nodes[p.nodes.length - 1]?.name,
             length: p.length,
-            intermediate_nodes: p.nodes.slice(1, -1).map(n => n.name)
-          }))
+            intermediate_nodes: p.nodes.slice(1, -1).map(n => n.name),
+          })),
         },
         metadata: {
           query_type: queryType,
           confidence: pathResult.paths.length > 0 ? 0.8 : 0.2,
-          result_count: pathResult.paths.length
+          result_count: pathResult.paths.length,
         },
         follow_up_suggestions: [
-          "Examine intermediate nodes: --type node --search <intermediate_node>",
-          "Find alternative paths with different constraints",
-          "Analyze relationship types in the path"
-        ]
+          'Examine intermediate nodes: --type node --search <intermediate_node>',
+          'Find alternative paths with different constraints',
+          'Analyze relationship types in the path',
+        ],
       }
       console.log(JSON.stringify(contextPacket, null, 2))
       break
     }
-      
+
     case 'stats': {
-      const statsResult = result as { 
-        nodeCount: number; 
-        relationshipCount: number; 
-        nodeTypes: Record<string, number>; 
-        relationshipTypes: Record<string, number>; 
+      const statsResult = result as {
+        nodeCount: number
+        relationshipCount: number
+        nodeTypes: Record<string, number>
+        relationshipTypes: Record<string, number>
       }
-      
+
       const contextPacket = {
         summary: `Graph contains ${statsResult.nodeCount} nodes and ${statsResult.relationshipCount} relationships`,
         data: {
@@ -528,37 +535,37 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
             total_nodes: statsResult.nodeCount,
             total_relationships: statsResult.relationshipCount,
             node_types: statsResult.nodeTypes,
-            relationship_types: statsResult.relationshipTypes
+            relationship_types: statsResult.relationshipTypes,
           },
           top_node_types: Object.entries(statsResult.nodeTypes)
-            .sort(([,a], [,b]) => b - a)
+            .sort(([, a], [, b]) => b - a)
             .slice(0, 5),
           top_relationship_types: Object.entries(statsResult.relationshipTypes)
-            .sort(([,a], [,b]) => b - a)
-            .slice(0, 5)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 5),
         },
         metadata: {
           query_type: queryType,
           confidence: 1.0,
-          result_count: statsResult.nodeCount + statsResult.relationshipCount
+          result_count: statsResult.nodeCount + statsResult.relationshipCount,
         },
         follow_up_suggestions: [
-          "Explore specific node types: --type node --node-type <type_name>",
-          "Find high-connectivity nodes: --type relations --depth 2",
-          "Search for specific entities: --type node --search <entity_name>"
-        ]
+          'Explore specific node types: --type node --node-type <type_name>',
+          'Find high-connectivity nodes: --type relations --depth 2',
+          'Search for specific entities: --type node --search <entity_name>',
+        ],
       }
       console.log(JSON.stringify(contextPacket, null, 2))
       break
     }
-      
+
     default: {
       // 通用格式
       const genericPacket = {
-        summary: "Query executed successfully",
+        summary: 'Query executed successfully',
         data: result,
         metadata: { query_type: queryType, confidence: 0.5 },
-        follow_up_suggestions: ["Use --format table for detailed view"]
+        follow_up_suggestions: ['Use --format table for detailed view'],
       }
       console.log(JSON.stringify(genericPacket, null, 2))
       break
@@ -587,109 +594,109 @@ export const queryCommand: CLICommand = {
       description: '查询类型 (node,relations,path,stats)',
       type: 'string',
       defaultValue: 'stats',
-      required: false
+      required: false,
     },
     {
       name: 'search',
       description: '搜索词或节点ID',
       type: 'string',
-      required: false
+      required: false,
     },
     {
       name: 'node-type',
       description: '节点类型过滤',
       type: 'string',
-      required: false
+      required: false,
     },
     {
       name: 'limit',
       description: '结果数量限制',
       type: 'number',
       defaultValue: 10,
-      required: false
+      required: false,
     },
     {
       name: 'depth',
       description: '关系查询深度',
       type: 'number',
       defaultValue: 1,
-      required: false
+      required: false,
     },
     {
       name: 'direction',
       description: '关系方向 (in,out,both)',
       type: 'string',
       defaultValue: 'both',
-      required: false
+      required: false,
     },
     {
       name: 'format',
       description: '输出格式 (table,json,tree,ai-context)',
       type: 'string',
       defaultValue: 'table',
-      required: false
-    }
+      required: false,
+    },
   ],
   examples: [
     'linch ai:query --type stats',
     'linch ai:query --type node --search "User" --node-type "Schema"',
     'linch ai:query --type relations --search "package:_linch-kit_auth" --depth 2',
     'linch ai:query --type path --search "LoginPage api.authenticate"',
-    'linch ai:query --type stats --format ai-context  # AI优化的上下文格式'
+    'linch ai:query --type stats --format ai-context  # AI优化的上下文格式',
   ],
   handler: async (context: CommandContext): Promise<CommandResult> => {
     const { options } = context
-    
+
     // 解析参数
-    const queryType = options.type as QueryType || 'stats'
-    const searchTerm = options.search as string || ''
+    const queryType = (options.type as QueryType) || 'stats'
+    const searchTerm = (options.search as string) || ''
     const nodeType = options['node-type'] as string
-    const limit = options.limit as number || 10
-    const depth = options.depth as number || 1
-    const direction = options.direction as 'in' | 'out' | 'both' || 'both'
-    const format = options.format as 'table' | 'json' | 'tree' | 'ai-context' || 'table'
-    
+    const limit = (options.limit as number) || 10
+    const depth = (options.depth as number) || 1
+    const direction = (options.direction as 'in' | 'out' | 'both') || 'both'
+    const format = (options.format as 'table' | 'json' | 'tree' | 'ai-context') || 'table'
+
     // 验证参数
     const validQueryTypes: QueryType[] = ['node', 'relations', 'path', 'stats']
     const validDirections = ['in', 'out', 'both']
     const validFormats = ['table', 'json', 'tree', 'ai-context']
-    
+
     if (!validQueryTypes.includes(queryType)) {
       return {
         success: false,
-        error: `无效的查询类型: ${queryType}. 支持的类型: ${validQueryTypes.join(', ')}`
+        error: `无效的查询类型: ${queryType}. 支持的类型: ${validQueryTypes.join(', ')}`,
       }
     }
-    
+
     if (!validDirections.includes(direction)) {
       return {
         success: false,
-        error: `无效的方向: ${direction}. 支持的方向: ${validDirections.join(', ')}`
+        error: `无效的方向: ${direction}. 支持的方向: ${validDirections.join(', ')}`,
       }
     }
-    
+
     if (!validFormats.includes(format)) {
       return {
         success: false,
-        error: `无效的格式: ${format}. 支持的格式: ${validFormats.join(', ')}`
+        error: `无效的格式: ${format}. 支持的格式: ${validFormats.join(', ')}`,
       }
     }
-    
+
     // 对于非 stats 查询，需要搜索词
     if (queryType !== 'stats' && !searchTerm) {
       return {
         success: false,
-        error: `${queryType} 查询需要提供搜索词 (--search)`
+        error: `${queryType} 查询需要提供搜索词 (--search)`,
       }
     }
-    
+
     // 执行查询
     return await executeQuery(queryType, searchTerm, {
       type: nodeType,
       limit,
       depth,
       direction,
-      format
+      format,
     })
-  }
+  },
 }

@@ -9,15 +9,20 @@
   "commit": false,
   "fixed": [],
   "linked": [
-    ["@linch-kit/core", "@linch-kit/schema", "@linch-kit/auth", "@linch-kit/crud", "@linch-kit/trpc", "@linch-kit/ui", "@linch-kit/console"]
+    [
+      "@linch-kit/core",
+      "@linch-kit/schema",
+      "@linch-kit/auth",
+      "@linch-kit/crud",
+      "@linch-kit/trpc",
+      "@linch-kit/ui",
+      "@linch-kit/console"
+    ]
   ],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": [
-    "@linch-kit/starter",
-    "demo-app"
-  ],
+  "ignore": ["@linch-kit/starter", "demo-app"],
   "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
     "onlyUpdatePeerDependentsWhenOutOfRange": true
   }

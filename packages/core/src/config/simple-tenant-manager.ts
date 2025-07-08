@@ -8,11 +8,7 @@
 import { LRUCache } from 'lru-cache'
 import { EventEmitter } from 'eventemitter3'
 
-import type { 
-  ConfigSource,
-  ConfigValue,
-  TenantContext
-} from '../types'
+import type { ConfigSource, ConfigValue, TenantContext } from '../types'
 import { useTranslation } from '../i18n'
 import type { TranslationFunction } from '../i18n'
 
@@ -73,14 +69,11 @@ export class SimpleTenantConfigManager extends EventEmitter {
   private globalCache: LRUCache<string, CacheableConfigValue>
   private t: TranslationFunction
 
-  constructor(options?: {
-    cacheOptions?: { max: number; ttl: number }
-    t?: TranslationFunction
-  }) {
+  constructor(options?: { cacheOptions?: { max: number; ttl: number }; t?: TranslationFunction }) {
     super()
-    
+
     this.t = options?.t || useTranslation()
-    
+
     // 初始化全局缓存
     const cacheOptions = options?.cacheOptions || { max: 1000, ttl: 1000 * 60 * 60 } // 1小时TTL
     this.globalCache = new LRUCache<string, CacheableConfigValue>(cacheOptions)
@@ -94,19 +87,17 @@ export class SimpleTenantConfigManager extends EventEmitter {
     const { tenantId, initialConfig = {}, cacheOptions } = options
 
     if (this.tenants.has(tenantId)) {
-      throw new Error(
-        this.t('config.tenant.exists', { tenantId })
-      )
+      throw new Error(this.t('config.tenant.exists', { tenantId }))
     }
 
     // 创建租户专用配置Map
     const config = new Map<string, ConfigValue>()
-    
+
     // 加载初始配置
     for (const [key, value] of Object.entries(initialConfig)) {
       config.set(key, value)
     }
-    
+
     // 创建租户专用缓存
     const cache = new LRUCache<string, CacheableConfigValue>(
       cacheOptions || { max: 500, ttl: 1000 * 60 * 30 } // 30分钟TTL
@@ -118,7 +109,7 @@ export class SimpleTenantConfigManager extends EventEmitter {
       config,
       cache,
       lastUpdated: new Date(),
-      version: 1
+      version: 1,
     }
 
     this.tenants.set(tenantId, tenantConfig)
@@ -137,11 +128,11 @@ export class SimpleTenantConfigManager extends EventEmitter {
 
     // 清理缓存
     tenant.cache.clear()
-    
+
     // 删除租户
     this.tenants.delete(tenantId)
     this.emit('tenant:deleted', { tenantId })
-    
+
     return true
   }
 
@@ -165,11 +156,7 @@ export class SimpleTenantConfigManager extends EventEmitter {
    * @param defaultValue 默认值
    * @param context 租户上下文
    */
-  get<T = unknown>(
-    key: string, 
-    defaultValue?: T,
-    context?: TenantContext
-  ): T {
+  get<T = unknown>(key: string, defaultValue?: T, context?: TenantContext): T {
     const tenantId = context?.tenantId
 
     if (tenantId) {
@@ -200,16 +187,10 @@ export class SimpleTenantConfigManager extends EventEmitter {
    * 获取租户配置
    * @private
    */
-  private getTenantConfig<T = unknown>(
-    tenantId: string, 
-    key: string, 
-    defaultValue?: T
-  ): T {
+  private getTenantConfig<T = unknown>(tenantId: string, key: string, defaultValue?: T): T {
     const tenant = this.tenants.get(tenantId)
     if (!tenant) {
-      throw new Error(
-        this.t('config.tenant.not.found', { tenantId })
-      )
+      throw new Error(this.t('config.tenant.not.found', { tenantId }))
     }
 
     // 尝试从缓存获取
@@ -239,20 +220,18 @@ export class SimpleTenantConfigManager extends EventEmitter {
   private setTenantConfig(tenantId: string, key: string, value: ConfigValue): void {
     const tenant = this.tenants.get(tenantId)
     if (!tenant) {
-      throw new Error(
-        this.t('config.tenant.not.found', { tenantId })
-      )
+      throw new Error(this.t('config.tenant.not.found', { tenantId }))
     }
 
     // 更新配置
     tenant.config.set(key, value)
-    
+
     // 更新缓存（只缓存非undefined和非null值）
     const cacheKey = `${tenantId}:${key}`
     if (value !== undefined && value !== null) {
       tenant.cache.set(cacheKey, value as CacheableConfigValue)
     }
-    
+
     // 更新元数据
     tenant.lastUpdated = new Date()
     tenant.version += 1
@@ -292,7 +271,7 @@ export class SimpleTenantConfigManager extends EventEmitter {
   private setGlobalConfig(key: string, value: ConfigValue): void {
     // 更新配置
     this.globalConfig.set(key, value)
-    
+
     // 更新缓存（只缓存非undefined和非null值）
     if (value !== undefined && value !== null) {
       this.globalCache.set(key, value as CacheableConfigValue)
@@ -306,7 +285,7 @@ export class SimpleTenantConfigManager extends EventEmitter {
    */
   async loadConfig(source: ConfigSource, context?: TenantContext): Promise<void> {
     const data = await this.loadFromSource(source)
-    
+
     if (context?.tenantId) {
       // 加载到租户配置
       const tenant = this.tenants.get(context.tenantId)
@@ -317,10 +296,10 @@ export class SimpleTenantConfigManager extends EventEmitter {
         tenant.cache.clear() // 清除缓存
         tenant.lastUpdated = new Date()
         tenant.version += 1
-        
-        this.emit('tenant:updated', { 
-          tenantId: context.tenantId, 
-          version: tenant.version 
+
+        this.emit('tenant:updated', {
+          tenantId: context.tenantId,
+          version: tenant.version,
         })
       }
     } else {
@@ -345,18 +324,12 @@ export class SimpleTenantConfigManager extends EventEmitter {
         return process.env as Record<string, ConfigValue>
       case 'file':
         // 文件类型需要具体实现
-        throw new Error(
-          this.t('config.source.file.not.implemented')
-        )
+        throw new Error(this.t('config.source.file.not.implemented'))
       case 'remote':
         // 远程类型需要具体实现
-        throw new Error(
-          this.t('config.source.remote.not.implemented')
-        )
+        throw new Error(this.t('config.source.remote.not.implemented'))
       default:
-        throw new Error(
-          this.t('config.source.unsupported', { type: source.type })
-        )
+        throw new Error(this.t('config.source.unsupported', { type: source.type }))
     }
   }
 
@@ -404,15 +377,15 @@ export class SimpleTenantConfigManager extends EventEmitter {
  * @example
  * ```typescript
  * import { createSimpleTenantConfigManager } from '@linch-kit/core'
- * 
+ *
  * const configManager = createSimpleTenantConfigManager()
- * 
+ *
  * // 创建租户
  * await configManager.createTenant({
  *   tenantId: 'tenant1',
  *   initialConfig: { port: 3000 }
  * })
- * 
+ *
  * // 获取租户配置
  * const port = configManager.get('port', 3000, { tenantId: 'tenant1' })
  * ```

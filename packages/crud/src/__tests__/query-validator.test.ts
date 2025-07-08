@@ -1,6 +1,6 @@
 /**
  * QueryValidator 测试套件
- * 
+ *
  * 测试查询验证器的各种功能，包括：
  * - 字段验证
  * - 类型检查
@@ -14,7 +14,11 @@ import { describe, it, expect, beforeEach, jest } from 'bun:test'
 import type { Entity } from '@linch-kit/schema'
 
 import { QueryValidator, createQueryValidator } from '../core/query-builder/query-validator'
-import type { Logger, QueryValidationOptions, QueryValidationResult } from '../core/query-builder/query-validator'
+import type {
+  Logger,
+  QueryValidationOptions,
+  QueryValidationResult,
+} from '../core/query-builder/query-validator'
 
 // Mock Logger
 const mockLogger: Logger = {
@@ -22,7 +26,7 @@ const mockLogger: Logger = {
   error: jest.fn(),
   warn: jest.fn(),
   debug: jest.fn(),
-  child: jest.fn(() => mockLogger)
+  child: jest.fn(() => mockLogger),
 }
 
 // Mock Entity
@@ -37,8 +41,8 @@ const mockUserEntity: Entity = {
     isActive: { name: 'isActive', type: 'boolean', required: false },
     createdAt: { name: 'createdAt', type: 'datetime', required: false },
     profile: { name: 'profile', type: 'relation', required: false, relationTo: 'Profile' },
-    posts: { name: 'posts', type: 'relation', required: false, relationTo: 'Post' }
-  }
+    posts: { name: 'posts', type: 'relation', required: false, relationTo: 'Post' },
+  },
 }
 
 describe('QueryValidator', () => {
@@ -51,7 +55,7 @@ describe('QueryValidator', () => {
       maxComplexity: 100,
       maxLimit: 1000,
       allowRawQueries: false,
-      strictMode: true
+      strictMode: true,
     })
   })
 
@@ -67,7 +71,7 @@ describe('QueryValidator', () => {
         maxComplexity: 200,
         maxLimit: 2000,
         allowRawQueries: true,
-        strictMode: false
+        strictMode: false,
       }
       const validator = new QueryValidator(mockLogger, options)
       expect(validator).toBeInstanceOf(QueryValidator)
@@ -96,7 +100,7 @@ describe('QueryValidator', () => {
     it('should validate simple query successfully', () => {
       const query = { where: { name: 'John' } }
       const result = queryValidator.validate(query, mockUserEntity)
-      
+
       expect(result.valid).toBe(true)
       expect(result.errors).toHaveLength(0)
       expect(result.warnings).toHaveLength(0)
@@ -109,10 +113,10 @@ describe('QueryValidator', () => {
         include: { profile: true },
         select: { name: true, email: true },
         take: 10,
-        skip: 0
+        skip: 0,
       }
       const result = queryValidator.validate(query, mockUserEntity)
-      
+
       expect(result.valid).toBe(true)
       expect(result.errors).toHaveLength(0)
     })
@@ -120,19 +124,19 @@ describe('QueryValidator', () => {
     it('should log validation results', () => {
       const query = { where: { name: 'John' } }
       queryValidator.validate(query, mockUserEntity)
-      
+
       expect(mockLogger.debug).toHaveBeenCalledWith('Query validation completed', {
         valid: true,
         errorsCount: 0,
         warningsCount: 0,
-        complexity: expect.any(Number)
+        complexity: expect.any(Number),
       })
     })
 
     it('should reject raw queries when not allowed', () => {
       const query = { _raw: 'SELECT * FROM users' }
       const result = queryValidator.validate(query, mockUserEntity)
-      
+
       expect(result.valid).toBe(false)
       expect(result.errors).toHaveLength(1)
       expect(result.errors[0].code).toBe('RAW_QUERY_NOT_ALLOWED')
@@ -141,11 +145,11 @@ describe('QueryValidator', () => {
     it('should reject queries that exceed complexity limit', () => {
       const complexQuery = {
         where: {
-          AND: Array.from({ length: 50 }, (_, i) => ({ [`field${i}`]: `value${i}` }))
-        }
+          AND: Array.from({ length: 50 }, (_, i) => ({ [`field${i}`]: `value${i}` })),
+        },
       }
       const result = queryValidator.validate(complexQuery, mockUserEntity)
-      
+
       expect(result.valid).toBe(false)
       expect(result.errors.some(e => e.code === 'QUERY_TOO_COMPLEX')).toBe(true)
     })
@@ -163,7 +167,7 @@ describe('QueryValidator', () => {
         { where: { name: { contains: 'John' } } },
         { where: { email: { startsWith: 'john' } } },
         { where: { name: { endsWith: 'Doe' } } },
-        { where: { age: { in: [18, 25, 30] } } }
+        { where: { age: { in: [18, 25, 30] } } },
       ]
 
       queries.forEach(query => {
@@ -176,7 +180,7 @@ describe('QueryValidator', () => {
       const queries = [
         { where: { AND: [{ name: 'John' }, { age: { gte: 18 } }] } },
         { where: { OR: [{ name: 'John' }, { name: 'Jane' }] } },
-        { where: { NOT: { name: 'John' } } }
+        { where: { NOT: { name: 'John' } } },
       ]
 
       queries.forEach(query => {
@@ -186,7 +190,10 @@ describe('QueryValidator', () => {
     })
 
     it('should reject non-existent fields in WHERE', () => {
-      const result = queryValidator.validate({ where: { nonExistentField: 'value' } }, mockUserEntity)
+      const result = queryValidator.validate(
+        { where: { nonExistentField: 'value' } },
+        mockUserEntity
+      )
       expect(result.valid).toBe(false)
       expect(result.errors[0].code).toBe('FIELD_NOT_FOUND')
     })
@@ -194,7 +201,7 @@ describe('QueryValidator', () => {
     it('should handle non-existent fields as warnings in non-strict mode', () => {
       const validator = new QueryValidator(mockLogger, { strictMode: false })
       const result = validator.validate({ where: { nonExistentField: 'value' } }, mockUserEntity)
-      
+
       expect(result.valid).toBe(true)
       expect(result.warnings).toHaveLength(1)
       expect(result.warnings[0].code).toBe('FIELD_NOT_FOUND')
@@ -203,14 +210,18 @@ describe('QueryValidator', () => {
     it('should validate WHERE nesting depth', () => {
       const deepQuery = {
         where: {
-          AND: [{
-            OR: [{
-              NOT: {
-                AND: [{ name: 'John' }]
-              }
-            }]
-          }]
-        }
+          AND: [
+            {
+              OR: [
+                {
+                  NOT: {
+                    AND: [{ name: 'John' }],
+                  },
+                },
+              ],
+            },
+          ],
+        },
       }
       const result = queryValidator.validate(deepQuery, mockUserEntity)
       expect(result.valid).toBe(false)
@@ -221,18 +232,25 @@ describe('QueryValidator', () => {
       const invalidQueries = [
         { where: { age: { contains: 'text' } } }, // String operator on number field
         { where: { name: { gte: 'text' } } }, // Comparison operator on string field
-        { where: { age: { in: 'not-array' } } } // IN operator with non-array
+        { where: { age: { in: 'not-array' } } }, // IN operator with non-array
       ]
 
       invalidQueries.forEach(query => {
         const result = queryValidator.validate(query, mockUserEntity)
         expect(result.valid).toBe(false)
-        expect(result.errors.some(e => e.code === 'INCOMPATIBLE_OPERATOR' || e.code === 'INVALID_VALUE_TYPE')).toBe(true)
+        expect(
+          result.errors.some(
+            e => e.code === 'INCOMPATIBLE_OPERATOR' || e.code === 'INVALID_VALUE_TYPE'
+          )
+        ).toBe(true)
       })
     })
 
     it('should warn about unknown operators', () => {
-      const result = queryValidator.validate({ where: { name: { unknownOp: 'value' } } }, mockUserEntity)
+      const result = queryValidator.validate(
+        { where: { name: { unknownOp: 'value' } } },
+        mockUserEntity
+      )
       expect(result.warnings.some(w => w.code === 'UNKNOWN_OPERATOR')).toBe(true)
     })
   })
@@ -244,14 +262,20 @@ describe('QueryValidator', () => {
     })
 
     it('should validate array ORDER BY', () => {
-      const result = queryValidator.validate({ 
-        orderBy: [{ name: 'asc' }, { age: 'desc' }] 
-      }, mockUserEntity)
+      const result = queryValidator.validate(
+        {
+          orderBy: [{ name: 'asc' }, { age: 'desc' }],
+        },
+        mockUserEntity
+      )
       expect(result.valid).toBe(true)
     })
 
     it('should reject non-existent fields in ORDER BY', () => {
-      const result = queryValidator.validate({ orderBy: { nonExistentField: 'asc' } }, mockUserEntity)
+      const result = queryValidator.validate(
+        { orderBy: { nonExistentField: 'asc' } },
+        mockUserEntity
+      )
       expect(result.valid).toBe(false)
       expect(result.errors[0].code).toBe('INVALID_ORDER_FIELD')
     })
@@ -259,7 +283,7 @@ describe('QueryValidator', () => {
     it('should handle non-existent fields as warnings in non-strict mode', () => {
       const validator = new QueryValidator(mockLogger, { strictMode: false })
       const result = validator.validate({ orderBy: { nonExistentField: 'asc' } }, mockUserEntity)
-      
+
       expect(result.valid).toBe(true)
       expect(result.warnings).toHaveLength(1)
       expect(result.warnings[0].code).toBe('INVALID_ORDER_FIELD')
@@ -273,9 +297,12 @@ describe('QueryValidator', () => {
     })
 
     it('should validate multiple INCLUDE', () => {
-      const result = queryValidator.validate({ 
-        include: { profile: true, posts: true } 
-      }, mockUserEntity)
+      const result = queryValidator.validate(
+        {
+          include: { profile: true, posts: true },
+        },
+        mockUserEntity
+      )
       expect(result.valid).toBe(true)
     })
 
@@ -292,10 +319,10 @@ describe('QueryValidator', () => {
         include: {
           profile: {
             include: {
-              user: true
-            }
-          }
-        }
+              user: true,
+            },
+          },
+        },
       }
       const result = validator.validate(deepInclude, mockUserEntity)
       // 由于当前实现的局限性，这个测试检查是否产生了警告
@@ -303,9 +330,12 @@ describe('QueryValidator', () => {
     })
 
     it('should warn about nested includes', () => {
-      const result = queryValidator.validate({ 
-        include: { profile: { include: { user: true } } } 
-      }, mockUserEntity)
+      const result = queryValidator.validate(
+        {
+          include: { profile: { include: { user: true } } },
+        },
+        mockUserEntity
+      )
       expect(result.warnings.some(w => w.code === 'NESTED_INCLUDE')).toBe(true)
     })
   })
@@ -317,9 +347,12 @@ describe('QueryValidator', () => {
     })
 
     it('should validate multiple SELECT', () => {
-      const result = queryValidator.validate({ 
-        select: { name: true, email: true, age: true } 
-      }, mockUserEntity)
+      const result = queryValidator.validate(
+        {
+          select: { name: true, email: true, age: true },
+        },
+        mockUserEntity
+      )
       expect(result.valid).toBe(true)
     })
 
@@ -332,7 +365,7 @@ describe('QueryValidator', () => {
     it('should handle non-existent fields as warnings in non-strict mode', () => {
       const validator = new QueryValidator(mockLogger, { strictMode: false })
       const result = validator.validate({ select: { nonExistentField: true } }, mockUserEntity)
-      
+
       expect(result.valid).toBe(true)
       expect(result.warnings).toHaveLength(1)
       expect(result.warnings[0].code).toBe('INVALID_SELECT_FIELD')
@@ -349,20 +382,22 @@ describe('QueryValidator', () => {
       const invalidTakes = [
         { take: -1 }, // Negative
         { take: 'invalid' }, // Non-number
-        { take: 2000 } // Too large
+        { take: 2000 }, // Too large
       ]
 
       invalidTakes.forEach(query => {
         const result = queryValidator.validate(query, mockUserEntity)
         expect(result.valid).toBe(false)
-        expect(result.errors.some(e => e.code === 'INVALID_LIMIT' || e.code === 'LIMIT_TOO_LARGE')).toBe(true)
+        expect(
+          result.errors.some(e => e.code === 'INVALID_LIMIT' || e.code === 'LIMIT_TOO_LARGE')
+        ).toBe(true)
       })
     })
 
     it('should reject invalid skip values', () => {
       const invalidSkips = [
         { skip: -1 }, // Negative
-        { skip: 'invalid' } // Non-number
+        { skip: 'invalid' }, // Non-number
       ]
 
       invalidSkips.forEach(query => {
@@ -375,12 +410,14 @@ describe('QueryValidator', () => {
     it('should warn about large pagination values', () => {
       const queries = [
         { take: 200 }, // Large limit
-        { skip: 15000 } // Large offset
+        { skip: 15000 }, // Large offset
       ]
 
       queries.forEach(query => {
         const result = queryValidator.validate(query, mockUserEntity)
-        expect(result.warnings.some(w => w.code === 'LARGE_LIMIT' || w.code === 'LARGE_OFFSET')).toBe(true)
+        expect(
+          result.warnings.some(w => w.code === 'LARGE_LIMIT' || w.code === 'LARGE_OFFSET')
+        ).toBe(true)
       })
     })
   })
@@ -395,11 +432,8 @@ describe('QueryValidator', () => {
     it('should calculate WHERE complexity', () => {
       const complexWhere = {
         where: {
-          AND: [
-            { name: 'John' },
-            { OR: [{ age: { gte: 18 } }, { isActive: true }] }
-          ]
-        }
+          AND: [{ name: 'John' }, { OR: [{ age: { gte: 18 } }, { isActive: true }] }],
+        },
       }
       const result = queryValidator.validate(complexWhere, mockUserEntity)
       expect(result.valid).toBe(true)
@@ -414,7 +448,7 @@ describe('QueryValidator', () => {
     it('should calculate orderBy complexity', () => {
       const queries = [
         { orderBy: { name: 'asc' } },
-        { orderBy: [{ name: 'asc' }, { age: 'desc' }] }
+        { orderBy: [{ name: 'asc' }, { age: 'desc' }] },
       ]
 
       queries.forEach(query => {
@@ -437,10 +471,7 @@ describe('QueryValidator', () => {
     })
 
     it('should handle null/undefined values', () => {
-      const queries = [
-        { where: { name: null } },
-        { where: { name: undefined } }
-      ]
+      const queries = [{ where: { name: null } }, { where: { name: undefined } }]
 
       queries.forEach(query => {
         const result = queryValidator.validate(query, mockUserEntity)
@@ -451,11 +482,8 @@ describe('QueryValidator', () => {
     it('should handle complex nested logical operators', () => {
       const complexQuery = {
         where: {
-          AND: [
-            { OR: [{ name: 'John' }, { name: 'Jane' }] },
-            { NOT: { age: { lt: 18 } } }
-          ]
-        }
+          AND: [{ OR: [{ name: 'John' }, { name: 'Jane' }] }, { NOT: { age: { lt: 18 } } }],
+        },
       }
       const result = queryValidator.validate(complexQuery, mockUserEntity)
       expect(result.valid).toBe(true)
@@ -467,10 +495,12 @@ describe('QueryValidator', () => {
       const validator = new QueryValidator(mockLogger, { maxDepth: 1 })
       const deepQuery = {
         where: {
-          AND: [{
-            OR: [{ name: 'John' }]
-          }]
-        }
+          AND: [
+            {
+              OR: [{ name: 'John' }],
+            },
+          ],
+        },
       }
       const result = validator.validate(deepQuery, mockUserEntity)
       expect(result.valid).toBe(false)
@@ -481,13 +511,9 @@ describe('QueryValidator', () => {
       const validator = new QueryValidator(mockLogger, { maxComplexity: 5 })
       const complexQuery = {
         where: {
-          AND: [
-            { name: 'John' },
-            { age: { gte: 18 } },
-            { isActive: true }
-          ]
+          AND: [{ name: 'John' }, { age: { gte: 18 } }, { isActive: true }],
         },
-        include: { profile: true }
+        include: { profile: true },
       }
       const result = validator.validate(complexQuery, mockUserEntity)
       expect(result.valid).toBe(false)

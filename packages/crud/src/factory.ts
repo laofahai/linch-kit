@@ -11,7 +11,10 @@ import { PrismaQueryBuilder } from './core/query-builder/prisma-query-builder'
 // 简化的 PrismaClient 类型定义 - 避免运行时依赖
 interface PrismaClient {
   [key: string]: unknown
-  $transaction: <T>(callback: (tx: PrismaClient) => Promise<T>, options?: { timeout?: number; isolationLevel?: string }) => Promise<T>
+  $transaction: <T>(
+    callback: (tx: PrismaClient) => Promise<T>,
+    options?: { timeout?: number; isolationLevel?: string }
+  ) => Promise<T>
   $queryRaw: <T = unknown>(query: TemplateStringsArray | string, ...values: unknown[]) => Promise<T>
 }
 
@@ -27,14 +30,8 @@ export function createCrudManager(
   }
 ): CrudManager {
   const { pluginManager, ...crudOptions } = options || {}
-  
-  return new CrudManager(
-    prisma,
-    schemaRegistry,
-    logger,
-    pluginManager,
-    crudOptions
-  )
+
+  return new CrudManager(prisma, schemaRegistry, logger, pluginManager, crudOptions)
 }
 
 /**
@@ -47,13 +44,7 @@ export function createQueryBuilder<T = unknown>(
   logger: Logger,
   pluginManager?: PluginManager
 ): PrismaQueryBuilder<T> {
-  return PrismaQueryBuilder.create<T>(
-    entityName,
-    prisma,
-    schemaRegistry,
-    logger,
-    pluginManager
-  )
+  return PrismaQueryBuilder.create<T>(entityName, prisma, schemaRegistry, logger, pluginManager)
 }
 
 /**
@@ -71,7 +62,7 @@ export function createDefaultCrudManager(
     enableCache: true,
     enableAudit: true,
     enableMetrics: true,
-    pluginManager
+    pluginManager,
   })
 }
 
@@ -88,6 +79,6 @@ export function createMinimalCrudManager(
     enableValidation: false,
     enableCache: false,
     enableAudit: false,
-    enableMetrics: false
+    enableMetrics: false,
   })
 }

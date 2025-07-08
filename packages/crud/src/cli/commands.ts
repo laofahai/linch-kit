@@ -97,7 +97,7 @@ export const generateCrudCommand: CLICommand = {
 
       // 读取Schema定义
       const entities = await loadSchemaEntities(schema)
-      
+
       if (entities.length === 0) {
         console.warn(`No entities found in ${schema}`)
         return { success: true, entities: [], files: [] }
@@ -272,7 +272,9 @@ export const seedCrudCommand: CLICommand = {
 /**
  * 加载Schema实体
  */
-async function loadSchemaEntities(_schemaPath: string): Promise<Array<{ name: string; fields: Record<string, unknown> }>> {
+async function loadSchemaEntities(
+  _schemaPath: string
+): Promise<Array<{ name: string; fields: Record<string, unknown> }>> {
   // 这里应该实现实际的Schema加载逻辑
   // 与 @linch-kit/schema 集成
   return []
@@ -342,15 +344,15 @@ function generateCrudClass(
 ): string {
   const className = `${entity.name}Crud`
   const imports = [`import { CrudManager } from '@linch-kit/crud'`]
-  
+
   if (options.permissions) {
     imports.push(`import { PermissionChecker } from '@linch-kit/crud/permissions'`)
   }
-  
+
   if (options.validation) {
     imports.push(`import { ValidationManager } from '@linch-kit/crud/validation'`)
   }
-  
+
   if (options.cache) {
     imports.push(`import { CacheManager } from '@linch-kit/crud/cache'`)
   }
@@ -443,10 +445,10 @@ async function runMigration(options: {
   force: boolean
 }): Promise<{ appliedMigrations: string[] }> {
   console.log(`Running migration with provider: ${options.provider}`)
-  
+
   // 这里应该实现实际的迁移逻辑
   // 根据provider调用相应的迁移工具
-  
+
   return { appliedMigrations: [] }
 }
 
@@ -459,17 +461,13 @@ async function runSeedData(options?: {
   reset?: boolean
 }): Promise<{ seedsRun: number }> {
   console.log(`Running seed data${options?.file ? ` from ${options.file}` : ''}`)
-  
+
   // 这里应该实现实际的种子数据逻辑
-  
+
   return { seedsRun: 0 }
 }
 
 /**
  * 所有CRUD相关命令
  */
-export const crudCommands: CLICommand[] = [
-  generateCrudCommand,
-  migrateCrudCommand,
-  seedCrudCommand,
-]
+export const crudCommands: CLICommand[] = [generateCrudCommand, migrateCrudCommand, seedCrudCommand]

@@ -1,6 +1,6 @@
 /**
  * @linch-kit/schema 字段类型定义
- * 
+ *
  * @description 字段相关的类型定义
  * @author LinchKit Team
  * @since 0.1.0
@@ -60,8 +60,6 @@ export interface I18nFieldConfig {
   locales?: string[]
   fallback?: string
 }
-
-
 
 /**
  * 基础字段定义
@@ -198,7 +196,8 @@ export interface ArrayFieldOptions extends BaseFieldDefinition {
 /**
  * 枚举字段选项
  */
-export interface EnumFieldOptions<T extends readonly string[] = readonly string[]> extends BaseFieldDefinition {
+export interface EnumFieldOptions<T extends readonly string[] = readonly string[]>
+  extends BaseFieldDefinition {
   type: 'enum'
   values: T
 }
@@ -245,7 +244,12 @@ export interface CustomFieldTypeConfig {
 /**
  * 字符串类字段选项联合类型
  */
-export type StringLikeFieldOptions = StringFieldOptions | TextFieldOptions | EmailFieldOptions | UrlFieldOptions | UuidFieldOptions
+export type StringLikeFieldOptions =
+  | StringFieldOptions
+  | TextFieldOptions
+  | EmailFieldOptions
+  | UrlFieldOptions
+  | UuidFieldOptions
 
 /**
  * 字段定义联合类型

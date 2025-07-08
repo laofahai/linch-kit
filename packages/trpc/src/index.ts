@@ -1,6 +1,6 @@
 /**
  * @linch-kit/trpc - LinchKit tRPC API Layer (Client)
- * 
+ *
  * 客户端安全的tRPC功能，服务端功能在单独的server.ts中
  */
 

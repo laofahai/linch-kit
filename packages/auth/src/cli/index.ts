@@ -1,8 +1,8 @@
 /**
  * @linch-kit/auth CLI命令导出
- * 
+ *
  * 集成到@linch-kit/core的CLI系统，提供Auth相关的命令行工具
- * 
+ *
  * @module cli
  */
 
@@ -16,11 +16,11 @@ export { authCommands } from './commands'
 /**
  * 单个命令导出，供按需使用或自定义CLI集成
  */
-export { 
+export {
   initAuthCommand,
   createUserCommand,
   listUsersCommand,
   resetPasswordCommand,
   setupMFACommand,
-  auditCommand
+  auditCommand,
 } from './commands'

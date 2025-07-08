@@ -1,6 +1,6 @@
 /**
  * CRUD管理器 - 基于 Prisma ORM
- * 
+ *
  * 设计原则：
  * - 使用 Prisma 而不是自己实现 ORM 功能
  * - 利用 Prisma 的类型安全和代码生成
@@ -25,7 +25,7 @@ import type {
   ValidationError,
   PermissionError as _PermissionError,
   AuditLogEntry,
-  PerformanceMetrics
+  PerformanceMetrics,
 } from '../types'
 import { PermissionChecker } from '../permissions/permission-checker'
 import { ValidationManager } from '../validation/validation-manager'
@@ -54,20 +54,16 @@ export class PrismaCrudManager implements ICrudManager {
     this.cacheManager = new CacheManager({
       enabled: options?.enableCache ?? true,
       defaultTTL: 300,
-      maxSize: 1000
+      maxSize: 1000,
     })
   }
 
   /**
    * 创建记录
    */
-  async create<T>(
-    entityName: string,
-    data: CreateInput<T>,
-    options?: CrudOptions
-  ): Promise<T> {
+  async create<T>(entityName: string, data: CreateInput<T>, options?: CrudOptions): Promise<T> {
     const startTime = Date.now()
-    
+
     try {
       // 1. 获取实体 Schema 定义
       const entity = this.schemaRegistry.getEntity(entityName)
@@ -95,7 +91,7 @@ export class PrismaCrudManager implements ICrudManager {
       const model = this.getPrismaModel(entityName)
       const result = await model.create({
         data: processedData,
-        include: this.buildInclude(entity)
+        include: this.buildInclude(entity),
       })
 
       // 6. 后处理和审计
@@ -107,7 +103,7 @@ export class PrismaCrudManager implements ICrudManager {
         entityName,
         duration: Date.now() - startTime,
         recordsAffected: 1,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return result as T
@@ -115,7 +111,7 @@ export class PrismaCrudManager implements ICrudManager {
       this.logger.error('Create operation failed', {
         entityName,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -124,11 +120,7 @@ export class PrismaCrudManager implements ICrudManager {
   /**
    * 根据ID查找记录
    */
-  async findById<T>(
-    entityName: string,
-    id: string,
-    options?: FindOptions
-  ): Promise<T | null> {
+  async findById<T>(entityName: string, id: string, options?: FindOptions): Promise<T | null> {
     const startTime = Date.now()
 
     try {
@@ -147,7 +139,7 @@ export class PrismaCrudManager implements ICrudManager {
             entityName,
             duration: Date.now() - startTime,
             cacheHit: true,
-            timestamp: new Date()
+            timestamp: new Date(),
           })
           return cached
         }
@@ -155,7 +147,7 @@ export class PrismaCrudManager implements ICrudManager {
 
       // 构建查询条件
       const whereClause: Record<string, unknown> = { id }
-      
+
       // 软删除过滤
       if (!options?.includeSoftDeleted && entity.options?.softDelete) {
         whereClause.deletedAt = null
@@ -174,7 +166,7 @@ export class PrismaCrudManager implements ICrudManager {
       const model = this.getPrismaModel(entityName)
       const result = await model.findFirst({
         where: whereClause,
-        include: this.buildInclude(entity)
+        include: this.buildInclude(entity),
       })
 
       if (!result) {
@@ -183,7 +175,7 @@ export class PrismaCrudManager implements ICrudManager {
           entityName,
           duration: Date.now() - startTime,
           recordsAffected: 0,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
         return null
       }
@@ -212,7 +204,7 @@ export class PrismaCrudManager implements ICrudManager {
         duration: Date.now() - startTime,
         recordsAffected: 1,
         cacheHit: false,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return filteredResult as T
@@ -221,7 +213,7 @@ export class PrismaCrudManager implements ICrudManager {
         entityName,
         id,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -230,11 +222,7 @@ export class PrismaCrudManager implements ICrudManager {
   /**
    * 查找多条记录
    */
-  async findMany<T>(
-    entityName: string,
-    query?: QueryInput,
-    options?: FindOptions
-  ): Promise<T[]> {
+  async findMany<T>(entityName: string, query?: QueryInput, options?: FindOptions): Promise<T[]> {
     const startTime = Date.now()
 
     try {
@@ -262,7 +250,7 @@ export class PrismaCrudManager implements ICrudManager {
             duration: Date.now() - startTime,
             cacheHit: true,
             recordsAffected: cached.length,
-            timestamp: new Date()
+            timestamp: new Date(),
           })
           return cached
         }
@@ -280,7 +268,7 @@ export class PrismaCrudManager implements ICrudManager {
         )
         prismaQuery.where = {
           ...prismaQuery.where,
-          ...permissionFilter
+          ...permissionFilter,
         }
       }
 
@@ -311,7 +299,7 @@ export class PrismaCrudManager implements ICrudManager {
         duration: Date.now() - startTime,
         recordsAffected: filteredResults.length,
         cacheHit: false,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return filteredResults as T[]
@@ -320,7 +308,7 @@ export class PrismaCrudManager implements ICrudManager {
         entityName,
         query,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -334,10 +322,14 @@ export class PrismaCrudManager implements ICrudManager {
     query?: QueryInput,
     options?: FindOptions
   ): Promise<T | null> {
-    const results = await this.findMany<T>(entityName, {
-      ...query,
-      limit: 1
-    }, options)
+    const results = await this.findMany<T>(
+      entityName,
+      {
+        ...query,
+        limit: 1,
+      },
+      options
+    )
 
     return results.length > 0 ? results[0] : null
   }
@@ -386,7 +378,7 @@ export class PrismaCrudManager implements ICrudManager {
       const result = await model.update({
         where: { id },
         data: processedData,
-        include: this.buildInclude(entity)
+        include: this.buildInclude(entity),
       })
 
       // 后处理和审计
@@ -400,7 +392,7 @@ export class PrismaCrudManager implements ICrudManager {
         entityName,
         duration: Date.now() - startTime,
         recordsAffected: 1,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return result as T
@@ -409,7 +401,7 @@ export class PrismaCrudManager implements ICrudManager {
         entityName,
         id,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -418,11 +410,7 @@ export class PrismaCrudManager implements ICrudManager {
   /**
    * 删除记录
    */
-  async delete(
-    entityName: string,
-    id: string,
-    options?: CrudOptions
-  ): Promise<boolean> {
+  async delete(entityName: string, id: string, options?: CrudOptions): Promise<boolean> {
     const startTime = Date.now()
 
     try {
@@ -449,12 +437,12 @@ export class PrismaCrudManager implements ICrudManager {
           where: { id },
           data: {
             deletedAt: new Date(),
-            deletedBy: options?.user?.id
-          }
+            deletedBy: options?.user?.id,
+          },
         })
       } else {
         await model.delete({
-          where: { id }
+          where: { id },
         })
       }
 
@@ -469,7 +457,7 @@ export class PrismaCrudManager implements ICrudManager {
         entityName,
         duration: Date.now() - startTime,
         recordsAffected: 1,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return true
@@ -478,7 +466,7 @@ export class PrismaCrudManager implements ICrudManager {
         entityName,
         id,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -487,11 +475,7 @@ export class PrismaCrudManager implements ICrudManager {
   /**
    * 计数
    */
-  async count(
-    entityName: string,
-    query?: QueryInput,
-    options?: FindOptions
-  ): Promise<number> {
+  async count(entityName: string, query?: QueryInput, options?: FindOptions): Promise<number> {
     const startTime = Date.now()
 
     try {
@@ -524,7 +508,7 @@ export class PrismaCrudManager implements ICrudManager {
         operation: 'count',
         entityName,
         duration: Date.now() - startTime,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       return count
@@ -533,7 +517,7 @@ export class PrismaCrudManager implements ICrudManager {
         entityName,
         query,
         error: error instanceof Error ? error.message : 'Unknown error',
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       })
       throw error
     }
@@ -542,11 +526,7 @@ export class PrismaCrudManager implements ICrudManager {
   /**
    * 检查是否存在
    */
-  async exists(
-    entityName: string,
-    query?: QueryInput,
-    options?: FindOptions
-  ): Promise<boolean> {
+  async exists(entityName: string, query?: QueryInput, options?: FindOptions): Promise<boolean> {
     const count = await this.count(entityName, query, options)
     return count > 0
   }
@@ -562,19 +542,21 @@ export class PrismaCrudManager implements ICrudManager {
     options?: FindOptions
   ): Promise<PaginatedResult<T>> {
     // 获取总数
-    const total = options?.includeCount !== false 
-      ? await this.count(entityName, query, options)
-      : 0
+    const total = options?.includeCount !== false ? await this.count(entityName, query, options) : 0
 
     // 计算偏移量
     const offset = (page - 1) * pageSize
 
     // 查询数据
-    const data = await this.findMany<T>(entityName, {
-      ...query,
-      limit: pageSize,
-      offset
-    }, options)
+    const data = await this.findMany<T>(
+      entityName,
+      {
+        ...query,
+        limit: pageSize,
+        offset,
+      },
+      options
+    )
 
     // 计算分页信息
     const totalPages = Math.ceil(total / pageSize)
@@ -587,8 +569,8 @@ export class PrismaCrudManager implements ICrudManager {
         total,
         totalPages,
         hasNext: page < totalPages,
-        hasPrevious: page > 1
-      }
+        hasPrevious: page > 1,
+      },
     }
   }
 
@@ -620,13 +602,13 @@ export class PrismaCrudManager implements ICrudManager {
     if (!options?.includeSoftDeleted && entity.options?.softDelete) {
       prismaQuery.where = {
         ...prismaQuery.where,
-        deletedAt: null
+        deletedAt: null,
       }
     }
 
     if (query?.orderBy) {
       prismaQuery.orderBy = query.orderBy.map(order => ({
-        [order.field]: order.direction
+        [order.field]: order.direction,
       }))
     }
 
@@ -779,7 +761,7 @@ export class PrismaCrudManager implements ICrudManager {
         tenantId: options.tenantId,
         changes: { after: result },
         timestamp: new Date(),
-        source: options.source
+        source: options.source,
       })
     }
   }
@@ -801,7 +783,7 @@ export class PrismaCrudManager implements ICrudManager {
         tenantId: options.tenantId,
         changes: { before: existing, after: result },
         timestamp: new Date(),
-        source: options.source
+        source: options.source,
       })
     }
   }
@@ -822,16 +804,15 @@ export class PrismaCrudManager implements ICrudManager {
         tenantId: options.tenantId,
         changes: { before: existing },
         timestamp: new Date(),
-        source: options.source
+        source: options.source,
       })
     }
   }
 
   private async invalidateCache(entityName: string, id?: string): Promise<void> {
-    const patterns = [
-      `${entityName}:*`,
-      id ? `${entityName}:findById:*${id}*` : null
-    ].filter(Boolean) as string[]
+    const patterns = [`${entityName}:*`, id ? `${entityName}:findById:*${id}*` : null].filter(
+      Boolean
+    ) as string[]
 
     for (const pattern of patterns) {
       await this.cacheManager.invalidate(pattern)

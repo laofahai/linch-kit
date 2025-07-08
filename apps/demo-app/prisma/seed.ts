@@ -1,12 +1,20 @@
 /**
  * LinchKit Starter App - 数据库种子文件
- * 
+ *
  * @description 初始化数据库数据，包括用户、分类、文章等示例数据
  * @author LinchKit Team
  * @since 0.1.0
  */
 
-import { PrismaClient, UserRole, UserStatus, PostStatus, ConfigType, AuditCategory, AuditSeverity } from './generated/client'
+import {
+  PrismaClient,
+  UserRole,
+  UserStatus,
+  PostStatus,
+  ConfigType,
+  AuditCategory,
+  AuditSeverity,
+} from './generated/client'
 
 const prisma = new PrismaClient()
 
@@ -64,7 +72,7 @@ async function main() {
     },
   })
 
-  const businessCategory = await prisma.category.create({
+  const _businessCategory = await prisma.category.create({
     data: {
       name: '商业',
       description: '商业相关文章',
@@ -283,7 +291,7 @@ function createUser(data: Omit<User, 'id'>): User {
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error('❌ 种子执行失败:', e)
     process.exit(1)
   })

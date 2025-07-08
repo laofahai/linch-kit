@@ -1,6 +1,6 @@
 /**
  * 基础查询构建器 - 使用策略模式和插件系统
- * 
+ *
  * 设计模式：
  * - 策略模式：不同查询类型使用不同策略
  * - 建造者模式：链式API构建查询
@@ -15,7 +15,7 @@ import type {
   Operator,
   PerformanceMetrics,
   SchemaRegistry,
-  Logger
+  Logger,
 } from '../../types'
 
 // 简化的 PrismaClient 类型定义
@@ -119,7 +119,7 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
 
     const orderBy = this.query.orderBy as Array<Record<string, string>>
     orderBy.push({
-      [field as string]: direction
+      [field as string]: direction,
     })
 
     return this
@@ -189,7 +189,9 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
     // 1. 验证查询
     const validationResult = this.validator.validate(this.query, this.entity)
     if (validationResult.errors.length > 0) {
-      throw new Error(`Query validation failed: ${validationResult.errors.map(e => e.message).join(', ')}`)
+      throw new Error(
+        `Query validation failed: ${validationResult.errors.map(e => e.message).join(', ')}`
+      )
     }
 
     // 2. 优化查询
@@ -226,14 +228,14 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
    */
   protected async recordMetrics(metrics: PerformanceMetrics): Promise<void> {
     try {
-      this.logger.debug('Query performance metrics', { 
+      this.logger.debug('Query performance metrics', {
         operation: metrics.operation,
         entityName: metrics.entityName,
         duration: metrics.duration,
         queryComplexity: metrics.queryComplexity,
-        timestamp: metrics.timestamp.toISOString()
+        timestamp: metrics.timestamp.toISOString(),
       })
-      
+
       // 应用指标插件
       if (this.pluginManager) {
         const plugins = this.pluginManager.getAll().map(reg => reg.plugin)
@@ -245,7 +247,10 @@ export abstract class BaseQueryBuilder<T = unknown> implements IQueryBuilder<T> 
         }
       }
     } catch (error) {
-      this.logger.error('Failed to record query metrics', error instanceof Error ? error : new Error('Unknown error'))
+      this.logger.error(
+        'Failed to record query metrics',
+        error instanceof Error ? error : new Error('Unknown error')
+      )
     }
   }
 

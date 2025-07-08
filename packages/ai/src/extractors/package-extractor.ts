@@ -1,6 +1,6 @@
 /**
  * Package Dependency Extractor
- * 
+ *
  * 提取 LinchKit 包依赖关系和元数据
  * 基于现有的 deps-graph.js 逻辑，符合包复用约束
  */
@@ -9,11 +9,7 @@ import { readdir, readFile, access, stat } from 'fs/promises'
 import { join, relative, extname } from 'path'
 
 import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index.js'
-import type {
-  GraphNode,
-  GraphRelationship,
-  PackageNode
-} from '../types/index.js'
+import type { GraphNode, GraphRelationship, PackageNode } from '../types/index.js'
 import { NodeType, RelationType } from '../types/index.js'
 
 import { BaseExtractor } from './base-extractor.js'
@@ -64,11 +60,11 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
     const packages = await this.scanWorkspacePackages()
     const dependencies = await this.analyzeDependencies(packages)
     const buildOrder = this.calculateBuildOrder(packages, dependencies)
-    
+
     return {
       packages,
       buildOrder,
-      dependencies
+      dependencies,
     }
   }
 
@@ -81,18 +77,18 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
   }> {
     const nodes: GraphNode[] = []
     const relationships: GraphRelationship[] = []
-    
+
     // 1. 创建包节点
     for (const pkg of rawData.packages) {
       const packageNode = this.createPackageNode(pkg)
       nodes.push(packageNode)
-      
+
       // 2. 添加关键文件节点
       const fileNodes = await this.createFileNodes(pkg)
       nodes.push(...fileNodes.nodes)
       relationships.push(...fileNodes.relationships)
     }
-    
+
     // 3. 创建依赖关系
     for (const [packageName, deps] of rawData.dependencies) {
       for (const dep of deps) {
@@ -100,7 +96,7 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
         relationships.push(relationship)
       }
     }
-    
+
     return { nodes, relationships }
   }
 
@@ -109,17 +105,17 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
    */
   private async scanWorkspacePackages(): Promise<PackageInfo[]> {
     const packages: PackageInfo[] = []
-    
+
     // 扫描 packages 目录
     await this.scanDirectory(join(process.cwd(), 'packages'), packages)
-    
-    // 扫描 modules 目录  
+
+    // 扫描 modules 目录
     await this.scanDirectory(join(process.cwd(), 'modules'), packages)
-    
+
     this.logger.debug(`发现 ${packages.length} 个包`, {
-      packageNames: packages.map(p => p.name)
+      packageNames: packages.map(p => p.name),
     })
-    
+
     return packages
   }
 
@@ -129,21 +125,21 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
   private async scanDirectory(dirPath: string, packages: PackageInfo[]): Promise<void> {
     try {
       const items = await readdir(dirPath)
-      
+
       for (const item of items) {
         const itemPath = join(dirPath, item)
         const packageJsonPath = join(itemPath, 'package.json')
-        
+
         try {
           await access(packageJsonPath)
           const content = await readFile(packageJsonPath, 'utf8')
           const packageJson = JSON.parse(content)
-          
+
           if (packageJson.name) {
             packages.push({
               name: packageJson.name,
               path: itemPath,
-              packageJson
+              packageJson,
             })
           }
         } catch {
@@ -161,27 +157,27 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
    */
   private async analyzeDependencies(packages: PackageInfo[]): Promise<Map<string, Set<string>>> {
     const dependencies = new Map<string, Set<string>>()
-    
+
     for (const pkg of packages) {
       const deps = new Set<string>()
-      
+
       // 收集所有类型的依赖
       const allDeps = {
         ...pkg.packageJson.dependencies,
         ...pkg.packageJson.devDependencies,
-        ...pkg.packageJson.peerDependencies
+        ...pkg.packageJson.peerDependencies,
       }
-      
+
       // 只关心 LinchKit 内部包依赖
       for (const depName of Object.keys(allDeps)) {
         if (depName.startsWith('@linch-kit/')) {
           deps.add(depName)
         }
       }
-      
+
       dependencies.set(pkg.name, deps)
     }
-    
+
     return dependencies
   }
 
@@ -189,40 +185,40 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
    * 计算构建顺序 (拓扑排序)
    */
   private calculateBuildOrder(
-    packages: PackageInfo[], 
+    packages: PackageInfo[],
     dependencies: Map<string, Set<string>>
   ): string[] {
     const visited = new Set<string>()
     const visiting = new Set<string>()
     const buildOrder: string[] = []
     const packageMap = new Map(packages.map(p => [p.name, p]))
-    
+
     const visit = (packageName: string): void => {
       if (visited.has(packageName)) return
       if (visiting.has(packageName)) {
         this.logger.warn(`检测到循环依赖: ${packageName}`)
         return
       }
-      
+
       visiting.add(packageName)
-      
+
       const deps = dependencies.get(packageName) || new Set()
       for (const dep of deps) {
         if (packageMap.has(dep)) {
           visit(dep)
         }
       }
-      
+
       visiting.delete(packageName)
       visited.add(packageName)
       buildOrder.push(packageName)
     }
-    
+
     // 访问所有包
     for (const pkg of packages) {
       visit(pkg.name)
     }
-    
+
     return buildOrder
   }
 
@@ -242,12 +238,9 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
         types: pkg.packageJson.types || '',
         keywords: pkg.packageJson.keywords || [],
         dependencies: Object.keys(pkg.packageJson.dependencies || {}),
-        devDependencies: Object.keys(pkg.packageJson.devDependencies || {})
+        devDependencies: Object.keys(pkg.packageJson.devDependencies || {}),
       },
-      metadata: this.createMetadata(
-        join(pkg.path, 'package.json'),
-        pkg.name
-      )
+      metadata: this.createMetadata(join(pkg.path, 'package.json'), pkg.name),
     }
   }
 
@@ -260,23 +253,23 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
   }> {
     const nodes: GraphNode[] = []
     const relationships: GraphRelationship[] = []
-    
+
     const keyFiles = [
       'README.md',
       'CHANGELOG.md',
       'DESIGN.md',
       'src/index.ts',
       'src/index.js',
-      'package.json'
+      'package.json',
     ]
-    
+
     for (const fileName of keyFiles) {
       const filePath = join(pkg.path, fileName)
-      
+
       try {
         await access(filePath)
         const fileStats = await stat(filePath)
-        
+
         // 创建文件节点
         const fileNode: GraphNode = {
           id: NodeIdGenerator.file(pkg.name, fileName),
@@ -286,13 +279,13 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
             file_type: extname(fileName).slice(1) || 'unknown',
             file_path: relative(process.cwd(), filePath),
             size: fileStats.size,
-            is_key_file: true
+            is_key_file: true,
           },
-          metadata: this.createMetadata(filePath, pkg.name)
+          metadata: this.createMetadata(filePath, pkg.name),
         }
-        
+
         nodes.push(fileNode)
-        
+
         // 创建包含关系
         const containsRelationship: GraphRelationship = {
           id: RelationshipIdGenerator.create(
@@ -305,25 +298,27 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
           target: fileNode.id,
           properties: {
             file_type: fileNode.properties?.file_type,
-            is_entry_point: fileName.includes('index.') || fileName === 'package.json'
+            is_entry_point: fileName.includes('index.') || fileName === 'package.json',
           },
-          metadata: this.createMetadata()
+          metadata: this.createMetadata(),
         }
-        
+
         relationships.push(containsRelationship)
-        
       } catch {
         // 文件不存在，跳过
       }
     }
-    
+
     return { nodes, relationships }
   }
 
   /**
    * 创建依赖关系
    */
-  private createDependencyRelationship(sourcePackage: string, targetPackage: string): GraphRelationship {
+  private createDependencyRelationship(
+    sourcePackage: string,
+    targetPackage: string
+  ): GraphRelationship {
     return {
       id: RelationshipIdGenerator.create(
         RelationType.DEPENDS_ON,
@@ -335,12 +330,12 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
       target: NodeIdGenerator.package(targetPackage),
       properties: {
         dependency_type: 'package',
-        is_internal: true
+        is_internal: true,
       },
       metadata: {
         ...this.createMetadata(),
-        confidence: 1.0
-      }
+        confidence: 1.0,
+      },
     }
   }
 

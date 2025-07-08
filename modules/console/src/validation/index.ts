@@ -1,15 +1,15 @@
 /**
  * Console 模块验证器
- * 
+ *
  * 基于实体定义生成验证器，使用内置的 Zod schemas
  */
 
-import { 
-  TenantEntity, 
+import {
+  TenantEntity,
   TenantQuotasEntity,
   PluginEntity,
   SystemMetricEntity,
-  AuditLogEntity 
+  AuditLogEntity,
 } from '../entities'
 
 /**
@@ -20,13 +20,13 @@ function createEntityValidators(entity: Record<string, unknown>) {
     create: entity.createSchema,
     update: entity.updateSchema,
     validate: entity.zodSchema,
-    
+
     // 便捷验证方法
     validateCreate: (data: unknown) => entity.createSchema.safeParse(data),
     validateUpdate: (data: unknown) => entity.updateSchema.safeParse(data),
     assertCreate: (data: unknown) => entity.createSchema.parse(data),
     assertUpdate: (data: unknown) => entity.updateSchema.parse(data),
-    assert: (data: unknown) => entity.zodSchema.parse(data)
+    assert: (data: unknown) => entity.zodSchema.parse(data),
   }
 }
 
@@ -34,7 +34,7 @@ function createEntityValidators(entity: Record<string, unknown>) {
 export const tenantValidators = createEntityValidators(TenantEntity)
 export const tenantQuotasValidators = createEntityValidators(TenantQuotasEntity)
 
-// 插件验证器  
+// 插件验证器
 export const pluginValidators = createEntityValidators(PluginEntity)
 
 // 监控验证器
@@ -49,7 +49,7 @@ export const consoleValidators = {
   tenantQuotas: tenantQuotasValidators,
   plugin: pluginValidators,
   systemMetric: systemMetricValidators,
-  auditLog: auditLogValidators
+  auditLog: auditLogValidators,
 } as const
 
 /**
@@ -83,7 +83,7 @@ export function validateBatch<T>(
 ): { valid: T[]; invalid: { data: unknown; error: unknown }[] } {
   const valid: T[] = []
   const invalid: { data: unknown; error: unknown }[] = []
-  
+
   dataList.forEach(data => {
     const result = validator(data)
     if (result.success && result.data) {
@@ -92,6 +92,6 @@ export function validateBatch<T>(
       invalid.push({ data, error: result.error })
     }
   })
-  
+
   return { valid, invalid }
 }

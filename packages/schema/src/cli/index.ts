@@ -16,6 +16,4 @@ export { schemaCommands } from './commands'
 /**
  * 单个命令导出，供按需使用或自定义CLI集成
  */
-export {
-    generateSchemaCommand, validateSchemaCommand, watchSchemaCommand
-} from './commands'
+export { generateSchemaCommand, validateSchemaCommand, watchSchemaCommand } from './commands'

@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-07-08T01:20:46.520Z",
+  "summary": {
+    "passed": 3,
+    "failed": 3,
+    "skipped": 2
+  },
+  "results": [
+    {
+      "name": "代码格式检查",
+      "status": "passed",
+      "required": true
+    },
+    {
+      "name": "代码质量检查",
+      "status": "failed",
+      "required": true,
+      "error": "Command failed: bun run turbo lint"
+    },
+    {
+      "name": "类型检查",
+      "status": "passed",
+      "required": true
+    },
+    {
+      "name": "包构建",
+      "status": "passed",
+      "required": true
+    },
+    {
+      "name": "应用构建 - starter",
+      "status": "skipped",
+      "required": false,
+      "error": "Command failed: bun run turbo build --filter=starter"
+    },
+    {
+      "name": "应用构建 - website",
+      "status": "failed",
+      "required": true,
+      "error": "Command failed: bun run turbo build --filter=website"
+    },
+    {
+      "name": "应用构建 - demo-app",
+      "status": "skipped",
+      "required": false,
+      "error": "Command failed: bun run turbo build --filter=demo-app"
+    },
+    {
+      "name": "单元测试",
+      "status": "failed",
+      "required": true,
+      "error": "Command failed: bun run turbo test"
+    }
+  ],
+  "overallStatus": "failure"
+}

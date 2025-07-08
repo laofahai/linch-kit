@@ -1,6 +1,6 @@
 /**
  * Correlation Analyzer
- * 
+ *
  * 分析文档、代码、Schema、数据库之间的关联关系
  * 构建跨数据源的智能连接
  */
@@ -12,7 +12,7 @@ import type {
   GraphRelationship,
   RelationType,
   ExtractionResult,
-  Logger
+  Logger,
 } from '../types/index.js'
 import { RelationshipIdGenerator } from '../types/index.js'
 
@@ -51,21 +51,21 @@ export class CorrelationAnalyzer {
    */
   async analyzeCorrelations(extractionResults: ExtractionResult[]): Promise<CorrelationResult> {
     this.logger.info('开始分析跨数据源关联关系...')
-    
+
     // 合并所有节点
     const allNodes = this.mergeNodes(extractionResults)
-    
+
     // 查找关联关系
     const relationships = await this.findCorrelations(allNodes)
-    
+
     // 统计信息
     const stats = this.calculateStats(relationships)
-    
+
     this.logger.info('关联分析完成', {
       totalCorrelations: relationships.length,
-      nodeCount: allNodes.length
+      nodeCount: allNodes.length,
     })
-    
+
     return { relationships, stats }
   }
 
@@ -74,7 +74,7 @@ export class CorrelationAnalyzer {
    */
   private mergeNodes(extractionResults: ExtractionResult[]): GraphNode[] {
     const nodeMap = new Map<string, GraphNode>()
-    
+
     for (const result of extractionResults) {
       for (const node of result.nodes) {
         if (!nodeMap.has(node.id)) {
@@ -82,7 +82,7 @@ export class CorrelationAnalyzer {
         }
       }
     }
-    
+
     return Array.from(nodeMap.values())
   }
 
@@ -91,30 +91,28 @@ export class CorrelationAnalyzer {
    */
   private async findCorrelations(nodes: GraphNode[]): Promise<GraphRelationship[]> {
     const relationships: GraphRelationship[] = []
-    
+
     // 遍历所有节点对，检查是否匹配任何关联模式
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const node1 = nodes[i]
         const node2 = nodes[j]
-        
+
         for (const pattern of this.patterns) {
           if (pattern.matcher(node1, node2)) {
-            const relationship = this.createCorrelationRelationship(
-              node1, node2, pattern
-            )
+            const relationship = this.createCorrelationRelationship(node1, node2, pattern)
             relationships.push(relationship)
-            
+
             this.logger.debug(`发现关联: ${pattern.name}`, {
               source: node1.name,
               target: node2.name,
-              confidence: pattern.confidence
+              confidence: pattern.confidence,
             })
           }
         }
       }
     }
-    
+
     return relationships
   }
 
@@ -134,12 +132,12 @@ export class CorrelationAnalyzer {
       properties: {
         correlation_pattern: pattern.id,
         pattern_name: pattern.name,
-        auto_detected: true
+        auto_detected: true,
       },
       metadata: {
         created_at: new Date().toISOString(),
-        confidence: pattern.confidence
-      }
+        confidence: pattern.confidence,
+      },
     }
   }
 
@@ -167,7 +165,7 @@ export class CorrelationAnalyzer {
             return docPath?.includes(pkgPath) || false
           }
           return false
-        }
+        },
       },
 
       // 2. API ↔ Schema：API使用Schema实体
@@ -189,7 +187,7 @@ export class CorrelationAnalyzer {
             return apiSignature?.includes(schemaName) || false
           }
           return false
-        }
+        },
       },
 
       // 3. Schema ↔ 数据库表：Schema对应数据库表
@@ -211,7 +209,7 @@ export class CorrelationAnalyzer {
             return schemaTable === tableName
           }
           return false
-        }
+        },
       },
 
       // 4. 文档 ↔ API：文档记录API
@@ -233,7 +231,7 @@ export class CorrelationAnalyzer {
             return docContent?.toLowerCase().includes(apiName.toLowerCase()) || false
           }
           return false
-        }
+        },
       },
 
       // 5. 包 ↔ Schema：包定义Schema
@@ -255,7 +253,7 @@ export class CorrelationAnalyzer {
             return packageName === schemaPackage
           }
           return false
-        }
+        },
       },
 
       // 6. API ↔ 文件：API定义在文件中
@@ -277,7 +275,7 @@ export class CorrelationAnalyzer {
             return filePath === apiFile
           }
           return false
-        }
+        },
       },
 
       // 7. 概念 ↔ 包：概念在包中实现
@@ -301,7 +299,7 @@ export class CorrelationAnalyzer {
             return packageName.includes(conceptName) || packageDesc.includes(conceptName)
           }
           return false
-        }
+        },
       },
 
       // 8. 同名实体关联：基于名称的相似性
@@ -313,15 +311,15 @@ export class CorrelationAnalyzer {
         confidence: 0.5,
         matcher: (node1, node2) => {
           if (node1.type === node2.type) return false // 同类型节点不关联
-          
+
           const name1 = node1.name.toLowerCase()
           const name2 = node2.name.toLowerCase()
-          
+
           // 计算名称相似度
           const similarity = this.calculateNameSimilarity(name1, name2)
           return similarity > 0.8
-        }
-      }
+        },
+      },
     ]
   }
 
@@ -332,14 +330,14 @@ export class CorrelationAnalyzer {
     const len1 = name1.length
     const len2 = name2.length
     const maxLen = Math.max(len1, len2)
-    
+
     if (maxLen === 0) return 1.0
-    
+
     // 简单的包含检查
     if (name1.includes(name2) || name2.includes(name1)) {
       return 0.9
     }
-    
+
     // 编辑距离计算 (简化版)
     let distance = 0
     for (let i = 0; i < Math.min(len1, len2); i++) {
@@ -348,8 +346,8 @@ export class CorrelationAnalyzer {
       }
     }
     distance += Math.abs(len1 - len2)
-    
-    return 1 - (distance / maxLen)
+
+    return 1 - distance / maxLen
   }
 
   /**
@@ -358,20 +356,20 @@ export class CorrelationAnalyzer {
   private calculateStats(relationships: GraphRelationship[]): CorrelationResult['stats'] {
     const byPattern: Record<string, number> = {}
     const byRelationType: Record<RelationType, number> = {} as Record<RelationType, number>
-    
+
     for (const rel of relationships) {
       const pattern = rel.properties?.correlation_pattern as string
       if (pattern) {
         byPattern[pattern] = (byPattern[pattern] || 0) + 1
       }
-      
+
       byRelationType[rel.type] = (byRelationType[rel.type] || 0) + 1
     }
-    
+
     return {
       total_correlations: relationships.length,
       by_pattern: byPattern,
-      by_relation_type: byRelationType
+      by_relation_type: byRelationType,
     }
   }
 }

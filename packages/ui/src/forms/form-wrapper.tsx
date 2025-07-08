@@ -1,11 +1,11 @@
 'use client'
 
 // Wrapper for react-hook-form to fix ESM import issues
-import { 
+import {
   useForm as useFormOrig,
   Controller as ControllerOrig,
   FormProvider as FormProviderOrig,
-  useFormContext as useFormContextOrig
+  useFormContext as useFormContextOrig,
 } from 'react-hook-form'
 
 export const useForm = useFormOrig

@@ -1,6 +1,6 @@
 /**
  * LinchKit AI Core Types
- * 
+ *
  * 统一的类型定义，用于 Graph RAG 系统中的所有数据结构
  */
 
@@ -24,46 +24,46 @@ export interface Logger {
  * Graph Node Types - 知识图谱中的实体类型
  */
 export enum NodeType {
-  PACKAGE = 'Package',           // LinchKit 包
-  DOCUMENT = 'Document',         // 文档文件  
-  CONCEPT = 'Concept',           // 抽象概念
-  API = 'API',                   // 函数/类/接口
+  PACKAGE = 'Package', // LinchKit 包
+  DOCUMENT = 'Document', // 文档文件
+  CONCEPT = 'Concept', // 抽象概念
+  API = 'API', // 函数/类/接口
   SCHEMA_ENTITY = 'SchemaEntity', // Schema 实体
-  SCHEMA_FIELD = 'SchemaField',   // Schema 字段
-  FILE = 'File',                 // 文件
+  SCHEMA_FIELD = 'SchemaField', // Schema 字段
+  FILE = 'File', // 文件
   DATABASE_TABLE = 'DatabaseTable', // 数据库表
   DATABASE_COLUMN = 'DatabaseColumn', // 数据库列
-  FUNCTION = 'Function',         // 函数
-  CLASS = 'Class',               // 类
-  INTERFACE = 'Interface',       // 接口
-  TYPE = 'Type',                 // 类型别名
-  VARIABLE = 'Variable',         // 变量
-  IMPORT = 'Import',             // 导入语句
-  EXPORT = 'Export'              // 导出语句
+  FUNCTION = 'Function', // 函数
+  CLASS = 'Class', // 类
+  INTERFACE = 'Interface', // 接口
+  TYPE = 'Type', // 类型别名
+  VARIABLE = 'Variable', // 变量
+  IMPORT = 'Import', // 导入语句
+  EXPORT = 'Export', // 导出语句
 }
 
 /**
  * Graph Relationship Types - 实体间的关系类型
  */
 export enum RelationType {
-  DEPENDS_ON = 'DEPENDS_ON',     // 依赖关系
-  DOCUMENTS = 'DOCUMENTS',       // 文档化关系
-  DEFINES = 'DEFINES',           // 定义关系
-  REFERENCES = 'REFERENCES',     // 引用关系
-  HAS_FIELD = 'HAS_FIELD',       // 包含字段
-  IMPLEMENTS = 'IMPLEMENTS',     // 实现关系
-  EXTENDS = 'EXTENDS',           // 继承关系
-  EXPORTS = 'EXPORTS',           // 导出关系
-  IMPORTS = 'IMPORTS',           // 导入关系
-  CONTAINS = 'CONTAINS',         // 包含关系
-  CALLS = 'CALLS',               // 调用关系
-  USES_TYPE = 'USES_TYPE',       // 使用类型
+  DEPENDS_ON = 'DEPENDS_ON', // 依赖关系
+  DOCUMENTS = 'DOCUMENTS', // 文档化关系
+  DEFINES = 'DEFINES', // 定义关系
+  REFERENCES = 'REFERENCES', // 引用关系
+  HAS_FIELD = 'HAS_FIELD', // 包含字段
+  IMPLEMENTS = 'IMPLEMENTS', // 实现关系
+  EXTENDS = 'EXTENDS', // 继承关系
+  EXPORTS = 'EXPORTS', // 导出关系
+  IMPORTS = 'IMPORTS', // 导入关系
+  CONTAINS = 'CONTAINS', // 包含关系
+  CALLS = 'CALLS', // 调用关系
+  USES_TYPE = 'USES_TYPE', // 使用类型
   HAS_RELATION = 'HAS_RELATION', // 具有关联
-  OVERRIDES = 'OVERRIDES',       // 重写关系
-  RETURNS = 'RETURNS',           // 返回关系
-  PARAMETER = 'PARAMETER',       // 参数关系
-  THROWS = 'THROWS',             // 抛出异常关系
-  ASYNC_CALLS = 'ASYNC_CALLS'    // 异步调用关系
+  OVERRIDES = 'OVERRIDES', // 重写关系
+  RETURNS = 'RETURNS', // 返回关系
+  PARAMETER = 'PARAMETER', // 参数关系
+  THROWS = 'THROWS', // 抛出异常关系
+  ASYNC_CALLS = 'ASYNC_CALLS', // 异步调用关系
 }
 
 /**
@@ -74,13 +74,16 @@ export const GraphNodeSchema = z.object({
   type: z.nativeEnum(NodeType).describe('节点类型'),
   name: z.string().describe('节点名称'),
   properties: z.record(z.unknown()).optional().describe('节点属性'),
-  metadata: z.object({
-    created_at: z.string().optional().describe('创建时间'),
-    updated_at: z.string().optional().describe('更新时间'),
-    source_file: z.string().optional().describe('源文件路径'),
-    package: z.string().optional().describe('所属包'),
-    confidence: z.number().min(0).max(1).optional().describe('置信度')
-  }).optional().describe('节点元数据')
+  metadata: z
+    .object({
+      created_at: z.string().optional().describe('创建时间'),
+      updated_at: z.string().optional().describe('更新时间'),
+      source_file: z.string().optional().describe('源文件路径'),
+      package: z.string().optional().describe('所属包'),
+      confidence: z.number().min(0).max(1).optional().describe('置信度'),
+    })
+    .optional()
+    .describe('节点元数据'),
 })
 
 /**
@@ -92,11 +95,14 @@ export const GraphRelationshipSchema = z.object({
   source: z.string().describe('源节点ID'),
   target: z.string().describe('目标节点ID'),
   properties: z.record(z.unknown()).optional().describe('关系属性'),
-  metadata: z.object({
-    created_at: z.string().optional().describe('创建时间'),
-    confidence: z.number().min(0).max(1).optional().describe('置信度'),
-    weight: z.number().optional().describe('关系权重')
-  }).optional().describe('关系元数据')
+  metadata: z
+    .object({
+      created_at: z.string().optional().describe('创建时间'),
+      confidence: z.number().min(0).max(1).optional().describe('置信度'),
+      weight: z.number().optional().describe('关系权重'),
+    })
+    .optional()
+    .describe('关系元数据'),
 })
 
 /**
@@ -112,8 +118,8 @@ export const PackageNodeSchema = GraphNodeSchema.extend({
     types: z.string().optional().describe('类型定义文件'),
     keywords: z.array(z.string()).optional().describe('关键词'),
     dependencies: z.array(z.string()).optional().describe('依赖列表'),
-    devDependencies: z.array(z.string()).optional().describe('开发依赖')
-  })
+    devDependencies: z.array(z.string()).optional().describe('开发依赖'),
+  }),
 })
 
 /**
@@ -127,8 +133,8 @@ export const DocumentNodeSchema = GraphNodeSchema.extend({
     content_hash: z.string().optional().describe('内容哈希'),
     title: z.string().optional().describe('文档标题'),
     sections: z.array(z.string()).optional().describe('章节列表'),
-    size: z.number().optional().describe('文件大小')
-  })
+    size: z.number().optional().describe('文件大小'),
+  }),
 })
 
 /**
@@ -137,18 +143,20 @@ export const DocumentNodeSchema = GraphNodeSchema.extend({
 export const APINodeSchema = GraphNodeSchema.extend({
   type: z.literal(NodeType.API),
   properties: z.object({
-    api_type: z.enum(['function', 'class', 'interface', 'type', 'constant', 'variable']).describe('API类型'),
+    api_type: z
+      .enum(['function', 'class', 'interface', 'type', 'constant', 'variable'])
+      .describe('API类型'),
     signature: z.string().optional().describe('函数/方法签名'),
     description: z.string().optional().describe('API描述'),
     is_exported: z.boolean().optional().describe('是否被导出'),
     file_path: z.string().describe('定义文件路径'),
     line_number: z.number().optional().describe('行号'),
-    access_modifier: z.enum(['public', 'private', 'protected']).optional().describe('访问修饰符')
-  })
+    access_modifier: z.enum(['public', 'private', 'protected']).optional().describe('访问修饰符'),
+  }),
 })
 
 /**
- * Schema 实体节点 Schema  
+ * Schema 实体节点 Schema
  */
 export const SchemaEntityNodeSchema = GraphNodeSchema.extend({
   type: z.literal(NodeType.SCHEMA_ENTITY),
@@ -157,8 +165,8 @@ export const SchemaEntityNodeSchema = GraphNodeSchema.extend({
     description: z.string().optional().describe('实体描述'),
     table_name: z.string().optional().describe('对应数据表名'),
     file_path: z.string().describe('定义文件路径'),
-    fields_count: z.number().optional().describe('字段数量')
-  })
+    fields_count: z.number().optional().describe('字段数量'),
+  }),
 })
 
 /**
@@ -168,12 +176,17 @@ export const FunctionNodeSchema = GraphNodeSchema.extend({
   type: z.literal(NodeType.FUNCTION),
   properties: z.object({
     signature: z.string().describe('函数签名'),
-    parameters: z.array(z.object({
-      name: z.string().describe('参数名'),
-      type: z.string().optional().describe('参数类型'),
-      optional: z.boolean().optional().describe('是否可选'),
-      default_value: z.string().optional().describe('默认值')
-    })).optional().describe('函数参数'),
+    parameters: z
+      .array(
+        z.object({
+          name: z.string().describe('参数名'),
+          type: z.string().optional().describe('参数类型'),
+          optional: z.boolean().optional().describe('是否可选'),
+          default_value: z.string().optional().describe('默认值'),
+        })
+      )
+      .optional()
+      .describe('函数参数'),
     return_type: z.string().optional().describe('返回类型'),
     is_async: z.boolean().optional().describe('是否异步函数'),
     is_exported: z.boolean().optional().describe('是否被导出'),
@@ -183,8 +196,8 @@ export const FunctionNodeSchema = GraphNodeSchema.extend({
     end_line_number: z.number().optional().describe('结束行号'),
     jsdoc: z.string().optional().describe('JSDoc 文档'),
     access_modifier: z.enum(['public', 'private', 'protected']).optional().describe('访问修饰符'),
-    complexity: z.number().optional().describe('圈复杂度')
-  })
+    complexity: z.number().optional().describe('圈复杂度'),
+  }),
 })
 
 /**
@@ -203,8 +216,8 @@ export const ClassNodeSchema = GraphNodeSchema.extend({
     jsdoc: z.string().optional().describe('JSDoc 文档'),
     access_modifier: z.enum(['public', 'private', 'protected']).optional().describe('访问修饰符'),
     methods_count: z.number().optional().describe('方法数量'),
-    properties_count: z.number().optional().describe('属性数量')
-  })
+    properties_count: z.number().optional().describe('属性数量'),
+  }),
 })
 
 /**
@@ -220,8 +233,8 @@ export const InterfaceNodeSchema = GraphNodeSchema.extend({
     end_line_number: z.number().optional().describe('结束行号'),
     jsdoc: z.string().optional().describe('JSDoc 文档'),
     properties_count: z.number().optional().describe('属性数量'),
-    methods_count: z.number().optional().describe('方法数量')
-  })
+    methods_count: z.number().optional().describe('方法数量'),
+  }),
 })
 
 /**
@@ -258,7 +271,7 @@ export const Neo4jConfigSchema = z.object({
   connectionUri: z.string().describe('Neo4j连接URI'),
   username: z.string().describe('用户名'),
   password: z.string().describe('密码'),
-  database: z.string().default('neo4j').describe('数据库名')
+  database: z.string().default('neo4j').describe('数据库名'),
 })
 
 /**
@@ -271,8 +284,8 @@ export const QueryResultSchema = z.object({
   metadata: z.object({
     query_time_ms: z.number().describe('查询耗时(毫秒)'),
     result_count: z.number().describe('结果数量'),
-    query: z.string().optional().describe('查询语句')
-  })
+    query: z.string().optional().describe('查询语句'),
+  }),
 })
 
 /**
@@ -337,47 +350,47 @@ export class NodeIdGenerator {
    */
   private static shortHash(input: string): string {
     // 使用更复杂的hash算法减少冲突
-    let hash1 = 0;
-    let hash2 = 0;
-    
+    let hash1 = 0
+    let hash2 = 0
+
     for (let i = 0; i < input.length; i++) {
-      const char = input.charCodeAt(i);
-      hash1 = ((hash1 << 5) - hash1) + char;
-      hash1 = hash1 & hash1; // 转换为32位整数
-      
-      hash2 = ((hash2 << 3) + hash2) ^ char;
-      hash2 = hash2 & hash2;
+      const char = input.charCodeAt(i)
+      hash1 = (hash1 << 5) - hash1 + char
+      hash1 = hash1 & hash1 // 转换为32位整数
+
+      hash2 = ((hash2 << 3) + hash2) ^ char
+      hash2 = hash2 & hash2
     }
-    
+
     // 组合两个hash值，并增加长度
-    const combined = (Math.abs(hash1) << 16) | (Math.abs(hash2) & 0xFFFF);
-    return combined.toString(36).slice(0, 10);
+    const combined = (Math.abs(hash1) << 16) | (Math.abs(hash2) & 0xffff)
+    return combined.toString(36).slice(0, 10)
   }
 
   static package(name: string): string {
     return `package:${name.replace(/[^a-zA-Z0-9-_]/g, '_')}`
   }
-  
+
   static file(packageName: string, filePath: string): string {
-    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_');
-    const hash = this.shortHash(filePath);
+    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_')
+    const hash = this.shortHash(filePath)
     return `file:${safePackage}_${hash}`
   }
-  
+
   static api(packageName: string, apiName: string, type: string, filePath?: string): string {
-    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_');
-    const safeName = apiName.replace(/[^a-zA-Z0-9-_]/g, '_');
+    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_')
+    const safeName = apiName.replace(/[^a-zA-Z0-9-_]/g, '_')
     // 包含文件路径确保同名函数在不同文件中的唯一性
-    const uniqueKey = filePath ? `${filePath}:${apiName}` : `${packageName}:${apiName}`;
-    const hash = this.shortHash(uniqueKey);
+    const uniqueKey = filePath ? `${filePath}:${apiName}` : `${packageName}:${apiName}`
+    const hash = this.shortHash(uniqueKey)
     return `api:${safePackage}_${type}_${safeName}_${hash}`
   }
-  
+
   static document(filePath: string): string {
-    const hash = this.shortHash(filePath);
+    const hash = this.shortHash(filePath)
     return `doc:${hash}`
   }
-  
+
   static schemaEntity(name: string): string {
     return `schema:${name.replace(/[^a-zA-Z0-9-_]/g, '_')}`
   }
@@ -386,9 +399,9 @@ export class NodeIdGenerator {
    * 生成导入节点ID，包含文件路径确保唯一性
    */
   static import(packageName: string, source: string, imported: string, filePath: string): string {
-    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_');
-    const uniqueKey = `${filePath}:${source}:${imported}`;
-    const hash = this.shortHash(uniqueKey);
+    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_')
+    const uniqueKey = `${filePath}:${source}:${imported}`
+    const hash = this.shortHash(uniqueKey)
     return `import:${safePackage}_${hash}`
   }
 
@@ -396,9 +409,9 @@ export class NodeIdGenerator {
    * 生成导出节点ID
    */
   static export(packageName: string, exported: string, filePath: string): string {
-    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_');
-    const uniqueKey = `${filePath}:${exported}`;
-    const hash = this.shortHash(uniqueKey);
+    const safePackage = packageName.replace(/[^a-zA-Z0-9-_]/g, '_')
+    const uniqueKey = `${filePath}:${exported}`
+    const hash = this.shortHash(uniqueKey)
     return `export:${safePackage}_${hash}`
   }
 }

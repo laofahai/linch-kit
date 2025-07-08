@@ -1,6 +1,6 @@
 /**
  * @linch-kit/schema 插件定义
- * 
+ *
  * @description Schema 包的插件定义，用于集成到 @linch-kit/core 插件系统
  * @author LinchKit Team
  * @since 0.1.0
@@ -20,7 +20,7 @@ export interface SchemaPluginConfig {
 
 /**
  * Schema 插件定义
- * 
+ *
  * @description 将 Schema 功能注册为 Core 插件
  * @param config 插件配置
  * @returns 插件定义对象
@@ -30,27 +30,27 @@ export function schemaPlugin(config: SchemaPluginConfig = {}) {
     name: 'schema',
     version: '0.1.0',
     description: 'LinchKit Schema 插件',
-    
+
     // 插件初始化
     async initialize() {
       console.log('Schema 插件已初始化')
     },
-    
+
     // 插件配置
     config: {
       autoMigration: config.autoMigration ?? false,
       enableValidation: config.enableValidation ?? true,
-      generators: config.generators ?? ['prisma', 'typescript']
+      generators: config.generators ?? ['prisma', 'typescript'],
     },
-    
+
     // 插件提供的服务
     services: {
       // 这里可以注册 Schema 相关的服务
     },
-    
+
     // 插件钩子
     hooks: {
       // 这里可以注册 Schema 相关的钩子
-    }
+    },
   }
 }

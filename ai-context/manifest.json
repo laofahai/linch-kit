@@ -15,7 +15,7 @@
       "priority": "high"
     },
     {
-      "path": "ai-context/00_Overview/02_Quick_Start.md", 
+      "path": "ai-context/00_Overview/02_Quick_Start.md",
       "description": "Quick start guide for developers and AI assistants",
       "tags": ["guide", "quickstart"],
       "priority": "high"
@@ -55,6 +55,12 @@
       "description": "Frontend applications architecture and design patterns",
       "tags": ["frontend", "architecture", "ui"],
       "priority": "medium"
+    },
+    {
+      "path": "ai-context/01_Concepts/07_Strategic_Architecture_Evolution.md",
+      "description": "LinchKit战略架构演进规划：从纯技术框架向插件化生态平台的演进路径，包含3PL解决方案架构设计和第三方生态建设",
+      "tags": ["strategy", "evolution", "ecosystem", "plugins", "3pl", "roadmap"],
+      "priority": "critical"
     },
     {
       "path": "ai-context/02_Guides/01_Development_Workflow.md",
@@ -134,6 +140,7 @@
     "criticalDocuments": [
       "ai-context/02_Guides/01_Development_Workflow.md",
       "ai-context/01_Concepts/03_Package_Architecture.md",
+      "ai-context/01_Concepts/07_Strategic_Architecture_Evolution.md",
       "ai-context/02_Guides/03_AI_Collaboration.md"
     ],
     "workflowRequirements": [
@@ -149,19 +156,14 @@
   "packageArchitecture": {
     "corePackages": [
       "@linch-kit/core",
-      "@linch-kit/schema", 
+      "@linch-kit/schema",
       "@linch-kit/auth",
       "@linch-kit/crud",
       "@linch-kit/trpc",
       "@linch-kit/ui"
     ],
-    "modules": [
-      "modules/console"
-    ],
-    "applications": [
-      "apps/starter",
-      "apps/website"
-    ],
+    "modules": ["modules/console"],
+    "applications": ["apps/starter", "apps/website"],
     "completionStatus": "100%"
   }
 }

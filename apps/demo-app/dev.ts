@@ -1,17 +1,19 @@
 #!/usr/bin/env node
 
-// 简化的开发服务器启动脚本
-// 避免文件监听问题
+// Demo App 开发服务器启动脚本
 
-const { spawn } = require('child_process')
-const path = require('path')
+import { spawn } from 'child_process'
+import { fileURLToPath } from 'url'
+import path from 'path'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // 设置文件监听限制
 process.env.UV_THREADPOOL_SIZE = '64'
 process.env.NODE_MAX_LISTENERS = '100'
 
-// 启动 Next.js 开发服务器，关闭 Turbopack 以减少文件监听
-const dev = spawn('bunx', ['next', 'dev', '--port', '3000'], {
+// 启动 Next.js 开发服务器
+const dev = spawn('bunx', ['next', 'dev', '--port', '3001'], {
   stdio: 'inherit',
   cwd: __dirname,
   env: {
@@ -22,7 +24,7 @@ const dev = spawn('bunx', ['next', 'dev', '--port', '3000'], {
 })
 
 dev.on('close', (code) => {
-  process.exit(code)
+  process.exit(code || 0)
 })
 
 process.on('SIGINT', () => {

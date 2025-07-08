@@ -8,8 +8,18 @@ import { z } from 'zod'
 // 避免循环依赖的通用类型定义
 interface TRPCProcedure {
   input: (schema: z.ZodType) => TRPCProcedure
-  query: (handler: (opts: { ctx?: Record<string, unknown>; input?: Record<string, unknown> }) => Promise<unknown> | unknown) => unknown
-  mutation?: (handler: (opts: { ctx?: Record<string, unknown>; input?: Record<string, unknown> }) => Promise<unknown> | unknown) => unknown
+  query: (
+    handler: (opts: {
+      ctx?: Record<string, unknown>
+      input?: Record<string, unknown>
+    }) => Promise<unknown> | unknown
+  ) => unknown
+  mutation?: (
+    handler: (opts: {
+      ctx?: Record<string, unknown>
+      input?: Record<string, unknown>
+    }) => Promise<unknown> | unknown
+  ) => unknown
 }
 
 interface TRPCRouterBuilder {
@@ -23,39 +33,37 @@ export function createAuthRouter(trpc: TRPCRouterBuilder) {
 
   return router({
     // 获取当前会话
-    getSession: publicProcedure
-      .query(async ({ ctx }: any) => {
-        return ctx.user || null
-      }),
+    getSession: publicProcedure.query(async ({ ctx }: any) => {
+      return ctx.user || null
+    }),
 
     // 获取用户信息
-    getUser: protectedProcedure
-      .query(async ({ ctx: _ctx }: any) => {
-        return _ctx.user
-      }),
+    getUser: protectedProcedure.query(async ({ ctx: _ctx }: any) => {
+      return _ctx.user
+    }),
 
     // 用户登录状态检查
-    isAuthenticated: publicProcedure
-      .query(async ({ ctx }: any) => {
-        return !!ctx.user
-      }),
+    isAuthenticated: publicProcedure.query(async ({ ctx }: any) => {
+      return !!ctx.user
+    }),
 
     // 获取用户权限
-    getPermissions: protectedProcedure
-      .query(async ({ ctx: _ctx }: any) => {
-        // TODO: 集成权限引擎
-        return []
-      }),
+    getPermissions: protectedProcedure.query(async ({ ctx: _ctx }: any) => {
+      // TODO: 集成权限引擎
+      return []
+    }),
 
     // 检查特定权限
     hasPermission: protectedProcedure
-      .input(z.object({
-        action: z.string(),
-        resource: z.string()
-      }))
+      .input(
+        z.object({
+          action: z.string(),
+          resource: z.string(),
+        })
+      )
       .query(async ({ input: _input, ctx: _ctx }: any) => {
         // TODO: 集成权限引擎
         return false
-      })
+      }),
   })
 }

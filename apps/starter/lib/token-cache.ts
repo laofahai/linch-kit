@@ -34,18 +34,18 @@ class TokenCacheManager {
     try {
       // 检查是否在客户端环境
       if (typeof window === 'undefined') return null
-      
+
       const cached = localStorage.getItem(this.CACHE_KEY)
       if (!cached) return null
 
       const token = JSON.parse(cached) as CachedToken
-      
+
       // 检查是否过期（增加1分钟缓冲时间，避免边界情况）
       const bufferTime = 60 * 1000 // 1分钟缓冲
       if (Date.now() >= token.expiresAt + bufferTime) {
-        Logger.info('Token已过期，清除缓存', { 
+        Logger.info('Token已过期，清除缓存', {
           expiresAt: new Date(token.expiresAt).toISOString(),
-          currentTime: new Date().toISOString()
+          currentTime: new Date().toISOString(),
         })
         this.clearToken()
         return null
@@ -66,12 +66,12 @@ class TokenCacheManager {
     try {
       // 检查是否在客户端环境
       if (typeof window === 'undefined') return
-      
+
       const cachedToken: CachedToken = {
         token,
         expiresAt: Date.now() + expiresIn * 1000,
         userId: userInfo.id,
-        userInfo
+        userInfo,
       }
 
       localStorage.setItem(this.CACHE_KEY, JSON.stringify(cachedToken))
@@ -88,7 +88,7 @@ class TokenCacheManager {
     try {
       // 检查是否在客户端环境
       if (typeof window === 'undefined') return
-      
+
       localStorage.removeItem(this.CACHE_KEY)
       Logger.info('Token缓存已清除')
     } catch (error) {
@@ -123,22 +123,25 @@ class TokenCacheManager {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${cached.token}`
-        }
+          Authorization: `Bearer ${cached.token}`,
+        },
       })
 
       if (!response.ok) {
         const errorData = await response.json()
-        Logger.error('Token刷新失败', new Error(`HTTP ${response.status}: ${errorData.message || '刷新失败'}`))
+        Logger.error(
+          'Token刷新失败',
+          new Error(`HTTP ${response.status}: ${errorData.message || '刷新失败'}`)
+        )
         this.clearToken()
         return { success: false, error: errorData.message || '刷新失败' }
       }
 
       const data = await response.json()
-      
+
       // 更新缓存
       this.setCachedToken(data.token, data.expiresIn, cached.userInfo)
-      
+
       Logger.info('Token刷新成功', { userId: cached.userId })
       return { success: true, token: data.token }
     } catch (error) {

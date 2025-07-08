@@ -1,6 +1,6 @@
 /**
  * Vibe Coding Engine
- * 
+ *
  * LinchKit AI-驱动的智能代码生成引擎
  * 基于 Graph RAG 实现上下文感知的代码生成
  */
@@ -17,7 +17,7 @@ import type {
   ContextAnalysis,
   GeneratedCode,
   DependencyInfo,
-  ValidationResult
+  ValidationResult,
 } from './types.js'
 import {
   GenerationContextType,
@@ -25,7 +25,7 @@ import {
   QualityLevel,
   GenerationContextSchema,
   GeneratedCodeSchema,
-  DependencyInfoSchema
+  DependencyInfoSchema,
 } from './types.js'
 
 /**
@@ -39,22 +39,22 @@ export class VibeCodingEngine implements IVibeCodingEngine {
 
   // 代码模板缓存
   private templates = new Map<string, string>()
-  
+
   // LinchKit 内部包映射
   private readonly linchkitPackages = new Set([
     '@linch-kit/core',
-    '@linch-kit/schema', 
+    '@linch-kit/schema',
     '@linch-kit/auth',
     '@linch-kit/crud',
     '@linch-kit/trpc',
-    '@linch-kit/ui'
+    '@linch-kit/ui',
   ])
 
   constructor() {
     this.logger = createLogger({ name: 'ai:vibe-coding-engine' })
     this.queryEngine = new IntelligentQueryEngine()
     this.contextAnalyzer = new ContextAnalyzer()
-    
+
     this.initializeTemplates()
   }
 
@@ -68,10 +68,10 @@ export class VibeCodingEngine implements IVibeCodingEngine {
 
     try {
       this.logger.info('初始化 Vibe Coding Engine...')
-      
+
       // 连接知识图谱
       await this.queryEngine.connect()
-      
+
       this.isInitialized = true
       this.logger.info('Vibe Coding Engine 初始化完成')
     } catch (error) {
@@ -85,29 +85,34 @@ export class VibeCodingEngine implements IVibeCodingEngine {
    */
   async generateCode(prompt: string, context?: Partial<GenerationContext>): Promise<GeneratedCode> {
     await this.ensureInitialized()
-    
+
     const startTime = Date.now()
     this.logger.info('开始代码生成', { prompt, context })
 
     try {
       // 1. 规范化生成上下文
       const normalizedContext = this.normalizeContext(context)
-      
+
       // 2. 分析上下文和查询图谱
       const contextAnalysis = await this.analyzeContext(prompt)
-      
+
       // 3. 选择合适的生成策略
       const strategy = this.selectGenerationStrategy(prompt, normalizedContext, contextAnalysis)
-      
+
       // 4. 生成代码
-      const code = await this.executeGeneration(prompt, normalizedContext, contextAnalysis, strategy)
-      
+      const code = await this.executeGeneration(
+        prompt,
+        normalizedContext,
+        contextAnalysis,
+        strategy
+      )
+
       // 5. 推理依赖关系
       const dependencies = await this.inferDependencies(code)
-      
+
       // 6. 验证代码质量
       const validation = await this.validateGeneration(code)
-      
+
       // 7. 构建结果
       const result: GeneratedCode = {
         code,
@@ -119,19 +124,19 @@ export class VibeCodingEngine implements IVibeCodingEngine {
           tech_stack: normalizedContext.tech_stack,
           confidence: this.calculateConfidence(contextAnalysis, validation),
           estimated_lines: code.split('\n').length,
-          complexity_score: this.calculateComplexity(code)
+          complexity_score: this.calculateComplexity(code),
         },
-        validation
+        validation,
       }
 
       // 验证结果结构
       const validatedResult = GeneratedCodeSchema.parse(result)
-      
+
       const endTime = Date.now()
       this.logger.info('代码生成完成', {
         duration: endTime - startTime,
         lines: validatedResult.metadata.estimated_lines,
-        confidence: validatedResult.metadata.confidence
+        confidence: validatedResult.metadata.confidence,
       })
 
       return validatedResult
@@ -146,13 +151,13 @@ export class VibeCodingEngine implements IVibeCodingEngine {
    */
   async analyzeContext(prompt: string): Promise<ContextAnalysis> {
     await this.ensureInitialized()
-    
+
     this.logger.info('开始上下文分析', { prompt })
 
     try {
       // 使用智能查询引擎查询相关节点
       const queryResult = await this.queryEngine.query(prompt)
-      
+
       // 使用上下文分析器分析结果
       const analysis = await this.contextAnalyzer.analyze(
         prompt,
@@ -163,7 +168,7 @@ export class VibeCodingEngine implements IVibeCodingEngine {
       this.logger.info('上下文分析完成', {
         relevantNodes: analysis.relevant_nodes.length,
         suggestedImports: analysis.suggested_imports.length,
-        patterns: analysis.patterns.length
+        patterns: analysis.patterns.length,
       })
 
       return analysis
@@ -181,17 +186,17 @@ export class VibeCodingEngine implements IVibeCodingEngine {
 
     try {
       const dependencies: DependencyInfo[] = []
-      
+
       // 1. 提取 import 语句
       const importMatches = code.match(/import\s+.*?\s+from\s+['"]([^'"]+)['"]/g) || []
-      
+
       for (const importMatch of importMatches) {
         const moduleMatch = importMatch.match(/from\s+['"]([^'"]+)['"]/)
         if (!moduleMatch) continue
-        
+
         const moduleName = moduleMatch[1]
         const exportsMatch = importMatch.match(/import\s+(?:\*\s+as\s+\w+|\{([^}]+)\}|\w+)/)
-        const exportsUsed = exportsMatch?.[1] 
+        const exportsUsed = exportsMatch?.[1]
           ? exportsMatch[1].split(',').map(e => e.trim().replace(/\s+as\s+.*/, ''))
           : ['default']
 
@@ -202,7 +207,7 @@ export class VibeCodingEngine implements IVibeCodingEngine {
           import_path: moduleName,
           exports_used: exportsUsed,
           confidence: this.calculateDependencyConfidence(moduleName),
-          reason: this.getDependencyReason(moduleName)
+          reason: this.getDependencyReason(moduleName),
         }
 
         // 添加版本信息（如果是已知的 LinchKit 包）
@@ -219,10 +224,10 @@ export class VibeCodingEngine implements IVibeCodingEngine {
 
       // 验证依赖信息
       const validatedDependencies = dependencies.map(dep => DependencyInfoSchema.parse(dep))
-      
+
       this.logger.info('依赖推理完成', {
         count: validatedDependencies.length,
-        linchkitDeps: validatedDependencies.filter(d => d.source === 'linchkit').length
+        linchkitDeps: validatedDependencies.filter(d => d.source === 'linchkit').length,
       })
 
       return validatedDependencies
@@ -244,7 +249,7 @@ export class VibeCodingEngine implements IVibeCodingEngine {
         type_safe: true,
         lint_compliant: true,
         warnings: [],
-        suggestions: []
+        suggestions: [],
       }
 
       // 1. 基础语法检查
@@ -253,7 +258,9 @@ export class VibeCodingEngine implements IVibeCodingEngine {
         this.performSyntaxCheck(code)
       } catch (error) {
         validation.syntax_valid = false
-        validation.warnings.push(`语法错误: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        validation.warnings.push(
+          `语法错误: ${error instanceof Error ? error.message : 'Unknown error'}`
+        )
       }
 
       // 2. TypeScript 类型检查
@@ -272,7 +279,7 @@ export class VibeCodingEngine implements IVibeCodingEngine {
       this.logger.info('代码验证完成', {
         syntaxValid: validation.syntax_valid,
         typeSafe: validation.type_safe,
-        warningsCount: validation.warnings.length
+        warningsCount: validation.warnings.length,
       })
 
       return validation
@@ -283,7 +290,7 @@ export class VibeCodingEngine implements IVibeCodingEngine {
         type_safe: false,
         lint_compliant: false,
         warnings: ['验证过程出现错误'],
-        suggestions: []
+        suggestions: [],
       }
     }
   }
@@ -293,12 +300,12 @@ export class VibeCodingEngine implements IVibeCodingEngine {
    */
   async getSuggestions(prompt: string): Promise<string[]> {
     await this.ensureInitialized()
-    
+
     this.logger.info('生成代码建议', { prompt })
 
     try {
       const suggestions: string[] = []
-      
+
       // 1. 基于提示分析生成类型建议
       const contextType = this.inferContextType(prompt)
       if (contextType) {
@@ -307,9 +314,11 @@ export class VibeCodingEngine implements IVibeCodingEngine {
 
       // 2. 基于图谱查询生成相关建议
       const contextAnalysis = await this.analyzeContext(prompt)
-      
+
       if (contextAnalysis.suggested_imports.length > 0) {
-        suggestions.push(`建议导入: ${contextAnalysis.suggested_imports.map(imp => imp.module).join(', ')}`)
+        suggestions.push(
+          `建议导入: ${contextAnalysis.suggested_imports.map(imp => imp.module).join(', ')}`
+        )
       }
 
       if (contextAnalysis.patterns.length > 0) {
@@ -345,20 +354,20 @@ export class VibeCodingEngine implements IVibeCodingEngine {
         max_lines: 200,
         include_tests: false,
         include_docs: true,
-        follow_conventions: true
-      }
+        follow_conventions: true,
+      },
     }
 
     // 合并用户提供的上下文
     const merged = { ...defaultContext, ...context }
-    
+
     // 验证上下文
     return GenerationContextSchema.parse(merged)
   }
 
   private selectGenerationStrategy(
-    prompt: string, 
-    context: GenerationContext, 
+    prompt: string,
+    context: GenerationContext,
     _analysis: ContextAnalysis
   ): string {
     // 基于上下文类型选择策略
@@ -399,14 +408,18 @@ export class VibeCodingEngine implements IVibeCodingEngine {
 
   // === 代码生成具体实现 ===
 
-  private generateFunction(prompt: string, _context: GenerationContext, analysis: ContextAnalysis): string {
+  private generateFunction(
+    prompt: string,
+    _context: GenerationContext,
+    analysis: ContextAnalysis
+  ): string {
     const imports = analysis.suggested_imports
       .filter(imp => imp.confidence > 0.7)
       .map(imp => `import { ${imp.exports.join(', ')} } from '${imp.module}'`)
       .join('\n')
 
     const functionName = this.extractFunctionName(prompt) || 'generatedFunction'
-    
+
     return `${imports ? imports + '\n\n' : ''}/**
  * ${this.generateJSDoc(prompt)}
  */
@@ -416,9 +429,13 @@ export async function ${functionName}(): Promise<void> {
 }`
   }
 
-  private generateReactComponent(prompt: string, _context: GenerationContext, _analysis: ContextAnalysis): string {
+  private generateReactComponent(
+    prompt: string,
+    _context: GenerationContext,
+    _analysis: ContextAnalysis
+  ): string {
     const componentName = this.extractComponentName(prompt) || 'GeneratedComponent'
-    
+
     return `import { type FC } from 'react'
 
 interface ${componentName}Props {
@@ -438,7 +455,11 @@ export const ${componentName}: FC<${componentName}Props> = (props) => {
 }`
   }
 
-  private generateApiRoute(prompt: string, _context: GenerationContext, _analysis: ContextAnalysis): string {
+  private generateApiRoute(
+    prompt: string,
+    _context: GenerationContext,
+    _analysis: ContextAnalysis
+  ): string {
     return `import { NextRequest, NextResponse } from 'next/server'
 
 /**
@@ -457,9 +478,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 }`
   }
 
-  private generateSchema(prompt: string, _context: GenerationContext, _analysis: ContextAnalysis): string {
+  private generateSchema(
+    prompt: string,
+    _context: GenerationContext,
+    _analysis: ContextAnalysis
+  ): string {
     const schemaName = this.extractSchemaName(prompt) || 'GeneratedSchema'
-    
+
     return `import { z } from 'zod'
 
 /**
@@ -474,7 +499,11 @@ export const ${schemaName}Schema = z.object({
 export type ${schemaName} = z.infer<typeof ${schemaName}Schema>`
   }
 
-  private generateGeneric(prompt: string, _context: GenerationContext, _analysis: ContextAnalysis): string {
+  private generateGeneric(
+    prompt: string,
+    _context: GenerationContext,
+    _analysis: ContextAnalysis
+  ): string {
     return `/**
  * ${this.generateJSDoc(prompt)}
  */
@@ -489,7 +518,7 @@ export const generatedCode = {
   private initializeTemplates(): void {
     // 初始化代码模板
     this.templates.set('function', '// Function template')
-    this.templates.set('component', '// Component template') 
+    this.templates.set('component', '// Component template')
     // 更多模板...
   }
 
@@ -499,14 +528,20 @@ export const generatedCode = {
   }
 
   private extractExports(code: string): string[] {
-    const exportMatches = code.match(/export\s+(?:default\s+)?(?:const|function|class|interface|type)\s+(\w+)/g) || []
-    return exportMatches.map(match => {
-      const nameMatch = match.match(/\s+(\w+)$/)
-      return nameMatch?.[1] || ''
-    }).filter(Boolean)
+    const exportMatches =
+      code.match(/export\s+(?:default\s+)?(?:const|function|class|interface|type)\s+(\w+)/g) || []
+    return exportMatches
+      .map(match => {
+        const nameMatch = match.match(/\s+(\w+)$/)
+        return nameMatch?.[1] || ''
+      })
+      .filter(Boolean)
   }
 
-  private groupDependencies(dependencies: DependencyInfo[]): { internal: string[]; external: string[] } {
+  private groupDependencies(dependencies: DependencyInfo[]): {
+    internal: string[]
+    external: string[]
+  } {
     const internal = dependencies.filter(d => d.source === 'linchkit').map(d => d.name)
     const external = dependencies.filter(d => d.source !== 'linchkit').map(d => d.name)
     return { internal, external }
@@ -514,17 +549,17 @@ export const generatedCode = {
 
   private calculateConfidence(analysis: ContextAnalysis, validation: ValidationResult): number {
     let confidence = 0.5 // 基础置信度
-    
+
     // 基于分析结果调整
     if (analysis.relevant_nodes.length > 0) confidence += 0.2
     if (analysis.suggested_imports.length > 0) confidence += 0.1
     if (analysis.patterns.length > 0) confidence += 0.1
-    
+
     // 基于验证结果调整
     if (validation.syntax_valid) confidence += 0.1
     if (validation.type_safe) confidence += 0.1
     if (validation.warnings.length === 0) confidence += 0.1
-    
+
     return Math.min(confidence, 1.0)
   }
 
@@ -533,8 +568,8 @@ export const generatedCode = {
     const lines = code.split('\n').length
     const functions = (code.match(/function\s+\w+/g) || []).length
     const conditions = (code.match(/if\s*\(|switch\s*\(|for\s*\(|while\s*\(/g) || []).length
-    
-    return Math.min((lines / 20) + functions + (conditions * 0.5), 10)
+
+    return Math.min(lines / 20 + functions + conditions * 0.5, 10)
   }
 
   private getPackageName(modulePath: string): string {
@@ -586,7 +621,7 @@ export const generatedCode = {
 
   private async analyzeApiUsage(code: string): Promise<DependencyInfo[]> {
     const dependencies: DependencyInfo[] = []
-    
+
     // 检查 React hooks 使用
     if (code.includes('useState') || code.includes('useEffect')) {
       dependencies.push({
@@ -596,7 +631,7 @@ export const generatedCode = {
         import_path: 'react',
         exports_used: ['useState', 'useEffect'],
         confidence: 0.9,
-        reason: '检测到 React hooks 使用'
+        reason: '检测到 React hooks 使用',
       })
     }
 
@@ -609,7 +644,7 @@ export const generatedCode = {
         import_path: '@linch-kit/core/server',
         exports_used: ['createLogger'],
         confidence: 0.9,
-        reason: '检测到 LinchKit 日志系统使用'
+        reason: '检测到 LinchKit 日志系统使用',
       })
     }
 
@@ -620,14 +655,14 @@ export const generatedCode = {
     // 简单的语法检查
     const openBraces = (code.match(/\{/g) || []).length
     const closeBraces = (code.match(/\}/g) || []).length
-    
+
     if (openBraces !== closeBraces) {
       throw new Error('括号不匹配')
     }
 
     const openParens = (code.match(/\(/g) || []).length
     const closeParens = (code.match(/\)/g) || []).length
-    
+
     if (openParens !== closeParens) {
       throw new Error('圆括号不匹配')
     }
@@ -661,7 +696,7 @@ export const generatedCode = {
 
   private getLinchKitBestPractices(prompt: string): string[] {
     const practices: string[] = []
-    
+
     if (prompt.includes('日志') || prompt.includes('log')) {
       practices.push('使用 @linch-kit/core createLogger 而不是 console.log')
     }

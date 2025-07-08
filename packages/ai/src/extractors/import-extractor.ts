@@ -1,6 +1,6 @@
 /**
  * ImportExtractor
- * 
+ *
  * 使用 ts-morph 分析模块导入导出关系，构建跨包依赖图谱
  * 识别循环依赖和关键路径，支持动态导入分析
  */
@@ -8,22 +8,17 @@
 import { readdir, stat } from 'fs/promises'
 import { join, extname } from 'path'
 
-import { 
-  Project, 
-  SourceFile, 
+import {
+  Project,
+  SourceFile,
   SyntaxKind,
   ImportDeclaration,
   ExportDeclaration,
   ImportSpecifier,
-  ExportSpecifier
+  ExportSpecifier,
 } from 'ts-morph'
 
-import { 
-  NodeType, 
-  RelationType, 
-  type GraphNode, 
-  type GraphRelationship
-} from '../types/index.js'
+import { NodeType, RelationType, type GraphNode, type GraphRelationship } from '../types/index.js'
 import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index.js'
 
 import { BaseExtractor } from './base-extractor.js'
@@ -79,7 +74,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     this.project = new Project({
       tsConfigFilePath: tsConfigPath,
       skipAddingFilesFromTsConfig: true,
-      skipFileDependencyResolution: true
+      skipFileDependencyResolution: true,
     })
   }
 
@@ -103,27 +98,30 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       try {
         this.sourceFiles.push(this.project.addSourceFileAtPath(filePath))
       } catch (error) {
-        this.logger.warn(`无法解析模块 ${filePath}`, { error: error instanceof Error ? error.message : String(error) })
+        this.logger.warn(`无法解析模块 ${filePath}`, {
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     }
 
     const analysis: DependencyAnalysis = {
       imports: [],
       exports: [],
-      dependencies: []
+      dependencies: [],
     }
 
     // 分析每个源文件
     for (const sourceFile of this.sourceFiles) {
       try {
         const fileAnalysis = await this.analyzeSourceFile(sourceFile)
-        
+
         analysis.imports.push(...fileAnalysis.imports)
         analysis.exports.push(...fileAnalysis.exports)
         analysis.dependencies.push(...fileAnalysis.dependencies)
-        
       } catch (error) {
-        this.logger.warn(`分析文件失败: ${sourceFile.getFilePath()}`, { error: error instanceof Error ? error.message : String(error) })
+        this.logger.warn(`分析文件失败: ${sourceFile.getFilePath()}`, {
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     }
 
@@ -132,7 +130,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       duration: endTime - startTime,
       importsCount: analysis.imports.length,
       exportsCount: analysis.exports.length,
-      dependenciesCount: analysis.dependencies.length
+      dependenciesCount: analysis.dependencies.length,
     })
 
     return analysis
@@ -144,16 +142,16 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     const scanDirectory = async (dir: string): Promise<void> => {
       try {
         const items = await readdir(dir)
-        
+
         for (const item of items) {
           const fullPath = join(dir, item)
-          
+
           if (this.shouldExcludePath(item) || item.startsWith('.')) {
             continue
           }
 
           const stats = await stat(fullPath)
-          
+
           if (stats.isDirectory()) {
             await scanDirectory(fullPath)
           } else if (stats.isFile()) {
@@ -164,13 +162,15 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
           }
         }
       } catch (error) {
-        this.logger.warn(`扫描目录失败: ${dir}`, { error: error instanceof Error ? error.message : String(error) })
+        this.logger.warn(`扫描目录失败: ${dir}`, {
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     }
 
     // 扫描项目根目录
     await scanDirectory(this.getProjectRoot())
-    
+
     // 扫描包目录
     const packageDirs = this.config.getPackageDirectories()
     for (const packageDir of packageDirs) {
@@ -199,7 +199,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     const analysis: DependencyAnalysis = {
       imports: [],
       exports: [],
-      dependencies: []
+      dependencies: [],
     }
 
     // 分析静态导入
@@ -207,7 +207,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       const importInfo = this.extractImportInfo(importDecl, filePath, packageName)
       if (importInfo) {
         analysis.imports.push(importInfo)
-        
+
         // 计算依赖关系
         const dependency = this.createDependency(importInfo, filePath)
         if (dependency) {
@@ -228,13 +228,15 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     const defaultExport = sourceFile.getDefaultExportSymbol()
     if (defaultExport) {
       analysis.exports.push({
-        specifiers: [{
-          exported: 'default',
-          local: defaultExport.getName() || 'default',
-          type: 'default'
-        }],
+        specifiers: [
+          {
+            exported: 'default',
+            local: defaultExport.getName() || 'default',
+            type: 'default',
+          },
+        ],
         filePath,
-        packageName
+        packageName,
       })
     }
 
@@ -244,22 +246,24 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
         const arg = call.getArguments()[0]
         if (arg && arg.getKind() === SyntaxKind.StringLiteral) {
           const moduleSpecifier = arg.asKindOrThrow(SyntaxKind.StringLiteral).getLiteralValue()
-          
+
           const dynamicImport: ImportInfo = {
-            specifiers: [{
-              imported: '*',
-              local: '*',
-              type: 'namespace'
-            }],
+            specifiers: [
+              {
+                imported: '*',
+                local: '*',
+                type: 'namespace',
+              },
+            ],
             source: moduleSpecifier,
             filePath,
             lineNumber: this.safeLineNumber(call.getStartLineNumber()),
             isDynamic: true,
-            packageName
+            packageName,
           }
-          
+
           analysis.imports.push(dynamicImport)
-          
+
           const dependency = this.createDependency(dynamicImport, filePath)
           if (dependency) {
             analysis.dependencies.push(dependency)
@@ -271,7 +275,11 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     return analysis
   }
 
-  private extractImportInfo(importDecl: ImportDeclaration, filePath: string, packageName?: string): ImportInfo | null {
+  private extractImportInfo(
+    importDecl: ImportDeclaration,
+    filePath: string,
+    packageName?: string
+  ): ImportInfo | null {
     const source = importDecl.getModuleSpecifierValue()
     if (!source) return null
 
@@ -282,7 +290,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       specifiers.push({
         imported: namedImport.getName(),
         local: namedImport.getAliasNode()?.getText() || namedImport.getName(),
-        type: 'named'
+        type: 'named',
       })
     })
 
@@ -292,7 +300,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       specifiers.push({
         imported: 'default',
         local: defaultImport.getText(),
-        type: 'default'
+        type: 'default',
       })
     }
 
@@ -302,7 +310,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       specifiers.push({
         imported: '*',
         local: namespaceImport.getText(),
-        type: 'namespace'
+        type: 'namespace',
       })
     }
 
@@ -312,11 +320,15 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       filePath,
       lineNumber: this.safeLineNumber(importDecl.getStartLineNumber()),
       isDynamic: false,
-      packageName
+      packageName,
     }
   }
 
-  private extractExportInfo(exportDecl: ExportDeclaration, filePath: string, packageName?: string): ExportInfo | null {
+  private extractExportInfo(
+    exportDecl: ExportDeclaration,
+    filePath: string,
+    packageName?: string
+  ): ExportInfo | null {
     const specifiers: ExportInfo['specifiers'] = []
 
     // 处理命名导出
@@ -324,7 +336,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       specifiers.push({
         exported: namedExport.getAliasNode()?.getText() || namedExport.getName(),
         local: namedExport.getName(),
-        type: 'named'
+        type: 'named',
       })
     })
 
@@ -338,19 +350,19 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
       source,
       filePath,
       lineNumber: this.safeLineNumber(exportDecl.getStartLineNumber()),
-      packageName
+      packageName,
     }
   }
 
   private createDependency(importInfo: ImportInfo, fromFile: string): ModuleDependency | null {
     const dependencyType = this.isExternalModule(importInfo.source) ? 'external' : 'internal'
     const importedItems = importInfo.specifiers.map(s => s.imported)
-    
+
     return {
       from: fromFile,
       to: importInfo.source,
       importedItems,
-      dependencyType
+      dependencyType,
     }
   }
 
@@ -360,25 +372,25 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
 
   private getPackageNameFromPath(filePath: string): string | undefined {
     const segments = filePath.split('/')
-    
+
     // 检查 packages/ 目录
     const packagesIndex = segments.findIndex(segment => segment === 'packages')
     if (packagesIndex >= 0 && packagesIndex < segments.length - 1) {
       return `@linch-kit/${segments[packagesIndex + 1]}`
     }
-    
+
     // 检查 apps/ 目录
     const appsIndex = segments.findIndex(segment => segment === 'apps')
     if (appsIndex >= 0 && appsIndex < segments.length - 1) {
       return segments[appsIndex + 1]
     }
-    
+
     // 检查 modules/ 目录
     const modulesIndex = segments.findIndex(segment => segment === 'modules')
     if (modulesIndex >= 0 && modulesIndex < segments.length - 1) {
       return segments[modulesIndex + 1]
     }
-    
+
     return undefined
   }
 
@@ -393,7 +405,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     for (const importInfo of rawData.imports) {
       for (const spec of importInfo.specifiers) {
         const importId = NodeIdGenerator.import(
-          importInfo.packageName || 'unknown', 
+          importInfo.packageName || 'unknown',
           importInfo.source,
           spec.imported,
           importInfo.filePath
@@ -410,26 +422,33 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
             source: importInfo.source,
             is_dynamic: importInfo.isDynamic,
             file_path: importInfo.filePath,
-            line_number: importInfo.lineNumber
+            line_number: importInfo.lineNumber,
           },
-          metadata: this.createMetadata(importInfo.filePath, importInfo.packageName)
+          metadata: this.createMetadata(importInfo.filePath, importInfo.packageName),
         }
 
         nodes.push(importNode)
 
         // 创建文件导入关系
-        const fileNodeId = NodeIdGenerator.file(importInfo.packageName || 'unknown', importInfo.filePath)
-        const importRelId = RelationshipIdGenerator.create(RelationType.IMPORTS, fileNodeId, importId)
-        
+        const fileNodeId = NodeIdGenerator.file(
+          importInfo.packageName || 'unknown',
+          importInfo.filePath
+        )
+        const importRelId = RelationshipIdGenerator.create(
+          RelationType.IMPORTS,
+          fileNodeId,
+          importId
+        )
+
         relationships.push({
           id: importRelId,
           type: RelationType.IMPORTS,
           source: fileNodeId,
           target: importId,
           properties: {
-            import_type: importInfo.isDynamic ? 'dynamic' : 'static'
+            import_type: importInfo.isDynamic ? 'dynamic' : 'static',
           },
-          metadata: this.createMetadata(importInfo.filePath, importInfo.packageName)
+          metadata: this.createMetadata(importInfo.filePath, importInfo.packageName),
         })
       }
     }
@@ -453,23 +472,30 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
             export_type: spec.type,
             source: exportInfo.source,
             file_path: exportInfo.filePath,
-            line_number: exportInfo.lineNumber
+            line_number: exportInfo.lineNumber,
           },
-          metadata: this.createMetadata(exportInfo.filePath, exportInfo.packageName)
+          metadata: this.createMetadata(exportInfo.filePath, exportInfo.packageName),
         }
 
         nodes.push(exportNode)
 
         // 创建文件导出关系
-        const fileNodeId = NodeIdGenerator.file(exportInfo.packageName || 'unknown', exportInfo.filePath)
-        const exportRelId = RelationshipIdGenerator.create(RelationType.EXPORTS, fileNodeId, exportId)
-        
+        const fileNodeId = NodeIdGenerator.file(
+          exportInfo.packageName || 'unknown',
+          exportInfo.filePath
+        )
+        const exportRelId = RelationshipIdGenerator.create(
+          RelationType.EXPORTS,
+          fileNodeId,
+          exportId
+        )
+
         relationships.push({
           id: exportRelId,
           type: RelationType.EXPORTS,
           source: fileNodeId,
           target: exportId,
-          metadata: this.createMetadata(exportInfo.filePath, exportInfo.packageName)
+          metadata: this.createMetadata(exportInfo.filePath, exportInfo.packageName),
         })
       }
     }
@@ -477,12 +503,17 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     // 创建模块依赖关系
     for (const dependency of rawData.dependencies) {
       const sourceFileId = NodeIdGenerator.file('unknown', dependency.from)
-      const targetFileId = dependency.dependencyType === 'internal' 
-        ? NodeIdGenerator.file('unknown', dependency.to)
-        : `external:${dependency.to.replace(/[^a-zA-Z0-9-_]/g, '_')}`
-      
-      const depRelId = RelationshipIdGenerator.create(RelationType.DEPENDS_ON, sourceFileId, targetFileId)
-      
+      const targetFileId =
+        dependency.dependencyType === 'internal'
+          ? NodeIdGenerator.file('unknown', dependency.to)
+          : `external:${dependency.to.replace(/[^a-zA-Z0-9-_]/g, '_')}`
+
+      const depRelId = RelationshipIdGenerator.create(
+        RelationType.DEPENDS_ON,
+        sourceFileId,
+        targetFileId
+      )
+
       relationships.push({
         id: depRelId,
         type: RelationType.DEPENDS_ON,
@@ -490,15 +521,15 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
         target: targetFileId,
         properties: {
           dependency_type: dependency.dependencyType,
-          imported_items: dependency.importedItems
+          imported_items: dependency.importedItems,
         },
-        metadata: this.createMetadata(dependency.from)
+        metadata: this.createMetadata(dependency.from),
       })
     }
 
     this.logger.info('导入导出图数据转换完成', {
       nodeCount: nodes.length,
-      relationshipCount: relationships.length
+      relationshipCount: relationships.length,
     })
 
     return { nodes, relationships }
@@ -509,11 +540,7 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
   }
 
   getRelationTypes(): RelationType[] {
-    return [
-      RelationType.IMPORTS,
-      RelationType.EXPORTS,
-      RelationType.DEPENDS_ON
-    ]
+    return [RelationType.IMPORTS, RelationType.EXPORTS, RelationType.DEPENDS_ON]
   }
 
   protected getSourceCount(rawData: DependencyAnalysis): number {

@@ -1,6 +1,6 @@
 /**
  * LinchKit AI Extractors
- * 
+ *
  * 统一的数据提取器导出
  */
 

@@ -1,6 +1,6 @@
 /**
  * Console 路由配置
- * 
+ *
  * 定义 Console 模块的所有路由和导航结构
  */
 
@@ -27,9 +27,9 @@ export const defaultRoutes: Record<ConsoleFeature, ConsoleRoute[]> = {
         icon: 'LayoutDashboard',
         requireAuth: true,
         permissions: ['console:dashboard:read'],
-        order: 1
-      }
-    }
+        order: 1,
+      },
+    },
   ],
 
   tenants: [
@@ -41,8 +41,8 @@ export const defaultRoutes: Record<ConsoleFeature, ConsoleRoute[]> = {
         icon: 'Building2',
         requireAuth: true,
         permissions: ['console:tenant:read'],
-        order: 2
-      }
+        order: 2,
+      },
     },
     {
       path: '/tenants/create',
@@ -52,8 +52,8 @@ export const defaultRoutes: Record<ConsoleFeature, ConsoleRoute[]> = {
         requireAuth: true,
         permissions: ['console:tenant:create'],
         hidden: true,
-        parent: '/tenants'
-      }
+        parent: '/tenants',
+      },
     },
     {
       path: '/tenants/:id',
@@ -63,38 +63,40 @@ export const defaultRoutes: Record<ConsoleFeature, ConsoleRoute[]> = {
         requireAuth: true,
         permissions: ['console:tenant:read'],
         hidden: true,
-        parent: '/tenants'
-      }
-    }
+        parent: '/tenants',
+      },
+    },
   ],
-  
+
   // 暂未实现的功能模块 - 空数组
   users: [],
   permissions: [],
   plugins: [],
   monitoring: [],
   schemas: [],
-  settings: []
+  settings: [],
 }
 
 /**
  * 获取默认启用的功能 - 只包含已实现的
  */
-export const defaultFeatures: ConsoleFeature[] = [
-  'dashboard',
-  'tenants'
-]
+export const defaultFeatures: ConsoleFeature[] = ['dashboard', 'tenants']
 
 /**
  * 权限映射 - 包含所有功能模块
  */
 export const permissionMap: Record<ConsoleFeature, string[]> = {
   dashboard: ['console:dashboard:read'],
-  tenants: ['console:tenant:read', 'console:tenant:create', 'console:tenant:update', 'console:tenant:delete'],
+  tenants: [
+    'console:tenant:read',
+    'console:tenant:create',
+    'console:tenant:update',
+    'console:tenant:delete',
+  ],
   users: [],
   permissions: [],
   plugins: [],
   monitoring: [],
   schemas: [],
-  settings: []
+  settings: [],
 }

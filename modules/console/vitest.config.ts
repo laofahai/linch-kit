@@ -1,5 +1,5 @@
-import { defineConfig } from 'vitest/config';
-import path from 'path';
+import { defineConfig } from 'vitest/config'
+import path from 'path'
 
 export default defineConfig({
   test: {
@@ -9,14 +9,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/**',
-        'dist/**',
-        '**/*.test.ts',
-        '**/*.spec.ts',
-        'src/types/**'
-      ]
-    }
+      exclude: ['node_modules/**', 'dist/**', '**/*.test.ts', '**/*.spec.ts', 'src/types/**'],
+    },
   },
   resolve: {
     alias: {
@@ -26,6 +20,6 @@ export default defineConfig({
       '@linch-kit/crud': path.resolve(__dirname, '../crud/src'),
       '@linch-kit/trpc': path.resolve(__dirname, '../trpc/src'),
       '@linch-kit/ui': path.resolve(__dirname, '../ui/src'),
-    }
-  }
-});
+    },
+  },
+})

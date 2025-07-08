@@ -6,7 +6,7 @@ export default defineConfig({
     'src/cli/index.ts',
     'src/cli/main.ts',
     'src/extractors/index.ts',
-    'src/graph/index.ts'
+    'src/graph/index.ts',
   ],
   format: ['esm', 'cjs'],
   dts: true,

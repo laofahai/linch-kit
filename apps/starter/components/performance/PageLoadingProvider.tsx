@@ -45,10 +45,13 @@ export function PageLoadingProvider({ children }: PageLoadingProviderProps) {
     // 记录页面加载性能
     const recordPageLoad = () => {
       if (typeof window !== 'undefined' && window.performance) {
-        const navigation = window.performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+        const navigation = window.performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming
         const loadTime = navigation.loadEventEnd - navigation.loadEventStart
-        const renderTime = navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart
-        
+        const renderTime =
+          navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart
+
         setMetrics(prev => ({
           ...prev,
           loadTime,
@@ -106,7 +109,7 @@ export function PageLoadingProvider({ children }: PageLoadingProviderProps) {
   const recordInteraction = (action: string) => {
     const interactionTime = Date.now()
     setMetrics(prev => ({ ...prev, interactionTime }))
-    
+
     Logger.info('用户交互', {
       action,
       interactionTime,
@@ -134,8 +137,12 @@ export function PerformanceMonitor() {
       <div className="space-y-1">
         <div>加载时间: {metrics.loadTime}ms</div>
         <div>渲染时间: {metrics.renderTime}ms</div>
-        <div className={`flex items-center gap-2 ${metrics.isLoading ? 'text-yellow-400' : 'text-green-400'}`}>
-          <div className={`w-2 h-2 rounded-full ${metrics.isLoading ? 'bg-yellow-400' : 'bg-green-400'}`}></div>
+        <div
+          className={`flex items-center gap-2 ${metrics.isLoading ? 'text-yellow-400' : 'text-green-400'}`}
+        >
+          <div
+            className={`w-2 h-2 rounded-full ${metrics.isLoading ? 'bg-yellow-400' : 'bg-green-400'}`}
+          ></div>
           {metrics.isLoading ? '加载中' : '就绪'}
         </div>
       </div>

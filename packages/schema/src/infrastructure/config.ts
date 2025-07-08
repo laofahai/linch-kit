@@ -1,8 +1,8 @@
 /**
  * @linch-kit/schema 配置管理
- * 
+ *
  * Schema包的配置定义和默认值
- * 
+ *
  * @module infrastructure/config
  */
 
@@ -41,5 +41,5 @@ export const defaultSchemaConfig: SchemaConfig = {
   decorators: false,
   examples: false,
   watch: false,
-  clean: false
+  clean: false,
 }

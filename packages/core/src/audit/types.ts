@@ -17,7 +17,7 @@ export interface AuditEvent {
   category: 'SECURITY' | 'DATA' | 'SYSTEM' | 'BUSINESS'
   /** 严重程度 */
   severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
-  
+
   // 操作信息
   /** 操作名称 */
   operation: string
@@ -25,7 +25,7 @@ export interface AuditEvent {
   resource: string
   /** 资源ID */
   resourceId?: string
-  
+
   // 用户信息
   /** 用户ID */
   userId?: string
@@ -35,7 +35,7 @@ export interface AuditEvent {
   ipAddress?: string
   /** 会话ID */
   sessionId?: string
-  
+
   // 结果信息
   /** 操作是否成功 */
   success: boolean
@@ -43,11 +43,11 @@ export interface AuditEvent {
   errorCode?: string
   /** 错误消息 */
   errorMessage?: string
-  
+
   // 详细数据
   /** 元数据 */
   metadata?: Record<string, unknown>
-  
+
   // 上下文信息
   /** 服务名称 */
   service: string
@@ -55,7 +55,7 @@ export interface AuditEvent {
   requestId?: string
   /** 追踪ID */
   traceId?: string
-  
+
   // 合规字段
   /** 保留策略 */
   retentionPolicy?: string
@@ -129,28 +129,28 @@ export interface AuditFilter {
 export interface AuditStore {
   /** 存储名称 */
   name: string
-  
+
   /** 存储审计事件 */
   store(events: AuditEvent[]): Promise<void>
-  
+
   /** 查询审计事件 */
   query(filter: AuditFilter): Promise<AuditEvent[]>
-  
+
   /** 统计审计事件数量 */
   count(filter: AuditFilter): Promise<number>
-  
+
   /** 导出审计数据 */
   export(filter: AuditFilter, format: 'json' | 'csv' | 'xml'): Promise<string>
-  
+
   /** 清理过期数据 */
   purge(beforeDate: Date): Promise<number>
-  
+
   /** 健康检查 */
   healthCheck(): Promise<boolean>
-  
+
   /** 初始化存储 */
   initialize?(): Promise<void>
-  
+
   /** 销毁存储 */
   destroy?(): Promise<void>
 }
@@ -205,55 +205,55 @@ export interface AuditAlertRule {
 export interface AuditManager {
   /** 记录审计事件（异步） */
   log(event: Partial<AuditEvent>): Promise<void>
-  
+
   /** 记录审计事件（同步） */
   logSync(event: Partial<AuditEvent>): void
-  
+
   /** 强制刷新缓存的事件 */
   flush(): Promise<void>
-  
+
   /** 查询审计事件 */
   query(filter: AuditFilter): Promise<AuditEvent[]>
-  
+
   /** 统计审计事件 */
   count(filter: AuditFilter): Promise<number>
-  
+
   /** 导出审计数据 */
   export(filter: AuditFilter, format: 'json' | 'csv' | 'xml'): Promise<string>
-  
+
   /** 获取当前审计策略 */
   getPolicy(): AuditPolicy
-  
+
   /** 更新审计策略 */
   updatePolicy(policy: Partial<AuditPolicy>): Promise<void>
-  
+
   /** 添加存储适配器 */
   addStore(store: AuditStore): void
-  
+
   /** 移除存储适配器 */
   removeStore(name: string): void
-  
+
   /** 获取所有存储适配器 */
   getStores(): AuditStore[]
-  
+
   /** 添加告警规则 */
   addAlertRule(rule: AuditAlertRule): void
-  
+
   /** 移除告警规则 */
   removeAlertRule(name: string): void
-  
+
   /** 获取告警历史 */
   getAlerts(filter?: Partial<AuditAlert>): Promise<AuditAlert[]>
-  
+
   /** 确认告警 */
   acknowledgeAlert(alertId: string): Promise<void>
-  
+
   /** 健康检查 */
   healthCheck(): Promise<Record<string, boolean>>
-  
+
   /** 初始化 */
   initialize(): Promise<void>
-  
+
   /** 销毁 */
   destroy(): Promise<void>
 }
@@ -317,16 +317,16 @@ export interface AuditConfig {
 export interface DataMasker {
   /** 脱敏单个值 */
   maskValue(value: unknown, fieldName: string): unknown
-  
+
   /** 脱敏对象 */
   maskObject(obj: Record<string, unknown>): Record<string, unknown>
-  
+
   /** 脱敏数组 */
   maskArray(arr: unknown[]): unknown[]
-  
+
   /** 检查字段是否敏感 */
   isSensitiveField(fieldName: string): boolean
-  
+
   /** 添加敏感字段模式 */
   addSensitivePattern(pattern: string | RegExp): void
 }
@@ -344,5 +344,5 @@ export const DEFAULT_AUDIT_POLICY: AuditPolicy = {
   batchSize: 100,
   flushInterval: 5000, // 5秒
   dataMasking: true,
-  compression: false
+  compression: false,
 }

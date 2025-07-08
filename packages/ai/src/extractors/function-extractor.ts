@@ -1,6 +1,6 @@
 /**
  * FunctionExtractor
- * 
+ *
  * 使用 ts-morph 提取 TypeScript/JavaScript 代码中的函数、类、接口、类型定义等
  * 分析代码结构和函数调用关系，构建详细的代码知识图谱
  */
@@ -8,9 +8,9 @@
 import { readdir, stat } from 'fs/promises'
 import { join, extname } from 'path'
 
-import { 
-  Project, 
-  SourceFile, 
+import {
+  Project,
+  SourceFile,
   SyntaxKind,
   FunctionDeclaration,
   MethodDeclaration,
@@ -24,15 +24,10 @@ import {
   PropertyDeclaration,
   CallExpression,
   VariableDeclaration,
-  ExpressionWithTypeArguments
+  ExpressionWithTypeArguments,
 } from 'ts-morph'
 
-import { 
-  NodeType, 
-  RelationType, 
-  type GraphNode, 
-  type GraphRelationship
-} from '../types/index.js'
+import { NodeType, RelationType, type GraphNode, type GraphRelationship } from '../types/index.js'
 import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index.js'
 
 import { BaseExtractor } from './base-extractor.js'
@@ -127,7 +122,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     this.project = new Project({
       tsConfigFilePath: tsConfigPath,
       skipAddingFilesFromTsConfig: true,
-      skipFileDependencyResolution: true
+      skipFileDependencyResolution: true,
     })
   }
 
@@ -151,7 +146,9 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       try {
         this.sourceFiles.push(this.project.addSourceFileAtPath(filePath))
       } catch (error) {
-        this.logger.warn(`无法解析文件 ${filePath}`, { error: error instanceof Error ? error.message : String(error) })
+        this.logger.warn(`无法解析文件 ${filePath}`, {
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     }
 
@@ -159,21 +156,22 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       functions: [],
       classes: [],
       interfaces: [],
-      types: []
+      types: [],
     }
 
     // 分析每个源文件
     for (const sourceFile of this.sourceFiles) {
       try {
         const fileAnalysis = await this.analyzeSourceFile(sourceFile)
-        
+
         analysis.functions.push(...fileAnalysis.functions)
         analysis.classes.push(...fileAnalysis.classes)
         analysis.interfaces.push(...fileAnalysis.interfaces)
         analysis.types.push(...fileAnalysis.types)
-        
       } catch (error) {
-        this.logger.warn(`分析文件失败: ${sourceFile.getFilePath()}`, { error: error instanceof Error ? error.message : String(error) })
+        this.logger.warn(`分析文件失败: ${sourceFile.getFilePath()}`, {
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     }
 
@@ -183,7 +181,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       functionsCount: analysis.functions.length,
       classesCount: analysis.classes.length,
       interfacesCount: analysis.interfaces.length,
-      typesCount: analysis.types.length
+      typesCount: analysis.types.length,
     })
 
     return analysis
@@ -195,16 +193,16 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     const scanDirectory = async (dir: string): Promise<void> => {
       try {
         const items = await readdir(dir)
-        
+
         for (const item of items) {
           const fullPath = join(dir, item)
-          
+
           if (this.shouldExcludePath(item) || item.startsWith('.')) {
             continue
           }
 
           const stats = await stat(fullPath)
-          
+
           if (stats.isDirectory()) {
             await scanDirectory(fullPath)
           } else if (stats.isFile()) {
@@ -215,13 +213,15 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           }
         }
       } catch (error) {
-        this.logger.warn(`扫描目录失败: ${dir}`, { error: error instanceof Error ? error.message : String(error) })
+        this.logger.warn(`扫描目录失败: ${dir}`, {
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     }
 
     // 扫描项目根目录
     await scanDirectory(this.getProjectRoot())
-    
+
     // 扫描包目录
     const packageDirs = this.config.getPackageDirectories()
     for (const packageDir of packageDirs) {
@@ -246,12 +246,12 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
   private async analyzeSourceFile(sourceFile: SourceFile): Promise<CodeAnalysis> {
     const filePath = this.normalizeFilePath(sourceFile.getFilePath())
     const packageName = this.getPackageNameFromPath(filePath)
-    
+
     const analysis: CodeAnalysis = {
       functions: [],
       classes: [],
       interfaces: [],
-      types: []
+      types: [],
     }
 
     // 分析函数声明
@@ -304,7 +304,11 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     return analysis
   }
 
-  private extractFunctionInfo(func: FunctionDeclaration, filePath: string, packageName?: string): FunctionInfo | null {
+  private extractFunctionInfo(
+    func: FunctionDeclaration,
+    filePath: string,
+    packageName?: string
+  ): FunctionInfo | null {
     const name = func.getName()
     if (!name) return null
 
@@ -317,7 +321,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       name: param.getName(),
       type: param.getTypeNode()?.getText(),
       optional: param.hasQuestionToken(),
-      defaultValue: param.getInitializer()?.getText()
+      defaultValue: param.getInitializer()?.getText(),
     }))
 
     // 提取返回类型
@@ -347,11 +351,15 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       endLineNumber: endLine,
       jsdoc,
       calls,
-      packageName
+      packageName,
     }
   }
 
-  private extractMethodInfo(method: MethodDeclaration, filePath: string, packageName?: string): FunctionInfo | null {
+  private extractMethodInfo(
+    method: MethodDeclaration,
+    filePath: string,
+    packageName?: string
+  ): FunctionInfo | null {
     const name = method.getName()
     if (!name) return null
 
@@ -363,7 +371,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       name: param.getName(),
       type: param.getTypeNode()?.getText(),
       optional: param.hasQuestionToken(),
-      defaultValue: param.getInitializer()?.getText()
+      defaultValue: param.getInitializer()?.getText(),
     }))
 
     const returnType = method.getReturnTypeNode()?.getText()
@@ -397,11 +405,15 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       jsdoc,
       accessModifier,
       calls,
-      packageName
+      packageName,
     }
   }
 
-  private extractArrowFunctionInfo(arrow: ArrowFunction, filePath: string, packageName?: string): FunctionInfo | null {
+  private extractArrowFunctionInfo(
+    arrow: ArrowFunction,
+    filePath: string,
+    packageName?: string
+  ): FunctionInfo | null {
     // 只提取有名称的箭头函数（变量声明）
     const parent = arrow.getParent()
     if (!parent || parent.getKind() !== SyntaxKind.VariableDeclaration) {
@@ -418,7 +430,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       name: param.getName(),
       type: param.getTypeNode()?.getText(),
       optional: param.hasQuestionToken(),
-      defaultValue: param.getInitializer()?.getText()
+      defaultValue: param.getInitializer()?.getText(),
     }))
 
     const returnType = arrow.getReturnTypeNode()?.getText()
@@ -438,11 +450,15 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       lineNumber: startLine,
       endLineNumber: endLine,
       calls,
-      packageName
+      packageName,
     }
   }
 
-  private extractClassInfo(cls: ClassDeclaration, filePath: string, packageName?: string): ClassInfo | null {
+  private extractClassInfo(
+    cls: ClassDeclaration,
+    filePath: string,
+    packageName?: string
+  ): ClassInfo | null {
     const name = cls.getName()
     if (!name) return null
 
@@ -454,7 +470,9 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
     // 获取继承和实现信息
     const extendsClass = cls.getExtends()?.getExpression()?.getText()
-    const implementsInterfaces = cls.getImplements().map((impl: ExpressionWithTypeArguments) => impl.getText())
+    const implementsInterfaces = cls
+      .getImplements()
+      .map((impl: ExpressionWithTypeArguments) => impl.getText())
 
     // 获取访问修饰符
     let accessModifier: 'public' | 'private' | 'protected' | undefined
@@ -485,11 +503,15 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       accessModifier,
       methods,
       properties,
-      packageName
+      packageName,
     }
   }
 
-  private extractInterfaceInfo(iface: InterfaceDeclaration, filePath: string, packageName?: string): InterfaceInfo | null {
+  private extractInterfaceInfo(
+    iface: InterfaceDeclaration,
+    filePath: string,
+    packageName?: string
+  ): InterfaceInfo | null {
     const name = iface.getName()
     if (!name) return null
 
@@ -497,19 +519,21 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     const endLine = this.safeLineNumber(iface.getEndLineNumber())
 
     const isExported = iface.isExported()
-    const extendsInterfaces = iface.getExtends().map((ext: ExpressionWithTypeArguments) => ext.getText())
+    const extendsInterfaces = iface
+      .getExtends()
+      .map((ext: ExpressionWithTypeArguments) => ext.getText())
 
     // 获取属性和方法
     const properties = iface.getProperties().map((prop: PropertySignature) => ({
       name: prop.getName(),
       type: prop.getTypeNode()?.getText(),
-      optional: prop.hasQuestionToken()
+      optional: prop.hasQuestionToken(),
     }))
 
     const methods = iface.getMethods().map((method: MethodSignature) => ({
       name: method.getName(),
       signature: method.getText(),
-      returnType: method.getReturnTypeNode()?.getText()
+      returnType: method.getReturnTypeNode()?.getText(),
     }))
 
     const jsdoc = iface.getJsDocs()?.[0]?.getDescription()
@@ -524,11 +548,15 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       jsdoc,
       properties,
       methods,
-      packageName
+      packageName,
     }
   }
 
-  private extractTypeInfo(typeAlias: TypeAliasDeclaration, filePath: string, packageName?: string): TypeInfo | null {
+  private extractTypeInfo(
+    typeAlias: TypeAliasDeclaration,
+    filePath: string,
+    packageName?: string
+  ): TypeInfo | null {
     const name = typeAlias.getName()
     if (!name) return null
 
@@ -549,13 +577,15 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       lineNumber: startLine,
       jsdoc,
       referencedTypes,
-      packageName
+      packageName,
     }
   }
 
-  private extractFunctionCalls(node: FunctionDeclaration | MethodDeclaration | ArrowFunction): string[] {
+  private extractFunctionCalls(
+    node: FunctionDeclaration | MethodDeclaration | ArrowFunction
+  ): string[] {
     const calls: string[] = []
-    
+
     // 查找所有函数调用表达式
     node.getDescendantsOfKind(SyntaxKind.CallExpression).forEach((callExpr: CallExpression) => {
       const expression = callExpr.getExpression()
@@ -570,25 +600,25 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
   private getPackageNameFromPath(filePath: string): string | undefined {
     const segments = filePath.split('/')
-    
+
     // 检查 packages/ 目录
     const packagesIndex = segments.findIndex(segment => segment === 'packages')
     if (packagesIndex >= 0 && packagesIndex < segments.length - 1) {
       return `@linch-kit/${segments[packagesIndex + 1]}`
     }
-    
+
     // 检查 apps/ 目录
     const appsIndex = segments.findIndex(segment => segment === 'apps')
     if (appsIndex >= 0 && appsIndex < segments.length - 1) {
       return segments[appsIndex + 1]
     }
-    
+
     // 检查 modules/ 目录
     const modulesIndex = segments.findIndex(segment => segment === 'modules')
     if (modulesIndex >= 0 && modulesIndex < segments.length - 1) {
       return segments[modulesIndex + 1]
     }
-    
+
     return undefined
   }
 
@@ -601,8 +631,13 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
     // 创建函数节点
     for (const func of rawData.functions) {
-      const nodeId = NodeIdGenerator.api(func.packageName || 'unknown', func.name, 'function', func.filePath)
-      
+      const nodeId = NodeIdGenerator.api(
+        func.packageName || 'unknown',
+        func.name,
+        'function',
+        func.filePath
+      )
+
       const functionNode: GraphNode = {
         id: nodeId,
         type: NodeType.FUNCTION,
@@ -618,32 +653,42 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           line_number: func.lineNumber,
           end_line_number: func.endLineNumber,
           jsdoc: func.jsdoc,
-          access_modifier: func.accessModifier
+          access_modifier: func.accessModifier,
         },
-        metadata: this.createMetadata(func.filePath, func.packageName)
+        metadata: this.createMetadata(func.filePath, func.packageName),
       }
 
       nodes.push(functionNode)
 
       // 创建函数调用关系
       for (const calledFunction of func.calls) {
-        const targetId = NodeIdGenerator.api(func.packageName || 'unknown', calledFunction, 'function', func.filePath)
+        const targetId = NodeIdGenerator.api(
+          func.packageName || 'unknown',
+          calledFunction,
+          'function',
+          func.filePath
+        )
         const relationshipId = RelationshipIdGenerator.create(RelationType.CALLS, nodeId, targetId)
-        
+
         relationships.push({
           id: relationshipId,
           type: RelationType.CALLS,
           source: nodeId,
           target: targetId,
-          metadata: this.createMetadata(func.filePath, func.packageName)
+          metadata: this.createMetadata(func.filePath, func.packageName),
         })
       }
     }
 
     // 创建类节点
     for (const cls of rawData.classes) {
-      const nodeId = NodeIdGenerator.api(cls.packageName || 'unknown', cls.name, 'class', cls.filePath)
-      
+      const nodeId = NodeIdGenerator.api(
+        cls.packageName || 'unknown',
+        cls.name,
+        'class',
+        cls.filePath
+      )
+
       const classNode: GraphNode = {
         id: nodeId,
         type: NodeType.CLASS,
@@ -659,46 +704,67 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           jsdoc: cls.jsdoc,
           access_modifier: cls.accessModifier,
           methods_count: cls.methods.length,
-          properties_count: cls.properties.length
+          properties_count: cls.properties.length,
         },
-        metadata: this.createMetadata(cls.filePath, cls.packageName)
+        metadata: this.createMetadata(cls.filePath, cls.packageName),
       }
 
       nodes.push(classNode)
 
       // 创建继承关系
       if (cls.extendsClass) {
-        const parentId = NodeIdGenerator.api(cls.packageName || 'unknown', cls.extendsClass, 'class')
-        const relationshipId = RelationshipIdGenerator.create(RelationType.EXTENDS, nodeId, parentId)
-        
+        const parentId = NodeIdGenerator.api(
+          cls.packageName || 'unknown',
+          cls.extendsClass,
+          'class'
+        )
+        const relationshipId = RelationshipIdGenerator.create(
+          RelationType.EXTENDS,
+          nodeId,
+          parentId
+        )
+
         relationships.push({
           id: relationshipId,
           type: RelationType.EXTENDS,
           source: nodeId,
           target: parentId,
-          metadata: this.createMetadata(cls.filePath, cls.packageName)
+          metadata: this.createMetadata(cls.filePath, cls.packageName),
         })
       }
 
       // 创建实现关系
       for (const interfaceName of cls.implementsInterfaces) {
-        const interfaceId = NodeIdGenerator.api(cls.packageName || 'unknown', interfaceName, 'interface')
-        const relationshipId = RelationshipIdGenerator.create(RelationType.IMPLEMENTS, nodeId, interfaceId)
-        
+        const interfaceId = NodeIdGenerator.api(
+          cls.packageName || 'unknown',
+          interfaceName,
+          'interface'
+        )
+        const relationshipId = RelationshipIdGenerator.create(
+          RelationType.IMPLEMENTS,
+          nodeId,
+          interfaceId
+        )
+
         relationships.push({
           id: relationshipId,
           type: RelationType.IMPLEMENTS,
           source: nodeId,
           target: interfaceId,
-          metadata: this.createMetadata(cls.filePath, cls.packageName)
+          metadata: this.createMetadata(cls.filePath, cls.packageName),
         })
       }
     }
 
     // 创建接口节点
     for (const iface of rawData.interfaces) {
-      const nodeId = NodeIdGenerator.api(iface.packageName || 'unknown', iface.name, 'interface', iface.filePath)
-      
+      const nodeId = NodeIdGenerator.api(
+        iface.packageName || 'unknown',
+        iface.name,
+        'interface',
+        iface.filePath
+      )
+
       const interfaceNode: GraphNode = {
         id: nodeId,
         type: NodeType.INTERFACE,
@@ -711,32 +777,45 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           end_line_number: iface.endLineNumber,
           jsdoc: iface.jsdoc,
           properties_count: iface.properties.length,
-          methods_count: iface.methods.length
+          methods_count: iface.methods.length,
         },
-        metadata: this.createMetadata(iface.filePath, iface.packageName)
+        metadata: this.createMetadata(iface.filePath, iface.packageName),
       }
 
       nodes.push(interfaceNode)
 
       // 创建接口继承关系
       for (const parentInterface of iface.extendsInterfaces) {
-        const parentId = NodeIdGenerator.api(iface.packageName || 'unknown', parentInterface, 'interface')
-        const relationshipId = RelationshipIdGenerator.create(RelationType.EXTENDS, nodeId, parentId)
-        
+        const parentId = NodeIdGenerator.api(
+          iface.packageName || 'unknown',
+          parentInterface,
+          'interface'
+        )
+        const relationshipId = RelationshipIdGenerator.create(
+          RelationType.EXTENDS,
+          nodeId,
+          parentId
+        )
+
         relationships.push({
           id: relationshipId,
           type: RelationType.EXTENDS,
           source: nodeId,
           target: parentId,
-          metadata: this.createMetadata(iface.filePath, iface.packageName)
+          metadata: this.createMetadata(iface.filePath, iface.packageName),
         })
       }
     }
 
     // 创建类型节点
     for (const type of rawData.types) {
-      const nodeId = NodeIdGenerator.api(type.packageName || 'unknown', type.name, 'type', type.filePath)
-      
+      const nodeId = NodeIdGenerator.api(
+        type.packageName || 'unknown',
+        type.name,
+        'type',
+        type.filePath
+      )
+
       const typeNode: GraphNode = {
         id: nodeId,
         type: NodeType.TYPE,
@@ -746,9 +825,9 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           is_exported: type.isExported,
           file_path: type.filePath,
           line_number: type.lineNumber,
-          jsdoc: type.jsdoc
+          jsdoc: type.jsdoc,
         },
-        metadata: this.createMetadata(type.filePath, type.packageName)
+        metadata: this.createMetadata(type.filePath, type.packageName),
       }
 
       nodes.push(typeNode)
@@ -756,7 +835,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
     this.logger.info('图数据转换完成', {
       nodeCount: nodes.length,
-      relationshipCount: relationships.length
+      relationshipCount: relationships.length,
     })
 
     return { nodes, relationships }
@@ -773,11 +852,16 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       RelationType.IMPLEMENTS,
       RelationType.USES_TYPE,
       RelationType.RETURNS,
-      RelationType.PARAMETER
+      RelationType.PARAMETER,
     ]
   }
 
   protected getSourceCount(rawData: CodeAnalysis): number {
-    return rawData.functions.length + rawData.classes.length + rawData.interfaces.length + rawData.types.length
+    return (
+      rawData.functions.length +
+      rawData.classes.length +
+      rawData.interfaces.length +
+      rawData.types.length
+    )
   }
 }

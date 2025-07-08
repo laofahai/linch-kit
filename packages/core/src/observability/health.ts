@@ -7,11 +7,7 @@ import { Server } from 'http'
 
 import { createTerminus, TerminusOptions, HealthCheckError } from '@godaddy/terminus'
 
-import type { 
-  HealthChecker, 
-  HealthMonitor, 
-  HealthStatus 
-} from '../types'
+import type { HealthChecker, HealthMonitor, HealthStatus } from '../types'
 
 import { logger } from './logger'
 
@@ -40,20 +36,20 @@ export class LinchKitHealthMonitor implements HealthMonitor {
 
   async checkAll(): Promise<Record<string, HealthStatus>> {
     const results: Record<string, HealthStatus> = {}
-    
+
     const checkPromises = Array.from(this.checkers.entries()).map(async ([name, checker]) => {
       try {
-        const timeoutPromise = checker.timeout 
+        const timeoutPromise = checker.timeout
           ? this.withTimeout(checker.check(), checker.timeout)
           : checker.check()
-        
+
         const status = await timeoutPromise
         results[name] = status
       } catch (error) {
         results[name] = {
           status: 'unhealthy',
           message: error instanceof Error ? error.message : 'Unknown error',
-          timestamp: Date.now()
+          timestamp: Date.now(),
         }
       }
     })
@@ -69,16 +65,16 @@ export class LinchKitHealthMonitor implements HealthMonitor {
     }
 
     try {
-      const timeoutPromise = checker.timeout 
+      const timeoutPromise = checker.timeout
         ? this.withTimeout(checker.check(), checker.timeout)
         : checker.check()
-      
+
       return await timeoutPromise
     } catch (error) {
       return {
         status: 'unhealthy',
         message: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       }
     }
   }
@@ -86,10 +82,10 @@ export class LinchKitHealthMonitor implements HealthMonitor {
   async getOverallHealth(): Promise<HealthStatus> {
     const results = await this.checkAll()
     const statuses = Object.values(results)
-    
+
     const hasUnhealthy = statuses.some(s => s.status === 'unhealthy')
     const hasDegraded = statuses.some(s => s.status === 'degraded')
-    
+
     let overallStatus: 'healthy' | 'unhealthy' | 'degraded'
     if (hasUnhealthy) {
       overallStatus = 'unhealthy'
@@ -98,19 +94,19 @@ export class LinchKitHealthMonitor implements HealthMonitor {
     } else {
       overallStatus = 'healthy'
     }
-    
+
     return {
       status: overallStatus,
       message: `${statuses.length} checks completed`,
       details: results,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
   }
 
   start(): void {
     this.isStarted = true
-    logger.info('Health monitor started', { 
-      checkersCount: this.checkers.size 
+    logger.info('Health monitor started', {
+      checkersCount: this.checkers.size,
     })
   }
 
@@ -127,7 +123,7 @@ export class LinchKitHealthMonitor implements HealthMonitor {
       signal: 'SIGTERM',
       timeout: 5000,
       ...options,
-      
+
       // 健康检查端点
       healthChecks: {
         '/health': async () => {
@@ -144,7 +140,7 @@ export class LinchKitHealthMonitor implements HealthMonitor {
             throw new HealthCheckError('Readiness check failed', results)
           }
           return { status: 'ready', timestamp: Date.now() }
-        }
+        },
       },
 
       // 优雅关闭处理
@@ -169,7 +165,7 @@ export class LinchKitHealthMonitor implements HealthMonitor {
         if (options.onSendFailureDuringShutdown) {
           await options.onSendFailureDuringShutdown()
         }
-      }
+      },
     }
 
     createTerminus(server, terminusOptions)
@@ -190,8 +186,11 @@ export class LinchKitHealthMonitor implements HealthMonitor {
     return Promise.race([
       promise,
       new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error(`Health check timed out after ${timeoutMs}ms`)), timeoutMs)
-      })
+        setTimeout(
+          () => reject(new Error(`Health check timed out after ${timeoutMs}ms`)),
+          timeoutMs
+        )
+      }),
     ])
   }
 }
@@ -231,32 +230,32 @@ export const builtinCheckers = {
     async check(): Promise<HealthStatus> {
       const usage = process.memoryUsage()
       const usedRatio = usage.heapUsed / usage.heapTotal
-      
+
       if (usedRatio > threshold) {
         return {
           status: 'unhealthy',
           message: `Memory usage too high: ${(usedRatio * 100).toFixed(1)}%`,
           details: { usage, threshold },
-          timestamp: Date.now()
+          timestamp: Date.now(),
         }
       }
-      
+
       if (usedRatio > threshold * 0.8) {
         return {
           status: 'degraded',
           message: `Memory usage elevated: ${(usedRatio * 100).toFixed(1)}%`,
           details: { usage, threshold },
-          timestamp: Date.now()
+          timestamp: Date.now(),
         }
       }
-      
+
       return {
         status: 'healthy',
         message: `Memory usage normal: ${(usedRatio * 100).toFixed(1)}%`,
         details: { usage, threshold },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       }
-    }
+    },
   }),
 
   /**
@@ -270,31 +269,31 @@ export const builtinCheckers = {
         const fs = await import('fs')
         const stats = await fs.promises.statfs(path)
         const usedRatio = (stats.blocks - stats.bavail) / stats.blocks
-        
+
         if (usedRatio > threshold) {
           return {
             status: 'unhealthy',
             message: `Disk usage too high: ${(usedRatio * 100).toFixed(1)}%`,
             details: { path, usedRatio, threshold },
-            timestamp: Date.now()
+            timestamp: Date.now(),
           }
         }
-        
+
         return {
           status: 'healthy',
           message: `Disk usage normal: ${(usedRatio * 100).toFixed(1)}%`,
           details: { path, usedRatio, threshold },
-          timestamp: Date.now()
+          timestamp: Date.now(),
         }
       } catch (error) {
         return {
           status: 'unhealthy',
           message: `Failed to check disk usage: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         }
       }
-    }
-  })
+    },
+  }),
 }
 
 /**

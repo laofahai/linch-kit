@@ -1,6 +1,6 @@
 /**
  * Console 页面组件导出
- * 
+ *
  * 统一导出所有 Console 页面组件
  */
 
@@ -22,9 +22,9 @@ import TenantCreate from './tenants/TenantCreate'
 export default {
   // 主要页面
   Dashboard,
-  
+
   // 租户管理
   TenantList,
   TenantDetail,
-  TenantCreate
+  TenantCreate,
 }

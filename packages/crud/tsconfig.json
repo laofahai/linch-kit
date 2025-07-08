@@ -9,17 +9,7 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules",
-    
-  ],
-  "references": [
-    { "path": "../core" },
-    { "path": "../schema" },
-    { "path": "../auth" }
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"],
+  "references": [{ "path": "../core" }, { "path": "../schema" }, { "path": "../auth" }]
 }

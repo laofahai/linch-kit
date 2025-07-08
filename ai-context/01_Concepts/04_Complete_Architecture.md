@@ -7,6 +7,7 @@
 ## 🎯 架构核心理念
 
 ### 设计哲学
+
 1. **包功能完整性**：每个包都是功能完整的独立库，可单独使用
 2. **分层使用模式**：支持从开箱即用到完全自定义的多种使用方式
 3. **职责清晰分离**：Starter（环境）+ Console（集成）+ Packages（功能）
@@ -15,6 +16,7 @@
 ### 三层使用模式
 
 #### 🚀 **开箱即用模式**（Starter + Console）
+
 ```
 目标用户: 需要快速上线的用户
 使用方式: starter + console + 内置插件
@@ -24,6 +26,7 @@
 ```
 
 #### 🛠️ **定制开发模式**（Starter + Console + 自定义功能）
+
 ```
 目标用户: 有特定需求的开发者
 使用方式: starter + console（基础功能）+ 自定义路由和组件
@@ -33,6 +36,7 @@
 ```
 
 #### ⚙️ **深度集成模式**（Pure Packages）
+
 ```
 目标用户: 有现有系统的企业用户
 使用方式: 直接在现有项目中集成 packages/*
@@ -46,6 +50,7 @@
 ### **Starter：轻量级应用启动器**
 
 **职责边界**：
+
 - ✅ 提供 Next.js 运行环境
 - ✅ 加载和管理配置文件
 - ✅ 提供基础路由框架
@@ -56,6 +61,7 @@
 - ❌ 不包含数据处理逻辑
 
 **文件结构**：
+
 ```
 apps/starter/
 ├── app/
@@ -72,11 +78,12 @@ apps/starter/
 ```
 
 **依赖策略**：
+
 ```json
 {
   "dependencies": {
     "@linch-kit/core": "workspace:*",
-    "@linch-kit/console": "workspace:*",  // 可选，开箱即用模式需要
+    "@linch-kit/console": "workspace:*", // 可选，开箱即用模式需要
     "next": "^15.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -87,6 +94,7 @@ apps/starter/
 ### **Console：企业级管理控制台集成器**
 
 **职责边界**：
+
 - ✅ 集成所有 packages 功能
 - ✅ 提供完整的管理界面
 - ✅ 实现插件管理系统
@@ -97,12 +105,14 @@ apps/starter/
 - ❌ 不强制依赖特定 UI
 
 **核心特点**：
+
 1. **完全基于 Packages 构建**：Console 自身不实现业务逻辑
 2. **可选择性使用**：用户可以完全绕过 Console
 3. **插件化架构**：支持功能扩展和替换
 4. **配置驱动**：通过配置文件控制功能和外观
 
 **文件结构**：
+
 ```
 modules/console/
 ├── src/
@@ -126,6 +136,7 @@ modules/console/
 ### **Packages：功能完整的独立库**
 
 **设计原则**：
+
 1. **完全独立**：每个包可以单独使用，不依赖其他 LinchKit 包（除 core）
 2. **功能完整**：包含该领域的所有核心功能和 API
 3. **文档齐全**：每个包都有独立的使用文档和示例
@@ -134,12 +145,13 @@ modules/console/
 **包设计规范**：
 
 #### **@linch-kit/core**
+
 ```typescript
 // 基础设施包，其他包的依赖基础
 {
   "功能": [
     "配置管理系统",
-    "日志记录系统", 
+    "日志记录系统",
     "插件管理框架",
     "事件系统",
     "工具函数库"
@@ -150,6 +162,7 @@ modules/console/
 ```
 
 #### **@linch-kit/schema**
+
 ```typescript
 // Schema 定义和验证包
 {
@@ -165,6 +178,7 @@ modules/console/
 ```
 
 #### **@linch-kit/auth**
+
 ```typescript
 // 认证授权包
 {
@@ -180,6 +194,7 @@ modules/console/
 ```
 
 #### **@linch-kit/crud**
+
 ```typescript
 // 通用 CRUD 操作包
 {
@@ -195,6 +210,7 @@ modules/console/
 ```
 
 #### **@linch-kit/trpc**
+
 ```typescript
 // API 层包
 {
@@ -210,6 +226,7 @@ modules/console/
 ```
 
 #### **@linch-kit/ui**
+
 ```typescript
 // UI 组件包
 {
@@ -245,14 +262,14 @@ export interface LinchKitConfig {
   console?: {
     // 启用的功能模块
     features: Array<'user-management' | 'tenant-management' | 'analytics' | 'monitoring'>
-    
+
     // 插件配置
     plugins: Array<{
       name: string
       version?: string
       config?: Record<string, unknown>
     }>
-    
+
     // UI 定制
     customization: {
       logo?: string
@@ -260,7 +277,7 @@ export interface LinchKitConfig {
       colors?: Record<string, string>
       layout?: 'sidebar' | 'topbar'
     }
-    
+
     // 权限配置
     permissions?: {
       roles: Array<string>
@@ -277,7 +294,7 @@ export interface LinchKitConfig {
       name: string
       permissions?: string[]
     }>
-    
+
     // 自定义导航项
     customNavigation?: Array<{
       label: string
@@ -315,7 +332,7 @@ export interface LinchKitConfig {
 
   // 环境配置
   env: 'development' | 'production' | 'test'
-  
+
   // 调试配置
   debug: boolean
 }
@@ -324,59 +341,59 @@ export interface LinchKitConfig {
 const consoleConfig: LinchKitConfig = {
   app: {
     name: 'My Enterprise App',
-    version: '1.0.0'
+    version: '1.0.0',
   },
-  
+
   mode: 'console',
-  
+
   console: {
     features: ['user-management', 'tenant-management', 'analytics'],
     plugins: [
       { name: '@linch-kit/plugin-advanced-analytics', version: '^1.0.0' },
-      { name: './plugins/custom-theme' }
+      { name: './plugins/custom-theme' },
     ],
     customization: {
       logo: './assets/company-logo.svg',
       theme: 'dark',
       colors: {
         primary: '#1e40af',
-        secondary: '#64748b'
-      }
-    }
+        secondary: '#64748b',
+      },
+    },
   },
-  
+
   database: {
     provider: 'postgresql',
-    url: process.env.DATABASE_URL!
+    url: process.env.DATABASE_URL!,
   },
-  
+
   auth: {
     providers: ['credentials', 'github'],
     jwt: {
       secret: process.env.JWT_SECRET!,
-      expiresIn: '7d'
-    }
-  }
+      expiresIn: '7d',
+    },
+  },
 }
 
 // 使用示例 2: 混合开发模式（Console + 自定义功能）
 const hybridConfig: LinchKitConfig = {
   app: {
     name: 'Custom Enterprise App',
-    version: '1.0.0'
+    version: '1.0.0',
   },
-  
+
   mode: 'hybrid',
-  
+
   console: {
     // 使用 Console 的基础功能
     features: ['user-management', 'tenant-management'],
     customization: {
       logo: './assets/logo.svg',
-      theme: 'light'
-    }
+      theme: 'light',
+    },
   },
-  
+
   hybrid: {
     // 添加自定义路由
     customRoutes: [
@@ -384,43 +401,43 @@ const hybridConfig: LinchKitConfig = {
         path: '/inventory',
         component: './components/inventory/InventoryPage',
         name: '库存管理',
-        permissions: ['inventory:read']
+        permissions: ['inventory:read'],
       },
       {
         path: '/reports/custom',
         component: './components/reports/CustomReports',
-        name: '自定义报表'
-      }
+        name: '自定义报表',
+      },
     ],
-    
+
     // 自定义导航项
     customNavigation: [
       {
         label: '库存管理',
         path: '/inventory',
         icon: 'Package',
-        permissions: ['inventory:read']
+        permissions: ['inventory:read'],
       },
       {
         label: '业务报表',
         path: '/reports/custom',
-        icon: 'BarChart'
-      }
-    ]
+        icon: 'BarChart',
+      },
+    ],
   },
-  
+
   database: {
     provider: 'postgresql',
-    url: process.env.DATABASE_URL!
+    url: process.env.DATABASE_URL!,
   },
-  
+
   auth: {
     providers: ['credentials'],
     jwt: {
       secret: process.env.JWT_SECRET!,
-      expiresIn: '7d'
-    }
-  }
+      expiresIn: '7d',
+    },
+  },
 }
 
 export default hybridConfig
@@ -460,6 +477,7 @@ import { defineEntity } from '@linch-kit/schema'
 ### **3. 灵活使用示例**
 
 #### **开箱即用模式**
+
 ```typescript
 // apps/starter/app/dashboard/[[...slug]]/page.tsx
 import { LinchKitConsole } from '@linch-kit/console'
@@ -471,6 +489,7 @@ export default function DashboardPage() {
 ```
 
 #### **混合开发模式（Console + 自定义功能）**
+
 ```typescript
 // apps/starter/app/dashboard/[[...slug]]/page.tsx
 import { LinchKitConsole } from '@linch-kit/console'
@@ -492,14 +511,14 @@ const inventoryCRUD = createCRUD(InventorySchema, {
 
 export default function InventoryPage() {
   const { data, isLoading } = inventoryCRUD.useList()
-  
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">库存管理</h1>
         <InventoryCreateButton />
       </div>
-      
+
       <SchemaTable
         schema={InventorySchema}
         data={data}
@@ -520,6 +539,7 @@ export default function InventoryPage() {
 ```
 
 #### **现有项目集成**
+
 ```typescript
 // 现有项目中集成认证
 import { createAuthMiddleware, useAuth } from '@linch-kit/auth'
@@ -534,7 +554,7 @@ app.use('/api', createAuthMiddleware({
 // React 组件中使用
 function MyExistingComponent() {
   const { user, login, logout } = useAuth()
-  
+
   return (
     <div>
       {user ? (
@@ -559,16 +579,16 @@ export interface LinchKitPlugin {
   version: string
   description?: string
   author?: string
-  
+
   // 依赖声明
   dependencies?: Array<{
     name: string
     version: string
   }>
-  
+
   // 组件覆盖/扩展
   components?: Record<string, React.ComponentType<any>>
-  
+
   // 路由扩展
   routes?: Array<{
     path: string
@@ -576,19 +596,22 @@ export interface LinchKitPlugin {
     permissions?: string[]
     layout?: 'default' | 'fullscreen' | 'minimal'
   }>
-  
+
   // 服务扩展
-  services?: Record<string, {
-    create: (options: any) => any
-    extend?: (existing: any) => any
-  }>
-  
+  services?: Record<
+    string,
+    {
+      create: (options: any) => any
+      extend?: (existing: any) => any
+    }
+  >
+
   // API 扩展
   api?: {
     routes: Record<string, any>
     middleware?: Array<any>
   }
-  
+
   // 生命周期钩子
   hooks?: {
     onInstall?: () => Promise<void>
@@ -597,7 +620,7 @@ export interface LinchKitPlugin {
     onAuth?: (user: User) => Promise<void>
     onError?: (error: Error) => void
   }
-  
+
   // 配置模式
   config?: {
     schema: z.ZodSchema
@@ -611,23 +634,23 @@ export interface LinchKitPlugin {
 ```typescript
 // 官方插件
 const officialPlugins = [
-  '@linch-kit/plugin-user-management',     // 用户管理
-  '@linch-kit/plugin-tenant-management',   // 租户管理
-  '@linch-kit/plugin-role-management',     // 角色权限管理
-  '@linch-kit/plugin-analytics',           // 数据分析
-  '@linch-kit/plugin-monitoring',          // 系统监控
-  '@linch-kit/plugin-audit-log',           // 审计日志
-  '@linch-kit/plugin-file-manager',        // 文件管理
-  '@linch-kit/plugin-notification',        // 通知系统
-  '@linch-kit/plugin-backup',              // 数据备份
-  '@linch-kit/plugin-import-export'        // 数据导入导出
+  '@linch-kit/plugin-user-management', // 用户管理
+  '@linch-kit/plugin-tenant-management', // 租户管理
+  '@linch-kit/plugin-role-management', // 角色权限管理
+  '@linch-kit/plugin-analytics', // 数据分析
+  '@linch-kit/plugin-monitoring', // 系统监控
+  '@linch-kit/plugin-audit-log', // 审计日志
+  '@linch-kit/plugin-file-manager', // 文件管理
+  '@linch-kit/plugin-notification', // 通知系统
+  '@linch-kit/plugin-backup', // 数据备份
+  '@linch-kit/plugin-import-export', // 数据导入导出
 ]
 
 // 第三方插件示例
 const thirdPartyPlugins = [
-  '@company/linchkit-crm-integration',     // CRM 集成
-  '@team/custom-reporting',                // 自定义报表
-  'linchkit-payment-gateway'               // 支付网关
+  '@company/linchkit-crm-integration', // CRM 集成
+  '@team/custom-reporting', // 自定义报表
+  'linchkit-payment-gateway', // 支付网关
 ]
 ```
 
@@ -639,14 +662,14 @@ export default {
   name: 'custom-analytics',
   version: '1.0.0',
   description: '自定义数据分析插件',
-  
+
   components: {
     // 覆盖默认仪表板
     Dashboard: () => <CustomDashboard />,
     // 新增分析组件
     AdvancedChart: () => <AdvancedChartComponent />
   },
-  
+
   routes: [
     {
       path: '/analytics',
@@ -659,7 +682,7 @@ export default {
       permissions: ['reports:view']
     }
   ],
-  
+
   services: {
     analytics: {
       create: (options) => new AnalyticsService(options),
@@ -671,14 +694,14 @@ export default {
       }
     }
   },
-  
+
   api: {
     routes: {
       '/api/analytics': analyticsRouter,
       '/api/reports': reportsRouter
     }
   },
-  
+
   hooks: {
     onInit: async (context) => {
       Logger.info('Analytics plugin initialized')
@@ -686,7 +709,7 @@ export default {
       await initAnalyticsTables()
     }
   },
-  
+
   config: {
     schema: z.object({
       provider: z.enum(['google-analytics', 'mixpanel', 'custom']),
@@ -703,30 +726,35 @@ export default {
 ## 📋 迁移实施计划
 
 ### **Phase 1: 包完整性验证**（1周）
+
 1. 审核每个 package 的独立性和功能完整性
 2. 补充缺失的 API 和文档
 3. 确保每个包都可以独立使用
 4. 编写独立使用示例
 
 ### **Phase 2: Console 重构**（2周）
+
 1. 将 Console 重构为纯集成器
 2. 移除 Console 中的业务逻辑实现
 3. 基于 packages 重新构建 Console
 4. 实现插件管理系统
 
 ### **Phase 3: Starter 精简**（1周）
+
 1. 精简 Starter 到最小依赖
 2. 实现配置文件系统
 3. 支持多种使用模式
 4. 创建使用示例
 
 ### **Phase 4: 插件生态**（2周）
+
 1. 实现插件系统核心功能
 2. 开发官方插件
 3. 创建插件开发工具
 4. 编写插件开发文档
 
 ### **Phase 5: 文档和测试**（1周）
+
 1. 完善架构文档
 2. 编写使用指南
 3. 创建最佳实践示例
@@ -735,18 +763,21 @@ export default {
 ## 🎯 架构优势
 
 ### **用户视角**
+
 1. **灵活选择**：可根据需求选择合适的使用模式
 2. **渐进升级**：从开箱即用到完全自定义的平滑升级路径
 3. **生态丰富**：官方插件 + 第三方插件 + 自定义插件
 4. **学习成本低**：统一的 API 设计和文档
 
 ### **开发者视角**
+
 1. **职责清晰**：每个组件的职责边界明确
 2. **易于维护**：功能集中在对应的包中
 3. **扩展性强**：插件系统支持无限扩展
 4. **测试友好**：独立的包便于单元测试
 
 ### **企业视角**
+
 1. **快速上线**：开箱即用模式支持快速 MVP
 2. **定制灵活**：完全的定制开发能力
 3. **投资保护**：可集成到现有系统

@@ -1,6 +1,6 @@
 /**
  * Neo4j Neogma Models (暂时简化版本)
- * 
+ *
  * 使用 Neogma OGM 定义图数据库模型，提供类型安全的数据访问
  * 注意：当前版本暂时注释掉复杂的 Neogma 集成，专注于基础功能
  */
@@ -18,12 +18,16 @@ let neogma: Neogma | null = null
  * 初始化 Neogma 实例（暂时简化版本）
  * 注意：当前版本专注于验证连接，复杂的 OGM 集成将在后续版本实现
  */
-export function initializeNeogma(connectionUri: string, username: string, password: string): Neogma {
+export function initializeNeogma(
+  connectionUri: string,
+  username: string,
+  password: string
+): Neogma {
   if (!neogma) {
     neogma = new Neogma({
       url: connectionUri,
       username: username,
-      password: password
+      password: password,
     })
   }
   return neogma
@@ -111,10 +115,12 @@ export class GraphQueryService {
     // 节点类型条件
     if (nodeType) {
       if (Array.isArray(nodeType)) {
-        const typeConditions = nodeType.map((type, index) => {
-          parameters[`type${index}`] = type
-          return `n.type = $type${index}`
-        }).join(' OR ')
+        const typeConditions = nodeType
+          .map((type, index) => {
+            parameters[`type${index}`] = type
+            return `n.type = $type${index}`
+          })
+          .join(' OR ')
         whereConditions.push(`(${typeConditions})`)
       } else {
         whereConditions.push('n.type = $nodeType')
@@ -132,7 +138,7 @@ export class GraphQueryService {
 
     // 构建查询
     const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : ''
-    
+
     // 构建排序子句
     let orderClause = 'ORDER BY n.name'
     if (searchTerm) {
@@ -148,7 +154,7 @@ export class GraphQueryService {
           n.name
       `
     }
-    
+
     const cypher = `
       MATCH (n)
       ${whereClause}
@@ -171,12 +177,15 @@ export class GraphQueryService {
   /**
    * 高级关系查询（使用原生 driver）
    */
-  async findRelationships(nodeId: string, options: {
-    depth?: number
-    direction?: 'in' | 'out' | 'both'
-    relationshipType?: RelationTypeEnum | RelationTypeEnum[]
-    limit?: number
-  }) {
+  async findRelationships(
+    nodeId: string,
+    options: {
+      depth?: number
+      direction?: 'in' | 'out' | 'both'
+      relationshipType?: RelationTypeEnum | RelationTypeEnum[]
+      limit?: number
+    }
+  ) {
     const { depth = 1, direction = 'both', relationshipType, limit = 20 } = options
     const maxDepth = Math.min(depth, 5) // 限制最大深度
 
@@ -218,7 +227,7 @@ export class GraphQueryService {
     const session = this.neogma.driver.session()
     const queryResponse = await session.run(cypher, { nodeId, limit: Math.floor(limit) })
     await session.close()
-    
+
     const nodes = new Map<string, NodeProperties>()
     const relationships: GraphRelationship[] = []
 
@@ -239,7 +248,7 @@ export class GraphQueryService {
             source: rel.start.toString(),
             target: rel.end.toString(),
             properties: rel.properties || {},
-            metadata: { created_at: new Date().toISOString() }
+            metadata: { created_at: new Date().toISOString() },
           })
         })
       } else if (rels) {
@@ -249,7 +258,7 @@ export class GraphQueryService {
           source: rels.start.toString(),
           target: rels.end.toString(),
           properties: rels.properties || {},
-          metadata: { created_at: new Date().toISOString() }
+          metadata: { created_at: new Date().toISOString() },
         })
       }
     })
@@ -261,11 +270,14 @@ export class GraphQueryService {
         totalNodes: nodes.size,
         totalRelationships: relationships.length,
         maxDepth: maxDepth,
-        relationshipTypes: relationships.reduce((acc, rel) => {
-          acc[rel.type] = (acc[rel.type] || 0) + 1
-          return acc
-        }, {} as Record<string, number>)
-      }
+        relationshipTypes: relationships.reduce(
+          (acc, rel) => {
+            acc[rel.type] = (acc[rel.type] || 0) + 1
+            return acc
+          },
+          {} as Record<string, number>
+        ),
+      },
     }
   }
 
@@ -295,7 +307,7 @@ export class GraphQueryService {
 
     const session = this.neogma.driver.session()
     const nodesResult = await session.run(findNodesQuery, { startTerm, endTerm })
-    
+
     if (nodesResult.records.length === 0) {
       throw new Error(`找不到匹配的节点对: "${startTerm}" 和 "${endTerm}"`)
     }
@@ -314,13 +326,13 @@ export class GraphQueryService {
     const pathsResult = await session.run(shortestPathQuery, {
       startId: startNode.id,
       endId: endNode.id,
-      limit: Math.floor(limit)
+      limit: Math.floor(limit),
     })
 
     const paths = pathsResult.records.map((record: Neo4jRecord) => {
       const path = record.get('path')
       const pathLength = record.get('pathLength').toNumber()
-      
+
       interface PathSegment {
         start: { properties: GraphNode }
         end: { properties: GraphNode }
@@ -331,12 +343,12 @@ export class GraphQueryService {
         }
       }
 
-      const nodes = path.segments.flatMap((segment: PathSegment) => [
-        segment.start.properties,
-        segment.end.properties
-      ]).filter((node: GraphNode, index: number, array: GraphNode[]) => 
-        array.findIndex(n => n.id === node.id) === index
-      )
+      const nodes = path.segments
+        .flatMap((segment: PathSegment) => [segment.start.properties, segment.end.properties])
+        .filter(
+          (node: GraphNode, index: number, array: GraphNode[]) =>
+            array.findIndex(n => n.id === node.id) === index
+        )
 
       const relationships = path.segments.map((segment: PathSegment) => ({
         id: segment.relationship.elementId,
@@ -344,11 +356,13 @@ export class GraphQueryService {
         source: segment.start.properties.id,
         target: segment.end.properties.id,
         properties: segment.relationship.properties || {},
-        metadata: { created_at: new Date().toISOString() }
+        metadata: { created_at: new Date().toISOString() },
       }))
 
-      const weight = relationships.reduce((sum: number, rel: { properties?: { weight?: number } }) => 
-        sum + (rel.properties?.weight as number || 1), 0
+      const weight = relationships.reduce(
+        (sum: number, rel: { properties?: { weight?: number } }) =>
+          sum + ((rel.properties?.weight as number) || 1),
+        0
       )
 
       return {
@@ -356,7 +370,7 @@ export class GraphQueryService {
         relationships,
         length: pathLength,
         weight,
-        pathType: 'shortest' as const
+        pathType: 'shortest' as const,
       }
     })
 
@@ -382,15 +396,19 @@ export class GraphQueryService {
     const result = await session.run(statsQuery)
     const record = result.records[0]
 
-    const nodeTypes = record.get('nodeTypes').reduce((acc: Record<string, number>, type: string) => {
-      if (type) acc[type] = 0
-      return acc
-    }, {})
+    const nodeTypes = record
+      .get('nodeTypes')
+      .reduce((acc: Record<string, number>, type: string) => {
+        if (type) acc[type] = 0
+        return acc
+      }, {})
 
-    const relationshipTypes = record.get('relationshipTypes').reduce((acc: Record<string, number>, type: string) => {
-      if (type) acc[type] = 0
-      return acc
-    }, {})
+    const relationshipTypes = record
+      .get('relationshipTypes')
+      .reduce((acc: Record<string, number>, type: string) => {
+        if (type) acc[type] = 0
+        return acc
+      }, {})
 
     // 获取具体计数
     const nodeSession = this.neogma.driver.session()
@@ -426,7 +444,7 @@ export class GraphQueryService {
       node_count: record.get('nodeCount').toNumber(),
       relationship_count: record.get('relationshipCount').toNumber(),
       node_types: nodeTypes,
-      relationship_types: relationshipTypes
+      relationship_types: relationshipTypes,
     }
   }
 }
@@ -444,8 +462,8 @@ export function graphNodeToNeogmaNode(node: GraphNode): NodeProperties {
     line_number: node.properties?.line_number as number,
     properties: node.properties || {},
     metadata: node.metadata || {},
-    created_at: node.metadata?.created_at as string || new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: (node.metadata?.created_at as string) || new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   }
 }
 
@@ -461,12 +479,12 @@ export function neogmaNodeToGraphNode(node: NodeProperties): GraphNode {
       ...node.properties,
       description: node.description,
       file_path: node.file_path,
-      line_number: node.line_number
+      line_number: node.line_number,
     },
     metadata: {
       ...node.metadata,
       created_at: node.created_at,
-      updated_at: node.updated_at
-    }
+      updated_at: node.updated_at,
+    },
   }
 }

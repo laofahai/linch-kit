@@ -24,9 +24,9 @@ describe('ValidationManager', () => {
       { name: 'age', type: 'number', isRequired: false },
       { name: 'isActive', type: 'boolean', isRequired: false },
       { name: 'createdAt', type: 'datetime', isRequired: false },
-      { name: 'updatedAt', type: 'datetime', isRequired: false }
+      { name: 'updatedAt', type: 'datetime', isRequired: false },
     ],
-    relations: []
+    relations: [],
   }
 
   beforeEach(() => {
@@ -35,14 +35,14 @@ describe('ValidationManager', () => {
       getAllEntities: mock().mockReturnValue([mockEntity]),
       hasEntity: mock().mockReturnValue(true),
       register: mock(),
-      unregister: mock()
+      unregister: mock(),
     }
 
     mockLogger = {
       debug: mock(),
       info: mock(),
       warn: mock(),
-      error: mock()
+      error: mock(),
     }
 
     validationManager = new ValidationManager(mockSchemaRegistry, mockLogger)
@@ -54,7 +54,7 @@ describe('ValidationManager', () => {
         email: 'test@example.com',
         name: 'Test User',
         age: 25,
-        isActive: true
+        isActive: true,
       }
 
       const errors = await validationManager.validateCreate(mockEntity, validData)
@@ -66,7 +66,7 @@ describe('ValidationManager', () => {
       const invalidData = {
         email: 'invalid-email',
         // missing required 'name' field
-        age: 'not-a-number'
+        age: 'not-a-number',
       }
 
       const errors = await validationManager.validateCreate(mockEntity, invalidData)
@@ -101,7 +101,7 @@ describe('ValidationManager', () => {
     it('should validate update data successfully', async () => {
       const validData = {
         name: 'Updated User',
-        age: 26
+        age: 26,
       }
 
       const errors = await validationManager.validateUpdate(mockEntity, validData)
@@ -112,7 +112,7 @@ describe('ValidationManager', () => {
     it('should return validation errors for invalid update data', async () => {
       const invalidData = {
         email: 'invalid-email-format',
-        age: 'not-a-number'
+        age: 'not-a-number',
       }
 
       const errors = await validationManager.validateUpdate(mockEntity, invalidData)
@@ -131,7 +131,7 @@ describe('ValidationManager', () => {
 
     it('should handle partial data for update', async () => {
       const partialData = {
-        name: 'Partial Update'
+        name: 'Partial Update',
       }
 
       const errors = await validationManager.validateUpdate(mockEntity, partialData)
@@ -145,13 +145,13 @@ describe('ValidationManager', () => {
       const validQuery = {
         where: {
           email: 'test@example.com',
-          age: { gte: 18 }
+          age: { gte: 18 },
         },
         orderBy: {
-          createdAt: 'desc'
+          createdAt: 'desc',
         },
         take: 10,
-        skip: 0
+        skip: 0,
       }
 
       const errors = await validationManager.validateQuery(mockEntity, validQuery)
@@ -162,13 +162,13 @@ describe('ValidationManager', () => {
     it('should return validation errors for invalid query', async () => {
       const invalidQuery = {
         where: {
-          nonExistentField: 'value'
+          nonExistentField: 'value',
         },
         orderBy: {
-          invalidField: 'desc'
+          invalidField: 'desc',
         },
         take: -1, // 无效的 take 值
-        skip: -5  // 无效的 skip 值
+        skip: -5, // 无效的 skip 值
       }
 
       const errors = await validationManager.validateQuery(mockEntity, invalidQuery)
@@ -188,27 +188,18 @@ describe('ValidationManager', () => {
     it('should validate complex query structures', async () => {
       const complexQuery = {
         where: {
-          AND: [
-            { email: { contains: '@example.com' } },
-            { age: { gte: 18, lte: 65 } }
-          ],
-          OR: [
-            { name: { startsWith: 'John' } },
-            { name: { startsWith: 'Jane' } }
-          ]
+          AND: [{ email: { contains: '@example.com' } }, { age: { gte: 18, lte: 65 } }],
+          OR: [{ name: { startsWith: 'John' } }, { name: { startsWith: 'Jane' } }],
         },
-        orderBy: [
-          { createdAt: 'desc' },
-          { name: 'asc' }
-        ],
+        orderBy: [{ createdAt: 'desc' }, { name: 'asc' }],
         include: {
           posts: {
             select: {
               title: true,
-              content: true
-            }
-          }
-        }
+              content: true,
+            },
+          },
+        },
       }
 
       const errors = await validationManager.validateQuery(mockEntity, complexQuery)
@@ -296,13 +287,13 @@ describe('ValidationManager', () => {
         {
           email: 'user1@example.com',
           name: 'User 1',
-          age: 25
+          age: 25,
         },
         {
           email: 'user2@example.com',
           name: 'User 2',
-          age: 30
-        }
+          age: 30,
+        },
       ]
 
       // 由于当前没有 validateBatch 方法，我们模拟批量验证
@@ -320,13 +311,13 @@ describe('ValidationManager', () => {
         {
           email: 'valid@example.com',
           name: 'Valid User',
-          age: 25
+          age: 25,
         },
         {
           email: 'invalid-email',
           name: 'Invalid User',
-          age: 'not-a-number'
-        }
+          age: 'not-a-number',
+        },
       ]
 
       const allErrors = []
@@ -347,13 +338,13 @@ describe('ValidationManager', () => {
         field: 'email',
         rule: 'custom',
         validator: (value: string) => value.includes('@'),
-        message: 'Email must contain @ symbol'
+        message: 'Email must contain @ symbol',
       }
 
       // 在实际实现中，应该能够添加和应用自定义验证规则
       const errors = await validationManager.validateCreate(mockEntity, {
         email: 'invalid-email-without-at-symbol',
-        name: 'Test User'
+        name: 'Test User',
       })
 
       expect(errors).toBeInstanceOf(Array)
@@ -365,7 +356,7 @@ describe('ValidationManager', () => {
       const conflictingData = {
         email: 'test@example.com',
         name: 'Test User',
-        age: 150 // 可能超出合理范围
+        age: 150, // 可能超出合理范围
       }
 
       const errors = await validationManager.validateCreate(mockEntity, conflictingData)
@@ -380,7 +371,7 @@ describe('ValidationManager', () => {
       const corruptedData = {
         email: 'test@example.com',
         name: 'Test User',
-        corruptedField: Symbol('corrupted') // 不能序列化的数据
+        corruptedField: Symbol('corrupted'), // 不能序列化的数据
       }
 
       const errors = await validationManager.validateCreate(mockEntity, corruptedData)
@@ -391,7 +382,7 @@ describe('ValidationManager', () => {
     it('should log validation errors', async () => {
       const invalidData = {
         email: 'invalid-email',
-        name: null // 无效的必填字段
+        name: null, // 无效的必填字段
       }
 
       await validationManager.validateCreate(mockEntity, invalidData)
@@ -407,18 +398,18 @@ describe('ValidationManager', () => {
       const largeDataSet = Array.from({ length: 100 }, (_, i) => ({
         email: `user${i}@example.com`,
         name: `User ${i}`,
-        age: 18 + (i % 50)
+        age: 18 + (i % 50),
       }))
 
       const startTime = Date.now()
-      
+
       // 由于没有 validateBatch 方法，我们测试单个验证的性能
       const allErrors = []
       for (const data of largeDataSet) {
         const errors = await validationManager.validateCreate(mockEntity, data)
         allErrors.push(...errors)
       }
-      
+
       const endTime = Date.now()
 
       expect(allErrors).toEqual([])

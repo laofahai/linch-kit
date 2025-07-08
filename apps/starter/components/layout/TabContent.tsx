@@ -34,7 +34,13 @@ interface TabContentProps {
 }
 
 // 错误边界组件
-function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
+function ErrorFallback({
+  error,
+  resetErrorBoundary,
+}: {
+  error: Error
+  resetErrorBoundary: () => void
+}) {
   return (
     <div className="h-full w-full flex items-center justify-center">
       <Card className="w-full max-w-md">
@@ -80,11 +86,10 @@ function NotFoundFallback({ path }: { path: string }) {
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-sm text-muted-foreground">
-            路径 <code className="bg-muted px-2 py-1 rounded text-xs">{path}</code> 对应的页面正在开发中
+            路径 <code className="bg-muted px-2 py-1 rounded text-xs">{path}</code>{' '}
+            对应的页面正在开发中
           </p>
-          <p className="text-xs text-muted-foreground">
-            该功能将在后续版本中提供
-          </p>
+          <p className="text-xs text-muted-foreground">该功能将在后续版本中提供</p>
         </CardContent>
       </Card>
     </div>
@@ -97,7 +102,7 @@ export function TabContent({ tab, isActive }: TabContentProps) {
     if (isActive) {
       // 更新浏览器标题
       document.title = `${tab.title} - LinchKit`
-      
+
       // 更新浏览器历史记录（不触发页面刷新）
       if (window.history.pushState) {
         window.history.pushState(null, '', tab.path)
@@ -107,13 +112,10 @@ export function TabContent({ tab, isActive }: TabContentProps) {
 
   // 获取对应的页面组件
   const PageComponent = pageRoutes[tab.path]
-  
+
   return (
     <div
-      className={cn(
-        'h-full w-full overflow-auto',
-        isActive ? 'block' : 'hidden'
-      )}
+      className={cn('h-full w-full overflow-auto', isActive ? 'block' : 'hidden')}
       data-tab-id={tab.id}
       data-tab-path={tab.path}
     >
