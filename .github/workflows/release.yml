@@ -128,7 +128,7 @@ jobs:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
     needs: [release]
-    if: always() && needs.release.result == 'success'
+    if: needs.release.outputs.published == 'true'
     strategy:
       matrix:
         app:
@@ -163,11 +163,14 @@ jobs:
           bun add -g vercel@latest
           
           # 创建 .vercel 目录和项目文件
-          mkdir -p ${{ matrix.app.directory }}/.vercel
-          echo '{"projectId":"${{ secrets[matrix.app.project-id] }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > ${{ matrix.app.directory }}/.vercel/project.json
+          mkdir -p .vercel
+          echo '{"projectId":"${{ secrets[matrix.app.project-id] }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
           
-          # 切换到项目目录并部署
-          cd ${{ matrix.app.directory }} && vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+          # 部署（从monorepo根目录）
+          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes --scope=apps/${{ matrix.app.name }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets[matrix.app.project-id] }}
+
+      - name: Deployment completed
+        run: echo "✅ Successfully deployed ${{ matrix.app.name }} to Vercel"

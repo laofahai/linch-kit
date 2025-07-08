@@ -1,7 +1,9 @@
 {
-  "buildCommand": "cd ../.. && bun install && bun run build --filter=website",
-  "devCommand": "bun run dev",
   "installCommand": "bun install",
+  "buildCommand": "bun run build",
+  "outputDirectory": ".next",
   "framework": "nextjs",
-  "outputDirectory": ".next"
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

@@ -1,0 +1,77 @@
+name: Deploy to Vercel
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - preview
+      apps:
+        description: 'Apps to deploy (comma-separated: starter,demo-app,website)'
+        required: true
+        default: 'starter,demo-app,website'
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: ${{ fromJson(format('[{0}]', join(fromJson(format('["{0}"]', replace(github.event.inputs.apps, ',', '","'))), '","'))) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build packages
+        run: bun run build:packages
+
+      - name: Setup Vercel CLI
+        run: bun add -g vercel@latest
+
+      - name: Deploy ${{ matrix.app }} to Vercel
+        run: |
+          # 创建 .vercel 目录和项目文件
+          mkdir -p .vercel
+          
+          # 根据应用名称设置项目ID
+          if [ "${{ matrix.app }}" = "starter" ]; then
+            PROJECT_ID="${{ secrets.VERCEL_STARTER_PROJECT_ID }}"
+          elif [ "${{ matrix.app }}" = "demo-app" ]; then
+            PROJECT_ID="${{ secrets.VERCEL_DEMO_PROJECT_ID }}"
+          elif [ "${{ matrix.app }}" = "website" ]; then
+            PROJECT_ID="${{ secrets.VERCEL_WEBSITE_PROJECT_ID }}"
+          fi
+          
+          echo '{"projectId":"'$PROJECT_ID'","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
+          
+          # 部署到 Vercel（从monorepo根目录）
+          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+            vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes --scope=apps/${{ matrix.app }}
+          else
+            vercel deploy --token=${{ secrets.VERCEL_TOKEN }} --yes --scope=apps/${{ matrix.app }}
+          fi
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+
+      - name: Deployment Summary
+        run: |
+          echo "✅ Successfully deployed ${{ matrix.app }} to Vercel"
+          echo "Environment: ${{ github.event.inputs.environment }}"
