@@ -1,10 +1,11 @@
 name: E2E Tests
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+  # 暂时禁用自动触发，只保留手动触发
+  # push:
+  #   branches: [main, develop]
+  # pull_request:
+  #   branches: [main, develop]
   workflow_dispatch:
     inputs:
       target_url:

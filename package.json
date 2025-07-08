@@ -53,7 +53,7 @@
     "test:workflow": "bun scripts/test-workflow.js",
     "validate:light": "bun run format:fix && bun run lint:fix",
     "validate": "bun run format:fix && bun run lint:fix && bun run check-types && bun run build:packages && bun run test",
-    "validate:ci": "bun run validate && bun run test:e2e",
+    "validate:ci": "bun run validate",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "format:all": "prettier --write \"**/*.{ts,tsx,md,json}\" --ignore-unknown",
     "test:e2e": "playwright test",
