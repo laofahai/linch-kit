@@ -25,6 +25,7 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_counter',
         type: 'counter',
         help: 'Test counter',
+        labels: [], // 必须提供 labels 数组，即使为空
       })
 
       expect(counter).toBeDefined()
@@ -37,6 +38,7 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_gauge',
         type: 'gauge',
         help: 'Test gauge',
+        labels: [],
       })
 
       expect(gauge).toBeDefined()
@@ -51,6 +53,8 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_histogram',
         type: 'histogram',
         help: 'Test histogram',
+        labels: [],
+        buckets: [0.1, 0.5, 1, 2.5, 5, 10],
       })
 
       expect(histogram).toBeDefined()
@@ -63,6 +67,8 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_summary',
         type: 'summary',
         help: 'Test summary',
+        labels: [],
+        quantiles: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 0.999],
       })
 
       expect(summary).toBeDefined()
@@ -77,6 +83,7 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_counter_ops',
         type: 'counter',
         help: 'Test counter operations',
+        labels: [],
       })
 
       counter.inc()
@@ -91,6 +98,7 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_gauge_ops',
         type: 'gauge',
         help: 'Test gauge operations',
+        labels: [],
       })
 
       gauge.set(42)
@@ -106,6 +114,8 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_histogram_ops',
         type: 'histogram',
         help: 'Test histogram operations',
+        labels: [],
+        buckets: [0.1, 0.5, 1, 2.5, 5, 10],
       })
 
       histogram.observe(0.1)
@@ -152,6 +162,7 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_histogram_buckets',
         type: 'histogram',
         help: 'Test histogram with buckets',
+        labels: [],
         buckets: [0.1, 0.5, 1, 2, 5],
       })
 
@@ -164,6 +175,7 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_summary_quantiles',
         type: 'summary',
         help: 'Test summary with quantiles',
+        labels: [],
         quantiles: [0.5, 0.9, 0.99],
       })
 
@@ -178,6 +190,7 @@ describe('LinchKitMetricCollector', () => {
         name: 'duplicate_counter',
         type: 'counter',
         help: 'Test counter',
+        labels: [],
       })
 
       // 第二次创建相同名称的指标应该抛出错误
@@ -186,6 +199,7 @@ describe('LinchKitMetricCollector', () => {
           name: 'duplicate_counter',
           type: 'counter',
           help: 'Test counter',
+          labels: [],
         })
       }).toThrow()
     })
@@ -198,6 +212,7 @@ describe('LinchKitMetricCollector', () => {
         name: 'test_export_counter',
         type: 'counter',
         help: 'Test export counter',
+        labels: [],
       })
       counter.inc()
 
@@ -206,18 +221,19 @@ describe('LinchKitMetricCollector', () => {
       expect(metrics).toContain('test_export_counter')
     })
 
-    it('should clear all metrics', () => {
+    it('should reset all metrics', () => {
       // 创建指标
       collector.createCounter({
         name: 'test_clear_counter',
         type: 'counter',
         help: 'Test clear counter',
+        labels: [],
       })
 
-      // 清除指标
-      collector.clearMetrics()
+      // 重置指标
+      collector.reset()
 
-      // 验证清除方法存在
+      // 验证重置方法存在
       expect(true).toBe(true)
     })
   })

@@ -106,10 +106,28 @@ describe('DefaultAuditManager', () => {
     })
 
     it('should initialize metrics counters', () => {
-      expect(mockMetrics.createCounter).toHaveBeenCalledTimes(4)
+      // 由于 bun:test 中 mock 状态可能在测试间共享，我们只验证调用参数而不是次数
       expect(mockMetrics.createCounter).toHaveBeenCalledWith(
         expect.objectContaining({
           name: 'audit_events_queued',
+          type: 'counter',
+        })
+      )
+      expect(mockMetrics.createCounter).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'audit_events_processed',
+          type: 'counter',
+        })
+      )
+      expect(mockMetrics.createCounter).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'audit_events_failed',
+          type: 'counter',
+        })
+      )
+      expect(mockMetrics.createCounter).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'audit_alerts_triggered',
           type: 'counter',
         })
       )
@@ -197,6 +215,9 @@ describe('DefaultAuditManager', () => {
     })
 
     it('should filter events based on policy', async () => {
+      // 重置 mock 以避免前面测试的干扰
+      mockStore.store.mockClear()
+
       // 设置只记录 HIGH 级别的事件
       await auditManager.updatePolicy({ minSeverity: 'HIGH' })
 
@@ -207,6 +228,9 @@ describe('DefaultAuditManager', () => {
     })
 
     it('should filter events based on categories', async () => {
+      // 重置 mock 以避免前面测试的干扰
+      mockStore.store.mockClear()
+
       await auditManager.updatePolicy({ categories: ['SECURITY'] })
 
       await auditManager.log({ ...testEvent, category: 'SYSTEM' })
