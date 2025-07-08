@@ -17,6 +17,9 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.changesets.outputs.published }}
+      publishedPackages: ${{ steps.changesets.outputs.publishedPackages }}
     permissions:
       contents: write
       id-token: write
@@ -44,10 +47,10 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build packages
-        run: bun run turbo build:packages
+        run: bun run build:packages
 
       - name: Run tests
-        run: bun run turbo test
+        run: bun test
 
       - name: Create Release Pull Request or Publish
         id: changesets
@@ -108,7 +111,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build packages
-        run: bun run turbo build:packages
+        run: bun run build:packages
 
       - name: Publish to GitHub Packages
         run: |
@@ -120,12 +123,24 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
 
-  # 部署到 Vercel (仅 Demo 应用)
-  deploy-demo:
-    name: Deploy Demo to Vercel
+  # 部署到 Vercel (所有应用)
+  deploy-vercel:
+    name: Deploy to Vercel
     runs-on: ubuntu-latest
     needs: [release]
     if: needs.release.outputs.published == 'true' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        app:
+          - name: starter
+            directory: ./apps/starter
+            project-id: VERCEL_STARTER_PROJECT_ID
+          - name: demo-app
+            directory: ./apps/demo-app
+            project-id: VERCEL_DEMO_PROJECT_ID
+          - name: website
+            directory: ./apps/website
+            project-id: VERCEL_WEBSITE_PROJECT_ID
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -138,15 +153,15 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build packages
-        run: bun run turbo build --filter='./packages/*'
+      - name: Build packages  
+        run: bun run build:packages
 
-      - name: Deploy to Vercel (Demo App)
-        if: secrets.VERCEL_TOKEN != ''
+      - name: Deploy ${{ matrix.app.name }} to Vercel
+        if: ${{ vars.VERCEL_ENABLED == 'true' }}
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./apps/demo-app
+          vercel-project-id: ${{ secrets[matrix.app.project-id] }}
+          working-directory: ${{ matrix.app.directory }}
