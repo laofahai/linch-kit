@@ -58,11 +58,11 @@ export default defineConfig({
     },
   ],
 
-  /* 本地开发服务器配置 */
-  webServer: {
-    command: process.env.CI ? 'bun run build && bun run start' : 'bun run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  /* 本地开发服务器配置 - 如果需要自动启动服务器，取消注释以下配置 */
+  // webServer: {
+  //   command: process.env.CI ? 'cd apps/starter && bun run build && bun run start' : 'cd apps/starter && bun run dev',
+  //   url: 'http://localhost:3000',
+  //   reuseExistingServer: !process.env.CI,
+  //   timeout: 120 * 1000,
+  // },
 })
