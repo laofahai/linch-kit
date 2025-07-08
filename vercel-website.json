@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "installCommand": "bun install",
+  "buildCommand": "bun run build:packages && turbo run build --filter=website",
+  "outputDirectory": "apps/website/.next",
+  "framework": "nextjs",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
