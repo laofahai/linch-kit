@@ -4,11 +4,7 @@
 
 import { describe, it, expect, mock, beforeEach } from 'bun:test'
 
-import { 
-  createMinimalCrudManager, 
-  createCrudManager, 
-  createDefaultCrudManager
-} from '../factory'
+import { createMinimalCrudManager, createCrudManager, createDefaultCrudManager } from '../factory'
 import { CrudManager } from '../core/crud-manager'
 
 describe('Factory Functions', () => {
@@ -64,7 +60,7 @@ describe('Factory Functions', () => {
       const crudManager = createMinimalCrudManager(mockPrisma, mockSchemaRegistry, mockLogger)
 
       expect(crudManager).toBeInstanceOf(CrudManager)
-      
+
       // 验证最小化配置
       // @ts-ignore - 访问私有属性进行测试
       expect(crudManager.options.enablePermissions).toBe(false)
@@ -112,7 +108,7 @@ describe('Factory Functions', () => {
       )
 
       expect(crudManager).toBeInstanceOf(CrudManager)
-      
+
       // @ts-ignore - 访问私有属性进行测试
       expect(crudManager.options.enablePermissions).toBe(true)
       // @ts-ignore
@@ -126,11 +122,7 @@ describe('Factory Functions', () => {
     })
 
     it('should create instance with no options', () => {
-      const crudManager = createCrudManager(
-        mockPrisma,
-        mockSchemaRegistry,
-        mockLogger
-      )
+      const crudManager = createCrudManager(mockPrisma, mockSchemaRegistry, mockLogger)
 
       expect(crudManager).toBeInstanceOf(CrudManager)
       expect(crudManager.prisma).toBe(mockPrisma)
@@ -144,12 +136,7 @@ describe('Factory Functions', () => {
         enablePermissions: true,
       }
 
-      const crudManager = createCrudManager(
-        mockPrisma,
-        mockSchemaRegistry,
-        mockLogger,
-        options
-      )
+      const crudManager = createCrudManager(mockPrisma, mockSchemaRegistry, mockLogger, options)
 
       expect(crudManager).toBeInstanceOf(CrudManager)
       // @ts-ignore - 访问私有属性进行测试
@@ -159,14 +146,10 @@ describe('Factory Functions', () => {
 
   describe('createDefaultCrudManager', () => {
     it('should create a CrudManager instance with default full options', () => {
-      const crudManager = createDefaultCrudManager(
-        mockPrisma,
-        mockSchemaRegistry,
-        mockLogger
-      )
+      const crudManager = createDefaultCrudManager(mockPrisma, mockSchemaRegistry, mockLogger)
 
       expect(crudManager).toBeInstanceOf(CrudManager)
-      
+
       // 验证默认完整配置
       // @ts-ignore - 访问私有属性进行测试
       expect(crudManager.options.enablePermissions).toBe(true)
@@ -214,12 +197,7 @@ describe('Factory Functions', () => {
         pluginManager: mockPluginManager,
       }
 
-      const crudManager = createCrudManager(
-        mockPrisma,
-        mockSchemaRegistry,
-        mockLogger,
-        options
-      )
+      const crudManager = createCrudManager(mockPrisma, mockSchemaRegistry, mockLogger, options)
 
       // @ts-ignore - 访问私有属性进行测试
       expect(crudManager.options.enableValidation).toBe(false)
@@ -228,12 +206,7 @@ describe('Factory Functions', () => {
     })
 
     it('should use default values when options not provided', () => {
-      const crudManager = createCrudManager(
-        mockPrisma,
-        mockSchemaRegistry,
-        mockLogger,
-        {}
-      )
+      const crudManager = createCrudManager(mockPrisma, mockSchemaRegistry, mockLogger, {})
 
       expect(crudManager).toBeInstanceOf(CrudManager)
     })

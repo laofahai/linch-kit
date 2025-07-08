@@ -18,21 +18,22 @@ export function createValidatorsFromEntity<T>(entity: EntityDefinition<T>) {
     schema: entity.zodSchema,
     create: entity.createSchema,
     update: entity.updateSchema,
-    
+
     // 验证函数
     validate: (data: unknown) => entity.zodSchema.safeParse(data),
     validateCreate: (data: unknown) => entity.createSchema.safeParse(data),
     validateUpdate: (data: unknown) => entity.updateSchema.safeParse(data),
-    
+
     // 类型断言
     assert: (data: unknown): T => entity.zodSchema.parse(data),
     assertCreate: (data: unknown) => entity.createSchema.parse(data),
-    assertUpdate: (data: unknown) => entity.updateSchema.parse(data)
+    assertUpdate: (data: unknown) => entity.updateSchema.parse(data),
   }
 }
 ```
 
 **使用方式**：
+
 ```typescript
 // 在 Console 模块中
 import { createValidatorsFromEntity } from '@linch-kit/schema'
@@ -48,12 +49,14 @@ if (result.success) {
 ```
 
 **优点**：
+
 - ✅ 运行时立即可用
 - ✅ 与实体定义同步
 - ✅ 类型安全
 - ✅ 无需 CLI 依赖
 
 **缺点**：
+
 - ❌ 可能有少量运行时开销
 
 ### 方案 2：混合生成策略
@@ -65,9 +68,8 @@ if (result.success) {
 export const runtimeValidators = createValidatorsFromEntity(TenantEntity)
 
 // 构建时生成的优化验证器（生产时使用）
-export const buildTimeValidators = typeof window !== 'undefined' 
-  ? runtimeValidators 
-  : await import('./generated/tenant-validators')
+export const buildTimeValidators =
+  typeof window !== 'undefined' ? runtimeValidators : await import('./generated/tenant-validators')
 ```
 
 ### 方案 3：验证器注册系统
@@ -78,22 +80,22 @@ export const buildTimeValidators = typeof window !== 'undefined'
 // @linch-kit/schema
 class ValidatorRegistry {
   private validators = new Map()
-  
+
   register(entityName: string, validators: any) {
     this.validators.set(entityName, validators)
   }
-  
+
   get(entityName: string, entity?: EntityDefinition) {
     // 优先使用注册的验证器（CLI 生成）
     if (this.validators.has(entityName)) {
       return this.validators.get(entityName)
     }
-    
+
     // 降级到运行时生成
     if (entity) {
       return createValidatorsFromEntity(entity)
     }
-    
+
     throw new Error(`Validator not found for entity: ${entityName}`)
   }
 }
@@ -112,42 +114,40 @@ export interface EntityValidators<T> {
   schema: z.ZodSchema<T>
   createSchema: z.ZodSchema<CreateInput<T>>
   updateSchema: z.ZodSchema<UpdateInput<T>>
-  
+
   // Validation functions
   validate: (data: unknown) => SafeParseResult<T>
   validateCreate: (data: unknown) => SafeParseResult<CreateInput<T>>
   validateUpdate: (data: unknown) => SafeParseResult<UpdateInput<T>>
-  
+
   // Type assertions
   assert: (data: unknown) => T
   assertCreate: (data: unknown) => CreateInput<T>
   assertUpdate: (data: unknown) => UpdateInput<T>
-  
+
   // Conditional validation
   validateIf: (condition: boolean, data: unknown) => SafeParseResult<T>
   validatePartial: (data: unknown) => SafeParseResult<Partial<T>>
 }
 
-export function createValidatorsFromEntity<T>(
-  entity: EntityDefinition<T>
-): EntityValidators<T> {
+export function createValidatorsFromEntity<T>(entity: EntityDefinition<T>): EntityValidators<T> {
   return {
     schema: entity.zodSchema,
     createSchema: entity.createSchema,
     updateSchema: entity.updateSchema,
-    
-    validate: (data) => entity.zodSchema.safeParse(data),
-    validateCreate: (data) => entity.createSchema.safeParse(data),
-    validateUpdate: (data) => entity.updateSchema.safeParse(data),
-    
-    assert: (data) => entity.zodSchema.parse(data),
-    assertCreate: (data) => entity.createSchema.parse(data),
-    assertUpdate: (data) => entity.updateSchema.parse(data),
-    
-    validateIf: (condition, data) => 
+
+    validate: data => entity.zodSchema.safeParse(data),
+    validateCreate: data => entity.createSchema.safeParse(data),
+    validateUpdate: data => entity.updateSchema.safeParse(data),
+
+    assert: data => entity.zodSchema.parse(data),
+    assertCreate: data => entity.createSchema.parse(data),
+    assertUpdate: data => entity.updateSchema.parse(data),
+
+    validateIf: (condition, data) =>
       condition ? entity.zodSchema.safeParse(data) : { success: true, data: data as T },
-    
-    validatePartial: (data) => entity.updateSchema.safeParse(data)
+
+    validatePartial: data => entity.updateSchema.safeParse(data),
   }
 }
 ```
@@ -183,7 +183,7 @@ export class TenantService {
   async createTenant(input: unknown) {
     // 运行时验证
     const validatedInput = tenantValidators.assertCreate(input)
-    
+
     // 继续业务逻辑
     return this.crudService.create(validatedInput, context)
   }
@@ -197,14 +197,15 @@ export class TenantService {
 // apps/starter/src/generated/validators/tenant.ts
 export const optimizedTenantValidators = {
   // 预编译的验证器，性能更好
-  validate: (data: unknown) => { /* 优化后的验证逻辑 */ },
+  validate: (data: unknown) => {
+    /* 优化后的验证逻辑 */
+  },
   // ...
 }
 
 // 在生产环境使用优化版本
-export const tenantValidators = process.env.NODE_ENV === 'production'
-  ? optimizedTenantValidators
-  : runtimeTenantValidators
+export const tenantValidators =
+  process.env.NODE_ENV === 'production' ? optimizedTenantValidators : runtimeTenantValidators
 ```
 
 ## 总结

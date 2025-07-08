@@ -1,15 +1,15 @@
 'use client'
 
 import { LoadingOverlay } from '@/components/loading-overlay'
-import { 
-  Button, 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
   Input,
-  Label 
+  Label,
 } from '@linch-kit/ui'
 import { Github, Loader2, Mail } from 'lucide-react'
 import Link from 'next/link'
@@ -22,7 +22,7 @@ function SignInForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
-  
+
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/dashboard'
@@ -40,17 +40,17 @@ function SignInForm() {
     e.preventDefault()
     setError('')
     setIsSubmitting(true)
-    
+
     try {
       // 使用 NextAuth.js 的 signIn 函数
       const { signIn } = await import('next-auth/react')
-      
+
       const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
       })
-      
+
       if (result?.error) {
         setError('登录失败，请检查邮箱和密码')
         setIsSubmitting(false)
@@ -87,10 +87,12 @@ function SignInForm() {
                 {error}
               </div>
             )}
-            
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">邮箱</Label>
+                <Label htmlFor="email" className="text-sm font-medium">
+                  邮箱
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -103,12 +105,14 @@ function SignInForm() {
                   autoComplete="email"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm font-medium">密码</Label>
-                  <Link 
-                    href="/forgot-password" 
+                  <Label htmlFor="password" className="text-sm font-medium">
+                    密码
+                  </Label>
+                  <Link
+                    href="/forgot-password"
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     忘记密码？
@@ -127,9 +131,9 @@ function SignInForm() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full h-10" 
+              <Button
+                type="submit"
+                className="w-full h-10"
                 disabled={isSubmitting || isLoading}
                 variant="default"
                 size="default"
@@ -150,18 +154,28 @@ function SignInForm() {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  或继续使用
-                </span>
+                <span className="bg-background px-2 text-muted-foreground">或继续使用</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" size="default" type="button" disabled={isSubmitting || isLoading} className="h-10">
+              <Button
+                variant="outline"
+                size="default"
+                type="button"
+                disabled={isSubmitting || isLoading}
+                className="h-10"
+              >
                 <Github className="mr-2 h-4 w-4" />
                 GitHub
               </Button>
-              <Button variant="outline" size="default" type="button" disabled={isSubmitting || isLoading} className="h-10">
+              <Button
+                variant="outline"
+                size="default"
+                type="button"
+                disabled={isSubmitting || isLoading}
+                className="h-10"
+              >
                 <Mail className="mr-2 h-4 w-4" />
                 Email
               </Button>
@@ -169,8 +183,8 @@ function SignInForm() {
 
             <p className="text-center text-sm text-muted-foreground">
               还没有账户？{' '}
-              <Link 
-                href="/sign-up" 
+              <Link
+                href="/sign-up"
                 className="font-medium text-foreground hover:text-primary transition-colors"
               >
                 立即注册
@@ -190,14 +204,12 @@ function SignInForm() {
             </p>
           </CardContent>
         </Card>
-        
+
         {/* 移动端品牌信息 */}
         <div className="lg:hidden mt-8 text-center">
           <div className="space-y-2">
             <h2 className="text-lg font-semibold">LinchKit</h2>
-            <p className="text-sm text-muted-foreground">
-              AI-First 全栈开发框架
-            </p>
+            <p className="text-sm text-muted-foreground">AI-First 全栈开发框架</p>
           </div>
         </div>
       </div>
@@ -212,31 +224,37 @@ export default function SignInPage() {
       <div className="hidden lg:flex lg:flex-1 relative overflow-hidden">
         {/* 渐变背景 */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-background"></div>
-        
+
         {/* 网格背景 */}
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `
               linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
               linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)
             `,
-            backgroundSize: '20px 20px'
-          }}></div>
+              backgroundSize: '20px 20px',
+            }}
+          ></div>
         </div>
-        
+
         {/* 装饰性图形 */}
         <div className="absolute top-20 left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary/3 rounded-full blur-3xl"></div>
-        
+
         <div className="relative flex flex-1 flex-col justify-between p-12">
           {/* Logo 和品牌 */}
-          <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+          >
             <div className="h-10 w-10 bg-primary rounded-lg flex items-center justify-center shadow-lg">
               <span className="text-xl font-bold text-primary-foreground">L</span>
             </div>
             <span className="text-xl font-semibold">LinchKit</span>
           </Link>
-          
+
           {/* 中心内容 */}
           <div className="mx-auto max-w-lg space-y-8">
             <div className="space-y-4">
@@ -253,7 +271,7 @@ export default function SignInPage() {
                 让开发者专注创造价值
               </p>
             </div>
-            
+
             {/* 装饰性元素 */}
             <div className="flex items-center space-x-4 pt-4">
               <div className="flex -space-x-2">
@@ -263,7 +281,7 @@ export default function SignInPage() {
               </div>
             </div>
           </div>
-          
+
           {/* 底部信息 */}
           <div className="space-y-2 text-sm text-muted-foreground">
             <p>© 2025 LinchKit. All rights reserved.</p>
@@ -275,19 +293,24 @@ export default function SignInPage() {
       {/* 右侧登录表单区 */}
       <div className="flex flex-1 flex-col items-center justify-center p-8">
         {/* 移动端 Logo */}
-        <Link href="/" className="mb-8 flex items-center space-x-3 lg:hidden hover:opacity-80 transition-opacity">
+        <Link
+          href="/"
+          className="mb-8 flex items-center space-x-3 lg:hidden hover:opacity-80 transition-opacity"
+        >
           <div className="h-10 w-10 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-xl font-bold text-primary-foreground">L</span>
           </div>
           <span className="text-xl font-semibold">LinchKit</span>
         </Link>
-        
-        <Suspense fallback={
-          <div className="flex items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span className="text-sm text-muted-foreground">加载中...</span>
-          </div>
-        }>
+
+        <Suspense
+          fallback={
+            <div className="flex items-center space-x-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-sm text-muted-foreground">加载中...</span>
+            </div>
+          }
+        >
           <SignInForm />
         </Suspense>
       </div>

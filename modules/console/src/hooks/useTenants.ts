@@ -1,6 +1,6 @@
 /**
  * 租户管理 Hooks
- * 
+ *
  * 使用 @linch-kit/trpc 和 React Query 提供租户数据管理
  */
 
@@ -21,7 +21,7 @@ export const tenantKeys = {
   details: () => [...tenantKeys.all, 'detail'] as const,
   detail: (id: string) => [...tenantKeys.details(), id] as const,
   quotas: (id: string) => [...tenantKeys.detail(id), 'quotas'] as const,
-  stats: () => [...tenantKeys.all, 'stats'] as const
+  stats: () => [...tenantKeys.all, 'stats'] as const,
 }
 
 /**
@@ -34,14 +34,14 @@ export function useTenants(filters?: {
   pageSize?: number
 }) {
   const t = useConsoleTranslation()
-  
+
   return useQuery({
     queryKey: tenantKeys.list(filters),
     queryFn: () => trpc.console.tenant.list.query(filters),
     staleTime: 5 * 60 * 1000, // 5分钟
     onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.tenant.loadFailed'))
-    }
+    },
   })
 }
 
@@ -50,7 +50,7 @@ export function useTenants(filters?: {
  */
 export function useTenant(id: string) {
   const t = useConsoleTranslation()
-  
+
   return useQuery({
     queryKey: tenantKeys.detail(id),
     queryFn: () => trpc.console.tenant.get.query({ id }),
@@ -58,7 +58,7 @@ export function useTenant(id: string) {
     staleTime: 5 * 60 * 1000,
     onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.tenant.notFound'))
-    }
+    },
   })
 }
 
@@ -67,7 +67,7 @@ export function useTenant(id: string) {
  */
 export function useTenantQuotas(tenantId: string) {
   const t = useConsoleTranslation()
-  
+
   return useQuery({
     queryKey: tenantKeys.quotas(tenantId),
     queryFn: () => trpc.console.tenant.getQuotas.query({ tenantId }),
@@ -75,7 +75,7 @@ export function useTenantQuotas(tenantId: string) {
     staleTime: 2 * 60 * 1000, // 2分钟
     onError: (_error: Record<string, unknown>) => {
       toast.error(t('error.tenant.quotasLoadFailed'))
-    }
+    },
   })
 }
 
@@ -87,7 +87,7 @@ export function useTenantStats() {
     queryKey: tenantKeys.stats(),
     queryFn: () => trpc.console.tenant.getStats.query(),
     staleTime: 10 * 60 * 1000, // 10分钟
-    refetchInterval: 5 * 60 * 1000 // 5分钟自动刷新
+    refetchInterval: 5 * 60 * 1000, // 5分钟自动刷新
   })
 }
 
@@ -97,20 +97,19 @@ export function useTenantStats() {
 export function useCreateTenant() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: (input: TenantInput) => 
-      trpc.console.tenant.create.mutate(input),
-    onSuccess: (_data) => {
+    mutationFn: (input: TenantInput) => trpc.console.tenant.create.mutate(input),
+    onSuccess: _data => {
       // 更新相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
       queryClient.invalidateQueries({ queryKey: tenantKeys.stats() })
-      
+
       toast.success(t('success.tenant.created'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.createFailed'))
-    }
+    },
   })
 }
 
@@ -120,7 +119,7 @@ export function useCreateTenant() {
 export function useUpdateTenant() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: TenantUpdate }) =>
       trpc.console.tenant.update.mutate({ id, ...input }),
@@ -128,12 +127,12 @@ export function useUpdateTenant() {
       // 更新相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
       queryClient.invalidateQueries({ queryKey: tenantKeys.detail(variables.id) })
-      
+
       toast.success(t('success.tenant.updated'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.updateFailed'))
-    }
+    },
   })
 }
 
@@ -143,21 +142,20 @@ export function useUpdateTenant() {
 export function useDeleteTenant() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: (id: string) => 
-      trpc.console.tenant.delete.mutate({ id }),
+    mutationFn: (id: string) => trpc.console.tenant.delete.mutate({ id }),
     onSuccess: (data, variables) => {
       // 更新相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
       queryClient.invalidateQueries({ queryKey: tenantKeys.stats() })
       queryClient.removeQueries({ queryKey: tenantKeys.detail(variables) })
-      
+
       toast.success(t('success.tenant.deleted'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.deleteFailed'))
-    }
+    },
   })
 }
 
@@ -167,7 +165,7 @@ export function useDeleteTenant() {
 export function useSuspendTenant() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
       trpc.console.tenant.suspend.mutate({ id, reason }),
@@ -176,12 +174,12 @@ export function useSuspendTenant() {
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
       queryClient.invalidateQueries({ queryKey: tenantKeys.detail(variables.id) })
       queryClient.invalidateQueries({ queryKey: tenantKeys.stats() })
-      
+
       toast.success(t('success.tenant.suspended'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.suspendFailed'))
-    }
+    },
   })
 }
 
@@ -191,21 +189,20 @@ export function useSuspendTenant() {
 export function useActivateTenant() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: (id: string) => 
-      trpc.console.tenant.activate.mutate({ id }),
+    mutationFn: (id: string) => trpc.console.tenant.activate.mutate({ id }),
     onSuccess: (data, variables) => {
       // 更新相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
       queryClient.invalidateQueries({ queryKey: tenantKeys.detail(variables) })
       queryClient.invalidateQueries({ queryKey: tenantKeys.stats() })
-      
+
       toast.success(t('success.tenant.activated'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.activateFailed'))
-    }
+    },
   })
 }
 
@@ -215,7 +212,7 @@ export function useActivateTenant() {
 export function useUpdateTenantQuotas() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
     mutationFn: ({ tenantId, quotas }: { tenantId: string; quotas: Partial<TenantQuotas> }) =>
       trpc.console.tenant.updateQuotas.mutate({ tenantId, quotas }),
@@ -223,12 +220,12 @@ export function useUpdateTenantQuotas() {
       // 更新相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.quotas(variables.tenantId) })
       queryClient.invalidateQueries({ queryKey: tenantKeys.detail(variables.tenantId) })
-      
+
       toast.success(t('success.tenant.quotasUpdated'))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.quotasUpdateFailed'))
-    }
+    },
   })
 }
 
@@ -238,16 +235,16 @@ export function useUpdateTenantQuotas() {
 export function useBatchTenantOperation() {
   const queryClient = useQueryClient()
   const t = useConsoleTranslation()
-  
+
   return useMutation({
-    mutationFn: ({ 
-      operation, 
-      tenantIds, 
-      data 
-    }: { 
+    mutationFn: ({
+      operation,
+      tenantIds,
+      data,
+    }: {
       operation: 'suspend' | 'activate' | 'delete'
       tenantIds: string[]
-      data?: Record<string, unknown> 
+      data?: Record<string, unknown>
     }) => {
       switch (operation) {
         case 'suspend':
@@ -264,7 +261,7 @@ export function useBatchTenantOperation() {
       // 更新所有相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
       queryClient.invalidateQueries({ queryKey: tenantKeys.stats() })
-      
+
       // 移除或更新详情查询
       variables.tenantIds.forEach(id => {
         if (variables.operation === 'delete') {
@@ -273,12 +270,12 @@ export function useBatchTenantOperation() {
           queryClient.invalidateQueries({ queryKey: tenantKeys.detail(id) })
         }
       })
-      
+
       toast.success(t(`success.tenant.batch${variables.operation}`))
     },
     onError: (_error: Record<string, unknown>) => {
       toast.error(error.message || t('error.tenant.batchOperationFailed'))
-    }
+    },
   })
 }
 
@@ -293,7 +290,7 @@ export function useTenantOperations() {
   const activateTenant = useActivateTenant()
   const updateQuotas = useUpdateTenantQuotas()
   const batchOperation = useBatchTenantOperation()
-  
+
   return {
     create: createTenant,
     update: updateTenant,
@@ -302,15 +299,15 @@ export function useTenantOperations() {
     activate: activateTenant,
     updateQuotas,
     batchOperation,
-    
+
     // 便捷方法
-    isLoading: 
+    isLoading:
       createTenant.isPending ||
       updateTenant.isPending ||
       deleteTenant.isPending ||
       suspendTenant.isPending ||
       activateTenant.isPending ||
       updateQuotas.isPending ||
-      batchOperation.isPending
+      batchOperation.isPending,
   }
 }

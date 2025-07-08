@@ -1,6 +1,6 @@
 /**
  * 租户详情页面
- * 
+ *
  * 显示租户的详细信息，包括基本信息、配额、用户、插件等
  */
 
@@ -8,10 +8,10 @@
 
 import React, { useState } from 'react'
 import { useParams } from 'next/navigation'
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
+import {
+  Card,
+  CardContent,
+  CardHeader,
   CardTitle,
   Button,
   Badge,
@@ -25,9 +25,9 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from '@linch-kit/ui'
-import { 
+import {
   Building2,
   Users,
   Puzzle,
@@ -40,7 +40,7 @@ import {
   Settings,
   BarChart3,
   Download,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -58,59 +58,62 @@ export function TenantDetail() {
   const params = useParams()
   const tenantId = params.id as string
   const t = useConsoleTranslation()
-  
+
   const canEdit = useConsolePermission('tenant:edit')
   const canDelete = useConsolePermission('tenant:delete')
   const canSuspend = useConsolePermission('tenant:suspend')
   const canManageQuotas = useConsolePermission('tenant:manage_quotas')
-  
+
   // 状态管理
   const [activeTab, setActiveTab] = useState('overview')
   const [deleteDialog, setDeleteDialog] = useState(false)
   const [suspendDialog, setSuspendDialog] = useState(false)
-  
+
   // 数据获取
   const { data: tenant, isLoading: tenantLoading } = useTenant(tenantId)
   const { data: quotas } = useTenantQuotas(tenantId)
-  
+
   // 操作hooks
   const { deleteTenant, suspendTenant, activateTenant } = useTenantOperations()
-  
+
   if (tenantLoading) {
     return <TenantDetailSkeleton />
   }
-  
+
   if (!tenant) {
     return (
       <div className="p-6">
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center text-muted-foreground">
-              租户不存在
-            </div>
+            <div className="text-center text-muted-foreground">租户不存在</div>
           </CardContent>
         </Card>
       </div>
     )
   }
-  
+
   // 获取状态颜色
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'default'
-      case 'suspended': return 'secondary'
-      case 'deleted': return 'destructive'
-      case 'pending': return 'outline'
-      default: return 'outline'
+      case 'active':
+        return 'default'
+      case 'suspended':
+        return 'secondary'
+      case 'deleted':
+        return 'destructive'
+      case 'pending':
+        return 'outline'
+      default:
+        return 'outline'
     }
   }
-  
+
   // 计算配额使用率
   const calculateUsagePercentage = (current: number, max: number) => {
     if (!max) return 0
     return Math.min((current / max) * 100, 100)
   }
-  
+
   // 处理删除
   const handleDelete = async () => {
     try {
@@ -122,7 +125,7 @@ export function TenantDetail() {
       console.error('Delete tenant failed:', error)
     }
   }
-  
+
   // 处理暂停/激活
   const handleSuspend = async () => {
     try {
@@ -152,23 +155,19 @@ export function TenantDetail() {
                 {t(`console.entities.tenant.status.${tenant.status}`)}
               </Badge>
             </div>
-            <p className="text-muted-foreground">
-              {tenant.domain || tenant.slug}
-            </p>
+            <p className="text-muted-foreground">{tenant.domain || tenant.slug}</p>
             <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
                 <span>创建于 {format(new Date(tenant.createdAt), 'yyyy年MM月dd日')}</span>
               </div>
               <div className="flex items-center space-x-1">
-                <Badge variant="outline">
-                  {t(`console.entities.tenant.plan.${tenant.plan}`)}
-                </Badge>
+                <Badge variant="outline">{t(`console.entities.tenant.plan.${tenant.plan}`)}</Badge>
               </div>
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
@@ -187,11 +186,7 @@ export function TenantDetail() {
             </Button>
           )}
           {canSuspend && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSuspendDialog(true)}
-            >
+            <Button variant="outline" size="sm" onClick={() => setSuspendDialog(true)}>
               {tenant.status === 'active' ? (
                 <>
                   <Pause className="h-4 w-4 mr-2" />
@@ -206,11 +201,7 @@ export function TenantDetail() {
             </Button>
           )}
           {canDelete && tenant.status !== 'active' && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setDeleteDialog(true)}
-            >
+            <Button variant="destructive" size="sm" onClick={() => setDeleteDialog(true)}>
               <Trash2 className="h-4 w-4 mr-2" />
               删除
             </Button>
@@ -227,12 +218,7 @@ export function TenantDetail() {
           icon={Users}
           color="blue"
         />
-        <StatCard
-          title="插件数量"
-          value={tenant.pluginCount || 0}
-          icon={Puzzle}
-          color="green"
-        />
+        <StatCard title="插件数量" value={tenant.pluginCount || 0} icon={Puzzle} color="green" />
         <StatCard
           title="存储使用"
           value={`${tenant.storageUsed || 0}MB`}
@@ -290,14 +276,16 @@ export function TenantDetail() {
                     </div>
                   </div>
                 </div>
-                
+
                 {tenant.businessLicense && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">营业执照号码</label>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      营业执照号码
+                    </label>
                     <div className="mt-1">{tenant.businessLicense}</div>
                   </div>
                 )}
-                
+
                 {tenant.description && (
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">描述</label>
@@ -318,30 +306,36 @@ export function TenantDetail() {
                     <div>
                       <div className="flex justify-between text-sm mb-2">
                         <span>用户数量</span>
-                        <span>{quotas.currentUsers} / {quotas.maxUsers}</span>
+                        <span>
+                          {quotas.currentUsers} / {quotas.maxUsers}
+                        </span>
                       </div>
-                      <Progress 
-                        value={calculateUsagePercentage(quotas.currentUsers, quotas.maxUsers)} 
+                      <Progress
+                        value={calculateUsagePercentage(quotas.currentUsers, quotas.maxUsers)}
                       />
                     </div>
-                    
+
                     <div>
                       <div className="flex justify-between text-sm mb-2">
                         <span>存储空间</span>
-                        <span>{quotas.currentStorage}MB / {quotas.maxStorage}MB</span>
+                        <span>
+                          {quotas.currentStorage}MB / {quotas.maxStorage}MB
+                        </span>
                       </div>
-                      <Progress 
-                        value={calculateUsagePercentage(quotas.currentStorage, quotas.maxStorage)} 
+                      <Progress
+                        value={calculateUsagePercentage(quotas.currentStorage, quotas.maxStorage)}
                       />
                     </div>
-                    
+
                     <div>
                       <div className="flex justify-between text-sm mb-2">
                         <span>API调用</span>
-                        <span>{quotas.currentApiCalls} / {quotas.maxApiCalls}</span>
+                        <span>
+                          {quotas.currentApiCalls} / {quotas.maxApiCalls}
+                        </span>
                       </div>
-                      <Progress 
-                        value={calculateUsagePercentage(quotas.currentApiCalls, quotas.maxApiCalls)} 
+                      <Progress
+                        value={calculateUsagePercentage(quotas.currentApiCalls, quotas.maxApiCalls)}
                       />
                     </div>
                   </div>
@@ -358,15 +352,17 @@ export function TenantDetail() {
             <CardContent>
               {tenant.recentActivities?.length > 0 ? (
                 <div className="space-y-3">
-                  {tenant.recentActivities.slice(0, 5).map((activity: Record<string, unknown>, index: number) => (
-                    <div key={index} className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-2" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm">{activity.description}</p>
-                        <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
+                  {tenant.recentActivities
+                    .slice(0, 5)
+                    .map((activity: Record<string, unknown>, index: number) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-2" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm">{activity.description}</p>
+                          <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">暂无最近活动</p>
@@ -414,11 +410,7 @@ export function TenantDetail() {
             <Button variant="outline" onClick={() => setDeleteDialog(false)}>
               取消
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleteTenant.isPending}
-            >
+            <Button variant="destructive" onClick={handleDelete} disabled={deleteTenant.isPending}>
               {deleteTenant.isPending ? '删除中...' : '确认删除'}
             </Button>
           </DialogFooter>
@@ -429,9 +421,7 @@ export function TenantDetail() {
       <Dialog open={suspendDialog} onOpenChange={setSuspendDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {tenant.status === 'active' ? '暂停租户' : '激活租户'}
-            </DialogTitle>
+            <DialogTitle>{tenant.status === 'active' ? '暂停租户' : '激活租户'}</DialogTitle>
             <DialogDescription>
               确定要{tenant.status === 'active' ? '暂停' : '激活'}租户 "{tenant.name}" 吗？
             </DialogDescription>
@@ -444,10 +434,11 @@ export function TenantDetail() {
               onClick={handleSuspend}
               disabled={suspendTenant.isPending || activateTenant.isPending}
             >
-              {(suspendTenant.isPending || activateTenant.isPending) 
-                ? '处理中...' 
-                : tenant.status === 'active' ? '确认暂停' : '确认激活'
-              }
+              {suspendTenant.isPending || activateTenant.isPending
+                ? '处理中...'
+                : tenant.status === 'active'
+                  ? '确认暂停'
+                  : '确认激活'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -459,7 +450,11 @@ export function TenantDetail() {
 /**
  * 配额管理组件
  */
-function QuotaManagement({ tenantId: _tenantId, quotas, canManage: _canManage }: {
+function QuotaManagement({
+  tenantId: _tenantId,
+  quotas,
+  canManage: _canManage,
+}: {
   tenantId: string
   quotas: Record<string, unknown>
   canManage: boolean
@@ -468,9 +463,7 @@ function QuotaManagement({ tenantId: _tenantId, quotas, canManage: _canManage }:
     return (
       <Card>
         <CardContent className="pt-6">
-          <div className="text-center text-muted-foreground">
-            配额信息加载中...
-          </div>
+          <div className="text-center text-muted-foreground">配额信息加载中...</div>
         </CardContent>
       </Card>
     )
@@ -481,26 +474,26 @@ function QuotaManagement({ tenantId: _tenantId, quotas, canManage: _canManage }:
       name: '最大用户数',
       current: quotas.currentUsers,
       max: quotas.maxUsers,
-      unit: '个'
+      unit: '个',
     },
     {
       name: '存储空间',
       current: quotas.currentStorage,
       max: quotas.maxStorage,
-      unit: 'MB'
+      unit: 'MB',
     },
     {
       name: 'API调用次数',
       current: quotas.currentApiCalls,
       max: quotas.maxApiCalls,
-      unit: '次'
+      unit: '次',
     },
     {
       name: '插件数量',
       current: quotas.currentPlugins,
       max: quotas.maxPlugins,
-      unit: '个'
-    }
+      unit: '个',
+    },
   ]
 
   return (
@@ -520,12 +513,11 @@ function QuotaManagement({ tenantId: _tenantId, quotas, canManage: _canManage }:
             <div key={index} className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="font-medium">{item.name}</span>
-                <span>{item.current} / {item.max} {item.unit}</span>
+                <span>
+                  {item.current} / {item.max} {item.unit}
+                </span>
               </div>
-              <Progress 
-                value={item.max ? (item.current / item.max) * 100 : 0} 
-                className="h-2"
-              />
+              <Progress value={item.max ? (item.current / item.max) * 100 : 0} className="h-2" />
               <div className="text-xs text-muted-foreground">
                 使用率: {item.max ? Math.round((item.current / item.max) * 100) : 0}%
               </div>
@@ -548,9 +540,7 @@ function TenantUserManagement({ tenantId: _tenantId }: { tenantId: string }) {
         <CardTitle>用户列表</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-center text-muted-foreground">
-          用户管理功能开发中...
-        </div>
+        <div className="text-center text-muted-foreground">用户管理功能开发中...</div>
       </CardContent>
     </Card>
   )
@@ -566,9 +556,7 @@ function TenantPluginManagement({ tenantId: _tenantId }: { tenantId: string }) {
         <CardTitle>已安装插件</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-center text-muted-foreground">
-          插件管理功能开发中...
-        </div>
+        <div className="text-center text-muted-foreground">插件管理功能开发中...</div>
       </CardContent>
     </Card>
   )
@@ -577,16 +565,20 @@ function TenantPluginManagement({ tenantId: _tenantId }: { tenantId: string }) {
 /**
  * 租户设置组件
  */
-function TenantSettings({ tenantId: _tenantId, tenant: _tenant }: { tenantId: string; tenant: Record<string, unknown> }) {
+function TenantSettings({
+  tenantId: _tenantId,
+  tenant: _tenant,
+}: {
+  tenantId: string
+  tenant: Record<string, unknown>
+}) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>租户设置</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-center text-muted-foreground">
-          设置管理功能开发中...
-        </div>
+        <div className="text-center text-muted-foreground">设置管理功能开发中...</div>
       </CardContent>
     </Card>
   )
@@ -602,9 +594,7 @@ function TenantAuditLogs({ tenantId: _tenantId }: { tenantId: string }) {
         <CardTitle>审计日志</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-center text-muted-foreground">
-          审计日志功能开发中...
-        </div>
+        <div className="text-center text-muted-foreground">审计日志功能开发中...</div>
       </CardContent>
     </Card>
   )
@@ -630,13 +620,13 @@ function TenantDetailSkeleton() {
           ))}
         </div>
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="h-24 bg-gray-200 rounded-lg animate-pulse" />
         ))}
       </div>
-      
+
       <div className="h-96 bg-gray-200 rounded-lg animate-pulse" />
     </div>
   )

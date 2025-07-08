@@ -102,13 +102,13 @@ describe('CrudManager', () => {
     it('should create record with basic data', async () => {
       const testData = { email: 'test@example.com', name: 'Test User' }
       const expectedResult = { id: '1', ...testData }
-      
+
       mockPrisma.user.create.mockResolvedValue(expectedResult)
-      
+
       const result = await crudManager.create('user', testData)
-      
+
       expect(mockPrisma.user.create).toHaveBeenCalledWith({
-        data: testData
+        data: testData,
       })
       expect(result).toEqual(expectedResult)
     })
@@ -117,11 +117,11 @@ describe('CrudManager', () => {
       const testData = { email: 'test@example.com', name: 'Test User' }
       const expectedResult = { id: '1', ...testData }
       const options = { skipValidation: true }
-      
+
       mockPrisma.user.create.mockResolvedValue(expectedResult)
-      
+
       const result = await crudManager.create('user', testData, options)
-      
+
       expect(result).toEqual(expectedResult)
     })
   })
@@ -130,13 +130,13 @@ describe('CrudManager', () => {
     it('should find many records without query', async () => {
       const expectedResults = [
         { id: '1', email: 'test1@example.com', name: 'User 1' },
-        { id: '2', email: 'test2@example.com', name: 'User 2' }
+        { id: '2', email: 'test2@example.com', name: 'User 2' },
       ]
-      
+
       mockPrisma.user.findMany.mockResolvedValue(expectedResults)
-      
+
       const results = await crudManager.findMany('user')
-      
+
       expect(mockPrisma.user.findMany).toHaveBeenCalled()
       expect(results).toEqual(expectedResults)
     })
@@ -147,7 +147,7 @@ describe('CrudManager', () => {
       const validationManager = new CrudManager(mockPrisma, mockSchemaRegistry, mockLogger, null, {
         enableValidation: true,
       })
-      
+
       // @ts-ignore - 访问私有属性进行测试
       expect(validationManager.options.enableValidation).toBe(true)
     })
@@ -156,7 +156,7 @@ describe('CrudManager', () => {
       const permissionManager = new CrudManager(mockPrisma, mockSchemaRegistry, mockLogger, null, {
         enablePermissions: true,
       })
-      
+
       // @ts-ignore - 访问私有属性进行测试
       expect(permissionManager.options.enablePermissions).toBe(true)
     })
@@ -165,7 +165,7 @@ describe('CrudManager', () => {
       const cacheManager = new CrudManager(mockPrisma, mockSchemaRegistry, mockLogger, null, {
         enableCache: true,
       })
-      
+
       // @ts-ignore - 访问私有属性进行测试
       expect(cacheManager.options.enableCache).toBe(true)
     })
@@ -174,7 +174,7 @@ describe('CrudManager', () => {
       const auditManager = new CrudManager(mockPrisma, mockSchemaRegistry, mockLogger, null, {
         enableAudit: true,
       })
-      
+
       // @ts-ignore - 访问私有属性进行测试
       expect(auditManager.options.enableAudit).toBe(true)
     })
@@ -183,7 +183,7 @@ describe('CrudManager', () => {
       const metricsManager = new CrudManager(mockPrisma, mockSchemaRegistry, mockLogger, null, {
         enableMetrics: true,
       })
-      
+
       // @ts-ignore - 访问私有属性进行测试
       expect(metricsManager.options.enableMetrics).toBe(true)
     })
@@ -192,9 +192,10 @@ describe('CrudManager', () => {
   describe('Error Handling', () => {
     it('should handle prisma errors gracefully', async () => {
       mockPrisma.user.create.mockRejectedValue(new Error('Database error'))
-      
-      await expect(crudManager.create('user', { email: 'test@example.com' }))
-        .rejects.toThrow('Database error')
+
+      await expect(crudManager.create('user', { email: 'test@example.com' })).rejects.toThrow(
+        'Database error'
+      )
     })
 
     it('should handle invalid model names', () => {
@@ -224,7 +225,7 @@ describe('CrudManager', () => {
   describe('Default Options', () => {
     it('should use default options when none provided', () => {
       const defaultManager = new CrudManager(mockPrisma, mockSchemaRegistry, mockLogger)
-      
+
       // @ts-ignore - 访问私有属性进行测试
       expect(defaultManager.options.enablePermissions).toBe(true)
       // @ts-ignore

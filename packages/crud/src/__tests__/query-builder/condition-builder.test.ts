@@ -14,7 +14,7 @@ const mockEntity: Entity = {
     age: { type: 'number', required: false },
     score: { type: 'float', required: false },
     createdAt: { type: 'datetime', required: false },
-    birthDate: { type: 'date', required: false }
+    birthDate: { type: 'date', required: false },
   },
   options: {},
   validate: async () => true,
@@ -23,7 +23,7 @@ const mockEntity: Entity = {
   validateUpdate: (data: unknown) => data,
   clone: () => mockEntity,
   extend: () => mockEntity,
-  withOptions: () => mockEntity
+  withOptions: () => mockEntity,
 }
 
 const mockLogger: Logger = {
@@ -33,7 +33,7 @@ const mockLogger: Logger = {
   error: mock(() => {}),
   trace: mock(() => {}),
   fatal: mock(() => {}),
-  child: mock(() => mockLogger)
+  child: mock(() => mockLogger),
 }
 
 describe('QueryConditionBuilder', () => {
@@ -138,11 +138,11 @@ describe('QueryConditionBuilder', () => {
     it('should add like condition', () => {
       conditionBuilder.addCondition('name', 'like', 'test')
       const query = conditionBuilder.build()
-      expect(query.where).toEqual({ 
-        name: { 
-          contains: 'test', 
-          mode: 'insensitive' 
-        } 
+      expect(query.where).toEqual({
+        name: {
+          contains: 'test',
+          mode: 'insensitive',
+        },
       })
     })
 
@@ -239,37 +239,30 @@ describe('QueryConditionBuilder', () => {
         .addCondition('name', '=', 'test')
         .addCondition('age', '>', 18)
         .addCondition('email', 'is_not_null', null)
-      
+
       const query = conditionBuilder.build()
       expect(query.where).toEqual({
         name: 'test',
         age: { gt: 18 },
-        email: { not: null }
+        email: { not: null },
       })
     })
 
     it('should merge multiple conditions on same field', () => {
-      conditionBuilder
-        .addCondition('age', '>', 18)
-        .addCondition('age', '<', 65)
-      
+      conditionBuilder.addCondition('age', '>', 18).addCondition('age', '<', 65)
+
       const query = conditionBuilder.build()
       expect(query.where).toEqual({
-        age: { gt: 18, lt: 65 }
+        age: { gt: 18, lt: 65 },
       })
     })
 
     it('should handle conflicting conditions with AND', () => {
-      conditionBuilder
-        .addCondition('name', '=', 'test1')
-        .addCondition('name', '=', 'test2')
-      
+      conditionBuilder.addCondition('name', '=', 'test1').addCondition('name', '=', 'test2')
+
       const query = conditionBuilder.build()
       expect(query.where).toEqual({
-        AND: [
-          { name: 'test1' },
-          { name: 'test2' }
-        ]
+        AND: [{ name: 'test1' }, { name: 'test2' }],
       })
     })
   })
@@ -287,57 +280,48 @@ describe('QueryConditionBuilder', () => {
       expect(query).toEqual({
         take: 10,
         skip: 5,
-        where: { name: 'test' }
+        where: { name: 'test' },
       })
     })
 
     it('should merge with existing where conditions', () => {
       conditionBuilder.addCondition('name', '=', 'test')
-      const existingQuery = { 
+      const existingQuery = {
         where: { status: 'active' },
-        take: 10 
+        take: 10,
       }
       const query = conditionBuilder.build(existingQuery)
       expect(query).toEqual({
         take: 10,
-        where: { 
+        where: {
           status: 'active',
-          name: 'test' 
-        }
+          name: 'test',
+        },
       })
     })
 
     it('should handle existing AND conditions', () => {
       conditionBuilder.addCondition('name', '=', 'test')
-      const existingQuery = { 
-        where: { 
-          AND: [
-            { status: 'active' },
-            { type: 'user' }
-          ]
-        }
+      const existingQuery = {
+        where: {
+          AND: [{ status: 'active' }, { type: 'user' }],
+        },
       }
       const query = conditionBuilder.build(existingQuery)
       expect(query).toEqual({
         where: {
-          AND: [
-            { status: 'active' },
-            { type: 'user' },
-            { name: 'test' }
-          ]
-        }
+          AND: [{ status: 'active' }, { type: 'user' }, { name: 'test' }],
+        },
       })
     })
   })
 
   describe('Condition Management', () => {
     it('should reset conditions', () => {
-      conditionBuilder
-        .addCondition('name', '=', 'test')
-        .addCondition('age', '>', 18)
-      
+      conditionBuilder.addCondition('name', '=', 'test').addCondition('age', '>', 18)
+
       expect(conditionBuilder.getConditionCount()).toBe(2)
-      
+
       const result = conditionBuilder.reset()
       expect(result).toBe(conditionBuilder)
       expect(conditionBuilder.getConditionCount()).toBe(0)
@@ -345,10 +329,10 @@ describe('QueryConditionBuilder', () => {
 
     it('should count conditions correctly', () => {
       expect(conditionBuilder.getConditionCount()).toBe(0)
-      
+
       conditionBuilder.addCondition('name', '=', 'test')
       expect(conditionBuilder.getConditionCount()).toBe(1)
-      
+
       conditionBuilder.addCondition('age', '>', 18)
       expect(conditionBuilder.getConditionCount()).toBe(2)
     })
@@ -358,12 +342,12 @@ describe('QueryConditionBuilder', () => {
     it('should register custom strategy', () => {
       const customStrategy = {
         build: mock((field: string, value: unknown) => ({ [field]: { custom: value } })),
-        validate: mock(() => {})
+        validate: mock(() => {}),
       }
-      
+
       const result = conditionBuilder.registerStrategy('custom', customStrategy)
       expect(result).toBe(conditionBuilder)
-      
+
       conditionBuilder.addCondition('field', 'custom' as any, 'value')
       const query = conditionBuilder.build()
       expect(query.where).toEqual({ field: { custom: 'value' } })
@@ -381,14 +365,14 @@ describe('QueryConditionBuilder', () => {
       expect(() => {
         conditionBuilder.addCondition('name', '=', undefined)
       }).toThrow("Value for field 'name' cannot be undefined")
-      
+
       expect(mockLogger.error).toHaveBeenCalled()
     })
 
     it('should handle build errors gracefully', () => {
       // 测试构建时错误处理 - 使用有效的条件但模拟构建失败
       conditionBuilder.addCondition('name', '=', 'test')
-      
+
       // 这个测试验证构建过程能正常处理错误（实际不会抛出错误）
       const query = conditionBuilder.build()
       expect(query.where).toEqual({ name: 'test' })
@@ -403,14 +387,14 @@ describe('QueryConditionBuilder', () => {
         .addCondition('email', 'is_not_null', null)
         .addCondition('id', 'in', ['1', '2', '3'])
         .addCondition('score', '>=', 3.5)
-      
+
       const query = conditionBuilder.build()
       expect(query.where).toEqual({
         name: { contains: 'test', mode: 'insensitive' },
         age: { gte: 18, lte: 65 },
         email: { not: null },
         id: { in: ['1', '2', '3'] },
-        score: { gte: 3.5 }
+        score: { gte: 3.5 },
       })
     })
 
@@ -419,12 +403,12 @@ describe('QueryConditionBuilder', () => {
         .addCondition('name', '=', 'test')
         .addCondition('age', '>', 18)
         .addCondition('email', 'like', 'test@')
-      
+
       expect(conditionBuilder.getConditionCount()).toBe(3)
-      
+
       conditionBuilder.reset()
       expect(conditionBuilder.getConditionCount()).toBe(0)
-      
+
       const query = conditionBuilder.build()
       expect(query).toEqual({})
     })

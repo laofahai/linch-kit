@@ -1,6 +1,6 @@
 /**
  * 统计卡片网格组件
- * 
+ *
  * 用于展示多个统计卡片的网格布局
  */
 
@@ -27,10 +27,10 @@ export interface StatGridProps {
 /**
  * 统计卡片网格组件
  */
-export function StatGrid({ 
-  children, 
+export function StatGrid({
+  children,
   className,
-  columns = { sm: 1, md: 2, lg: 4, xl: 4 }
+  columns = { sm: 1, md: 2, lg: 4, xl: 4 },
 }: StatGridProps) {
   const gridClasses = cn(
     'grid gap-4',
@@ -55,11 +55,7 @@ export function StatGrid({
     className
   )
 
-  return (
-    <div className={gridClasses}>
-      {children}
-    </div>
-  )
+  return <div className={gridClasses}>{children}</div>
 }
 
 export default StatGrid

@@ -1,6 +1,6 @@
 /**
  * LinchKit AI CLI Main Entry Point
- * 
+ *
  * 独立的 AI CLI 工具，用于数据提取和查询
  */
 
@@ -13,11 +13,11 @@ import type { CommandContext } from './plugin.js'
 async function main() {
   const args = process.argv.slice(2)
   const commandName = args[0]
-  
+
   // 解析选项
   const options: Record<string, unknown> = {}
   const remainingArgs: string[] = []
-  
+
   for (let i = 1; i < args.length; i++) {
     const arg = args[i]
     if (arg.startsWith('--')) {
@@ -33,7 +33,7 @@ async function main() {
       remainingArgs.push(arg)
     }
   }
-  
+
   // 创建命令上下文
   const context: CommandContext = {
     args: remainingArgs,
@@ -45,10 +45,10 @@ async function main() {
     logger: {
       info: (msg: string) => console.log(`[INFO] ${msg}`),
       warn: (msg: string) => console.warn(`[WARN] ${msg}`),
-      error: (msg: string) => console.error(`[ERROR] ${msg}`)
-    }
+      error: (msg: string) => console.error(`[ERROR] ${msg}`),
+    },
   }
-  
+
   // 路由到相应的命令
   let command
   switch (commandName) {
@@ -73,7 +73,7 @@ async function main() {
       console.log('  ai:context   - 上下文分析')
       process.exit(1)
   }
-  
+
   try {
     const result = await command.handler(context)
     if (!result.success) {

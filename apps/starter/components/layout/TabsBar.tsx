@@ -32,12 +32,12 @@ export function TabsBar({ className }: TabsBarProps) {
     }
 
     checkScrollButtons()
-    
+
     const scrollArea = scrollAreaRef.current
     if (scrollArea) {
       scrollArea.addEventListener('scroll', checkScrollButtons)
       window.addEventListener('resize', checkScrollButtons)
-      
+
       return () => {
         scrollArea.removeEventListener('scroll', checkScrollButtons)
         window.removeEventListener('resize', checkScrollButtons)
@@ -67,10 +67,12 @@ export function TabsBar({ className }: TabsBarProps) {
   }
 
   return (
-    <div className={cn(
-      "flex h-16 items-center gap-x-2 bg-background border-b border-border px-4",
-      className
-    )}>
+    <div
+      className={cn(
+        'flex h-16 items-center gap-x-2 bg-background border-b border-border px-4',
+        className
+      )}
+    >
       {/* 左滚动按钮 */}
       {showScrollButtons && (
         <Button
@@ -91,12 +93,8 @@ export function TabsBar({ className }: TabsBarProps) {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         <div className="flex items-center gap-x-2 min-w-max">
-          {tabs.map((tab) => (
-            <TabItem
-              key={tab.id}
-              tab={tab}
-              isActive={tab.id === activeTabId}
-            />
+          {tabs.map(tab => (
+            <TabItem key={tab.id} tab={tab} isActive={tab.id === activeTabId} />
           ))}
         </div>
       </div>

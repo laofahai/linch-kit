@@ -26,14 +26,17 @@ interface TRPCProviderProps {
 }
 
 export function TRPCProvider({ children }: TRPCProviderProps) {
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 5 * 60 * 1000, // 5 分钟
-        retry: 2, // 重试次数
-      },
-    },
-  }))
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 5 * 60 * 1000, // 5 分钟
+            retry: 2, // 重试次数
+          },
+        },
+      })
+  )
 
   const [trpcClient] = useState(() =>
     api.createClient({
@@ -54,9 +57,7 @@ export function TRPCProvider({ children }: TRPCProviderProps) {
 
   return (
     <api.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </api.Provider>
   )
 }

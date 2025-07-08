@@ -1,5 +1,5 @@
 ---
-"@linch-kit/ui": patch
+'@linch-kit/ui': patch
 ---
 
 feat(starter): 完成Starter应用CRUD功能和业务逻辑优化

@@ -1,6 +1,6 @@
 /**
  * linch info 命令
- * 
+ *
  * 显示系统信息和项目状态
  */
 
@@ -19,25 +19,25 @@ const infoCommand: CLICommand = {
       name: 'system',
       alias: '-s',
       description: '显示系统环境信息',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       name: 'project',
       alias: '-p',
       description: '显示项目信息',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       name: 'packages',
       description: '显示LinchKit包版本',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       name: 'detailed',
       alias: '-d',
       description: '显示详细信息',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   ],
   handler: async ({ options }) => {
     try {
@@ -72,10 +72,10 @@ const infoCommand: CLICommand = {
       Logger.error('Failed to get system info:', error)
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       }
     }
-  }
+  },
 }
 
 async function showSystemInfo(detailed?: boolean) {
@@ -125,7 +125,7 @@ async function showProjectInfo(detailed?: boolean) {
       const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
       console.log(`项目名称:    ${packageJson.name || '未设置'}`)
       console.log(`项目版本:    ${packageJson.version || '未设置'}`)
-      
+
       if (detailed && packageJson.description) {
         console.log(`项目描述:    ${packageJson.description}`)
       }
@@ -133,10 +133,10 @@ async function showProjectInfo(detailed?: boolean) {
       // 检查是否是 LinchKit 项目
       const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
       const linchKitPackages = Object.keys(deps).filter(dep => dep.startsWith('@linch-kit/'))
-      
+
       if (linchKitPackages.length > 0) {
         console.log(`LinchKit:    ✅ 已集成 (${linchKitPackages.length} 个包)`)
-        
+
         if (detailed) {
           console.log(`使用的包:`)
           linchKitPackages.forEach(pkg => {
@@ -153,7 +153,7 @@ async function showProjectInfo(detailed?: boolean) {
     // 检查环境文件
     const envFiles = ['.env', '.env.local', '.env.development', '.env.production']
     const existingEnvFiles = envFiles.filter(file => existsSync(file))
-    
+
     if (existingEnvFiles.length > 0) {
       console.log(`环境文件:    ✅ ${existingEnvFiles.join(', ')}`)
     } else {
@@ -166,7 +166,6 @@ async function showProjectInfo(detailed?: boolean) {
     } else {
       console.log(`Prisma:      ❌ 未配置`)
     }
-
   } catch (error) {
     console.log(`错误: ${error}`)
   }
@@ -180,11 +179,11 @@ async function showPackageInfo(detailed?: boolean) {
 
   const linchKitPackages = [
     '@linch-kit/core',
-    '@linch-kit/schema', 
+    '@linch-kit/schema',
     '@linch-kit/auth',
     '@linch-kit/crud',
     '@linch-kit/trpc',
-    '@linch-kit/ui'
+    '@linch-kit/ui',
   ]
 
   if (existsSync('package.json')) {
@@ -195,7 +194,7 @@ async function showPackageInfo(detailed?: boolean) {
       const version = deps[pkg]
       if (version) {
         console.log(`${pkg.padEnd(20)} ${version}`)
-        
+
         if (detailed) {
           try {
             // 尝试获取已安装的实际版本
@@ -222,7 +221,7 @@ async function showPackageInfo(detailed?: boolean) {
     const commands = getAllAvailableCommands()
     console.log('🔧 可用命令统计')
     console.log('─'.repeat(40))
-    
+
     const categories = groupCommandsByCategory(commands)
     Object.entries(categories).forEach(([category, count]) => {
       const categoryName = getCategoryDisplayName(category)
@@ -253,19 +252,22 @@ function getAllAvailableCommands(): Array<{ category: string }> {
 }
 
 function groupCommandsByCategory(commands: Array<{ category: string }>): Record<string, number> {
-  return commands.reduce((acc, cmd) => {
-    acc[cmd.category] = (acc[cmd.category] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+  return commands.reduce(
+    (acc, cmd) => {
+      acc[cmd.category] = (acc[cmd.category] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>
+  )
 }
 
 function getCategoryDisplayName(category: string): string {
   const names: Record<string, string> = {
-    'core': 'Core',
-    'schema': 'Schema',
-    'crud': 'CRUD',
-    'trpc': 'tRPC',
-    'system': 'System'
+    core: 'Core',
+    schema: 'Schema',
+    crud: 'CRUD',
+    trpc: 'tRPC',
+    system: 'System',
   }
   return names[category] || category
 }

@@ -13,14 +13,14 @@ export * from './plugin'
 export {
   createNextjsClientEnvProvider,
   NextjsClientEnvProvider,
-  type NextjsClientEnvConfig
+  type NextjsClientEnvConfig,
 } from './config/nextjs-provider-client'
 export {
   createSimpleTenantConfigManager,
   SimpleTenantConfigManager,
   type TenantConfigOptions,
   type TenantConfig as SimpleTenantConfig,
-  type TenantConfigEvents
+  type TenantConfigEvents,
 } from './config/simple-tenant-manager'
 // Note: ConfigManager 和 ConfigWatcher 已移至 './server.ts' (需要文件系统访问)
 

@@ -1,6 +1,6 @@
 /**
  * linch doctor 命令
- * 
+ *
  * 开发环境诊断工具 - Gemini建议的增强命令
  */
 
@@ -19,26 +19,26 @@ const doctorCommand: CLICommand = {
     {
       name: 'fix',
       description: '自动修复发现的问题',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       name: 'verbose',
       alias: '-v',
       description: '显示详细诊断信息',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       name: 'category',
       alias: '-c',
       description: '仅检查特定分类 (env|deps|config|db|build)',
-      type: 'string'
+      type: 'string',
     },
     {
       name: 'output',
       alias: '-o',
       description: '输出格式 (console|json|md)',
-      defaultValue: 'console'
-    }
+      defaultValue: 'console',
+    },
   ],
   handler: async ({ options }) => {
     try {
@@ -54,7 +54,7 @@ const doctorCommand: CLICommand = {
       console.log('===========================================\n')
 
       const diagnostics = await runDiagnostics(category, verbose)
-      
+
       // 显示诊断结果
       if (output === 'json') {
         console.log(JSON.stringify(diagnostics, null, 2))
@@ -68,23 +68,25 @@ const doctorCommand: CLICommand = {
       if (fix) {
         console.log('\n🔧 开始自动修复...')
         const fixResults = await autoFix(diagnostics)
-        console.log(`修复完成: ${fixResults.fixed} 个问题已修复, ${fixResults.failed} 个问题需要手动处理`)
+        console.log(
+          `修复完成: ${fixResults.fixed} 个问题已修复, ${fixResults.failed} 个问题需要手动处理`
+        )
       }
 
       const hasErrors = diagnostics.some(d => d.issues.some(i => i.level === 'error'))
-      return { 
+      return {
         success: !hasErrors,
         diagnostics,
-        summary: generateSummary(diagnostics)
+        summary: generateSummary(diagnostics),
       }
     } catch (error) {
       Logger.error('Doctor check failed:', error)
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       }
     }
-  }
+  },
 }
 
 interface DiagnosticIssue {
@@ -135,24 +137,24 @@ async function checkEnvironment(verbose?: boolean): Promise<DiagnosticCategory> 
   // Node.js版本检查
   const nodeVersion = process.version
   const majorVersion = parseInt(nodeVersion.slice(1).split('.')[0])
-  
+
   if (majorVersion < 18) {
     issues.push({
       level: 'error',
       message: `Node.js版本过低: ${nodeVersion}`,
       suggestion: '建议升级到Node.js 18+',
-      fixable: false
+      fixable: false,
     })
   } else if (majorVersion < 20) {
     issues.push({
       level: 'warning',
       message: `Node.js版本偏低: ${nodeVersion}`,
-      suggestion: '建议升级到Node.js 20+以获得更好的性能'
+      suggestion: '建议升级到Node.js 20+以获得更好的性能',
     })
   } else if (verbose) {
     issues.push({
       level: 'info',
-      message: `Node.js版本: ${nodeVersion} ✓`
+      message: `Node.js版本: ${nodeVersion} ✓`,
     })
   }
 
@@ -162,7 +164,7 @@ async function checkEnvironment(verbose?: boolean): Promise<DiagnosticCategory> 
     if (verbose) {
       issues.push({
         level: 'info',
-        message: `pnpm版本: ${pnpmVersion} ✓`
+        message: `pnpm版本: ${pnpmVersion} ✓`,
       })
     }
   } catch {
@@ -171,46 +173,49 @@ async function checkEnvironment(verbose?: boolean): Promise<DiagnosticCategory> 
       message: 'pnpm未安装',
       suggestion: '运行 npm install -g pnpm 安装pnpm',
       fixable: true,
-      command: 'npm install -g pnpm'
+      command: 'npm install -g pnpm',
     })
   }
 
   // 环境变量检查
   const envFiles = ['.env', '.env.local', '.env.development']
   const missingEnvFiles = envFiles.filter(file => !existsSync(file))
-  
+
   if (missingEnvFiles.length === envFiles.length) {
     issues.push({
       level: 'warning',
       message: '未找到环境变量文件',
       suggestion: '运行 linch init 创建环境配置',
       fixable: true,
-      command: 'linch init --skip-deps --skip-db'
+      command: 'linch init --skip-deps --skip-db',
     })
   }
 
   // 内存检查
   const totalMemory = require('os').totalmem()
   const memoryGB = Math.round(totalMemory / 1024 / 1024 / 1024)
-  
+
   if (memoryGB < 4) {
     issues.push({
       level: 'warning',
       message: `系统内存较低: ${memoryGB}GB`,
-      suggestion: '建议至少8GB内存以获得更好的开发体验'
+      suggestion: '建议至少8GB内存以获得更好的开发体验',
     })
   } else if (verbose) {
     issues.push({
       level: 'info',
-      message: `系统内存: ${memoryGB}GB ✓`
+      message: `系统内存: ${memoryGB}GB ✓`,
     })
   }
 
   return {
     name: '环境检查',
-    status: issues.some(i => i.level === 'error') ? 'error' : 
-            issues.some(i => i.level === 'warning') ? 'warning' : 'healthy',
-    issues
+    status: issues.some(i => i.level === 'error')
+      ? 'error'
+      : issues.some(i => i.level === 'warning')
+        ? 'warning'
+        : 'healthy',
+    issues,
   }
 }
 
@@ -221,7 +226,7 @@ async function checkDependencies(verbose?: boolean): Promise<DiagnosticCategory>
     issues.push({
       level: 'error',
       message: '未找到package.json文件',
-      suggestion: '确保在项目根目录运行命令'
+      suggestion: '确保在项目根目录运行命令',
     })
     return { name: '依赖检查', status: 'error', issues }
   }
@@ -231,31 +236,31 @@ async function checkDependencies(verbose?: boolean): Promise<DiagnosticCategory>
 
   // LinchKit包检查
   const linchKitPackages = Object.keys(deps).filter(dep => dep.startsWith('@linch-kit/'))
-  
+
   if (linchKitPackages.length === 0) {
     issues.push({
       level: 'error',
       message: '未找到LinchKit依赖',
-      suggestion: '运行 pnpm add @linch-kit/core 安装LinchKit'
+      suggestion: '运行 pnpm add @linch-kit/core 安装LinchKit',
     })
   } else if (verbose) {
     issues.push({
       level: 'info',
-      message: `LinchKit包: ${linchKitPackages.length} 个 ✓`
+      message: `LinchKit包: ${linchKitPackages.length} 个 ✓`,
     })
   }
 
   // 版本一致性检查
   const linchKitVersions = linchKitPackages.map(pkg => deps[pkg])
   const uniqueVersions = [...new Set(linchKitVersions)]
-  
+
   if (uniqueVersions.length > 1) {
     issues.push({
       level: 'warning',
       message: 'LinchKit包版本不一致',
       suggestion: '运行 linch upgrade 统一版本',
       fixable: true,
-      command: 'linch upgrade'
+      command: 'linch upgrade',
     })
   }
 
@@ -266,18 +271,19 @@ async function checkDependencies(verbose?: boolean): Promise<DiagnosticCategory>
       message: '依赖未安装',
       suggestion: '运行 pnpm install 安装依赖',
       fixable: true,
-      command: 'pnpm install'
+      command: 'pnpm install',
     })
   } else {
     try {
       const stats = statSync('node_modules')
       const ageMinutes = (Date.now() - stats.mtime.getTime()) / 1000 / 60
-      
-      if (ageMinutes > 60 * 24) { // 超过24小时
+
+      if (ageMinutes > 60 * 24) {
+        // 超过24小时
         issues.push({
           level: 'info',
           message: '依赖安装时间较久，建议重新安装',
-          suggestion: '运行 pnpm install 更新依赖'
+          suggestion: '运行 pnpm install 更新依赖',
         })
       }
     } catch {
@@ -290,15 +296,18 @@ async function checkDependencies(verbose?: boolean): Promise<DiagnosticCategory>
     issues.push({
       level: 'warning',
       message: '未找到pnpm-lock.yaml',
-      suggestion: '运行 pnpm install 生成锁文件'
+      suggestion: '运行 pnpm install 生成锁文件',
     })
   }
 
   return {
     name: '依赖检查',
-    status: issues.some(i => i.level === 'error') ? 'error' :
-            issues.some(i => i.level === 'warning') ? 'warning' : 'healthy',
-    issues
+    status: issues.some(i => i.level === 'error')
+      ? 'error'
+      : issues.some(i => i.level === 'warning')
+        ? 'warning'
+        : 'healthy',
+    issues,
   }
 }
 
@@ -309,75 +318,78 @@ async function checkConfiguration(verbose?: boolean): Promise<DiagnosticCategory
   if (existsSync('tsconfig.json')) {
     try {
       const tsconfig = JSON.parse(readFileSync('tsconfig.json', 'utf-8'))
-      
+
       if (!tsconfig.compilerOptions?.strict) {
         issues.push({
           level: 'warning',
           message: 'TypeScript严格模式未启用',
-          suggestion: '在tsconfig.json中启用strict模式'
+          suggestion: '在tsconfig.json中启用strict模式',
         })
       }
-      
+
       if (verbose) {
         issues.push({
           level: 'info',
-          message: 'TypeScript配置: ✓'
+          message: 'TypeScript配置: ✓',
         })
       }
     } catch {
       issues.push({
         level: 'error',
         message: 'tsconfig.json格式错误',
-        suggestion: '检查JSON语法'
+        suggestion: '检查JSON语法',
       })
     }
   } else {
     issues.push({
       level: 'warning',
       message: '未找到tsconfig.json',
-      suggestion: '运行 tsc --init 创建TypeScript配置'
+      suggestion: '运行 tsc --init 创建TypeScript配置',
     })
   }
 
   // Next.js配置
   const nextConfigFiles = ['next.config.js', 'next.config.mjs', 'next.config.ts']
   const hasNextConfig = nextConfigFiles.some(file => existsSync(file))
-  
+
   if (!hasNextConfig) {
     issues.push({
       level: 'info',
       message: '未找到Next.js配置文件',
-      suggestion: '如果使用Next.js，创建next.config.js'
+      suggestion: '如果使用Next.js，创建next.config.js',
     })
   } else if (verbose) {
     issues.push({
       level: 'info',
-      message: 'Next.js配置: ✓'
+      message: 'Next.js配置: ✓',
     })
   }
 
   // Tailwind配置
   const tailwindConfigFiles = ['tailwind.config.js', 'tailwind.config.ts']
   const hasTailwindConfig = tailwindConfigFiles.some(file => existsSync(file))
-  
+
   if (!hasTailwindConfig) {
     issues.push({
       level: 'info',
       message: '未找到Tailwind配置文件',
-      suggestion: '如果使用Tailwind，运行 bunx tailwindcss init'
+      suggestion: '如果使用Tailwind，运行 bunx tailwindcss init',
     })
   } else if (verbose) {
     issues.push({
       level: 'info',
-      message: 'Tailwind配置: ✓'
+      message: 'Tailwind配置: ✓',
     })
   }
 
   return {
     name: '配置检查',
-    status: issues.some(i => i.level === 'error') ? 'error' :
-            issues.some(i => i.level === 'warning') ? 'warning' : 'healthy',
-    issues
+    status: issues.some(i => i.level === 'error')
+      ? 'error'
+      : issues.some(i => i.level === 'warning')
+        ? 'warning'
+        : 'healthy',
+    issues,
   }
 }
 
@@ -389,7 +401,7 @@ async function checkDatabase(verbose?: boolean): Promise<DiagnosticCategory> {
     if (verbose) {
       issues.push({
         level: 'info',
-        message: 'Prisma Schema: ✓'
+        message: 'Prisma Schema: ✓',
       })
     }
 
@@ -400,21 +412,21 @@ async function checkDatabase(verbose?: boolean): Promise<DiagnosticCategory> {
         message: 'Prisma客户端未生成',
         suggestion: '运行 pnpm prisma generate',
         fixable: true,
-        command: 'pnpm prisma generate'
+        command: 'pnpm prisma generate',
       })
     }
   } else {
     issues.push({
       level: 'info',
       message: '未找到Prisma Schema',
-      suggestion: '如果使用数据库，运行 pnpm prisma init'
+      suggestion: '如果使用数据库，运行 pnpm prisma init',
     })
   }
 
   // 环境变量检查
   const envFiles = ['.env', '.env.local']
   let hasDatabaseUrl = false
-  
+
   for (const envFile of envFiles) {
     if (existsSync(envFile)) {
       const content = readFileSync(envFile, 'utf-8')
@@ -429,15 +441,18 @@ async function checkDatabase(verbose?: boolean): Promise<DiagnosticCategory> {
     issues.push({
       level: 'warning',
       message: '未配置DATABASE_URL环境变量',
-      suggestion: '在.env文件中配置数据库连接字符串'
+      suggestion: '在.env文件中配置数据库连接字符串',
     })
   }
 
   return {
     name: '数据库检查',
-    status: issues.some(i => i.level === 'error') ? 'error' :
-            issues.some(i => i.level === 'warning') ? 'warning' : 'healthy',
-    issues
+    status: issues.some(i => i.level === 'error')
+      ? 'error'
+      : issues.some(i => i.level === 'warning')
+        ? 'warning'
+        : 'healthy',
+    issues,
   }
 }
 
@@ -448,7 +463,7 @@ async function checkBuild(verbose?: boolean): Promise<DiagnosticCategory> {
     issues.push({
       level: 'error',
       message: '未找到package.json',
-      suggestion: '确保在项目根目录运行命令'
+      suggestion: '确保在项目根目录运行命令',
     })
     return { name: '构建检查', status: 'error', issues }
   }
@@ -459,47 +474,50 @@ async function checkBuild(verbose?: boolean): Promise<DiagnosticCategory> {
   // 检查关键脚本
   const requiredScripts = ['build', 'dev']
   const missingScripts = requiredScripts.filter(script => !scripts[script])
-  
+
   if (missingScripts.length > 0) {
     issues.push({
       level: 'warning',
       message: `缺少构建脚本: ${missingScripts.join(', ')}`,
-      suggestion: '在package.json中添加必要的脚本'
+      suggestion: '在package.json中添加必要的脚本',
     })
   }
 
   // 检查构建输出
   const buildDirs = ['dist', 'build', '.next']
   const hasBuildOutput = buildDirs.some(dir => existsSync(dir))
-  
+
   if (!hasBuildOutput) {
     issues.push({
       level: 'info',
       message: '未找到构建输出',
       suggestion: '运行 pnpm build 进行构建测试',
       fixable: true,
-      command: 'pnpm build'
+      command: 'pnpm build',
     })
   } else if (verbose) {
     issues.push({
       level: 'info',
-      message: '构建输出: ✓'
+      message: '构建输出: ✓',
     })
   }
 
   return {
     name: '构建检查',
-    status: issues.some(i => i.level === 'error') ? 'error' :
-            issues.some(i => i.level === 'warning') ? 'warning' : 'healthy',
-    issues
+    status: issues.some(i => i.level === 'error')
+      ? 'error'
+      : issues.some(i => i.level === 'warning')
+        ? 'warning'
+        : 'healthy',
+    issues,
   }
 }
 
 function showConsoleReport(diagnostics: DiagnosticCategory[], verbose?: boolean) {
   diagnostics.forEach(category => {
-    const statusIcon = category.status === 'healthy' ? '✅' : 
-                      category.status === 'warning' ? '⚠️' : '❌'
-    
+    const statusIcon =
+      category.status === 'healthy' ? '✅' : category.status === 'warning' ? '⚠️' : '❌'
+
     console.log(`\n${statusIcon} ${category.name}`)
     console.log('─'.repeat(40))
 
@@ -509,15 +527,14 @@ function showConsoleReport(diagnostics: DiagnosticCategory[], verbose?: boolean)
     }
 
     category.issues.forEach(issue => {
-      const levelIcon = issue.level === 'error' ? '❌' : 
-                        issue.level === 'warning' ? '⚠️' : 'ℹ️'
-      
+      const levelIcon = issue.level === 'error' ? '❌' : issue.level === 'warning' ? '⚠️' : 'ℹ️'
+
       console.log(`  ${levelIcon} ${issue.message}`)
-      
+
       if (issue.suggestion) {
         console.log(`     建议: ${issue.suggestion}`)
       }
-      
+
       if (issue.command && verbose) {
         console.log(`     命令: ${issue.command}`)
       }
@@ -527,11 +544,11 @@ function showConsoleReport(diagnostics: DiagnosticCategory[], verbose?: boolean)
 
 function showMarkdownReport(diagnostics: DiagnosticCategory[]) {
   console.log('# LinchKit 诊断报告\n')
-  
+
   diagnostics.forEach(category => {
-    const statusIcon = category.status === 'healthy' ? '✅' : 
-                      category.status === 'warning' ? '⚠️' : '❌'
-    
+    const statusIcon =
+      category.status === 'healthy' ? '✅' : category.status === 'warning' ? '⚠️' : '❌'
+
     console.log(`## ${statusIcon} ${category.name}\n`)
 
     if (category.issues.length === 0) {
@@ -540,25 +557,26 @@ function showMarkdownReport(diagnostics: DiagnosticCategory[]) {
     }
 
     category.issues.forEach(issue => {
-      const levelIcon = issue.level === 'error' ? '❌' : 
-                        issue.level === 'warning' ? '⚠️' : 'ℹ️'
-      
+      const levelIcon = issue.level === 'error' ? '❌' : issue.level === 'warning' ? '⚠️' : 'ℹ️'
+
       console.log(`- ${levelIcon} **${issue.message}**`)
-      
+
       if (issue.suggestion) {
         console.log(`  - 建议: ${issue.suggestion}`)
       }
-      
+
       if (issue.command) {
         console.log(`  - 命令: \`${issue.command}\``)
       }
     })
-    
+
     console.log('')
   })
 }
 
-async function autoFix(diagnostics: DiagnosticCategory[]): Promise<{ fixed: number; failed: number }> {
+async function autoFix(
+  diagnostics: DiagnosticCategory[]
+): Promise<{ fixed: number; failed: number }> {
   let fixed = 0
   let failed = 0
 

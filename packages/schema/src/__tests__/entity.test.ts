@@ -12,7 +12,7 @@ describe('Entity System', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
         email: defineField.email().required().unique(),
-        age: defineField.number().min(0).max(120)
+        age: defineField.number().min(0).max(120),
       })
 
       expect(User.name).toBe('User')
@@ -25,7 +25,7 @@ describe('Entity System', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
         email: defineField.email().required(),
-        age: defineField.number().optional()
+        age: defineField.number().optional(),
       })
 
       expect(User.fields.name.type).toBe('string')
@@ -38,7 +38,7 @@ describe('Entity System', () => {
     it('should create entity with relations', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
-        posts: defineField.relation('Post')
+        posts: defineField.relation('Post'),
       })
 
       expect(User.fields.posts).toBeDefined()
@@ -51,7 +51,7 @@ describe('Entity System', () => {
       const Product = defineEntity('Product', {
         name: defineField.i18n(['en', 'zh-CN']).required(),
         description: defineField.i18n(['en', 'zh-CN']).optional(),
-        price: defineField.number().required()
+        price: defineField.number().required(),
       })
 
       expect(Product.fields.name.type).toBe('i18n')
@@ -64,7 +64,7 @@ describe('Entity System', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
         email: defineField.email().required(),
-        age: defineField.number().min(0).max(120)
+        age: defineField.number().min(0).max(120),
       })
 
       const validData = {
@@ -73,7 +73,7 @@ describe('Entity System', () => {
         email: 'john@example.com',
         age: 30,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       const result = await User.validate(validData)
@@ -84,7 +84,7 @@ describe('Entity System', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
         email: defineField.email().required(),
-        age: defineField.number().min(0).max(120)
+        age: defineField.number().min(0).max(120),
       })
 
       const invalidData = {
@@ -93,7 +93,7 @@ describe('Entity System', () => {
         email: 'invalid-email',
         age: -5,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       const result = await User.validate(invalidData)
@@ -104,7 +104,7 @@ describe('Entity System', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
         email: defineField.email().required(),
-        age: defineField.number().optional()
+        age: defineField.number().optional(),
       })
 
       const validData = {
@@ -113,7 +113,7 @@ describe('Entity System', () => {
         email: 'john@example.com',
         age: 30,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       const result = User.validateAndParse(validData)
@@ -124,12 +124,12 @@ describe('Entity System', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
         email: defineField.email().required(),
-        age: defineField.number().optional()
+        age: defineField.number().optional(),
       })
 
       const createData = {
         name: 'John Doe',
-        email: 'john@example.com'
+        email: 'john@example.com',
       }
 
       const result = User.validateCreate(createData)
@@ -140,11 +140,11 @@ describe('Entity System', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
         email: defineField.email().required(),
-        age: defineField.number().optional()
+        age: defineField.number().optional(),
       })
 
       const updateData = {
-        name: 'John Smith'
+        name: 'John Smith',
       }
 
       const result = User.validateUpdate(updateData)
@@ -157,12 +157,12 @@ describe('Entity System', () => {
       const User = defineEntity('User', {
         fields: {
           name: defineField.string().required(),
-          email: defineField.email().required()
+          email: defineField.email().required(),
         },
         options: {
           timestamps: false,
-          softDelete: true
-        }
+          softDelete: true,
+        },
       })
 
       expect(User.options.timestamps).toBe(false)
@@ -172,7 +172,7 @@ describe('Entity System', () => {
     it('should use default options when not specified', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
-        email: defineField.email().required()
+        email: defineField.email().required(),
       })
 
       expect(User.options.timestamps).toBe(true)
@@ -185,7 +185,7 @@ describe('Entity System', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
         email: defineField.email().required(),
-        age: defineField.number().optional()
+        age: defineField.number().optional(),
       })
 
       // 测试类型访问器
@@ -199,33 +199,33 @@ describe('Entity System', () => {
     describe('getTableName', () => {
       it('should return snake_case table name by default', () => {
         const UserProfile = defineEntity('UserProfile', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         })
-        
+
         expect(UserProfile.getTableName()).toBe('user_profile')
       })
 
       it('should return custom table name when specified', () => {
         const User = defineEntity('User', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         }).withOptions({ tableName: 'custom_users' })
-        
+
         expect(User.getTableName()).toBe('custom_users')
       })
 
       it('should handle single word entity names', () => {
         const User = defineEntity('User', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         })
-        
+
         expect(User.getTableName()).toBe('user')
       })
 
       it('should handle complex entity names', () => {
         const VeryLongEntityName = defineEntity('VeryLongEntityName', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         })
-        
+
         expect(VeryLongEntityName.getTableName()).toBe('very_long_entity_name')
       })
     })
@@ -236,9 +236,9 @@ describe('Entity System', () => {
           name: defineField.string().required(),
           email: defineField.email().required(),
           age: defineField.number().optional(),
-          bio: defineField.text().optional()
+          bio: defineField.text().optional(),
         })
-        
+
         const fieldNames = User.getFieldNames()
         expect(fieldNames).toContain('name')
         expect(fieldNames).toContain('email')
@@ -249,7 +249,7 @@ describe('Entity System', () => {
 
       it('should return empty array for entity with no fields', () => {
         const Empty = defineEntity('Empty', {})
-        
+
         const fieldNames = Empty.getFieldNames()
         expect(fieldNames).toEqual([])
       })
@@ -261,9 +261,9 @@ describe('Entity System', () => {
           name: defineField.string().required(),
           email: defineField.email().required(),
           age: defineField.number().optional(),
-          bio: defineField.text().optional()
+          bio: defineField.text().optional(),
         })
-        
+
         const requiredFields = User.getRequiredFields()
         expect(requiredFields).toContain('name')
         expect(requiredFields).toContain('email')
@@ -275,9 +275,9 @@ describe('Entity System', () => {
       it('should return empty array when no required fields', () => {
         const User = defineEntity('User', {
           name: defineField.string().optional(),
-          age: defineField.number().optional()
+          age: defineField.number().optional(),
         })
-        
+
         const requiredFields = User.getRequiredFields()
         expect(requiredFields).toEqual([])
       })
@@ -286,9 +286,9 @@ describe('Entity System', () => {
         const User = defineEntity('User', {
           name: defineField.string().required(),
           email: defineField.email().required(),
-          age: defineField.number().required()
+          age: defineField.number().required(),
         })
-        
+
         const requiredFields = User.getRequiredFields()
         expect(requiredFields).toHaveLength(3)
         expect(requiredFields).toContain('name')
@@ -303,9 +303,9 @@ describe('Entity System', () => {
           name: defineField.string().required(),
           email: defineField.email().required().unique(),
           username: defineField.string().required().unique(),
-          age: defineField.number().optional()
+          age: defineField.number().optional(),
         })
-        
+
         const uniqueFields = User.getUniqueFields()
         expect(uniqueFields).toContain('email')
         expect(uniqueFields).toContain('username')
@@ -317,9 +317,9 @@ describe('Entity System', () => {
       it('should return empty array when no unique fields', () => {
         const User = defineEntity('User', {
           name: defineField.string().required(),
-          age: defineField.number().optional()
+          age: defineField.number().optional(),
         })
-        
+
         const uniqueFields = User.getUniqueFields()
         expect(uniqueFields).toEqual([])
       })
@@ -331,9 +331,9 @@ describe('Entity System', () => {
           name: defineField.string().required().index(),
           email: defineField.email().required().unique(),
           username: defineField.string().required().unique().index(),
-          age: defineField.number().optional()
+          age: defineField.number().optional(),
         })
-        
+
         const indexedFields = User.getIndexedFields()
         expect(indexedFields).toContain('name') // indexed
         expect(indexedFields).toContain('email') // unique (implies indexed)
@@ -345,9 +345,9 @@ describe('Entity System', () => {
       it('should return empty array when no indexed fields', () => {
         const User = defineEntity('User', {
           name: defineField.string().required(),
-          age: defineField.number().optional()
+          age: defineField.number().optional(),
         })
-        
+
         const indexedFields = User.getIndexedFields()
         expect(indexedFields).toEqual([])
       })
@@ -359,17 +359,17 @@ describe('Entity System', () => {
           name: defineField.string().required(),
           posts: defineField.relation('Post', 'oneToMany'),
           profile: defineField.relation('Profile', 'oneToOne'),
-          roles: defineField.relation('Role', 'manyToMany')
+          roles: defineField.relation('Role', 'manyToMany'),
         })
-        
+
         const relationFields = User.getRelationFields()
         expect(relationFields).toHaveLength(3)
-        
+
         const fieldNames = relationFields.map(([name]) => name)
         expect(fieldNames).toContain('posts')
         expect(fieldNames).toContain('profile')
         expect(fieldNames).toContain('roles')
-        
+
         const postField = relationFields.find(([name]) => name === 'posts')?.[1]
         expect(postField?.type).toBe('relation')
         expect((postField as any)?.target).toBe('Post')
@@ -378,9 +378,9 @@ describe('Entity System', () => {
       it('should return empty array when no relation fields', () => {
         const User = defineEntity('User', {
           name: defineField.string().required(),
-          email: defineField.email().required()
+          email: defineField.email().required(),
         })
-        
+
         const relationFields = User.getRelationFields()
         expect(relationFields).toEqual([])
       })
@@ -392,11 +392,11 @@ describe('Entity System', () => {
       it('should create a copy of the entity', () => {
         const User = defineEntity('User', {
           name: defineField.string().required(),
-          email: defineField.email().required()
+          email: defineField.email().required(),
         })
-        
+
         const clonedUser = User.clone()
-        
+
         expect(clonedUser.name).toBe(User.name)
         expect(clonedUser.fields).toEqual(User.fields)
         expect(clonedUser.options).toEqual(User.options)
@@ -405,16 +405,16 @@ describe('Entity System', () => {
 
       it('should create independent copy', () => {
         const User = defineEntity('User', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         })
-        
+
         const clonedUser = User.clone()
-        
+
         // Modifying clone should not affect original
         const extendedClone = clonedUser.extend({
-          email: defineField.email().required()
+          email: defineField.email().required(),
         })
-        
+
         expect(User.getFieldNames()).toHaveLength(1)
         expect(extendedClone.getFieldNames()).toHaveLength(2)
       })
@@ -423,14 +423,14 @@ describe('Entity System', () => {
     describe('extend', () => {
       it('should add new fields to entity', () => {
         const User = defineEntity('User', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         })
-        
+
         const ExtendedUser = User.extend({
           email: defineField.email().required(),
-          age: defineField.number().optional()
+          age: defineField.number().optional(),
         })
-        
+
         expect(ExtendedUser.getFieldNames()).toHaveLength(3)
         expect(ExtendedUser.getFieldNames()).toContain('name')
         expect(ExtendedUser.getFieldNames()).toContain('email')
@@ -440,26 +440,26 @@ describe('Entity System', () => {
       it('should override existing fields', () => {
         const User = defineEntity('User', {
           name: defineField.string().required(),
-          age: defineField.number().optional()
+          age: defineField.number().optional(),
         })
-        
+
         const ExtendedUser = User.extend({
-          age: defineField.number().required() // Override optional with required
+          age: defineField.number().required(), // Override optional with required
         })
-        
+
         expect(ExtendedUser.fields.age.required).toBe(true)
         expect(User.fields.age.required).toBe(false) // Original unchanged
       })
 
       it('should preserve original entity options', () => {
         const User = defineEntity('User', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         }).withOptions({ timestamps: false, softDelete: true })
-        
+
         const ExtendedUser = User.extend({
-          email: defineField.email().required()
+          email: defineField.email().required(),
         })
-        
+
         expect(ExtendedUser.options.timestamps).toBe(false)
         expect(ExtendedUser.options.softDelete).toBe(true)
       })
@@ -468,19 +468,19 @@ describe('Entity System', () => {
     describe('withOptions', () => {
       it('should create entity with new options', () => {
         const User = defineEntity('User', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         })
-        
+
         const UserWithOptions = User.withOptions({
           timestamps: false,
           softDelete: true,
-          tableName: 'custom_users'
+          tableName: 'custom_users',
         })
-        
+
         expect(UserWithOptions.options.timestamps).toBe(false)
         expect(UserWithOptions.options.softDelete).toBe(true)
         expect(UserWithOptions.options.tableName).toBe('custom_users')
-        
+
         // Original should be unchanged
         expect(User.options.timestamps).toBe(true)
         expect(User.options.softDelete).toBe(false)
@@ -489,14 +489,14 @@ describe('Entity System', () => {
 
       it('should merge with existing options', () => {
         const User = defineEntity('User', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         }).withOptions({ timestamps: false })
-        
+
         const UserWithMoreOptions = User.withOptions({
           softDelete: true,
-          tableName: 'users'
+          tableName: 'users',
         })
-        
+
         expect(UserWithMoreOptions.options.timestamps).toBe(false) // Preserved
         expect(UserWithMoreOptions.options.softDelete).toBe(true) // Added
         expect(UserWithMoreOptions.options.tableName).toBe('users') // Added
@@ -504,13 +504,13 @@ describe('Entity System', () => {
 
       it('should override existing options', () => {
         const User = defineEntity('User', {
-          name: defineField.string().required()
+          name: defineField.string().required(),
         }).withOptions({ timestamps: true })
-        
+
         const UserWithOverride = User.withOptions({
-          timestamps: false // Override
+          timestamps: false, // Override
         })
-        
+
         expect(UserWithOverride.options.timestamps).toBe(false)
         expect(User.options.timestamps).toBe(true) // Original unchanged
       })
@@ -524,28 +524,28 @@ describe('Entity System', () => {
         name: defineField.string().required().unique().index(),
         count: defineField.number().min(0).required(),
         active: defineField.boolean().required(),
-        
+
         // Optional types
         description: defineField.text().optional(),
         metadata: defineField.json().optional(),
-        
+
         // Constrained types
         email: defineField.email().required().unique(),
         website: defineField.url().optional(),
-        
+
         // Complex types
         status: defineField.enum(['draft', 'published']).required(),
         tags: defineField.array(defineField.string()).optional(),
-        
+
         // Relations
         authorId: defineField.relation('User', 'manyToOne').required(),
-        comments: defineField.relation('Comment', 'oneToMany').optional()
+        comments: defineField.relation('Comment', 'oneToMany').optional(),
       }).withOptions({
         tableName: 'complex_entities',
         timestamps: true,
-        softDelete: true
+        softDelete: true,
       })
-      
+
       // Test all helper methods
       expect(ComplexEntity.getTableName()).toBe('complex_entities')
       expect(ComplexEntity.getFieldNames()).toHaveLength(11)
@@ -553,18 +553,18 @@ describe('Entity System', () => {
       expect(ComplexEntity.getUniqueFields()).toHaveLength(2)
       expect(ComplexEntity.getIndexedFields()).toHaveLength(2) // name (unique+index), email (unique)
       expect(ComplexEntity.getRelationFields()).toHaveLength(2)
-      
+
       // Test manipulation methods
       const cloned = ComplexEntity.clone()
       expect(cloned.getFieldNames()).toHaveLength(11)
-      
+
       const extended = ComplexEntity.extend({
-        newField: defineField.string().optional()
+        newField: defineField.string().optional(),
       })
       expect(extended.getFieldNames()).toHaveLength(12)
-      
+
       const withNewOptions = ComplexEntity.withOptions({
-        timestamps: false
+        timestamps: false,
       })
       expect(withNewOptions.options.timestamps).toBe(false)
       expect(withNewOptions.options.tableName).toBe('complex_entities') // Preserved

@@ -1,6 +1,6 @@
 /**
  * linch upgrade 命令
- * 
+ *
  * 框架升级迁移工具 - Gemini建议的增强命令
  */
 
@@ -19,29 +19,29 @@ const upgradeCommand: CLICommand = {
       name: 'target',
       alias: '-t',
       description: '目标版本 (latest, next, 具体版本号)',
-      defaultValue: 'latest'
+      defaultValue: 'latest',
     },
     {
       name: 'dry-run',
       description: '模拟运行，不实际执行升级',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       name: 'force',
       description: '强制升级，跳过兼容性检查',
-      type: 'boolean'
+      type: 'boolean',
     },
     {
       name: 'backup',
       description: '升级前创建备份',
       type: 'boolean',
-      defaultValue: true
+      defaultValue: true,
     },
     {
       name: 'migration',
       description: '仅运行迁移脚本',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   ],
   handler: async ({ options }) => {
     try {
@@ -62,7 +62,7 @@ const upgradeCommand: CLICommand = {
       if (!projectInfo.isLinchKit) {
         return {
           success: false,
-          error: '当前目录不是LinchKit项目'
+          error: '当前目录不是LinchKit项目',
         }
       }
 
@@ -115,10 +115,10 @@ const upgradeCommand: CLICommand = {
       Logger.error('Upgrade failed:', error)
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       }
     }
-  }
+  },
 }
 
 interface ProjectInfo {
@@ -136,13 +136,13 @@ async function checkProject(): Promise<ProjectInfo> {
       name: '',
       version: '',
       linchKitPackages: [],
-      packageJson: null
+      packageJson: null,
     }
   }
 
   const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
   const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
-  
+
   const linchKitPackages = Object.entries(deps)
     .filter(([name]) => name.startsWith('@linch-kit/'))
     .map(([name, version]) => ({ name, version: version as string }))
@@ -152,7 +152,7 @@ async function checkProject(): Promise<ProjectInfo> {
     name: packageJson.name || 'unnamed',
     version: packageJson.version || '0.0.0',
     linchKitPackages,
-    packageJson
+    packageJson,
   }
 }
 
@@ -176,7 +176,7 @@ async function getTargetVersion(target: string): Promise<string> {
 }
 
 async function checkCompatibility(
-  projectInfo: ProjectInfo, 
+  projectInfo: ProjectInfo,
   targetVersion: string
 ): Promise<{ compatible: boolean; issues: string[] }> {
   const issues: string[] = []
@@ -202,7 +202,7 @@ async function checkCompatibility(
 
   return {
     compatible: issues.length === 0,
-    issues
+    issues,
   }
 }
 
@@ -214,13 +214,15 @@ async function checkBreakingChanges(
 
   // 这里应该实现实际的破坏性变更检查
   // 基于CHANGELOG或版本兼容性矩阵
-  
+
   for (const pkg of currentPackages) {
     const currentMajor = parseInt(pkg.version.split('.')[0])
     const targetMajor = parseInt(targetVersion.split('.')[0])
-    
+
     if (targetMajor > currentMajor) {
-      issues.push(`${pkg.name}: 主版本升级 (${pkg.version} -> ${targetVersion})，可能包含破坏性变更`)
+      issues.push(
+        `${pkg.name}: 主版本升级 (${pkg.version} -> ${targetVersion})，可能包含破坏性变更`
+      )
     }
   }
 
@@ -230,9 +232,9 @@ async function checkBreakingChanges(
 async function createBackup(): Promise<void> {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
   const backupName = `linchkit-backup-${timestamp}`
-  
+
   console.log(`创建备份: ${backupName}`)
-  
+
   try {
     // 备份package.json和重要配置文件
     const filesToBackup = [
@@ -241,11 +243,11 @@ async function createBackup(): Promise<void> {
       '.env.example',
       'tsconfig.json',
       'next.config.js',
-      'tailwind.config.js'
+      'tailwind.config.js',
     ]
 
     const backupData: Record<string, string> = {}
-    
+
     filesToBackup.forEach(file => {
       if (existsSync(file)) {
         backupData[file] = readFileSync(file, 'utf-8')
@@ -271,7 +273,7 @@ async function performUpgrade(
   // 1. 更新package.json中的LinchKit包版本
   if (!dryRun) {
     const packageJson = projectInfo.packageJson
-    
+
     projectInfo.linchKitPackages.forEach(pkg => {
       if (packageJson.dependencies?.[pkg.name]) {
         packageJson.dependencies[pkg.name] = `^${targetVersion}`
@@ -302,18 +304,16 @@ async function runMigrationOnly(
   dryRun?: boolean
 ): Promise<{ success: boolean; migrations: string[] }> {
   console.log(`${dryRun ? '[模拟] ' : ''}仅运行迁移脚本...`)
-  
+
   const targetVersion = getLatestInstalledVersion(projectInfo)
   const migrations = await runMigrations(targetVersion, dryRun)
-  
+
   return { success: true, migrations }
 }
 
 function getLatestInstalledVersion(projectInfo: ProjectInfo): string {
   // 获取当前安装的最高版本
-  const versions = projectInfo.linchKitPackages.map(pkg => 
-    pkg.version.replace(/[^0-9.]/g, '')
-  )
+  const versions = projectInfo.linchKitPackages.map(pkg => pkg.version.replace(/[^0-9.]/g, ''))
   return versions.sort().pop() || '1.0.0'
 }
 
@@ -322,7 +322,7 @@ async function runMigrations(targetVersion: string, dryRun?: boolean): Promise<s
 
   // 这里应该实现实际的迁移脚本逻辑
   // 基于版本号运行相应的迁移脚本
-  
+
   const migrationScripts = [
     {
       version: '2.0.0',
@@ -330,16 +330,16 @@ async function runMigrations(targetVersion: string, dryRun?: boolean): Promise<s
       script: () => {
         // 迁移Schema API调用
         migrations.push('Migrated Schema API calls')
-      }
+      },
     },
     {
-      version: '2.1.0', 
+      version: '2.1.0',
       name: 'CRUD配置更新',
       script: () => {
         // 更新CRUD配置格式
         migrations.push('Updated CRUD configuration format')
-      }
-    }
+      },
+    },
   ]
 
   for (const migration of migrationScripts) {

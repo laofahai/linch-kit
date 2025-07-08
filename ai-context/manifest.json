@@ -15,7 +15,7 @@
       "priority": "high"
     },
     {
-      "path": "ai-context/00_Overview/02_Quick_Start.md", 
+      "path": "ai-context/00_Overview/02_Quick_Start.md",
       "description": "Quick start guide for developers and AI assistants",
       "tags": ["guide", "quickstart"],
       "priority": "high"
@@ -149,19 +149,14 @@
   "packageArchitecture": {
     "corePackages": [
       "@linch-kit/core",
-      "@linch-kit/schema", 
+      "@linch-kit/schema",
       "@linch-kit/auth",
       "@linch-kit/crud",
       "@linch-kit/trpc",
       "@linch-kit/ui"
     ],
-    "modules": [
-      "modules/console"
-    ],
-    "applications": [
-      "apps/starter",
-      "apps/website"
-    ],
+    "modules": ["modules/console"],
+    "applications": ["apps/starter", "apps/website"],
     "completionStatus": "100%"
   }
 }

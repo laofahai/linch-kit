@@ -3,10 +3,8 @@ import { PluginDemo } from '@/components/plugins/PluginDemo'
 export default function PluginsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
-        LinchKit 插件系统演示
-      </h1>
-      
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">LinchKit 插件系统演示</h1>
+
       <div className="bg-purple-50 p-6 rounded-lg mb-8">
         <h2 className="text-xl font-semibold mb-4">🧩 企业级插件架构</h2>
         <p className="text-gray-700 mb-4">

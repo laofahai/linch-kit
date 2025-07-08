@@ -16,6 +16,6 @@ export default defineConfig({
     'next-auth',
     'next-auth/react',
     'react',
-    'react/jsx-runtime'
-  ]
+    'react/jsx-runtime',
+  ],
 })

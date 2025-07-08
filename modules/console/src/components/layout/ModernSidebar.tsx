@@ -1,6 +1,6 @@
 /**
  * 现代化响应式 Sidebar 布局组件
- * 
+ *
  * 基于 shadcn 原子组件，支持响应式设计和自定义主题
  */
 
@@ -8,12 +8,12 @@
 
 import React, { ReactNode, useState, useEffect } from 'react'
 import { cn } from '@linch-kit/ui/utils'
-import { 
-  Button, 
-  Card, 
-  CardContent, 
-  Separator, 
-  Avatar, 
+import {
+  Button,
+  Card,
+  CardContent,
+  Separator,
+  Avatar,
   AvatarFallback,
   Tooltip,
   TooltipContent,
@@ -22,13 +22,13 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
-  Badge
+  Badge,
 } from '@linch-kit/ui'
-import { 
-  Menu, 
-  Home, 
-  Settings, 
-  Users, 
+import {
+  Menu,
+  Home,
+  Settings,
+  Users,
   BarChart3,
   FileText,
   HelpCircle,
@@ -39,7 +39,7 @@ import {
   Search,
   Sun,
   Moon,
-  Monitor
+  Monitor,
 } from 'lucide-react'
 
 export interface ModernSidebarProps {
@@ -125,7 +125,7 @@ export function ModernSidebar({
   showThemeToggle = true,
   showSearch = true,
   defaultCollapsed = false,
-  responsiveBreakpoint = 'md'
+  responsiveBreakpoint = 'md',
 }: ModernSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed)
   const [isMobile, setIsMobile] = useState(false)
@@ -137,11 +137,11 @@ export function ModernSidebar({
       const breakpoints = {
         sm: 640,
         md: 768,
-        lg: 1024
+        lg: 1024,
       }
       setIsMobile(window.innerWidth < breakpoints[responsiveBreakpoint])
     }
-    
+
     checkDevice()
     window.addEventListener('resize', checkDevice)
     return () => window.removeEventListener('resize', checkDevice)
@@ -186,15 +186,11 @@ export function ModernSidebar({
             </div>
             <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
-          
+
           {(!isCollapsed || isMobile) && (
             <div className="flex-1 min-w-0">
-              <h1 className="font-bold text-xl text-gray-900 dark:text-white truncate">
-                {title}
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                {subtitle}
-              </p>
+              <h1 className="font-bold text-xl text-gray-900 dark:text-white truncate">{title}</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{subtitle}</p>
             </div>
           )}
         </div>
@@ -203,12 +199,8 @@ export function ModernSidebar({
       {/* 导航区域 */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
         <nav className="space-y-2">
-          {navItems.map((item) => (
-            <NavItemComponent
-              key={item.href}
-              item={item}
-              isCollapsed={isCollapsed && !isMobile}
-            />
+          {navItems.map(item => (
+            <NavItemComponent key={item.href} item={item} isCollapsed={isCollapsed && !isMobile} />
           ))}
         </nav>
       </div>
@@ -222,7 +214,7 @@ export function ModernSidebar({
                 {user.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            
+
             {(!isCollapsed || isMobile) && (
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-gray-900 dark:text-white truncate">
@@ -233,7 +225,7 @@ export function ModernSidebar({
                 </div>
               </div>
             )}
-            
+
             <Button
               variant="ghost"
               size="icon"
@@ -250,24 +242,27 @@ export function ModernSidebar({
   // 导航项组件
   const NavItemComponent = ({ item, isCollapsed }: { item: NavItem; isCollapsed: boolean }) => {
     const Icon = item.icon
-    
+
     const content = (
       <a
         href={item.href}
         className={cn(
           'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group',
           'hover:bg-gray-100 dark:hover:bg-gray-800',
-          item.active && 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 shadow-sm',
+          item.active &&
+            'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 shadow-sm',
           item.disabled && 'opacity-50 cursor-not-allowed',
           isCollapsed && 'justify-center px-2'
         )}
       >
-        <Icon className={cn(
-          'h-5 w-5 flex-shrink-0 transition-colors',
-          item.active && 'text-blue-600 dark:text-blue-400',
-          'group-hover:scale-110'
-        )} />
-        
+        <Icon
+          className={cn(
+            'h-5 w-5 flex-shrink-0 transition-colors',
+            item.active && 'text-blue-600 dark:text-blue-400',
+            'group-hover:scale-110'
+          )}
+        />
+
         {!isCollapsed && (
           <>
             <span className="truncate">{item.label}</span>
@@ -285,9 +280,7 @@ export function ModernSidebar({
       return (
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
-              {content}
-            </TooltipTrigger>
+            <TooltipTrigger asChild>{content}</TooltipTrigger>
             <TooltipContent side="right">
               <p>{item.label}</p>
             </TooltipContent>
@@ -310,7 +303,7 @@ export function ModernSidebar({
           )}
         >
           <SidebarContent />
-          
+
           {/* 折叠按钮 */}
           <Button
             variant="ghost"
@@ -318,7 +311,11 @@ export function ModernSidebar({
             onClick={toggleSidebar}
             className="absolute -right-4 top-6 h-8 w-8 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-200"
           >
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
           </Button>
         </aside>
       )}
@@ -337,11 +334,16 @@ export function ModernSidebar({
                 <React.Fragment key={index}>
                   {index > 0 && <span className="text-gray-400">/</span>}
                   {crumb.href ? (
-                    <a href={crumb.href} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+                    <a
+                      href={crumb.href}
+                      className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                    >
                       {crumb.label}
                     </a>
                   ) : (
-                    <span className="text-gray-900 dark:text-gray-100 font-medium">{crumb.label}</span>
+                    <span className="text-gray-900 dark:text-gray-100 font-medium">
+                      {crumb.label}
+                    </span>
                   )}
                 </React.Fragment>
               ))}
@@ -381,9 +383,7 @@ export function ModernSidebar({
         </header>
 
         {/* 页面内容 */}
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </div>
   )
@@ -416,14 +416,14 @@ export function ModernPage({
   children,
   className,
   showCard = false,
-  padding = 'lg'
+  padding = 'lg',
 }: ModernPageProps) {
   const paddingClasses = {
     none: '',
     sm: 'p-4',
     md: 'p-6',
     lg: 'p-8',
-    xl: 'p-12'
+    xl: 'p-12',
   }
 
   const content = (
@@ -444,20 +444,14 @@ export function ModernPage({
                 </p>
               )}
             </div>
-            
-            {actions && (
-              <div className="ml-6 flex items-center gap-3">
-                {actions}
-              </div>
-            )}
+
+            {actions && <div className="ml-6 flex items-center gap-3">{actions}</div>}
           </div>
         </div>
       )}
-      
+
       {/* 页面内容 */}
-      <div className="space-y-8">
-        {children}
-      </div>
+      <div className="space-y-8">{children}</div>
     </div>
   )
 
@@ -465,9 +459,7 @@ export function ModernPage({
     return (
       <div className="p-6">
         <Card className="shadow-lg border-0 bg-white dark:bg-gray-950">
-          <CardContent className="p-0">
-            {content}
-          </CardContent>
+          <CardContent className="p-0">{content}</CardContent>
         </Card>
       </div>
     )

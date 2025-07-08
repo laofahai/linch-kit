@@ -53,7 +53,10 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
       this.initialized = true
       this.logger?.info(`Plugin ${this.name} v${this.version} initialized successfully`)
     } catch (error) {
-      this.logger?.error(`Failed to initialize plugin ${this.name}`, error instanceof Error ? error : new Error(String(error)))
+      this.logger?.error(
+        `Failed to initialize plugin ${this.name}`,
+        error instanceof Error ? error : new Error(String(error))
+      )
       throw error
     }
   }
@@ -71,7 +74,10 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
       this.initialized = false
       this.logger?.info(`Plugin ${this.name} destroyed successfully`)
     } catch (error) {
-      this.logger?.error(`Failed to destroy plugin ${this.name}`, error instanceof Error ? error : new Error(String(error)))
+      this.logger?.error(
+        `Failed to destroy plugin ${this.name}`,
+        error instanceof Error ? error : new Error(String(error))
+      )
       throw error
     }
   }
@@ -85,7 +91,11 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
       await this.onConfigure(this.config)
       this.logger?.debug(`Plugin ${this.name} configured`, { config: this.config })
     } catch (error) {
-      this.logger?.error(`Failed to configure plugin ${this.name}`, error instanceof Error ? error : new Error(String(error)), { config })
+      this.logger?.error(
+        `Failed to configure plugin ${this.name}`,
+        error instanceof Error ? error : new Error(String(error)),
+        { config }
+      )
       throw error
     }
   }
@@ -113,10 +123,13 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
       name: this.name,
       version: this.version,
       description: this.description,
-      dependencies: this.dependencies?.reduce((acc, dep) => {
-        acc[dep] = '*'
-        return acc
-      }, {} as Record<string, string>)
+      dependencies: this.dependencies?.reduce(
+        (acc, dep) => {
+          acc[dep] = '*'
+          return acc
+        },
+        {} as Record<string, string>
+      ),
     }
   }
 
@@ -148,13 +161,17 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
   /**
    * 记录日志
    */
-  protected log(level: 'debug' | 'info' | 'warn' | 'error', message: string, meta?: Record<string, unknown>): void {
+  protected log(
+    level: 'debug' | 'info' | 'warn' | 'error',
+    message: string,
+    meta?: Record<string, unknown>
+  ): void {
     if (!this.logger) return
 
     const logMeta = {
       plugin: this.name,
       version: this.version,
-      ...meta
+      ...meta,
     }
 
     if (level === 'error') {
@@ -171,9 +188,11 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
    */
   protected validateConfig(config: Record<string, unknown>, requiredKeys: string[]): void {
     const missingKeys = requiredKeys.filter(key => !(key in config))
-    
+
     if (missingKeys.length > 0) {
-      throw new Error(`Plugin ${this.name} missing required configuration keys: ${missingKeys.join(', ')}`)
+      throw new Error(
+        `Plugin ${this.name} missing required configuration keys: ${missingKeys.join(', ')}`
+      )
     }
   }
 
@@ -186,9 +205,11 @@ export abstract class BaseCrudPlugin implements CrudPlugin {
     }
 
     const missingDependencies = this.dependencies.filter(dep => !availablePlugins.includes(dep))
-    
+
     if (missingDependencies.length > 0) {
-      throw new Error(`Plugin ${this.name} missing required dependencies: ${missingDependencies.join(', ')}`)
+      throw new Error(
+        `Plugin ${this.name} missing required dependencies: ${missingDependencies.join(', ')}`
+      )
     }
   }
 }

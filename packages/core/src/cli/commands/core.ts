@@ -1,6 +1,6 @@
 /**
  * LinchKit Core CLI 命令
- * 
+ *
  * 核心命令：init, info, help + 系统增强命令：upgrade, doctor
  */
 
@@ -27,7 +27,7 @@ export function registerCoreCommands(cli: CLIManager) {
   registerInitCommand(cli)
   registerInfoCommand(cli)
   registerHelpCommand(cli)
-  
+
   // 系统增强命令
   registerUpgradeCommand(cli)
   registerDoctorCommand(cli)

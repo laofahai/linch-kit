@@ -321,7 +321,7 @@ export const watchSchemaCommand: CLICommand = {
  */
 async function performGeneration(input: string, output: string, generators: string): Promise<void> {
   const entities = await loadSchemaEntities(input)
-  
+
   if (entities.length === 0) {
     console.warn(`No entities found in ${input}`)
     return
@@ -350,7 +350,7 @@ async function performGeneration(input: string, output: string, generators: stri
 
   // 写入文件
   await writeGeneratedFiles(files, output)
-  
+
   console.log(`Generated ${files.length} files from ${entities.length} entities`)
 }
 

@@ -16,11 +16,7 @@ interface ResponsiveNavProps {
   className?: string
 }
 
-export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
-  items,
-  brand,
-  className = ''
-}) => {
+export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({ items, brand, className = '' }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const router = useRouter()
@@ -72,10 +68,10 @@ export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
       return (
         <div key={item.label} className={`relative ${isMobile ? 'w-full' : ''}`}>
           <button
-            onClick={(e) => toggleDropdown(item.label, e)}
+            onClick={e => toggleDropdown(item.label, e)}
             className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              isActive 
-                ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30' 
+              isActive
+                ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30'
                 : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-700'
             } ${isMobile ? 'w-full justify-between' : ''}`}
           >
@@ -89,18 +85,25 @@ export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
 
           {/* 下拉菜单 */}
           {isDropdownOpen && (
-            <div className={`${
-              isMobile 
-                ? 'mt-2 ml-4 space-y-1' 
-                : 'absolute top-full left-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50'
-            }`}>
-              {item.children?.map((child) => (
+            <div
+              className={`${
+                isMobile
+                  ? 'mt-2 ml-4 space-y-1'
+                  : 'absolute top-full left-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50'
+              }`}
+            >
+              {item.children?.map(child => (
                 <a
                   key={child.href}
                   href={child.href}
@@ -125,8 +128,8 @@ export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
         key={item.href}
         href={item.href}
         className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-          isActive 
-            ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30' 
+          isActive
+            ? 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30'
             : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-gray-700'
         }`}
       >
@@ -137,16 +140,14 @@ export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
   }
 
   return (
-    <nav className={`bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 ${className}`}>
+    <nav
+      className={`bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 ${className}`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* 品牌logo */}
           <div className="flex items-center">
-            {brand && (
-              <div className="flex-shrink-0">
-                {brand}
-              </div>
-            )}
+            {brand && <div className="flex-shrink-0">{brand}</div>}
           </div>
 
           {/* 桌面端导航 */}
@@ -162,16 +163,21 @@ export const ResponsiveNav: React.FC<ResponsiveNavProps> = ({
               aria-expanded={isMobileMenuOpen}
               aria-label="主菜单"
             >
-              <svg
-                className="h-6 w-6"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                 {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 )}
               </svg>
             </button>

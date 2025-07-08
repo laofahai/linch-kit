@@ -31,22 +31,61 @@ const FooterContent = () => (
           © 2025 LinchKit. All rights reserved.
         </div>
       </div>
-      
+
       <div>
         <h4 className="font-semibold mb-3 text-sm">产品</h4>
         <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-          <li><a href="/#features" className="hover:text-gray-900 dark:hover:text-white transition-colors">特性</a></li>
-          <li><a href="/docs" className="hover:text-gray-900 dark:hover:text-white transition-colors">文档</a></li>
-          <li><a href="/docs/guides" className="hover:text-gray-900 dark:hover:text-white transition-colors">指南</a></li>
+          <li>
+            <a
+              href="/#features"
+              className="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              特性
+            </a>
+          </li>
+          <li>
+            <a href="/docs" className="hover:text-gray-900 dark:hover:text-white transition-colors">
+              文档
+            </a>
+          </li>
+          <li>
+            <a
+              href="/docs/guides"
+              className="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              指南
+            </a>
+          </li>
         </ul>
       </div>
-      
+
       <div>
         <h4 className="font-semibold mb-3 text-sm">资源</h4>
         <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-          <li><a href="/docs/api" className="hover:text-gray-900 dark:hover:text-white transition-colors">API 文档</a></li>
-          <li><a href="https://github.com/laofahai/linch-kit" className="hover:text-gray-900 dark:hover:text-white transition-colors">GitHub</a></li>
-          <li><a href="/docs/contributing" className="hover:text-gray-900 dark:hover:text-white transition-colors">贡献</a></li>
+          <li>
+            <a
+              href="/docs/api"
+              className="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              API 文档
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://github.com/laofahai/linch-kit"
+              className="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              GitHub
+            </a>
+          </li>
+          <li>
+            <a
+              href="/docs/contributing"
+              className="hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              贡献
+            </a>
+          </li>
         </ul>
       </div>
     </div>
@@ -56,34 +95,46 @@ const FooterContent = () => (
 // 增强的 Head 组件
 const HeadContent = () => {
   const { asPath } = useRouter()
-  
+
   return (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta name="description" content="Enterprise-ready AI-First full-stack development framework with Schema-driven architecture and end-to-end type safety." />
-      <meta name="keywords" content="LinchKit, AI-First, Full-Stack, Next.js, Framework, TypeScript, Schema-driven, Enterprise" />
+      <meta
+        name="description"
+        content="Enterprise-ready AI-First full-stack development framework with Schema-driven architecture and end-to-end type safety."
+      />
+      <meta
+        name="keywords"
+        content="LinchKit, AI-First, Full-Stack, Next.js, Framework, TypeScript, Schema-driven, Enterprise"
+      />
       <meta name="author" content="LinchKit Team" />
-      
+
       {/* Open Graph */}
       <meta property="og:title" content="LinchKit - AI-First Full-Stack Development Framework" />
-      <meta property="og:description" content="Enterprise-ready development framework with Schema-driven architecture and end-to-end type safety, designed for AI era." />
+      <meta
+        property="og:description"
+        content="Enterprise-ready development framework with Schema-driven architecture and end-to-end type safety, designed for AI era."
+      />
       <meta property="og:type" content="website" />
       <meta property="og:url" content={`https://linchkit.dev${asPath}`} />
       <meta property="og:image" content="/og-image.jpg" />
       <meta property="og:siteName" content="LinchKit" />
-      
+
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="LinchKit - AI-First Full-Stack Development Framework" />
-      <meta name="twitter:description" content="Enterprise-ready development framework designed for AI era." />
+      <meta
+        name="twitter:description"
+        content="Enterprise-ready development framework designed for AI era."
+      />
       <meta name="twitter:image" content="/og-image.jpg" />
-      
+
       {/* 网站图标 */}
       <link rel="icon" href="/favicon.ico" />
       <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
       <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
       <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-      
+
       {/* 主题颜色 */}
       <meta name="theme-color" content="#3b82f6" />
       <meta name="msapplication-TileColor" content="#3b82f6" />
@@ -98,7 +149,7 @@ const config = {
   },
   docsRepositoryBase: 'https://github.com/laofahai/linch-kit/tree/main/apps/website',
   footer: {
-    component: <FooterContent />
+    component: <FooterContent />,
   },
   head: <HeadContent />,
   primaryHue: 250,
@@ -107,8 +158,16 @@ const config = {
     defaultMenuCollapseLevel: 1,
     toggleButton: true,
     titleComponent: ({ title, type }: { title: string; type: string }) => (
-      <span className={type === 'separator' ? 'text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide' : ''}>{title}</span>
-    )
+      <span
+        className={
+          type === 'separator'
+            ? 'text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide'
+            : ''
+        }
+      >
+        {title}
+      </span>
+    ),
   },
   toc: {
     backToTop: true,
@@ -116,7 +175,7 @@ const config = {
       <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
         <div className="text-xs text-gray-500 dark:text-gray-400">
           <div className="font-medium mb-2">找到了问题？</div>
-          <a 
+          <a
             href="https://github.com/laofahai/linch-kit/issues"
             className="text-blue-600 dark:text-blue-400 hover:underline"
             target="_blank"
@@ -126,51 +185,51 @@ const config = {
           </a>
         </div>
       </div>
-    )
+    ),
   },
   editLink: {
     text: {
       en: 'Edit this page on GitHub →',
-      zh: '在 GitHub 上编辑此页 →'
-    }
+      zh: '在 GitHub 上编辑此页 →',
+    },
   },
   feedback: {
     content: {
       en: 'Question? Give us feedback →',
-      zh: '有问题？给我们反馈 →'
+      zh: '有问题？给我们反馈 →',
     },
-    labels: 'feedback'
+    labels: 'feedback',
   },
   search: {
     placeholder: {
       en: 'Search documentation...',
-      zh: '搜索文档...'
-    }
+      zh: '搜索文档...',
+    },
   },
   darkMode: true,
   nextThemes: {
-    defaultTheme: 'system'
+    defaultTheme: 'system',
   },
   i18n: [
     { locale: 'en', text: 'English' },
-    { locale: 'zh', text: '中文' }
+    { locale: 'zh', text: '中文' },
   ],
   gitTimestamp: {
     en: 'Last updated on',
-    zh: '最后更新于'
+    zh: '最后更新于',
   },
   navigation: {
     prev: true,
-    next: true
+    next: true,
   },
   themeSwitch: {
     useOptions() {
       return {
         light: '浅色',
         dark: '深色',
-        system: '系统'
+        system: '系统',
       }
-    }
+    },
   },
   banner: {
     dismissible: true,
@@ -186,19 +245,19 @@ const config = {
           立即开始使用 →
         </a>
       </div>
-    )
+    ),
   },
   useNextSeoProps() {
     const { asPath } = useRouter()
     if (asPath !== '/') {
       return {
-        titleTemplate: '%s | LinchKit'
+        titleTemplate: '%s | LinchKit',
       }
     }
     return {
-      title: 'LinchKit - AI-First Full-Stack Development Framework'
+      title: 'LinchKit - AI-First Full-Stack Development Framework',
     }
-  }
+  },
 }
 
 export default config

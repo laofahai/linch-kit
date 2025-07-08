@@ -3,7 +3,11 @@
  * 使用 @linch-kit/auth 包提供的企业级认证功能
  */
 
-import { createLinchKitAuthConfig, type LinchKitUser, type LinchKitAuthConfig } from '@linch-kit/auth'
+import {
+  createLinchKitAuthConfig,
+  type LinchKitUser,
+  type LinchKitAuthConfig,
+} from '@linch-kit/auth'
 import { prisma } from './prisma'
 import { Logger } from '@linch-kit/core'
 import bcrypt from 'bcryptjs'
@@ -11,7 +15,9 @@ import bcrypt from 'bcryptjs'
 /**
  * 凭据认证逻辑
  */
-async function authenticateCredentials(credentials: Record<string, unknown>): Promise<LinchKitUser | null> {
+async function authenticateCredentials(
+  credentials: Record<string, unknown>
+): Promise<LinchKitUser | null> {
   try {
     const { email, password } = credentials
 
@@ -22,8 +28,8 @@ async function authenticateCredentials(credentials: Record<string, unknown>): Pr
 
     // 查找用户
     const user = await prisma.user.findUnique({
-      where: { 
-        email: email.toLowerCase().trim() 
+      where: {
+        email: email.toLowerCase().trim(),
       },
       select: {
         id: true,
@@ -36,8 +42,8 @@ async function authenticateCredentials(credentials: Record<string, unknown>): Pr
         emailVerified: true,
         lastLoginAt: true,
         createdAt: true,
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     })
 
     if (!user) {
@@ -65,7 +71,7 @@ async function authenticateCredentials(credentials: Record<string, unknown>): Pr
     // 更新最后登录时间
     await prisma.user.update({
       where: { id: user.id },
-      data: { lastLoginAt: new Date() }
+      data: { lastLoginAt: new Date() },
     })
 
     // 转换为 LinchKitUser 格式
@@ -80,13 +86,12 @@ async function authenticateCredentials(credentials: Record<string, unknown>): Pr
       updatedAt: user.updatedAt,
       lastLoginAt: user.lastLoginAt,
       metadata: {
-        role: user.role
-      }
+        role: user.role,
+      },
     }
 
     Logger.info('User successfully authenticated', { userId: user.id, email: user.email })
     return linchKitUser
-
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err)
     Logger.error(`Authentication error: ${errorMessage}`)
@@ -100,7 +105,7 @@ async function authenticateCredentials(credentials: Record<string, unknown>): Pr
 const authConfig: LinchKitAuthConfig = {
   providers: {
     credentials: {
-      authorize: authenticateCredentials
+      authorize: authenticateCredentials,
     },
     // 可以在这里添加 GitHub 和 Google OAuth 提供商
     // github: {
@@ -125,9 +130,9 @@ const authConfig: LinchKitAuthConfig = {
   callbacks: {
     async beforeSignIn({ user, account }) {
       // 可以在这里添加登录前的检查逻辑
-      Logger.info('User attempting to sign in', { 
-        userId: user.id, 
-        provider: account?.provider 
+      Logger.info('User attempting to sign in', {
+        userId: user.id,
+        provider: account?.provider,
       })
       return true
     },
@@ -135,7 +140,7 @@ const authConfig: LinchKitAuthConfig = {
       // 扩展会话信息
       if (token.sub && session.user) {
         session.user.id = token.sub
-        
+
         // 从 metadata 中获取角色信息
         if (session.user.metadata?.role) {
           session.roles = [session.user.metadata.role as string]
@@ -150,26 +155,26 @@ const authConfig: LinchKitAuthConfig = {
         token.role = user.metadata?.role as string
       }
       return token
-    }
+    },
   },
   events: {
     async onSignIn({ user, account }) {
-      Logger.info('User signed in', { 
-        userId: user.id, 
+      Logger.info('User signed in', {
+        userId: user.id,
         email: user.email,
-        provider: account?.provider 
+        provider: account?.provider,
       })
-      
+
       // 注意：这里不能直接操作localStorage，因为这是服务器端
       // 客户端Token缓存将在useTokenCache hook中处理
     },
     async onSignOut({ session, token }) {
-      Logger.info('User signed out', { 
-        userId: session?.user?.id || token?.sub 
+      Logger.info('User signed out', {
+        userId: session?.user?.id || token?.sub,
       })
-    }
+    },
   },
-  debug: process.env.NODE_ENV === 'development'
+  debug: process.env.NODE_ENV === 'development',
 }
 
 /**

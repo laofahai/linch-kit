@@ -1,6 +1,6 @@
 /**
  * ExtractorConfig
- * 
+ *
  * 提取器配置管理，解决路径硬编码问题
  * 提供动态工作目录检测和项目结构识别
  */
@@ -75,8 +75,8 @@ export class ExtractorConfig {
    */
   shouldExclude(path: string): boolean {
     const segments = path.split('/')
-    return this.config.excludeDirectories.some(excludeDir => 
-      segments.includes(excludeDir) || path.includes(excludeDir)
+    return this.config.excludeDirectories.some(
+      excludeDir => segments.includes(excludeDir) || path.includes(excludeDir)
     )
   }
 
@@ -107,7 +107,7 @@ export class ExtractorConfig {
   private detectProjectConfiguration(customWorkingDir?: string): ExtractorConfiguration {
     const workingDirectory = customWorkingDir || process.cwd()
     const projectRoot = this.findProjectRoot(workingDirectory)
-    
+
     // 检测项目结构
     const packageDirectories = this.detectPackageDirectories(projectRoot)
     const tsConfigPath = this.findTsConfigPath(projectRoot)
@@ -127,10 +127,10 @@ export class ExtractorConfig {
         '.vscode',
         '.idea',
         'tmp',
-        'temp'
+        'temp',
       ],
       supportedExtensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'],
-      tsConfigPath
+      tsConfigPath,
     }
   }
 
@@ -139,7 +139,7 @@ export class ExtractorConfig {
    */
   private findProjectRoot(startDir: string): string {
     let currentDir = resolve(startDir)
-    
+
     // 向上查找，直到找到包含 package.json 的目录
     while (currentDir !== '/') {
       if (existsSync(join(currentDir, 'package.json'))) {
@@ -147,23 +147,23 @@ export class ExtractorConfig {
         if (this.isMonorepoRoot(currentDir)) {
           return currentDir
         }
-        
+
         // 如果不是 monorepo，继续向上查找
         const parentDir = resolve(currentDir, '..')
         if (parentDir === currentDir) {
           // 已经到达根目录
           return currentDir
         }
-        
+
         // 检查父目录是否也有 package.json（monorepo 情况）
         if (existsSync(join(parentDir, 'package.json'))) {
           currentDir = parentDir
           continue
         }
-        
+
         return currentDir
       }
-      
+
       const parentDir = resolve(currentDir, '..')
       if (parentDir === currentDir) {
         // 已经到达根目录，返回开始目录
@@ -171,7 +171,7 @@ export class ExtractorConfig {
       }
       currentDir = parentDir
     }
-    
+
     return startDir
   }
 
@@ -186,17 +186,15 @@ export class ExtractorConfig {
 
     try {
       const packageJson = require(packageJsonPath)
-      
+
       // 检查是否有 workspaces 配置
       if (packageJson.workspaces) {
         return true
       }
-      
+
       // 检查是否有常见的 monorepo 目录结构
       const monorepoIndicators = ['packages', 'modules', 'apps', 'libs']
-      return monorepoIndicators.some(indicator => 
-        existsSync(join(dir, indicator))
-      )
+      return monorepoIndicators.some(indicator => existsSync(join(dir, indicator)))
     } catch {
       return false
     }
@@ -223,11 +221,7 @@ export class ExtractorConfig {
    * 查找 TypeScript 配置文件
    */
   private findTsConfigPath(projectRoot: string): string | undefined {
-    const possiblePaths = [
-      'tsconfig.json',
-      'tsconfig.build.json',
-      'tsconfig.base.json'
-    ]
+    const possiblePaths = ['tsconfig.json', 'tsconfig.build.json', 'tsconfig.base.json']
 
     for (const path of possiblePaths) {
       const fullPath = join(projectRoot, path)

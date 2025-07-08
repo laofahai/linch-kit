@@ -1,6 +1,6 @@
 /**
  * Console Provider
- * 
+ *
  * 为 Console 模块提供统一的上下文和状态管理
  */
 
@@ -69,7 +69,7 @@ export function ConsoleProvider({
   permissions = [],
   _apiUrl = '/api/trpc',
   language = 'zh-CN',
-  devtools = process.env.NODE_ENV === 'development'
+  devtools = process.env.NODE_ENV === 'development',
 }: ConsoleProviderProps) {
   // TODO: 创建 tRPC 客户端
   // const [trpcClient] = useState(() =>
@@ -86,43 +86,55 @@ export function ConsoleProvider({
   //     ]
   //   })
   // )
-  
+
   // 创建 React Query 客户端
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 5 * 60 * 1000, // 5分钟
-        retry: (failureCount, error: Error) => {
-          // 权限错误不重试
-          if ((error as unknown as { status?: number })?.status === 403) return false
-          // 最多重试2次
-          return failureCount < 2
-        }
-      },
-      mutations: {
-        retry: false
-      }
-    }
-  }))
-  
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 5 * 60 * 1000, // 5分钟
+            retry: (failureCount, error: Error) => {
+              // 权限错误不重试
+              if ((error as unknown as { status?: number })?.status === 403) return false
+              // 最多重试2次
+              return failureCount < 2
+            },
+          },
+          mutations: {
+            retry: false,
+          },
+        },
+      })
+  )
+
   // Console 上下文值
   const contextValue = useMemo<ConsoleContextValue>(() => {
     const isAdmin = permissions.includes('console:admin')
     const isSystemAdmin = permissions.includes('system:admin')
-    
+
     return {
       config: {
         basePath: '/admin',
-        features: ['dashboard', 'tenants', 'users', 'permissions', 'plugins', 'monitoring', 'schemas', 'settings'],
+        features: [
+          'dashboard',
+          'tenants',
+          'users',
+          'permissions',
+          'plugins',
+          'monitoring',
+          'schemas',
+          'settings',
+        ],
         permissions: {
           access: ['console:access'],
-          admin: ['console:admin']
+          admin: ['console:admin'],
         },
         theme: {
           primary: '#3b82f6',
-          darkMode: false
+          darkMode: false,
         },
-        ...config
+        ...config,
       },
       tenantId,
       permissions,
@@ -130,17 +142,17 @@ export function ConsoleProvider({
       isSystemAdmin,
       theme: {
         mode: 'light',
-        primary: config.theme?.primary || '#3b82f6'
+        primary: config.theme?.primary || '#3b82f6',
       },
-      language
+      language,
     }
   }, [config, tenantId, permissions, language])
-  
+
   return (
     <QueryClientProvider client={queryClient}>
       <ConsoleContext.Provider value={contextValue}>
         {children}
-        
+
         {/* TODO: Toast 通知 */}
         {/* <Toaster 
           position="top-right"
@@ -148,7 +160,7 @@ export function ConsoleProvider({
           richColors
           closeButton
         /> */}
-        
+
         {/* React Query 开发工具 */}
         {devtools && <ReactQueryDevtools initialIsOpen={false} />}
       </ConsoleContext.Provider>
@@ -161,11 +173,11 @@ export function ConsoleProvider({
  */
 export function useConsoleContext() {
   const context = useContext(ConsoleContext)
-  
+
   if (!context) {
     throw new Error('useConsoleContext must be used within a ConsoleProvider')
   }
-  
+
   return context
 }
 
@@ -174,13 +186,13 @@ export function useConsoleContext() {
  */
 export function useConsolePermission(permission: string) {
   const { permissions, isAdmin, isSystemAdmin } = useConsoleContext()
-  
+
   // 系统管理员拥有所有权限
   if (isSystemAdmin) return true
-  
+
   // Console 管理员拥有所有 Console 权限
   if (isAdmin && permission.startsWith('console:')) return true
-  
+
   // 检查具体权限
   return permissions.includes(permission)
 }
@@ -190,16 +202,16 @@ export function useConsolePermission(permission: string) {
  */
 export function useConsolePermissions(requiredPermissions: string[], requireAll = false) {
   const { permissions, isAdmin, isSystemAdmin } = useConsoleContext()
-  
+
   // 系统管理员拥有所有权限
   if (isSystemAdmin) return true
-  
+
   const hasPermission = (permission: string) => {
     // Console 管理员拥有所有 Console 权限
     if (isAdmin && permission.startsWith('console:')) return true
     return permissions.includes(permission)
   }
-  
+
   if (requireAll) {
     return requiredPermissions.every(hasPermission)
   } else {
@@ -212,13 +224,13 @@ export function useConsolePermissions(requiredPermissions: string[], requireAll 
  */
 export function useConsoleTheme() {
   const { theme } = useConsoleContext()
-  
+
   return {
     mode: theme.mode,
     primary: theme.primary,
     isDark: theme.mode === 'dark',
     isLight: theme.mode === 'light',
-    isSystem: theme.mode === 'system'
+    isSystem: theme.mode === 'system',
   }
 }
 
@@ -227,7 +239,7 @@ export function useConsoleTheme() {
  */
 export function useConsoleConfiguration() {
   const { config } = useConsoleContext()
-  
+
   return {
     basePath: config.basePath || '/admin',
     features: config.features || [],
@@ -235,10 +247,21 @@ export function useConsoleConfiguration() {
     theme: config.theme || {},
     customRoutes: config.customRoutes || [],
     disabledRoutes: config.disabledRoutes || [],
-    
+
     // 便捷方法
-    hasFeature: (feature: string) => config.features?.includes(feature as 'dashboard' | 'tenants' | 'users' | 'permissions' | 'plugins' | 'monitoring' | 'schemas' | 'settings') || false,
-    isRouteDisabled: (route: string) => config.disabledRoutes?.includes(route) || false
+    hasFeature: (feature: string) =>
+      config.features?.includes(
+        feature as
+          | 'dashboard'
+          | 'tenants'
+          | 'users'
+          | 'permissions'
+          | 'plugins'
+          | 'monitoring'
+          | 'schemas'
+          | 'settings'
+      ) || false,
+    isRouteDisabled: (route: string) => config.disabledRoutes?.includes(route) || false,
   }
 }
 
@@ -247,10 +270,10 @@ export function useConsoleConfiguration() {
  */
 export function useConsoleTenant() {
   const { tenantId } = useConsoleContext()
-  
+
   return {
     tenantId,
-    hasTenant: !!tenantId
+    hasTenant: !!tenantId,
   }
 }
 
@@ -275,15 +298,15 @@ export function PermissionGuard({
   permissions = [],
   requireAll = false,
   fallback = null,
-  children
+  children,
 }: PermissionGuardProps) {
   const allPermissions = permission ? [permission, ...permissions] : permissions
   const hasPermission = useConsolePermissions(allPermissions, requireAll)
-  
+
   if (!hasPermission) {
     return <>{fallback}</>
   }
-  
+
   return <>{children}</>
 }
 
@@ -299,16 +322,12 @@ export interface FeatureGuardProps {
   children: ReactNode
 }
 
-export function FeatureGuard({
-  feature,
-  fallback = null,
-  children
-}: FeatureGuardProps) {
+export function FeatureGuard({ feature, fallback = null, children }: FeatureGuardProps) {
   const { hasFeature } = useConsoleConfiguration()
-  
+
   if (!hasFeature(feature)) {
     return <>{fallback}</>
   }
-  
+
   return <>{children}</>
 }

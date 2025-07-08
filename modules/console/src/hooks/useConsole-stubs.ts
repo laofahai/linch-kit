@@ -1,6 +1,6 @@
 /**
  * Console Hooks - Stub Implementation
- * 
+ *
  * Temporary stub implementations to make Console work without tRPC/backend
  */
 
@@ -14,7 +14,7 @@ const toast = {
   success: (message: string) => console.log('✅ Success:', message),
   error: (message: string) => console.error('❌ Error:', message),
   info: (message: string) => console.info('ℹ️ Info:', message),
-  warning: (message: string) => console.warn('⚠️ Warning:', message)
+  warning: (message: string) => console.warn('⚠️ Warning:', message),
 }
 
 // Mock data generators
@@ -32,37 +32,37 @@ function generateMockDashboard() {
       {
         description: '新用户注册',
         timestamp: '2分钟前',
-        type: 'user_register'
+        type: 'user_register',
       },
       {
         description: '插件更新完成',
         timestamp: '5分钟前',
-        type: 'plugin_update'
+        type: 'plugin_update',
       },
       {
         description: '租户配置变更',
         timestamp: '10分钟前',
-        type: 'tenant_config'
-      }
+        type: 'tenant_config',
+      },
     ],
     topTenants: [
       { name: '示例公司A', status: 'active', users: 45, plugins: 8 },
       { name: '示例公司B', status: 'active', users: 32, plugins: 6 },
-      { name: '示例公司C', status: 'suspended', users: 18, plugins: 3 }
+      { name: '示例公司C', status: 'suspended', users: 18, plugins: 3 },
     ],
     pluginStatus: [
       { name: '用户管理插件', version: '1.2.0', status: 'active' },
       { name: '报告生成器', version: '2.1.1', status: 'active' },
-      { name: '数据同步工具', version: '1.0.5', status: 'inactive' }
+      { name: '数据同步工具', version: '1.0.5', status: 'inactive' },
     ],
     recentAlerts: [
       {
         title: 'CPU使用率告警',
         description: 'CPU使用率超过80%阈值',
         timestamp: '30分钟前',
-        severity: 'warning'
-      }
-    ]
+        severity: 'warning',
+      },
+    ],
   }
 }
 
@@ -70,34 +70,34 @@ function generateMockSystemStats() {
   return {
     cpu: {
       usage: Math.floor(Math.random() * 100),
-      trend: '+2%'
+      trend: '+2%',
     },
     memory: {
       usage: Math.floor(Math.random() * 90) + 10,
-      trend: '-1%'
+      trend: '-1%',
     },
     disk: {
       usage: Math.floor(Math.random() * 80) + 20,
-      trend: '+3%'
+      trend: '+3%',
     },
     network: {
       inbound: '50 MB/s',
-      outbound: '30 MB/s'
-    }
+      outbound: '30 MB/s',
+    },
   }
 }
 
 function generateMockSystemHealth() {
   const statuses = ['healthy', 'warning', 'error']
   const status = statuses[Math.floor(Math.random() * statuses.length)]
-  
+
   return {
     status,
     lastCheck: '刚刚',
-    issues: status === 'healthy' ? [] : [
-      { message: '数据库连接延迟较高' },
-      { message: '部分服务响应缓慢' }
-    ]
+    issues:
+      status === 'healthy'
+        ? []
+        : [{ message: '数据库连接延迟较高' }, { message: '部分服务响应缓慢' }],
   }
 }
 
@@ -107,7 +107,7 @@ export const consoleKeys = {
   stats: ['console', 'stats'] as const,
   monitoring: ['console', 'monitoring'] as const,
   notifications: ['console', 'notifications'] as const,
-  auditLogs: ['console', 'auditLogs'] as const
+  auditLogs: ['console', 'auditLogs'] as const,
 }
 
 /**
@@ -121,7 +121,7 @@ export function useDashboard() {
       return generateMockDashboard()
     },
     staleTime: 5 * 60 * 1000,
-    refetchInterval: 2 * 60 * 1000
+    refetchInterval: 2 * 60 * 1000,
   })
 }
 
@@ -136,16 +136,14 @@ export function useSystemStats() {
       return generateMockSystemStats()
     },
     staleTime: 5 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000
+    refetchInterval: 5 * 60 * 1000,
   })
 }
 
 /**
  * 获取系统监控数据 (Stub)
  */
-export function useSystemMonitoring(
-  timeRange: '1h' | '6h' | '24h' | '7d' | '30d' = '24h'
-) {
+export function useSystemMonitoring(timeRange: '1h' | '6h' | '24h' | '7d' | '30d' = '24h') {
   return useQuery({
     queryKey: [...consoleKeys.monitoring, timeRange],
     queryFn: async () => {
@@ -156,17 +154,17 @@ export function useSystemMonitoring(
         charts: {
           cpu: Array.from({ length: 24 }, (_, i) => ({
             time: `${i}:00`,
-            value: Math.floor(Math.random() * 100)
+            value: Math.floor(Math.random() * 100),
           })),
           memory: Array.from({ length: 24 }, (_, i) => ({
             time: `${i}:00`,
-            value: Math.floor(Math.random() * 90) + 10
-          }))
-        }
+            value: Math.floor(Math.random() * 90) + 10,
+          })),
+        },
       }
     },
     staleTime: 2 * 60 * 1000,
-    refetchInterval: 30 * 1000
+    refetchInterval: 30 * 1000,
   })
 }
 
@@ -182,7 +180,7 @@ export function useSystemHealth() {
     },
     staleTime: 1 * 60 * 1000,
     refetchInterval: 30 * 1000,
-    retry: 3
+    retry: 3,
   })
 }
 
@@ -201,7 +199,7 @@ export function useNotifications(userId?: string) {
           title: '系统维护通知',
           message: '系统将在今晚进行例行维护',
           read: false,
-          createdAt: new Date()
+          createdAt: new Date(),
         },
         {
           id: '2',
@@ -209,13 +207,13 @@ export function useNotifications(userId?: string) {
           title: '存储空间告警',
           message: '租户存储空间使用率超过90%',
           read: true,
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       ]
     },
     enabled: !!userId,
     staleTime: 1 * 60 * 1000,
-    refetchInterval: 30 * 1000
+    refetchInterval: 30 * 1000,
   })
 }
 
@@ -236,7 +234,7 @@ export function useAuditLogs(filters?: Record<string, unknown>) {
             userId: 'user123',
             tenantId: 'tenant1',
             timestamp: new Date(),
-            details: { ip: '192.168.1.1' }
+            details: { ip: '192.168.1.1' },
           },
           {
             id: '2',
@@ -245,15 +243,15 @@ export function useAuditLogs(filters?: Record<string, unknown>) {
             userId: 'admin',
             tenantId: 'tenant2',
             timestamp: new Date(),
-            details: { name: 'New Tenant' }
-          }
+            details: { name: 'New Tenant' },
+          },
         ],
         total: 2,
         page: filters?.page || 1,
-        pageSize: filters?.pageSize || 10
+        pageSize: filters?.pageSize || 10,
       }
     },
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
   })
 }
 
@@ -271,20 +269,26 @@ export function usePermissions() {
     'user:manage',
     'plugin:manage',
     'monitoring:view',
-    'system:admin'
+    'system:admin',
   ]
 
   const hasPermission = useCallback((permission: string) => {
     return mockPermissions.includes(permission)
   }, [])
 
-  const hasAnyPermission = useCallback((permissions: string[]) => {
-    return permissions.some(permission => hasPermission(permission))
-  }, [hasPermission])
+  const hasAnyPermission = useCallback(
+    (permissions: string[]) => {
+      return permissions.some(permission => hasPermission(permission))
+    },
+    [hasPermission]
+  )
 
-  const hasAllPermissions = useCallback((permissions: string[]) => {
-    return permissions.every(permission => hasPermission(permission))
-  }, [hasPermission])
+  const hasAllPermissions = useCallback(
+    (permissions: string[]) => {
+      return permissions.every(permission => hasPermission(permission))
+    },
+    [hasPermission]
+  )
 
   return {
     permissions: mockPermissions,
@@ -292,7 +296,7 @@ export function usePermissions() {
     hasAnyPermission,
     hasAllPermissions,
     isAdmin: hasPermission('console:admin'),
-    isSystemAdmin: hasPermission('system:admin')
+    isSystemAdmin: hasPermission('system:admin'),
   }
 }
 
@@ -310,17 +314,17 @@ export function useCurrentTenant() {
         slug: 'demo-tenant',
         domain: 'demo.example.com',
         status: 'active',
-        plan: 'pro'
+        plan: 'pro',
       }
     },
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
   })
 }
 
 // Mutation stubs that just show success messages
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async (notificationId: string) => {
       await new Promise(resolve => setTimeout(resolve, 200))
@@ -332,13 +336,13 @@ export function useMarkNotificationRead() {
     },
     onError: () => {
       toast.error('标记通知失败')
-    }
+    },
   })
 }
 
 export function useCreateNotification() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async (notification: Record<string, unknown>) => {
       await new Promise(resolve => setTimeout(resolve, 500))
@@ -350,13 +354,13 @@ export function useCreateNotification() {
     },
     onError: () => {
       toast.error('创建通知失败')
-    }
+    },
   })
 }
 
 export function useSwitchTenant() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async (tenantId: string) => {
       await new Promise(resolve => setTimeout(resolve, 800))
@@ -368,13 +372,13 @@ export function useSwitchTenant() {
     },
     onError: () => {
       toast.error('租户切换失败')
-    }
+    },
   })
 }
 
 export function useConsoleConfig() {
   const queryClient = useQueryClient()
-  
+
   const { data: config } = useQuery({
     queryKey: ['console', 'config'],
     queryFn: async () => {
@@ -383,12 +387,12 @@ export function useConsoleConfig() {
         theme: { primary: '#3b82f6', darkMode: false },
         features: ['dashboard', 'tenants', 'users', 'plugins', 'monitoring'],
         notifications: { email: true, inApp: true },
-        security: { sessionTimeout: 24 * 60 * 60 * 1000 }
+        security: { sessionTimeout: 24 * 60 * 60 * 1000 },
       }
     },
-    staleTime: 30 * 60 * 1000
+    staleTime: 30 * 60 * 1000,
   })
-  
+
   const updateConfig = useMutation({
     mutationFn: async (updates: Record<string, unknown>) => {
       await new Promise(resolve => setTimeout(resolve, 600))
@@ -400,13 +404,13 @@ export function useConsoleConfig() {
     },
     onError: () => {
       toast.error('配置更新失败')
-    }
+    },
   })
-  
+
   return {
     config: config || {},
     updateConfig: updateConfig.mutate,
-    isUpdating: updateConfig.isPending
+    isUpdating: updateConfig.isPending,
   }
 }
 
@@ -418,10 +422,10 @@ export function useExportData() {
       return {
         content: mockData,
         filename: `export_${type}_${Date.now()}.${format}`,
-        mimeType: format === 'json' ? 'application/json' : 'text/csv'
+        mimeType: format === 'json' ? 'application/json' : 'text/csv',
       }
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       // Mock file download
       const blob = new Blob([data.content], { type: data.mimeType })
       const url = URL.createObjectURL(blob)
@@ -430,12 +434,12 @@ export function useExportData() {
       a.download = data.filename
       a.click()
       URL.revokeObjectURL(url)
-      
+
       toast.success('数据导出成功')
     },
     onError: () => {
       toast.error('数据导出失败')
-    }
+    },
   })
 }
 
@@ -443,14 +447,14 @@ export function useRealtimeData(_subscriptions: string[] = []) {
   const subscribe = useCallback((subscription: string) => {
     console.log(`订阅实时数据: ${subscription}`)
   }, [])
-  
+
   const unsubscribe = useCallback((subscription: string) => {
     console.log(`取消订阅: ${subscription}`)
   }, [])
-  
+
   return {
     subscribe,
-    unsubscribe
+    unsubscribe,
   }
 }
 
@@ -460,25 +464,21 @@ export function useConsoleStatus() {
   const systemHealth = useSystemHealth()
   const permissions = usePermissions()
   const currentTenant = useCurrentTenant()
-  
+
   const isLoading = useMemo(() => {
-    return dashboard.isLoading || 
-           systemStats.isLoading || 
-           systemHealth.isLoading
+    return dashboard.isLoading || systemStats.isLoading || systemHealth.isLoading
   }, [dashboard.isLoading, systemStats.isLoading, systemHealth.isLoading])
-  
+
   const hasErrors = useMemo(() => {
-    return dashboard.isError || 
-           systemStats.isError || 
-           systemHealth.isError
+    return dashboard.isError || systemStats.isError || systemHealth.isError
   }, [dashboard.isError, systemStats.isError, systemHealth.isError])
-  
+
   return {
     isLoading,
     hasErrors,
     isReady: !isLoading && !hasErrors,
     permissions: permissions.permissions,
     currentTenant: currentTenant.data,
-    systemHealth: systemHealth.data
+    systemHealth: systemHealth.data,
   }
 }

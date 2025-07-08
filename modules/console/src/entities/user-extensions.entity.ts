@@ -1,6 +1,6 @@
 /**
  * 用户扩展实体定义
- * 
+ *
  * 扩展 @linch-kit/auth 的用户实体，添加 Console 特定的字段
  */
 
@@ -31,67 +31,78 @@ export interface UserPreferences {
 function createConsoleUserExtensions() {
   return {
     // Console 特定字段
-    lastLoginAt: defineField.datetime()
+    lastLoginAt: defineField
+      .datetime()
       .optional()
       .description('console.entities.user.fields.lastLoginAt')
       .build(),
-    
-    lastActiveAt: defineField.datetime()
+
+    lastActiveAt: defineField
+      .datetime()
       .optional()
       .description('console.entities.user.fields.lastActiveAt')
       .build(),
-    
-    lastLoginIp: defineField.string()
+
+    lastLoginIp: defineField
+      .string()
       .optional()
       .max(45) // 支持 IPv6
       .description('console.entities.user.fields.lastLoginIp')
       .build(),
-    
-    loginCount: defineField.int()
+
+    loginCount: defineField
+      .int()
       .default(0)
       .min(0)
       .description('console.entities.user.fields.loginCount')
       .build(),
-    
-    preferences: defineField.json<UserPreferences>()
+
+    preferences: defineField
+      .json<UserPreferences>()
       .default({})
       .description('console.entities.user.fields.preferences')
       .build(),
-    
+
     // 个人信息扩展
-    displayBirthday: defineField.boolean()
+    displayBirthday: defineField
+      .boolean()
       .default(false)
       .description('console.entities.user.fields.displayBirthday')
       .build(),
-    
+
     // 多租户支持
-    currentTenantId: defineField.string()
+    currentTenantId: defineField
+      .string()
       .optional()
       .description('console.entities.user.fields.currentTenantId')
       .build(),
-    
+
     // 系统角色
-    isSystemAdmin: defineField.boolean()
+    isSystemAdmin: defineField
+      .boolean()
       .default(false)
       .description('console.entities.user.fields.isSystemAdmin')
       .build(),
-    
+
     // API 访问
-    apiKey: defineField.string()
+    apiKey: defineField
+      .string()
       .optional()
       .unique()
       .description('console.entities.user.fields.apiKey')
       .build(),
-    
-    apiKeyCreatedAt: defineField.datetime()
+
+    apiKeyCreatedAt: defineField
+      .datetime()
       .optional()
       .description('console.entities.user.fields.apiKeyCreatedAt')
       .build(),
-    
-    apiKeyLastUsedAt: defineField.datetime()
+
+    apiKeyLastUsedAt: defineField
+      .datetime()
       .optional()
       .description('console.entities.user.fields.apiKeyLastUsedAt')
-      .build()
+      .build(),
   }
 }
 
@@ -102,62 +113,72 @@ export const ConsoleUserExtensions = createConsoleUserExtensions()
  */
 export const UserActivityEntity = defineEntity('UserActivity', {
   // 关系
-  user: defineField.relation('User')
+  user: defineField
+    .relation('User')
     .required()
     .description('console.entities.userActivity.fields.user'),
-  
-  tenant: defineField.relation('Tenant')
+
+  tenant: defineField
+    .relation('Tenant')
     .optional()
     .description('console.entities.userActivity.fields.tenant'),
-  
+
   // 活动信息
-  type: defineField.enum([
-    'login',
-    'logout',
-    'page_view',
-    'api_call',
-    'data_export',
-    'settings_change',
-    'password_change',
-    'role_change'
-  ])
+  type: defineField
+    .enum([
+      'login',
+      'logout',
+      'page_view',
+      'api_call',
+      'data_export',
+      'settings_change',
+      'password_change',
+      'role_change',
+    ])
     .required()
     .description('console.entities.userActivity.fields.type'),
-  
-  action: defineField.string()
+
+  action: defineField
+    .string()
     .required()
     .max(100)
     .description('console.entities.userActivity.fields.action'),
-  
-  resource: defineField.string()
+
+  resource: defineField
+    .string()
     .optional()
     .max(100)
     .description('console.entities.userActivity.fields.resource'),
-  
-  resourceId: defineField.string()
+
+  resourceId: defineField
+    .string()
     .optional()
     .description('console.entities.userActivity.fields.resourceId'),
-  
+
   // 上下文信息
-  ipAddress: defineField.string()
+  ipAddress: defineField
+    .string()
     .optional()
     .max(45)
     .description('console.entities.userActivity.fields.ipAddress'),
-  
-  userAgent: defineField.string()
+
+  userAgent: defineField
+    .string()
     .optional()
     .max(500)
     .description('console.entities.userActivity.fields.userAgent'),
-  
-  metadata: defineField.json()
+
+  metadata: defineField
+    .json()
     .optional()
     .description('console.entities.userActivity.fields.metadata'),
-  
+
   // 时间戳
-  createdAt: defineField.datetime()
+  createdAt: defineField
+    .datetime()
     .default('now')
     .index()
-    .description('console.entities.userActivity.fields.createdAt')
+    .description('console.entities.userActivity.fields.createdAt'),
 })
 
 /**
@@ -165,64 +186,68 @@ export const UserActivityEntity = defineEntity('UserActivity', {
  */
 export const UserNotificationEntity = defineEntity('UserNotification', {
   // 关系
-  user: defineField.relation('User')
+  user: defineField
+    .relation('User')
     .required()
     .description('console.entities.userNotification.fields.user'),
-  
+
   // 通知内容
-  type: defineField.enum([
-    'info',
-    'warning',
-    'error',
-    'success',
-    'system',
-    'security'
-  ])
+  type: defineField
+    .enum(['info', 'warning', 'error', 'success', 'system', 'security'])
     .required()
     .description('console.entities.userNotification.fields.type'),
-  
-  title: defineField.string()
+
+  title: defineField
+    .string()
     .required()
     .max(200)
     .description('console.entities.userNotification.fields.title'),
-  
-  message: defineField.text()
+
+  message: defineField
+    .text()
     .required()
     .description('console.entities.userNotification.fields.message'),
-  
+
   // 操作链接
-  actionUrl: defineField.string()
+  actionUrl: defineField
+    .string()
     .optional()
     .max(500)
     .description('console.entities.userNotification.fields.actionUrl'),
-  
-  actionLabel: defineField.string()
+
+  actionLabel: defineField
+    .string()
     .optional()
     .max(50)
     .description('console.entities.userNotification.fields.actionLabel'),
-  
+
   // 状态
-  isRead: defineField.boolean()
+  isRead: defineField
+    .boolean()
     .default(false)
     .description('console.entities.userNotification.fields.isRead'),
-  
-  readAt: defineField.datetime()
+
+  readAt: defineField
+    .datetime()
     .optional()
     .description('console.entities.userNotification.fields.readAt'),
-  
+
   // 元数据
-  metadata: defineField.json()
+  metadata: defineField
+    .json()
     .optional()
     .description('console.entities.userNotification.fields.metadata'),
-  
+
   // 时间戳
-  createdAt: defineField.datetime()
+  createdAt: defineField
+    .datetime()
     .default('now')
     .description('console.entities.userNotification.fields.createdAt'),
-  
-  expiresAt: defineField.datetime()
+
+  expiresAt: defineField
+    .datetime()
     .optional()
-    .description('console.entities.userNotification.fields.expiresAt')
+    .description('console.entities.userNotification.fields.expiresAt'),
 })
 
 // 导出类型

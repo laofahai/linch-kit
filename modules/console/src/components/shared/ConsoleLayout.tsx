@@ -1,6 +1,6 @@
 /**
  * Console 布局组件
- * 
+ *
  * 提供 Console 模块的基础布局结构，使用简单可靠的自定义 sidebar
  */
 
@@ -42,11 +42,11 @@ export function ConsoleLayout({
   breadcrumbItems,
   children,
   className,
-  showSidebar = true
+  showSidebar = true,
 }: ConsoleLayoutProps) {
   // 获取当前用户会话
   const { data: session } = useSession()
-  
+
   // 如果不显示侧边栏，直接返回内容
   if (!showSidebar) {
     return (
@@ -57,30 +57,18 @@ export function ConsoleLayout({
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 {title && (
-                  <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                    {title}
-                  </h1>
+                  <h1 className="text-3xl font-bold tracking-tight text-gray-900">{title}</h1>
                 )}
-                {description && (
-                  <p className="mt-2 text-sm text-gray-600">
-                    {description}
-                  </p>
-                )}
+                {description && <p className="mt-2 text-sm text-gray-600">{description}</p>}
               </div>
-              
-              {actions && (
-                <div className="ml-6 flex items-center space-x-4">
-                  {actions}
-                </div>
-              )}
+
+              {actions && <div className="ml-6 flex items-center space-x-4">{actions}</div>}
             </div>
           </div>
         )}
-        
+
         {/* 页面内容 */}
-        <div className="console-content">
-          {children}
-        </div>
+        <div className="console-content">{children}</div>
       </div>
     )
   }
@@ -91,17 +79,17 @@ export function ConsoleLayout({
       subtitle="Console"
       breadcrumbs={breadcrumbItems}
       className={className}
-      user={session?.user ? {
-        name: session.user.name || 'User',
-        email: session.user.email || 'user@example.com',
-        avatar: session.user.image || undefined
-      } : undefined}
+      user={
+        session?.user
+          ? {
+              name: session.user.name || 'User',
+              email: session.user.email || 'user@example.com',
+              avatar: session.user.image || undefined,
+            }
+          : undefined
+      }
     >
-      <ModernPage
-        title={title}
-        description={description}
-        actions={actions}
-      >
+      <ModernPage title={title} description={description} actions={actions}>
         {children}
       </ModernPage>
     </ModernSidebar>
@@ -122,26 +110,16 @@ export function ConsolePageHeader({
   title,
   description,
   actions,
-  className
+  className,
 }: ConsolePageHeaderProps) {
   return (
     <div className={cn('flex items-start justify-between mb-6', className)}>
       <div className="flex-1">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-          {title}
-        </h1>
-        {description && (
-          <p className="mt-2 text-sm text-gray-600">
-            {description}
-          </p>
-        )}
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">{title}</h1>
+        {description && <p className="mt-2 text-sm text-gray-600">{description}</p>}
       </div>
-      
-      {actions && (
-        <div className="ml-6 flex items-center space-x-4">
-          {actions}
-        </div>
-      )}
+
+      {actions && <div className="ml-6 flex items-center space-x-4">{actions}</div>}
     </div>
   )
 }
@@ -155,23 +133,15 @@ export interface ConsoleContentProps {
   padding?: 'none' | 'sm' | 'md' | 'lg'
 }
 
-export function ConsoleContent({
-  children,
-  className,
-  padding = 'md'
-}: ConsoleContentProps) {
+export function ConsoleContent({ children, className, padding = 'md' }: ConsoleContentProps) {
   const paddingClasses = {
     none: '',
     sm: 'p-4',
     md: 'p-6',
-    lg: 'p-8'
+    lg: 'p-8',
   }
-  
-  return (
-    <div className={cn('console-content', paddingClasses[padding], className)}>
-      {children}
-    </div>
-  )
+
+  return <div className={cn('console-content', paddingClasses[padding], className)}>{children}</div>
 }
 
 /**
@@ -198,34 +168,26 @@ export function ConsoleSidebarLayout({
   sidebarWidth = 'md',
   sidebarPosition = 'left',
   collapsible: _collapsible = false,
-  className
+  className,
 }: ConsoleSidebarLayoutProps) {
   const sidebarWidthClasses = {
     sm: 'w-64',
     md: 'w-80',
-    lg: 'w-96'
+    lg: 'w-96',
   }
-  
+
   return (
     <div className={cn('flex gap-6', className)}>
       {sidebarPosition === 'left' && (
-        <aside className={cn(
-          'console-sidebar flex-shrink-0',
-          sidebarWidthClasses[sidebarWidth]
-        )}>
+        <aside className={cn('console-sidebar flex-shrink-0', sidebarWidthClasses[sidebarWidth])}>
           {sidebar}
         </aside>
       )}
-      
-      <main className="console-main flex-1 min-w-0">
-        {children}
-      </main>
-      
+
+      <main className="console-main flex-1 min-w-0">{children}</main>
+
       {sidebarPosition === 'right' && (
-        <aside className={cn(
-          'console-sidebar flex-shrink-0',
-          sidebarWidthClasses[sidebarWidth]
-        )}>
+        <aside className={cn('console-sidebar flex-shrink-0', sidebarWidthClasses[sidebarWidth])}>
           {sidebar}
         </aside>
       )}

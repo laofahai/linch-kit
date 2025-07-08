@@ -12,11 +12,36 @@ import { Logger } from '@linch-kit/core'
 
 export default function TRPCDemoPage() {
   // 使用 tRPC hooks
-  const { data: pingData, isLoading: pingLoading, error: pingError, refetch: refetchPing } = trpc.health.ping.useQuery()
-  const { data: statusData, isLoading: statusLoading, error: statusError, refetch: refetchStatus } = trpc.health.status.useQuery()
-  const { data: systemData, isLoading: systemLoading, error: systemError, refetch: refetchSystem } = trpc.system.info.useQuery()
-  const { data: usersData, isLoading: usersLoading, error: usersError, refetch: refetchUsers } = trpc.user.list.useQuery({ limit: 5, offset: 0 })
-  const { data: statsData, isLoading: statsLoading, error: statsError, refetch: refetchStats } = trpc.stats.dashboard.useQuery()
+  const {
+    data: pingData,
+    isLoading: pingLoading,
+    error: pingError,
+    refetch: refetchPing,
+  } = trpc.health.ping.useQuery()
+  const {
+    data: statusData,
+    isLoading: statusLoading,
+    error: statusError,
+    refetch: refetchStatus,
+  } = trpc.health.status.useQuery()
+  const {
+    data: systemData,
+    isLoading: systemLoading,
+    error: systemError,
+    refetch: refetchSystem,
+  } = trpc.system.info.useQuery()
+  const {
+    data: usersData,
+    isLoading: usersLoading,
+    error: usersError,
+    refetch: refetchUsers,
+  } = trpc.user.list.useQuery({ limit: 5, offset: 0 })
+  const {
+    data: statsData,
+    isLoading: statsLoading,
+    error: statsError,
+    refetch: refetchStats,
+  } = trpc.stats.dashboard.useQuery()
 
   const isLoading = pingLoading || statusLoading || systemLoading || usersLoading || statsLoading
   const hasError = pingError || statusError || systemError || usersError || statsError
@@ -24,11 +49,11 @@ export default function TRPCDemoPage() {
   useEffect(() => {
     // 记录数据加载状态
     if (pingData && statusData && systemData && statsData) {
-      Logger.info('tRPC 数据加载完成', { 
-        ping: pingData, 
-        status: statusData, 
-        system: systemData, 
-        stats: statsData 
+      Logger.info('tRPC 数据加载完成', {
+        ping: pingData,
+        status: statusData,
+        system: systemData,
+        stats: statsData,
       })
     }
     if (hasError) {
@@ -40,9 +65,7 @@ export default function TRPCDemoPage() {
     <div className="container mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">tRPC API 演示</h1>
-        <p className="text-muted-foreground mt-2">
-          展示 tRPC 类型安全的 API 调用和实时数据获取
-        </p>
+        <p className="text-muted-foreground mt-2">展示 tRPC 类型安全的 API 调用和实时数据获取</p>
       </div>
 
       {isLoading && (
@@ -87,11 +110,11 @@ export default function TRPCDemoPage() {
                 <p className="text-xs text-muted-foreground">时间: {statusData.timestamp}</p>
               </div>
             )}
-            <Button 
+            <Button
               onClick={() => {
                 refetchPing()
                 refetchStatus()
-              }} 
+              }}
               size="sm"
               disabled={pingLoading || statusLoading}
             >
@@ -171,8 +194,11 @@ export default function TRPCDemoPage() {
               </p>
             ) : usersData && usersData.users.length > 0 ? (
               <div className="space-y-2">
-                {usersData.users.map((user) => (
-                  <div key={user.id} className="flex justify-between items-center p-2 border rounded">
+                {usersData.users.map(user => (
+                  <div
+                    key={user.id}
+                    className="flex justify-between items-center p-2 border rounded"
+                  >
                     <div>
                       <p className="font-medium">{user.name || '未设置'}</p>
                       <p className="text-sm text-muted-foreground">{user.email}</p>

@@ -3,11 +3,7 @@
  * 支持灵活的Schema组合和扩展
  */
 
-import type { 
-  Entity, 
-  FieldDefinition, 
-  EntityOptions 
-} from '../types'
+import type { Entity, FieldDefinition, EntityOptions } from '../types'
 
 import { EntityImpl } from './entity'
 
@@ -27,7 +23,7 @@ export class SchemaBuilder<T extends Record<string, FieldDefinition> = {}> {
    * 添加字段
    */
   field<K extends string, F extends FieldDefinition>(
-    name: K, 
+    name: K,
     definition: F
   ): SchemaBuilder<T & Record<K, F>> {
     return this.fields({ [name]: definition } as Record<K, F>)
@@ -36,9 +32,7 @@ export class SchemaBuilder<T extends Record<string, FieldDefinition> = {}> {
   /**
    * 批量添加字段
    */
-  fields<F extends Record<string, FieldDefinition>>(
-    fields: F
-  ): SchemaBuilder<T & F> {
+  fields<F extends Record<string, FieldDefinition>>(fields: F): SchemaBuilder<T & F> {
     const newBuilder = new SchemaBuilder<T & F>(this._name)
     newBuilder._fields = { ...this._fields, ...fields } as T & F
     newBuilder._options = { ...this._options }
@@ -83,9 +77,13 @@ export class SchemaBuilder<T extends Record<string, FieldDefinition> = {}> {
     other: SchemaBuilder<Record<string, FieldDefinition>> | Entity<Record<string, FieldDefinition>>
   ): SchemaBuilder<Record<string, FieldDefinition>> {
     if (other instanceof SchemaBuilder) {
-      return this.fields(other._fields).options(other._options) as SchemaBuilder<Record<string, FieldDefinition>>
+      return this.fields(other._fields).options(other._options) as SchemaBuilder<
+        Record<string, FieldDefinition>
+      >
     } else {
-      return this.fields(other.fields).options(other.options) as SchemaBuilder<Record<string, FieldDefinition>>
+      return this.fields(other.fields).options(other.options) as SchemaBuilder<
+        Record<string, FieldDefinition>
+      >
     }
   }
 
@@ -101,7 +99,7 @@ export class SchemaBuilder<T extends Record<string, FieldDefinition> = {}> {
     return new EntityImpl(entityName, {
       name: entityName,
       fields: this._fields,
-      options: this._options
+      options: this._options,
     }) as Entity
   }
 
@@ -122,7 +120,7 @@ export class SchemaBuilder<T extends Record<string, FieldDefinition> = {}> {
 
 /**
  * 创建Schema构建器
- * 
+ *
  * @example
  * ```typescript
  * // 创建基础Schema
@@ -132,12 +130,12 @@ export class SchemaBuilder<T extends Record<string, FieldDefinition> = {}> {
  *   .field('age', defineField.number().min(0))
  *   .timestamps()
  *   .tableName('users')
- * 
+ *
  * // 扩展Schema
  * const adminSchema = userSchema
  *   .field('role', defineField.enum(['admin', 'superadmin']))
  *   .field('permissions', defineField.array(defineField.string()))
- * 
+ *
  * // 构建实体
  * const User = userSchema.build('User')
  * const Admin = adminSchema.build('Admin')
@@ -151,14 +149,14 @@ export function schema<T extends Record<string, FieldDefinition> = {}>(
 
 /**
  * 从现有实体创建Schema构建器
- * 
+ *
  * @example
  * ```typescript
  * const baseUser = defineEntity('User', {
  *   name: defineField.string().required(),
  *   email: defineField.email().required()
  * })
- * 
+ *
  * const extendedUser = fromEntity(baseUser)
  *   .field('age', defineField.number())
  *   .field('avatar', defineField.url())
@@ -175,7 +173,7 @@ export function fromEntity<T extends Record<string, FieldDefinition>>(
 
 /**
  * Mixin功能 - 允许复用字段组合
- * 
+ *
  * @example
  * ```typescript
  * // 定义混入
@@ -183,12 +181,12 @@ export function fromEntity<T extends Record<string, FieldDefinition>>(
  *   createdAt: defineField.date().required(),
  *   updatedAt: defineField.date().required()
  * })
- * 
+ *
  * const auditMixin = mixin({
  *   createdBy: defineField.relation('User').required(),
  *   updatedBy: defineField.relation('User')
  * })
- * 
+ *
  * // 使用混入
  * const Post = schema('Post')
  *   .field('title', defineField.string().required())
@@ -198,31 +196,29 @@ export function fromEntity<T extends Record<string, FieldDefinition>>(
  *   .build()
  * ```
  */
-export function mixin<T extends Record<string, FieldDefinition>>(
-  fields: T
-): SchemaBuilder<T> {
+export function mixin<T extends Record<string, FieldDefinition>>(fields: T): SchemaBuilder<T> {
   return schema<T>().fields(fields)
 }
 
 /**
  * 创建可复用的Schema模板
- * 
+ *
  * @example
  * ```typescript
  * // 创建模板
- * const baseEntityTemplate = template(() => 
+ * const baseEntityTemplate = template(() =>
  *   schema()
  *     .field('id', defineField.uuid().required())
  *     .field('createdAt', defineField.date().required())
  *     .field('updatedAt', defineField.date().required())
  * )
- * 
+ *
  * // 使用模板
  * const User = baseEntityTemplate()
  *   .field('name', defineField.string().required())
  *   .field('email', defineField.email().required())
  *   .build('User')
- * 
+ *
  * const Post = baseEntityTemplate()
  *   .field('title', defineField.string().required())
  *   .field('content', defineField.text())
@@ -237,7 +233,7 @@ export function template<T extends Record<string, FieldDefinition>>(
 
 /**
  * 条件字段 - 根据条件动态添加字段
- * 
+ *
  * @example
  * ```typescript
  * const User = schema('User')
@@ -259,7 +255,7 @@ export function conditional<T extends Record<string, FieldDefinition>>(
 
 /**
  * 字段组 - 逻辑分组字段便于管理
- * 
+ *
  * @example
  * ```typescript
  * const identityFields = group({
@@ -267,48 +263,46 @@ export function conditional<T extends Record<string, FieldDefinition>>(
  *   lastName: defineField.string().required(),
  *   email: defineField.email().required().unique()
  * })
- * 
+ *
  * const addressFields = group({
  *   street: defineField.string(),
  *   city: defineField.string(),
  *   country: defineField.string(),
  *   zipCode: defineField.string()
  * })
- * 
+ *
  * const User = schema('User')
  *   .fields(identityFields)
  *   .fields(addressFields)
  *   .build()
  * ```
  */
-export function group<T extends Record<string, FieldDefinition>>(
-  fields: T
-): T {
+export function group<T extends Record<string, FieldDefinition>>(fields: T): T {
   return fields
 }
 
 /**
  * 创建变体Schema - 基于基础Schema创建多个变体
- * 
+ *
  * @example
  * ```typescript
  * const baseUser = schema()
  *   .field('name', defineField.string().required())
  *   .field('email', defineField.email().required())
- * 
+ *
  * const userVariants = variants(baseUser, {
  *   admin: schema => schema
  *     .field('permissions', defineField.array(defineField.string()))
  *     .field('role', defineField.enum(['admin', 'superadmin'])),
- *   
+ *
  *   customer: schema => schema
  *     .field('orders', defineField.relation('Order'))
  *     .field('loyaltyPoints', defineField.number().default(0)),
- *   
+ *
  *   guest: schema => schema
  *     .field('sessionId', defineField.string().required())
  * })
- * 
+ *
  * const AdminUser = userVariants.admin.build('AdminUser')
  * const Customer = userVariants.customer.build('Customer')
  * const Guest = userVariants.guest.build('Guest')
@@ -316,37 +310,37 @@ export function group<T extends Record<string, FieldDefinition>>(
  */
 export function variants<
   T extends Record<string, FieldDefinition>,
-  V extends Record<string, (builder: SchemaBuilder<T>) => SchemaBuilder<Record<string, FieldDefinition>>>
->(
-  baseSchema: SchemaBuilder<T>,
-  variants: V
-): { [K in keyof V]: ReturnType<V[K]> } {
+  V extends Record<
+    string,
+    (builder: SchemaBuilder<T>) => SchemaBuilder<Record<string, FieldDefinition>>
+  >,
+>(baseSchema: SchemaBuilder<T>, variants: V): { [K in keyof V]: ReturnType<V[K]> } {
   const result: Record<string, unknown> = {}
-  
+
   Object.entries(variants).forEach(([key, transform]) => {
     result[key] = transform(baseSchema)
   })
-  
+
   return result as { [K in keyof V]: ReturnType<V[K]> }
 }
 
 /**
  * Schema组合器 - 将多个Schema合并
- * 
+ *
  * @example
  * ```typescript
  * const userSchema = schema()
  *   .field('name', defineField.string().required())
  *   .field('email', defineField.email().required())
- * 
+ *
  * const profileSchema = schema()
  *   .field('bio', defineField.text())
  *   .field('avatar', defineField.url())
- * 
+ *
  * const settingsSchema = schema()
  *   .field('theme', defineField.enum(['light', 'dark']))
  *   .field('notifications', defineField.boolean().default(true))
- * 
+ *
  * const CompleteUser = compose(
  *   userSchema,
  *   profileSchema,
@@ -359,7 +353,7 @@ export function compose<
   S2 extends SchemaBuilder<Record<string, FieldDefinition>>,
   S3 extends SchemaBuilder<Record<string, FieldDefinition>> = SchemaBuilder<{}>,
   S4 extends SchemaBuilder<Record<string, FieldDefinition>> = SchemaBuilder<{}>,
-  S5 extends SchemaBuilder<Record<string, FieldDefinition>> = SchemaBuilder<{}>
+  S5 extends SchemaBuilder<Record<string, FieldDefinition>> = SchemaBuilder<{}>,
 >(
   schema1: S1,
   schema2: S2,
@@ -368,10 +362,10 @@ export function compose<
   schema5?: S5
 ): SchemaBuilder<Record<string, FieldDefinition>> {
   let result = schema1.extend(schema2)
-  
+
   if (schema3) result = result.extend(schema3)
-  if (schema4) result = result.extend(schema4)  
+  if (schema4) result = result.extend(schema4)
   if (schema5) result = result.extend(schema5)
-  
+
   return result
 }

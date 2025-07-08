@@ -1,6 +1,6 @@
 /**
  * 租户管理实体定义
- * 
+ *
  * 多租户架构的核心实体，包括租户和配额管理
  */
 
@@ -29,82 +29,96 @@ export interface TenantMetadata {
  */
 export const TenantEntity = defineEntity('Tenant', {
   // 基础字段
-  name: defineField.string()
+  name: defineField
+    .string()
     .required()
     .unique()
     .max(100)
     .description('console.entities.tenant.fields.name'),
-  
-  domain: defineField.string()
+
+  domain: defineField
+    .string()
     .unique()
     .max(255)
     .optional()
     .description('console.entities.tenant.fields.domain'),
-  
-  slug: defineField.string()
+
+  slug: defineField
+    .string()
     .required()
     .unique()
     .max(50)
     .description('console.entities.tenant.fields.slug'),
-  
-  description: defineField.text()
+
+  description: defineField
+    .text()
     .optional()
     .description('console.entities.tenant.fields.description'),
-  
-  status: defineField.enum(['active', 'suspended', 'deleted', 'pending'])
+
+  status: defineField
+    .enum(['active', 'suspended', 'deleted', 'pending'])
     .required()
     .default('active')
     .description('console.entities.tenant.fields.status'),
-  
+
   // 计费信息
-  plan: defineField.enum(['free', 'starter', 'professional', 'enterprise'])
+  plan: defineField
+    .enum(['free', 'starter', 'professional', 'enterprise'])
     .required()
     .default('free')
     .description('console.entities.tenant.fields.plan'),
-  
-  billingCycle: defineField.enum(['monthly', 'yearly'])
+
+  billingCycle: defineField
+    .enum(['monthly', 'yearly'])
     .optional()
     .description('console.entities.tenant.fields.billingCycle'),
-  
-  maxUsers: defineField.int()
+
+  maxUsers: defineField
+    .int()
     .required()
     .default(10)
     .min(1)
     .description('console.entities.tenant.fields.maxUsers'),
-  
-  maxStorage: defineField.bigint()
+
+  maxStorage: defineField
+    .bigint()
     .required()
     .default(1073741824n) // 1GB
     .min(0n)
     .description('console.entities.tenant.fields.maxStorage'),
-  
+
   // 扩展字段
-  settings: defineField.json<TenantSettings>()
+  settings: defineField
+    .json<TenantSettings>()
     .default({})
     .description('console.entities.tenant.fields.settings'),
-  
-  metadata: defineField.json<TenantMetadata>()
+
+  metadata: defineField
+    .json<TenantMetadata>()
     .default({})
     .description('console.entities.tenant.fields.metadata'),
-  
+
   // 关系字段
   users: defineField.relation('User').oneToMany(),
   plugins: defineField.relation('Plugin').manyToMany(),
   quotas: defineField.relation('TenantQuotas').oneToOne(),
   auditLogs: defineField.relation('AuditLog').oneToMany(),
-  
+
   // 审计字段
-  createdAt: defineField.datetime()
+  createdAt: defineField
+    .datetime()
     .default('now')
     .description('console.entities.tenant.fields.createdAt'),
-  
-  updatedAt: defineField.datetime()
+
+  updatedAt: defineField
+    .datetime()
     .updatedAt()
     .description('console.entities.tenant.fields.updatedAt'),
-  
-  deletedAt: defineField.datetime()
+
+  deletedAt: defineField
+    .datetime()
     .optional()
-    .description('console.entities.tenant.fields.deletedAt')
+    .description('console.entities.tenant.fields.deletedAt'),
 })
 
 /**
@@ -112,88 +126,102 @@ export const TenantEntity = defineEntity('Tenant', {
  */
 export const TenantQuotasEntity = defineEntity('TenantQuotas', {
   // 关系字段
-  tenant: defineField.relation('Tenant')
+  tenant: defineField
+    .relation('Tenant')
     .oneToOne()
     .required()
     .description('console.entities.tenantQuotas.fields.tenant'),
-  
+
   // 用户配额
-  maxUsers: defineField.int()
+  maxUsers: defineField
+    .int()
     .required()
     .default(10)
     .min(0)
     .description('console.entities.tenantQuotas.fields.maxUsers'),
-  
-  currentUsers: defineField.int()
+
+  currentUsers: defineField
+    .int()
     .required()
     .default(0)
     .min(0)
     .description('console.entities.tenantQuotas.fields.currentUsers'),
-  
+
   // 存储配额
-  maxStorage: defineField.bigint()
+  maxStorage: defineField
+    .bigint()
     .required()
     .default(1073741824n) // 1GB
     .min(0n)
     .description('console.entities.tenantQuotas.fields.maxStorage'),
-  
-  currentStorage: defineField.bigint()
+
+  currentStorage: defineField
+    .bigint()
     .required()
     .default(0n)
     .min(0n)
     .description('console.entities.tenantQuotas.fields.currentStorage'),
-  
+
   // API配额
-  maxApiCalls: defineField.int()
+  maxApiCalls: defineField
+    .int()
     .required()
     .default(10000)
     .min(0)
     .description('console.entities.tenantQuotas.fields.maxApiCalls'),
-  
-  currentApiCalls: defineField.int()
+
+  currentApiCalls: defineField
+    .int()
     .required()
     .default(0)
     .min(0)
     .description('console.entities.tenantQuotas.fields.currentApiCalls'),
-  
-  apiResetAt: defineField.datetime()
+
+  apiResetAt: defineField
+    .datetime()
     .optional()
     .description('console.entities.tenantQuotas.fields.apiResetAt'),
-  
+
   // 插件配额
-  maxPlugins: defineField.int()
+  maxPlugins: defineField
+    .int()
     .required()
     .default(5)
     .min(0)
     .description('console.entities.tenantQuotas.fields.maxPlugins'),
-  
-  currentPlugins: defineField.int()
+
+  currentPlugins: defineField
+    .int()
     .required()
     .default(0)
     .min(0)
     .description('console.entities.tenantQuotas.fields.currentPlugins'),
-  
+
   // 数据模型配额
-  maxSchemas: defineField.int()
+  maxSchemas: defineField
+    .int()
     .required()
     .default(10)
     .min(0)
     .description('console.entities.tenantQuotas.fields.maxSchemas'),
-  
-  currentSchemas: defineField.int()
+
+  currentSchemas: defineField
+    .int()
     .required()
     .default(0)
     .min(0)
     .description('console.entities.tenantQuotas.fields.currentSchemas'),
-  
+
   // 时间戳
-  createdAt: defineField.datetime()
+  createdAt: defineField
+    .datetime()
     .default('now')
     .description('console.entities.tenantQuotas.fields.createdAt'),
-  
-  updatedAt: defineField.datetime()
+
+  updatedAt: defineField
+    .datetime()
     .updatedAt()
-    .description('console.entities.tenantQuotas.fields.updatedAt')
+    .description('console.entities.tenantQuotas.fields.updatedAt'),
 })
 
 // 导出类型

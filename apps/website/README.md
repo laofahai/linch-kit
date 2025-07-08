@@ -27,11 +27,11 @@ graph TD
     A[Nextra 4] --> B[Next.js 15]
     A --> C[MDX]
     A --> D[Tailwind CSS 4]
-    
+
     B --> E[Static Export]
     C --> F[Content]
     D --> G[Styling]
-    
+
     H[Vercel] --> I[CDN]
     I --> J[Global Edge]
 ```
@@ -123,10 +123,11 @@ apps/website/
 ### 添加新文档
 
 1. **创建 MDX 文件**:
-```mdx
+
+````mdx
 ---
-title: "新功能指南"
-description: "详细介绍新功能的使用方法"
+title: '新功能指南'
+description: '详细介绍新功能的使用方法'
 ---
 
 # 新功能指南
@@ -148,9 +149,10 @@ import { newFeature } from '@linch-kit/new-feature'
 
 const result = newFeature()
 \```
-```
+````
 
 2. **更新导航**:
+
 ```json
 // app/docs/_meta.json
 {
@@ -172,10 +174,10 @@ const result = newFeature()
 
 #### 内容结构
 
-```mdx
+````mdx
 ---
-title: "页面标题"
-description: "页面描述，用于 SEO"
+title: '页面标题'
+description: '页面描述，用于 SEO'
 ---
 
 # 页面标题
@@ -199,15 +201,16 @@ const example = "Hello World"
 
 - [相关文档](./related-doc)
 - [API 参考](../api/reference)
-```
+````
 
 ### 国际化文档
 
 #### 中文文档
+
 ```mdx
 ---
-title: "用户管理"
-description: "LinchKit 用户管理系统完整指南"
+title: '用户管理'
+description: 'LinchKit 用户管理系统完整指南'
 ---
 
 # 用户管理
@@ -216,10 +219,11 @@ LinchKit 提供完整的用户管理功能...
 ```
 
 #### 英文文档
+
 ```mdx
 ---
-title: "User Management"
-description: "Complete guide to LinchKit user management system"
+title: 'User Management'
+description: 'Complete guide to LinchKit user management system'
 ---
 
 # User Management
@@ -241,15 +245,15 @@ const config: DocsThemeConfig = {
     </div>
   ),
   project: {
-    link: 'https://github.com/laofahai/linch-kit'
+    link: 'https://github.com/laofahai/linch-kit',
   },
   docsRepositoryBase: 'https://github.com/laofahai/linch-kit/tree/main/apps/website',
   footer: {
-    text: '© 2024 LinchKit Team. All rights reserved.'
+    text: '© 2024 LinchKit Team. All rights reserved.',
   },
   useNextSeoProps() {
     return {
-      titleTemplate: '%s – LinchKit'
+      titleTemplate: '%s – LinchKit',
     }
   },
   head: (
@@ -258,7 +262,7 @@ const config: DocsThemeConfig = {
       <meta property="og:title" content="LinchKit" />
       <meta property="og:description" content="AI-First 全栈开发框架" />
     </>
-  )
+  ),
 }
 
 export default config
@@ -298,16 +302,19 @@ export default config
 网站实现了全面的 Core Web Vitals 优化：
 
 #### LCP (Largest Contentful Paint) < 2.5s
+
 - 静态生成减少 TTFB
 - 图片懒加载和 WebP 格式
 - 字体预加载和 font-display: swap
 
 #### FID (First Input Delay) < 100ms
+
 - 代码分割和懒加载
 - 减少主线程阻塞
 - 优化 JavaScript 执行
 
 #### CLS (Cumulative Layout Shift) < 0.1
+
 - 固定尺寸的图片和媒体
 - 无布局偏移的字体加载
 - 稳定的导航和页脚高度
@@ -373,9 +380,10 @@ export function LazyImage({ src, alt, width, height, priority = false }: LazyIma
 export const metadata: Metadata = {
   title: {
     default: 'LinchKit - AI-First 全栈开发框架',
-    template: '%s | LinchKit'
+    template: '%s | LinchKit',
   },
-  description: 'LinchKit 是一个现代化的 AI-First 全栈开发框架，提供 Schema 驱动的端到端类型安全解决方案。',
+  description:
+    'LinchKit 是一个现代化的 AI-First 全栈开发框架，提供 Schema 驱动的端到端类型安全解决方案。',
   keywords: ['LinchKit', 'TypeScript', 'Next.js', 'Full Stack', 'AI-First'],
   authors: [{ name: 'LinchKit Team' }],
   creator: 'LinchKit Team',
@@ -393,14 +401,14 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'LinchKit'
-      }
-    ]
+        alt: 'LinchKit',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     site: '@LinchKit',
-    creator: '@LinchKit'
+    creator: '@LinchKit',
   },
   robots: {
     index: true,
@@ -410,9 +418,9 @@ export const metadata: Metadata = {
       follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet': -1
-    }
-  }
+      'max-snippet': -1,
+    },
+  },
 }
 ```
 
@@ -431,8 +439,8 @@ export default function HomePage() {
     url: 'https://kit.linch.tech',
     author: {
       '@type': 'Organization',
-      name: 'LinchKit Team'
-    }
+      name: 'LinchKit Team',
+    },
   }
 
   return (
@@ -465,7 +473,7 @@ export function Analytics() {
   useEffect(() => {
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('config', 'GA_MEASUREMENT_ID', {
-        page_path: pathname + searchParams.toString()
+        page_path: pathname + searchParams.toString(),
       })
     }
   }, [pathname, searchParams])
@@ -484,7 +492,7 @@ import { useEffect } from 'react'
 
 export default function Error({
   error,
-  reset
+  reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
@@ -518,6 +526,7 @@ export default function Error({
    - 连接 GitHub 仓库
 
 2. **配置构建设置**:
+
 ```bash
 # Build Command
 bun build
@@ -530,6 +539,7 @@ bun install
 ```
 
 3. **环境变量**:
+
 ```bash
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_SITE_URL=https://kit.linch.tech
@@ -589,8 +599,8 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
   moduleNameMapping: {
-    '^@/(.*)$': '<rootDir>/$1'
-  }
+    '^@/(.*)$': '<rootDir>/$1',
+  },
 }
 ```
 

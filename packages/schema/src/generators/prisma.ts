@@ -16,19 +16,20 @@ export class PrismaGenerator extends BaseGenerator {
    * 生成Prisma Schema文件
    */
   async generate(context: GeneratorContext): Promise<GeneratedFile[]> {
-    const entities = context.entities.map(def => ({
-      name: def.name,
-      fields: def.fields,
-      options: def.options || {},
-      definition: def
-    } as unknown as Entity))
+    const entities = context.entities.map(
+      def =>
+        ({
+          name: def.name,
+          fields: def.fields,
+          options: def.options || {},
+          definition: def,
+        }) as unknown as Entity
+    )
     this.validateEntities(entities)
 
     const schemaContent = this.generateSchema(entities)
 
-    return [
-      this.createGeneratedFile('schema.prisma', schemaContent, 'prisma')
-    ]
+    return [this.createGeneratedFile('schema.prisma', schemaContent, 'prisma')]
   }
 
   protected getFileExtension(): string {
@@ -42,7 +43,7 @@ export class PrismaGenerator extends BaseGenerator {
     const sections = [
       this.generateGenerator(),
       this.generateDatasource(),
-      ...entities.map(entity => this.generateModel(entity))
+      ...entities.map(entity => this.generateModel(entity)),
     ]
 
     return sections.join('\n\n')
@@ -115,7 +116,7 @@ export class PrismaGenerator extends BaseGenerator {
     }
 
     const modelBody = [...fields, '', ...modelAttributes].join('\n')
-    
+
     return `model ${entity.name} {
 ${modelBody}
 }`
@@ -147,39 +148,39 @@ ${modelBody}
       case 'url':
       case 'uuid':
         return 'String'
-      
+
       case 'text':
         return 'String' // 或者使用 @db.Text 属性
-      
+
       case 'number':
         return field.integer ? 'Int' : 'Float'
-      
+
       case 'boolean':
         return 'Boolean'
-      
+
       case 'date':
         return 'DateTime'
-      
+
       case 'json':
         return 'Json'
-      
+
       case 'enum':
         return this.toPascalCase(field.values[0]) + 'Enum' // 需要生成枚举定义
-      
+
       case 'array': {
         const itemType = this.mapFieldTypeToPrisma(field.items)
         return `${itemType}[]`
       }
-      
+
       case 'relation':
         if (field.relationType === 'manyToMany') {
           return `${field.target}[]`
         }
         return field.target
-      
+
       case 'i18n':
         return 'Json' // 存储为JSON
-      
+
       default:
         return 'String'
     }
@@ -207,13 +208,13 @@ ${modelBody}
       case 'text':
         attributes.push('@db.Text')
         break
-      
+
       case 'uuid':
         if (!field.defaultValue) {
           attributes.push('@default(uuid())')
         }
         break
-      
+
       case 'enum':
         // 枚举类型会在模型外部定义
         break
@@ -303,13 +304,13 @@ ${modelBody}
    */
   private generateEnums(entities: Entity[]): string[] {
     const enums: string[] = []
-    
+
     entities.forEach(entity => {
       Object.entries(entity.fields).forEach(([fieldName, field]) => {
         if (field.type === 'enum') {
           const enumName = this.toPascalCase(fieldName) + 'Enum'
           const enumValues = field.values.map(value => `  ${value}`).join('\n')
-          
+
           enums.push(`enum ${enumName} {
 ${enumValues}
 }`)
@@ -328,18 +329,11 @@ ${enumValues}
 
     const enums = this.generateEnums(entities)
     const models = entities.map(entity => this.generateModel(entity))
-    
-    const sections = [
-      this.generateGenerator(),
-      this.generateDatasource(),
-      ...enums,
-      ...models
-    ]
+
+    const sections = [this.generateGenerator(), this.generateDatasource(), ...enums, ...models]
 
     const schemaContent = sections.join('\n\n')
-    
-    return [
-      this.createGeneratedFile('schema.prisma', schemaContent, 'prisma')
-    ]
+
+    return [this.createGeneratedFile('schema.prisma', schemaContent, 'prisma')]
   }
 }

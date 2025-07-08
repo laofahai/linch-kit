@@ -1,6 +1,6 @@
 /**
  * @linch-kit/auth NextAuth 适配器测试
- * 
+ *
  * @description 测试 NextAuth.js 适配器的核心功能
  * @author LinchKit Team
  * @since 0.1.0
@@ -10,13 +10,13 @@ import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test'
 
 import {
   createLinchKitAuthConfig,
-  createDefaultLinchKitAuthConfig
+  createDefaultLinchKitAuthConfig,
 } from '../../adapters/nextauth-adapter'
 
 // Mock NextAuth.js dependencies
 mock.module('next-auth', () => ({
   default: mock(),
-  NextAuth: mock()
+  NextAuth: mock(),
 }))
 
 describe('NextAuth Adapter', () => {
@@ -41,9 +41,9 @@ describe('NextAuth Adapter', () => {
       const config = createLinchKitAuthConfig({
         providers: {
           credentials: {
-            authorize: async () => null
-          }
-        }
+            authorize: async () => null,
+          },
+        },
       })
 
       expect(config).toBeDefined()
@@ -59,13 +59,13 @@ describe('NextAuth Adapter', () => {
      */
     it('should configure custom providers', () => {
       const mockAuthorize = mock().mockResolvedValue({ id: '1', email: 'test@example.com' })
-      
+
       const config = createLinchKitAuthConfig({
         providers: {
           credentials: {
-            authorize: mockAuthorize
-          }
-        }
+            authorize: mockAuthorize,
+          },
+        },
       })
 
       expect(config.providers).toBeDefined()
@@ -82,8 +82,8 @@ describe('NextAuth Adapter', () => {
         providers: {},
         session: {
           strategy: 'jwt',
-          maxAge: 24 * 60 * 60 // 24 hours
-        }
+          maxAge: 24 * 60 * 60, // 24 hours
+        },
       })
 
       expect(config.session).toBeDefined()
@@ -106,8 +106,8 @@ describe('NextAuth Adapter', () => {
         callbacks: {
           signIn: mockSignIn,
           jwt: mockJwt,
-          session: mockSession
-        }
+          session: mockSession,
+        },
       })
 
       expect(config.callbacks).toBeDefined()
@@ -126,7 +126,7 @@ describe('NextAuth Adapter', () => {
       process.env.NODE_ENV = 'development'
       const devConfig = createLinchKitAuthConfig({
         providers: {},
-        debug: true
+        debug: true,
       })
       expect(devConfig.debug).toBe(true)
 
@@ -134,7 +134,7 @@ describe('NextAuth Adapter', () => {
       process.env.NODE_ENV = 'production'
       const prodConfig = createLinchKitAuthConfig({
         providers: {},
-        debug: false
+        debug: false,
       })
       expect(prodConfig.debug).toBe(false)
     })
@@ -208,7 +208,7 @@ describe('NextAuth Adapter', () => {
     it('should handle invalid configuration gracefully', () => {
       expect(() => {
         createLinchKitAuthConfig({
-          providers: {}
+          providers: {},
         })
       }).not.toThrow()
     })

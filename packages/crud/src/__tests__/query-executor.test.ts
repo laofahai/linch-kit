@@ -1,6 +1,6 @@
 /**
  * QueryExecutor 测试套件
- * 
+ *
  * 测试查询执行器的各种功能，包括：
  * - 查询命令执行
  * - 性能监控
@@ -18,7 +18,7 @@ import type { Logger, PerformanceMetrics } from '../types'
 const mockUsers = [
   { id: '1', name: 'John', email: 'john@example.com', age: 30 },
   { id: '2', name: 'Jane', email: 'jane@example.com', age: 25 },
-  { id: '3', name: 'Bob', email: 'bob@example.com', age: 35 }
+  { id: '3', name: 'Bob', email: 'bob@example.com', age: 35 },
 ]
 
 const mockUser = { id: '1', name: 'John', email: 'john@example.com', age: 30 }
@@ -28,7 +28,7 @@ const mockLogger: Logger = {
   info: jest.fn(),
   error: jest.fn(),
   warn: jest.fn(),
-  debug: jest.fn()
+  debug: jest.fn(),
 }
 
 // Mock PrismaClient
@@ -37,8 +37,8 @@ const mockPrismaClient = {
     findMany: jest.fn(),
     findFirst: jest.fn(),
     count: jest.fn(),
-    aggregate: jest.fn()
-  }
+    aggregate: jest.fn(),
+  },
 }
 
 describe('QueryExecutor', () => {
@@ -47,7 +47,7 @@ describe('QueryExecutor', () => {
   beforeEach(() => {
     // 重置所有 mock 函数
     jest.clearAllMocks()
-    
+
     // 创建 QueryExecutor 实例
     queryExecutor = new QueryExecutor('User', mockPrismaClient, mockLogger)
   })
@@ -63,7 +63,7 @@ describe('QueryExecutor', () => {
 
       const query = {
         where: { age: { gt: 25 } },
-        orderBy: { name: 'asc' }
+        orderBy: { name: 'asc' },
       }
 
       const result = await queryExecutor.findMany(query)
@@ -74,7 +74,7 @@ describe('QueryExecutor', () => {
         entityName: 'User',
         duration: expect.any(Number),
         queryComplexity: expect.any(Number),
-        timestamp: expect.any(Date)
+        timestamp: expect.any(Date),
       })
       expect(mockPrismaClient.user.findMany).toHaveBeenCalledWith(query)
     })
@@ -86,11 +86,10 @@ describe('QueryExecutor', () => {
       const query = { where: { id: '1' } }
 
       await expect(queryExecutor.findMany(query)).rejects.toThrow('Database connection failed')
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'FindMany execution failed',
-        mockError,
-        { entityName: 'User', query }
-      )
+      expect(mockLogger.error).toHaveBeenCalledWith('FindMany execution failed', mockError, {
+        entityName: 'User',
+        query,
+      })
     })
 
     it('should calculate query complexity correctly', async () => {
@@ -98,19 +97,13 @@ describe('QueryExecutor', () => {
 
       const complexQuery = {
         where: {
-          AND: [
-            { age: { gt: 25 } },
-            { name: { contains: 'John' } }
-          ]
+          AND: [{ age: { gt: 25 } }, { name: { contains: 'John' } }],
         },
         include: {
           posts: true,
-          profile: true
+          profile: true,
         },
-        orderBy: [
-          { name: 'asc' },
-          { age: 'desc' }
-        ]
+        orderBy: [{ name: 'asc' }, { age: 'desc' }],
       }
 
       const result = await queryExecutor.findMany(complexQuery)
@@ -132,7 +125,7 @@ describe('QueryExecutor', () => {
         operation: 'findFirst',
         entityName: 'User',
         duration: expect.any(Number),
-        timestamp: expect.any(Date)
+        timestamp: expect.any(Date),
       })
       expect(mockPrismaClient.user.findFirst).toHaveBeenCalledWith(query)
     })
@@ -156,11 +149,10 @@ describe('QueryExecutor', () => {
       const query = { where: { id: '1' } }
 
       await expect(queryExecutor.findFirst(query)).rejects.toThrow('Invalid query')
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'FindFirst execution failed',
-        mockError,
-        { entityName: 'User', query }
-      )
+      expect(mockLogger.error).toHaveBeenCalledWith('FindFirst execution failed', mockError, {
+        entityName: 'User',
+        query,
+      })
     })
   })
 
@@ -176,7 +168,7 @@ describe('QueryExecutor', () => {
         operation: 'count',
         entityName: 'User',
         duration: expect.any(Number),
-        timestamp: expect.any(Date)
+        timestamp: expect.any(Date),
       })
       expect(mockPrismaClient.user.count).toHaveBeenCalledWith({ where: query.where })
     })
@@ -188,18 +180,17 @@ describe('QueryExecutor', () => {
       const query = { where: { age: { gt: 25 } } }
 
       await expect(queryExecutor.count(query)).rejects.toThrow('Count failed')
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Count execution failed',
-        mockError,
-        { entityName: 'User', query }
-      )
+      expect(mockLogger.error).toHaveBeenCalledWith('Count execution failed', mockError, {
+        entityName: 'User',
+        query,
+      })
     })
   })
 
   describe('aggregate 查询', () => {
     it('should execute sum aggregation successfully', async () => {
       mockPrismaClient.user.aggregate.mockResolvedValue({
-        _sum: { age: 150 }
+        _sum: { age: 150 },
       })
 
       const query = { where: { age: { gt: 20 } } }
@@ -210,17 +201,17 @@ describe('QueryExecutor', () => {
         operation: 'sum',
         entityName: 'User',
         duration: expect.any(Number),
-        timestamp: expect.any(Date)
+        timestamp: expect.any(Date),
       })
       expect(mockPrismaClient.user.aggregate).toHaveBeenCalledWith({
         where: query.where,
-        _sum: { age: true }
+        _sum: { age: true },
       })
     })
 
     it('should execute avg aggregation successfully', async () => {
       mockPrismaClient.user.aggregate.mockResolvedValue({
-        _avg: { age: 30 }
+        _avg: { age: 30 },
       })
 
       const query = { where: { age: { gt: 20 } } }
@@ -232,7 +223,7 @@ describe('QueryExecutor', () => {
 
     it('should execute min aggregation successfully', async () => {
       mockPrismaClient.user.aggregate.mockResolvedValue({
-        _min: { age: 25 }
+        _min: { age: 25 },
       })
 
       const query = { where: { age: { gt: 20 } } }
@@ -244,7 +235,7 @@ describe('QueryExecutor', () => {
 
     it('should execute max aggregation successfully', async () => {
       mockPrismaClient.user.aggregate.mockResolvedValue({
-        _max: { age: 35 }
+        _max: { age: 35 },
       })
 
       const query = { where: { age: { gt: 20 } } }
@@ -261,16 +252,15 @@ describe('QueryExecutor', () => {
       const query = { where: { age: { gt: 20 } } }
 
       await expect(queryExecutor.aggregate(query, 'sum', 'age')).rejects.toThrow('Aggregate failed')
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'sum execution failed',
-        mockError,
-        { entityName: 'User', field: 'age' }
-      )
+      expect(mockLogger.error).toHaveBeenCalledWith('sum execution failed', mockError, {
+        entityName: 'User',
+        field: 'age',
+      })
     })
 
     it('should handle null aggregate results', async () => {
       mockPrismaClient.user.aggregate.mockResolvedValue({
-        _sum: { age: null }
+        _sum: { age: null },
       })
 
       const query = { where: { age: { gt: 100 } } }
@@ -330,24 +320,15 @@ describe('QueryExecutor', () => {
 
       const complexQuery = {
         where: {
-          OR: [
-            { age: { gt: 25 } },
-            { name: { contains: 'John' } }
-          ],
-          AND: [
-            { email: { contains: '@example.com' } }
-          ]
+          OR: [{ age: { gt: 25 } }, { name: { contains: 'John' } }],
+          AND: [{ email: { contains: '@example.com' } }],
         },
         include: {
           posts: true,
           profile: true,
-          comments: true
+          comments: true,
         },
-        orderBy: [
-          { name: 'asc' },
-          { age: 'desc' },
-          { email: 'asc' }
-        ]
+        orderBy: [{ name: 'asc' }, { age: 'desc' }, { email: 'asc' }],
       }
 
       const result = await queryExecutor.findMany(complexQuery)
@@ -386,7 +367,7 @@ describe('BaseQueryCommand 测试', () => {
     mockPrismaClient.user.findMany.mockResolvedValue(mockUsers)
 
     const basicQuery = {
-      where: { id: '1' }
+      where: { id: '1' },
     }
 
     const result = await queryExecutor.findMany(basicQuery)
@@ -400,14 +381,11 @@ describe('BaseQueryCommand 测试', () => {
       where: {
         AND: [
           { age: { gt: 25 } },
-          { 
-            OR: [
-              { name: { contains: 'John' } },
-              { email: { contains: 'jane' } }
-            ]
-          }
-        ]
-      }
+          {
+            OR: [{ name: { contains: 'John' } }, { email: { contains: 'jane' } }],
+          },
+        ],
+      },
     }
 
     const result = await queryExecutor.findMany(nestedQuery)

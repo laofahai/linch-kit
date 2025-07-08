@@ -1,24 +1,24 @@
 /**
  * 钩子管理器 - 管理和执行各种细粒度的钩子
- * 
+ *
  * 支持的钩子类型：
  * - 全局钩子：所有实体和操作
- * - 实体级钩子：特定实体的操作  
+ * - 实体级钩子：特定实体的操作
  * - 字段级钩子：特定字段的变更
  * - 条件钩子：基于业务条件触发
  */
 
 import type { Logger } from '@linch-kit/core'
 
-import type { 
-  CrudPlugin, 
-  CrudPluginHooks, 
-  HookContext, 
+import type {
+  CrudPlugin,
+  CrudPluginHooks,
+  HookContext,
   FieldChange,
   CreateInput,
   UpdateInput,
   CrudOptions as _CrudOptions,
-  FindOptions as _FindOptions
+  FindOptions as _FindOptions,
 } from './types'
 
 /**
@@ -163,7 +163,13 @@ export class HookManager {
     for (const plugin of globalPlugins) {
       if (await this.shouldExecuteHook(plugin, 'beforeUpdate', entityName, context)) {
         try {
-          const result = await plugin.hooks!.beforeUpdate!(entityName, id, processedData, existing, context)
+          const result = await plugin.hooks!.beforeUpdate!(
+            entityName,
+            id,
+            processedData,
+            existing,
+            context
+          )
           processedData = result
         } catch (error) {
           this.handleHookError(plugin.name, 'beforeUpdate', error as Error)
@@ -176,7 +182,12 @@ export class HookManager {
     for (const plugin of entityPlugins) {
       if (await this.shouldExecuteHook(plugin, 'beforeEntityUpdate', entityName, context)) {
         try {
-          const result = await plugin.hooks!.beforeEntityUpdate!(id, processedData, existing, context)
+          const result = await plugin.hooks!.beforeEntityUpdate!(
+            id,
+            processedData,
+            existing,
+            context
+          )
           processedData = result
         } catch (error) {
           this.handleHookError(plugin.name, 'beforeEntityUpdate', error as Error)
@@ -302,18 +313,11 @@ export class HookManager {
     context: HookContext
   ): Promise<void> {
     const statusPlugins = this.getPluginsWithHook('onStatusChange')
-    
+
     for (const plugin of statusPlugins) {
       if (await this.shouldExecuteHook(plugin, 'onStatusChange', entityName, context)) {
         try {
-          await plugin.hooks!.onStatusChange!(
-            entityName,
-            id,
-            oldStatus,
-            newStatus,
-            entity,
-            context
-          )
+          await plugin.hooks!.onStatusChange!(entityName, id, oldStatus, newStatus, entity, context)
         } catch (error) {
           this.handleHookError(plugin.name, 'onStatusChange', error as Error)
         }
@@ -334,7 +338,7 @@ export class HookManager {
     context: HookContext
   ): Promise<void> {
     const relationPlugins = this.getPluginsWithHook('onRelationChange')
-    
+
     for (const plugin of relationPlugins) {
       if (await this.shouldExecuteHook(plugin, 'onRelationChange', entityName, context)) {
         try {
@@ -361,7 +365,7 @@ export class HookManager {
    */
   private getPluginsWithHook(hookName: keyof CrudPluginHooks, entityName?: string): CrudPlugin[] {
     const cacheKey = `${hookName}:${entityName || 'global'}`
-    
+
     if (this.hookCache.has(cacheKey)) {
       return this.hookCache.get(cacheKey)!
     }
@@ -395,7 +399,9 @@ export class HookManager {
     try {
       return await plugin.hooks.shouldExecuteHook(hookName, entityName, context)
     } catch (error) {
-      this.logger.error(`Error checking hook execution condition for ${plugin.name}.${hookName}`, { error })
+      this.logger.error(`Error checking hook execution condition for ${plugin.name}.${hookName}`, {
+        error,
+      })
       return false
     }
   }
@@ -408,7 +414,7 @@ export class HookManager {
       plugin: pluginName,
       hook: hookName,
       error: error.message,
-      stack: error.stack
+      stack: error.stack,
     })
 
     // 可以选择是否抛出错误或继续执行
@@ -441,21 +447,21 @@ export class HookManager {
           fieldName: field,
           oldValue: undefined,
           newValue,
-          action: 'added'
+          action: 'added',
         })
       } else if (!(field in newData)) {
         changes.push({
           fieldName: field,
           oldValue,
           newValue: undefined,
-          action: 'removed'
+          action: 'removed',
         })
       } else if (oldValue !== newValue) {
         changes.push({
           fieldName: field,
           oldValue,
           newValue,
-          action: 'modified'
+          action: 'modified',
         })
       }
     }
@@ -479,7 +485,7 @@ export class HookManager {
       user,
       timestamp: new Date(),
       requestId: requestId || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      metadata
+      metadata,
     }
   }
 }

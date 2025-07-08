@@ -55,6 +55,6 @@ export default defineConfig({
     'node:stream',
     'node:stream/promises',
     'node:events',
-    'node:child_process'
+    'node:child_process',
   ],
 })

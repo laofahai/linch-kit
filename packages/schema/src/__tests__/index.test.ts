@@ -34,7 +34,7 @@ describe('Schema Package', () => {
         email: defineField.email().required().unique(),
         age: defineField.number().optional().min(0).max(120),
         isActive: defineField.boolean(),
-        metadata: defineField.json().optional()
+        metadata: defineField.json().optional(),
       })
 
       expect(User.name).toBe('User')
@@ -63,7 +63,7 @@ describe('Schema Package', () => {
     it('should maintain type safety in entity definitions', () => {
       const User = defineEntity('User', {
         name: defineField.string().required(),
-        email: defineField.email().required()
+        email: defineField.email().required(),
       })
 
       expect(User.fields.name.required).toBe(true)

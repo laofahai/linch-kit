@@ -1,6 +1,6 @@
 /**
  * @linch-kit/auth MFA 扩展测试
- * 
+ *
  * @description 测试多因素认证 (MFA) 功能
  * @author LinchKit Team
  * @since 0.1.0
@@ -14,15 +14,15 @@ import { MFAManager } from '../../extensions/mfa'
 mock.module('speakeasy', () => ({
   generateSecret: mock(() => ({
     base32: 'JBSWY3DPEHPK3PXP',
-    otpauth_url: 'otpauth://totp/Test?secret=JBSWY3DPEHPK3PXP'
+    otpauth_url: 'otpauth://totp/Test?secret=JBSWY3DPEHPK3PXP',
   })),
   totp: {
-    verify: mock(() => ({ delta: 0 }))
-  }
+    verify: mock(() => ({ delta: 0 })),
+  },
 }))
 
 mock.module('crypto', () => ({
-  randomBytes: mock(() => Buffer.from('test-random-bytes'))
+  randomBytes: mock(() => Buffer.from('test-random-bytes')),
 }))
 
 describe('MFAManager', () => {
@@ -34,7 +34,7 @@ describe('MFAManager', () => {
       enabled: true,
       methods: ['totp', 'sms'],
       issuer: 'LinchKit Test',
-      backupCodesCount: 8
+      backupCodesCount: 8,
     })
     // Bun test handles mock management automatically
   })
@@ -125,7 +125,7 @@ describe('MFAManager', () => {
       const disabledMFA = new MFAManager({
         enabled: false,
         methods: [],
-        issuer: 'Test'
+        issuer: 'Test',
       })
 
       expect(disabledMFA.isEnabled()).toBe(false)
@@ -140,7 +140,7 @@ describe('MFAManager', () => {
       const defaultMFA = new MFAManager({
         enabled: true,
         methods: ['totp'],
-        issuer: 'Default'
+        issuer: 'Default',
       })
 
       expect(defaultMFA.isEnabled()).toBe(true)

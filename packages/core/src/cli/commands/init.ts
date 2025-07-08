@@ -1,6 +1,6 @@
 /**
  * linch init 命令
- * 
+ *
  * 初始化 LinchKit 项目
  */
 
@@ -14,7 +14,7 @@ import { type CLIManager, type CLICommand } from '../index'
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 })
 
 function question(query: string): Promise<string> {
@@ -30,20 +30,20 @@ const initCommand: CLICommand = {
       name: 'skip-env',
       description: '跳过环境变量配置',
       type: 'boolean',
-      defaultValue: false
+      defaultValue: false,
     },
     {
       name: 'skip-deps',
       description: '跳过依赖安装',
       type: 'boolean',
-      defaultValue: false
+      defaultValue: false,
     },
     {
       name: 'skip-db',
       description: '跳过数据库初始化',
       type: 'boolean',
-      defaultValue: false
-    }
+      defaultValue: false,
+    },
   ],
   handler: async ({ options }) => {
     try {
@@ -55,20 +55,20 @@ const initCommand: CLICommand = {
       if (!existsSync('package.json')) {
         return {
           success: false,
-          error: '未找到 package.json，请在 LinchKit 项目根目录运行此命令'
+          error: '未找到 package.json，请在 LinchKit 项目根目录运行此命令',
         }
       }
 
       const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
       const hasLinchKitDeps = Object.keys({
         ...packageJson.dependencies,
-        ...packageJson.devDependencies
+        ...packageJson.devDependencies,
       }).some(dep => dep.startsWith('@linch-kit/'))
 
       if (!hasLinchKitDeps) {
         return {
           success: false,
-          error: '当前项目不是 LinchKit 项目'
+          error: '当前项目不是 LinchKit 项目',
         }
       }
 
@@ -112,10 +112,10 @@ const initCommand: CLICommand = {
       rl.close()
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       }
     }
-  }
+  },
 }
 
 async function createEnvFile() {
@@ -136,24 +136,18 @@ async function createEnvFile() {
 
   // 交互式配置
   console.log('\n请配置基本信息:')
-  
+
   // 数据库配置
   const dbUrl = await question('PostgreSQL 连接字符串 (回车使用默认值): ')
   if (dbUrl) {
-    envContent = envContent.replace(
-      /DATABASE_URL=".*"/,
-      `DATABASE_URL="${dbUrl}"`
-    )
+    envContent = envContent.replace(/DATABASE_URL=".*"/, `DATABASE_URL="${dbUrl}"`)
   }
 
   // NextAuth 密钥
   const generateSecret = await question('是否自动生成 NextAuth 密钥？(Y/n): ')
   if (generateSecret.toLowerCase() !== 'n') {
     const secret = generateRandomString(32)
-    envContent = envContent.replace(
-      /NEXTAUTH_SECRET=".*"/,
-      `NEXTAUTH_SECRET="${secret}"`
-    )
+    envContent = envContent.replace(/NEXTAUTH_SECRET=".*"/, `NEXTAUTH_SECRET="${secret}"`)
   }
 
   writeFileSync('.env.local', envContent)

@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
-import { useEffect } from 'react';
-import { initMonitoring } from '@/lib/monitoring';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { useEffect } from 'react'
+import { initMonitoring } from '@/lib/monitoring'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 export function MonitoringProvider() {
   useEffect(() => {
-    initMonitoring();
-  }, []);
+    initMonitoring()
+  }, [])
 
   return (
     <>
@@ -17,5 +17,5 @@ export function MonitoringProvider() {
       {/* Vercel Speed Insights - 实时性能监控 */}
       <SpeedInsights />
     </>
-  );
+  )
 }

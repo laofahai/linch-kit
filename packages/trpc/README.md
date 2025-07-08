@@ -31,18 +31,16 @@ export const { router, procedure, middleware } = createTRPC({
   auth,
   errorHandler: (error, ctx) => {
     console.error('tRPC Error:', error)
-  }
+  },
 })
 
 // 创建路由
 export const appRouter = router({
   // 公开过程
-  hello: procedure
-    .input(z.object({ name: z.string() }))
-    .query(({ input }) => {
-      return `Hello ${input.name}`
-    }),
-    
+  hello: procedure.input(z.object({ name: z.string() })).query(({ input }) => {
+    return `Hello ${input.name}`
+  }),
+
   // 需要认证的过程
   user: router({
     profile: procedure
@@ -50,15 +48,15 @@ export const appRouter = router({
       .query(({ ctx }) => {
         return ctx.session.user
       }),
-      
+
     update: procedure
       .auth()
       .permission('user:update') // 要求权限
       .input(UpdateUserSchema)
       .mutation(async ({ input, ctx }) => {
         return await updateUser(ctx.session.user.id, input)
-      })
-  })
+      }),
+  }),
 })
 
 export type AppRouter = typeof appRouter
@@ -72,7 +70,7 @@ import { createTRPCClient } from '@linch-kit/trpc/client'
 import type { AppRouter } from '../server/trpc'
 
 export const trpc = createTRPCClient<AppRouter>({
-  url: '/api/trpc'
+  url: '/api/trpc',
 })
 
 // 在组件中使用
@@ -81,7 +79,7 @@ const updateUser = trpc.user.update.useMutation()
 
 // 调用 mutation
 await updateUser.mutateAsync({
-  name: 'New Name'
+  name: 'New Name',
 })
 ```
 
@@ -96,25 +94,23 @@ import { middleware } from '@linch-kit/trpc'
 const rateLimitMiddleware = middleware(async ({ ctx, next, path }) => {
   const key = `rate-limit:${ctx.session?.user.id || ctx.ip}:${path}`
   const count = await redis.incr(key)
-  
+
   if (count === 1) {
     await redis.expire(key, 60) // 1分钟窗口
   }
-  
+
   if (count > 100) {
     throw new TRPCError({
       code: 'TOO_MANY_REQUESTS',
-      message: 'Rate limit exceeded'
+      message: 'Rate limit exceeded',
     })
   }
-  
+
   return next()
 })
 
 // 使用中间件
-const protectedProcedure = procedure
-  .use(rateLimitMiddleware)
-  .auth()
+const protectedProcedure = procedure.use(rateLimitMiddleware).auth()
 ```
 
 ### 批量查询
@@ -124,13 +120,13 @@ const protectedProcedure = procedure
 const [user, posts, comments] = await Promise.all([
   trpc.user.get.query({ id: userId }),
   trpc.post.list.query({ authorId: userId }),
-  trpc.comment.list.query({ userId })
+  trpc.comment.list.query({ userId }),
 ])
 
 // 或使用 useQueries
-const results = trpc.useQueries((t) => [
+const results = trpc.useQueries(t => [
   t.user.get({ id: userId }),
-  t.post.list({ authorId: userId })
+  t.post.list({ authorId: userId }),
 ])
 ```
 
@@ -139,25 +135,24 @@ const results = trpc.useQueries((t) => [
 ```typescript
 // 服务端
 const appRouter = router({
-  onMessage: procedure
-    .subscription(({ ctx }) => {
-      return observable<Message>((emit) => {
-        const unsubscribe = messageEmitter.on('message', (data) => {
-          if (canViewMessage(ctx.session.user, data)) {
-            emit.next(data)
-          }
-        })
-        
-        return unsubscribe
+  onMessage: procedure.subscription(({ ctx }) => {
+    return observable<Message>(emit => {
+      const unsubscribe = messageEmitter.on('message', data => {
+        if (canViewMessage(ctx.session.user, data)) {
+          emit.next(data)
+        }
       })
+
+      return unsubscribe
     })
+  }),
 })
 
 // 客户端
 const { data } = trpc.onMessage.useSubscription(undefined, {
-  onData: (message) => {
+  onData: message => {
     console.log('New message:', message)
-  }
+  },
 })
 ```
 
@@ -170,7 +165,7 @@ import { TRPCError } from '@linch-kit/trpc'
 throw new TRPCError({
   code: 'NOT_FOUND',
   message: 'User not found',
-  cause: { userId }
+  cause: { userId },
 })
 
 // 全局错误处理
@@ -180,12 +175,10 @@ export const { router } = createTRPC({
       ...shape,
       data: {
         ...shape.data,
-        zodError: error.code === 'BAD_REQUEST' 
-          ? error.cause?.zodError 
-          : null
-      }
+        zodError: error.code === 'BAD_REQUEST' ? error.cause?.zodError : null,
+      },
     }
-  }
+  },
 })
 ```
 
@@ -196,28 +189,27 @@ export const { router } = createTRPC({
 export const createContext = async ({ req, res }) => {
   const session = await auth()
   const tenant = await getTenant(req)
-  
+
   return {
     req,
     res,
     session,
     tenant,
     prisma,
-    redis
+    redis,
   }
 }
 
 // 在过程中使用
-const tenantProcedure = procedure
-  .use(async ({ ctx, next }) => {
-    if (!ctx.tenant) {
-      throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'Tenant context required'
-      })
-    }
-    return next()
-  })
+const tenantProcedure = procedure.use(async ({ ctx, next }) => {
+  if (!ctx.tenant) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Tenant context required',
+    })
+  }
+  return next()
+})
 ```
 
 ## 📚 API 参考

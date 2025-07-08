@@ -1,49 +1,49 @@
 ---
-package: "@linch-kit/schema"
-version: "2.0.2"
-layer: "L1"
-dependencies: ["@linch-kit/core"]
+package: '@linch-kit/schema'
+version: '2.0.2'
+layer: 'L1'
+dependencies: ['@linch-kit/core']
 completeness: 85
 test_coverage: 75
-status: "production_ready"
-document_type: "api_reference"
-purpose: "Graph RAG knowledge base - Schema驱动开发引擎，提供类型安全的实体定义、代码生成、验证和迁移功能"
+status: 'production_ready'
+document_type: 'api_reference'
+purpose: 'Graph RAG knowledge base - Schema驱动开发引擎，提供类型安全的实体定义、代码生成、验证和迁移功能'
 api_exports:
-  - name: "defineField"
-    type: "factory"
-    status: "stable"
-  - name: "defineEntity"
-    type: "function"
-    status: "stable"
-  - name: "SchemaBuilder"
-    type: "class"
-    status: "stable"
-  - name: "PrismaGenerator"
-    type: "class"
-    status: "stable"
-  - name: "TypeScriptGenerator"
-    type: "class"
-    status: "stable"
-  - name: "SchemaValidator"
-    type: "class"
-    status: "stable"
-  - name: "MigrationManager"
-    type: "class"
-    status: "in_development"
-  - name: "Entity"
-    type: "decorator"
-    status: "stable"
-  - name: "Field"
-    type: "decorator"
-    status: "stable"
+  - name: 'defineField'
+    type: 'factory'
+    status: 'stable'
+  - name: 'defineEntity'
+    type: 'function'
+    status: 'stable'
+  - name: 'SchemaBuilder'
+    type: 'class'
+    status: 'stable'
+  - name: 'PrismaGenerator'
+    type: 'class'
+    status: 'stable'
+  - name: 'TypeScriptGenerator'
+    type: 'class'
+    status: 'stable'
+  - name: 'SchemaValidator'
+    type: 'class'
+    status: 'stable'
+  - name: 'MigrationManager'
+    type: 'class'
+    status: 'in_development'
+  - name: 'Entity'
+    type: 'decorator'
+    status: 'stable'
+  - name: 'Field'
+    type: 'decorator'
+    status: 'stable'
 relationships:
-  - type: "depends_on"
-    targets: ["@linch-kit/core"]
-  - type: "provides_schema_for"
-    targets: ["@linch-kit/auth", "@linch-kit/crud", "@linch-kit/trpc", "@linch-kit/ui"]
-  - type: "integrates_with"
-    targets: ["Zod", "Prisma", "TypeScript"]
-last_verified: "2025-07-07"
+  - type: 'depends_on'
+    targets: ['@linch-kit/core']
+  - type: 'provides_schema_for'
+    targets: ['@linch-kit/auth', '@linch-kit/crud', '@linch-kit/trpc', '@linch-kit/ui']
+  - type: 'integrates_with'
+    targets: ['Zod', 'Prisma', 'TypeScript']
+last_verified: '2025-07-07'
 ---
 
 # @linch-kit/schema API Reference
@@ -59,18 +59,21 @@ last_verified: "2025-07-07"
 ## 🏗 架构设计
 
 ### 设计模式
+
 - **建造者模式** - 字段和实体定义的链式调用
 - **工厂模式** - defineField 和 defineEntity 工厂函数
 - **模板方法模式** - 代码生成器的统一接口
 - **组合模式** - Schema 的复用和组合能力
 
 ### 核心概念
+
 - **字段定义** - 基于 FieldBuilder 的类型安全字段构建器
 - **实体定义** - 完整的数据模型定义，包含字段、选项、权限等
 - **Schema 组合** - 支持继承、混入、变体等多种组合模式
 - **代码生成** - 从 Schema 定义生成 Prisma、TypeScript 等代码
 
 ### 集成方式
+
 - **与 @linch-kit/core 集成** - 复用日志系统和基础设施
 - **被其他包依赖** - 为 auth、crud、trpc 等包提供类型基础
 - **插件系统** - 支持自定义生成器和验证器扩展
@@ -84,11 +87,11 @@ last_verified: "2025-07-07"
 export type * from './types'
 
 // 核心功能
-export * from './core'              // 字段、实体、Schema 构建器
-export * from './generators'        // 代码生成器系统
-export * from './validation'        // 验证系统
-export * from './migration'         // 迁移系统
-export * from './plugins'           // 插件系统
+export * from './core' // 字段、实体、Schema 构建器
+export * from './generators' // 代码生成器系统
+export * from './validation' // 验证系统
+export * from './migration' // 迁移系统
+export * from './plugins' // 插件系统
 
 // 装饰器
 export { Entity as EntityDecorator, Field } from './decorators'
@@ -105,25 +108,26 @@ export const VERSION = '0.1.0'
 import { defineField } from '@linch-kit/schema'
 
 // 基础类型
-defineField.string()      // 字符串字段
-defineField.number()      // 数字字段
-defineField.boolean()     // 布尔字段
-defineField.date()        // 日期字段
+defineField.string() // 字符串字段
+defineField.number() // 数字字段
+defineField.boolean() // 布尔字段
+defineField.date() // 日期字段
 
 // 特殊类型
-defineField.email()       // 邮箱字段
-defineField.url()         // URL字段
-defineField.uuid()        // UUID字段
-defineField.text()        // 长文本字段
-defineField.json()        // JSON字段
+defineField.email() // 邮箱字段
+defineField.url() // URL字段
+defineField.uuid() // UUID字段
+defineField.text() // 长文本字段
+defineField.json() // JSON字段
 
 // 高级类型
-defineField.enum(['a', 'b', 'c'])     // 枚举字段
+defineField.enum(['a', 'b', 'c']) // 枚举字段
 defineField.array(defineField.string()) // 数组字段
-defineField.relation('User')          // 关系字段
-defineField.i18n({                    // 国际化字段
+defineField.relation('User') // 关系字段
+defineField.i18n({
+  // 国际化字段
   locales: ['en', 'zh-CN'],
-  required: ['en']
+  required: ['en'],
 })
 ```
 
@@ -131,32 +135,32 @@ defineField.i18n({                    // 国际化字段
 
 ```typescript
 // 通用属性
-field.required()          // 必填
-field.optional()          // 可选
-field.default(value)      // 默认值
-field.unique()            // 唯一约束
-field.index()             // 索引
-field.description(text)   // 描述
+field.required() // 必填
+field.optional() // 可选
+field.default(value) // 默认值
+field.unique() // 唯一约束
+field.index() // 索引
+field.description(text) // 描述
 
 // 字符串字段特有
-field.min(length)         // 最小长度
-field.max(length)         // 最大长度
-field.pattern(regex)      // 正则模式
-field.trim()              // 去除空格
+field.min(length) // 最小长度
+field.max(length) // 最大长度
+field.pattern(regex) // 正则模式
+field.trim() // 去除空格
 
 // 数字字段特有
-field.min(value)          // 最小值
-field.max(value)          // 最大值
-field.positive()          // 正数
-field.negative()          // 负数
-field.integer()           // 整数
+field.min(value) // 最小值
+field.max(value) // 最大值
+field.positive() // 正数
+field.negative() // 负数
+field.integer() // 整数
 
 // 关系字段特有
-field.oneToOne()          // 一对一
-field.oneToMany()         // 一对多
-field.manyToOne()         // 多对一
-field.manyToMany()        // 多对多
-field.cascadeDelete()     // 级联删除
+field.oneToOne() // 一对一
+field.oneToMany() // 一对多
+field.manyToOne() // 多对一
+field.manyToMany() // 多对多
+field.cascadeDelete() // 级联删除
 field.onDelete('CASCADE') // 删除行为
 ```
 
@@ -173,55 +177,59 @@ const User = defineEntity('User', {
   name: defineField.string().required().min(2).max(50),
   email: defineField.email().required().unique(),
   createdAt: defineField.date().auto().required(),
-  updatedAt: defineField.date().auto().required()
+  updatedAt: defineField.date().auto().required(),
 })
 
 // 带选项的实体定义
-const Post = defineEntity('Post', {
-  id: defineField.uuid().auto().required(),
-  title: defineField.string().required(),
-  content: defineField.text().required(),
-  status: defineField.enum(['draft', 'published']).default('draft')
-}, {
-  // 实体选项
-  tableName: 'posts',
-  timestamps: true,
-  softDelete: true,
-  permissions: {
-    read: [{ role: 'authenticated' }],
-    create: [{ role: 'user' }],
-    update: [{ role: 'owner' }],
-    delete: [{ role: 'admin' }]
+const Post = defineEntity(
+  'Post',
+  {
+    id: defineField.uuid().auto().required(),
+    title: defineField.string().required(),
+    content: defineField.text().required(),
+    status: defineField.enum(['draft', 'published']).default('draft'),
+  },
+  {
+    // 实体选项
+    tableName: 'posts',
+    timestamps: true,
+    softDelete: true,
+    permissions: {
+      read: [{ role: 'authenticated' }],
+      create: [{ role: 'user' }],
+      update: [{ role: 'owner' }],
+      delete: [{ role: 'admin' }],
+    },
   }
-})
+)
 ```
 
 #### 实体实例方法
 
 ```typescript
 // 获取字段定义
-User.getField('name')           // 获取字段
-User.getFields()                // 获取所有字段
-User.getFieldNames()            // 获取字段名列表
+User.getField('name') // 获取字段
+User.getFields() // 获取所有字段
+User.getFieldNames() // 获取字段名列表
 
 // 获取关系
-User.getRelations()             // 获取关系字段
-User.getRelation('posts')       // 获取指定关系
+User.getRelations() // 获取关系字段
+User.getRelation('posts') // 获取指定关系
 
 // 验证功能
-User.validate(data)             // 验证数据
-User.validateCreate(data)       // 验证创建数据
-User.validateUpdate(data)       // 验证更新数据
+User.validate(data) // 验证数据
+User.validateCreate(data) // 验证创建数据
+User.validateUpdate(data) // 验证更新数据
 
 // Schema 获取
-User.zodSchema                  // 获取 Zod Schema
-User.zodCreateSchema            // 获取创建 Schema
-User.zodUpdateSchema            // 获取更新 Schema
+User.zodSchema // 获取 Zod Schema
+User.zodCreateSchema // 获取创建 Schema
+User.zodUpdateSchema // 获取更新 Schema
 
 // 元数据
-User.name                       // 实体名称
-User.tableName                  // 表名
-User.options                    // 实体选项
+User.name // 实体名称
+User.tableName // 表名
+User.options // 实体选项
 ```
 
 ### Schema 组合 API
@@ -240,13 +248,13 @@ builder.field('age', defineField.number().min(0))
 
 // 条件字段
 builder.when('userType', 'admin', {
-  permissions: defineField.json()
+  permissions: defineField.json(),
 })
 
 // 字段组
 builder.group('contact', {
   email: defineField.email(),
-  phone: defineField.string()
+  phone: defineField.string(),
 })
 
 // 构建实体
@@ -259,12 +267,12 @@ const User = builder.build('User')
 // 混入
 const Timestamped = defineEntity('Timestamped', {
   createdAt: defineField.date().auto().required(),
-  updatedAt: defineField.date().auto().required()
+  updatedAt: defineField.date().auto().required(),
 })
 
 const User = defineEntity('User', {
   id: defineField.uuid().auto().required(),
-  name: defineField.string().required()
+  name: defineField.string().required(),
 }).mixin(Timestamped)
 
 // 模板
@@ -274,21 +282,21 @@ const createAuditableEntity = (fields: Record<string, any>) => {
     createdAt: defineField.date().auto().required(),
     updatedAt: defineField.date().auto().required(),
     createdBy: defineField.uuid(),
-    updatedBy: defineField.uuid()
+    updatedBy: defineField.uuid(),
   })
 }
 
 // 变体
 const User = defineEntity('User', {
   id: defineField.uuid().auto().required(),
-  name: defineField.string().required()
+  name: defineField.string().required(),
 }).variants({
   admin: {
-    permissions: defineField.json()
+    permissions: defineField.json(),
   },
   regular: {
-    lastLogin: defineField.date()
-  }
+    lastLogin: defineField.date(),
+  },
 })
 ```
 
@@ -314,7 +322,7 @@ import { PrismaGenerator } from '@linch-kit/schema'
 
 const generator = new PrismaGenerator({
   databaseProvider: 'postgresql',
-  previewFeatures: ['tracing']
+  previewFeatures: ['tracing'],
 })
 
 const entities = [User, Post, Comment]
@@ -322,8 +330,8 @@ const files = await generator.generate(entities)
 
 // 生成的文件结构
 files.forEach(file => {
-  console.log(file.path)      // 文件路径
-  console.log(file.content)   // 文件内容
+  console.log(file.path) // 文件路径
+  console.log(file.content) // 文件内容
 })
 ```
 
@@ -334,7 +342,7 @@ import { TypeScriptGenerator } from '@linch-kit/schema'
 
 const generator = new TypeScriptGenerator({
   generateHelpers: true,
-  includeComments: true
+  includeComments: true,
 })
 
 const files = await generator.generate(entities)
@@ -355,7 +363,7 @@ import { CodeGenerator } from '@linch-kit/schema'
 const generator = new CodeGenerator([
   new PrismaGenerator(),
   new TypeScriptGenerator(),
-  new CustomGenerator()
+  new CustomGenerator(),
 ])
 
 // 生成所有代码
@@ -396,17 +404,15 @@ if (result.success) {
 
 ```typescript
 // 自定义验证器
-const customValidator = defineField.string()
-  .refine(value => {
-    return /^[A-Z]/.test(value)
-  }, 'Must start with uppercase letter')
+const customValidator = defineField.string().refine(value => {
+  return /^[A-Z]/.test(value)
+}, 'Must start with uppercase letter')
 
 // 异步验证
-const asyncValidator = defineField.string()
-  .refine(async value => {
-    const exists = await checkUserExists(value)
-    return !exists
-  }, 'Username already exists')
+const asyncValidator = defineField.string().refine(async value => {
+  const exists = await checkUserExists(value)
+  return !exists
+}, 'Username already exists')
 ```
 
 ### 迁移系统 API
@@ -418,20 +424,20 @@ import { defineMigration } from '@linch-kit/schema'
 
 const migration = defineMigration({
   name: 'add_user_profile',
-  up: async (schema) => {
+  up: async schema => {
     // 添加字段
     schema.addField('User', 'profile', defineField.json())
-    
+
     // 删除字段
     schema.removeField('User', 'oldField')
-    
+
     // 修改字段
     schema.modifyField('User', 'email', defineField.email().unique())
   },
-  down: async (schema) => {
+  down: async schema => {
     // 回滚操作
     schema.removeField('User', 'profile')
-  }
+  },
 })
 ```
 
@@ -464,14 +470,14 @@ import { Entity, Field, Required, Optional, Default, Unique } from '@linch-kit/s
 
 @Entity('User', {
   tableName: 'users',
-  timestamps: true
+  timestamps: true,
 })
 export class User {
-  @Field.uuid().auto()
+  @(Field.uuid().auto())
   @Required()
   id: string
 
-  @Field.string().min(2).max(50)
+  @(Field.string().min(2).max(50))
   @Required()
   name: string
 
@@ -480,7 +486,7 @@ export class User {
   @Unique()
   email: string
 
-  @Field.number().min(0)
+  @(Field.number().min(0))
   @Optional()
   age?: number
 
@@ -538,7 +544,7 @@ await registry.register(schemaPlugin, {
   enableWatcher: false,
   defaultGenerators: ['typescript', 'prisma'],
   inputDir: './src/schema',
-  outputDir: './generated'
+  outputDir: './generated',
 })
 
 // 启动插件
@@ -563,10 +569,10 @@ class CustomGenerator extends BaseGenerator {
 const customSchemaPlugin = {
   name: 'custom-schema',
   version: '1.0.0',
-  setup: async (context) => {
+  setup: async context => {
     // 注册自定义生成器
     context.registerGenerator('custom', CustomGenerator)
-  }
+  },
 }
 ```
 
@@ -586,7 +592,7 @@ const User = defineEntity('User', {
   id: defineField.uuid().auto().required(),
   name: nameField,
   email: emailField,
-  createdAt: defineField.date().auto().required()
+  createdAt: defineField.date().auto().required(),
 })
 
 // 3. 使用实体
@@ -600,24 +606,24 @@ const validatedData = User.validate(userData)
 // 一对多关系
 const User = defineEntity('User', {
   id: defineField.uuid().auto().required(),
-  posts: defineField.relation('Post').oneToMany()
+  posts: defineField.relation('Post').oneToMany(),
 })
 
 const Post = defineEntity('Post', {
   id: defineField.uuid().auto().required(),
   authorId: defineField.uuid().required(),
-  author: defineField.relation('User').manyToOne()
+  author: defineField.relation('User').manyToOne(),
 })
 
 // 多对多关系
 const Post = defineEntity('Post', {
   id: defineField.uuid().auto().required(),
-  tags: defineField.relation('Tag').manyToMany()
+  tags: defineField.relation('Tag').manyToMany(),
 })
 
 const Tag = defineEntity('Tag', {
   id: defineField.uuid().auto().required(),
-  posts: defineField.relation('Post').manyToMany()
+  posts: defineField.relation('Post').manyToMany(),
 })
 ```
 
@@ -640,62 +646,68 @@ const tsFiles = await tsGenerator.generate(entities)
 // 写入文件
 await Promise.all([
   ...prismaFiles.map(file => writeFile(file.path, file.content)),
-  ...tsFiles.map(file => writeFile(file.path, file.content))
+  ...tsFiles.map(file => writeFile(file.path, file.content)),
 ])
 ```
 
 ### 最佳实践
 
 1. **字段复用**
+
    ```typescript
    // 定义通用字段
    const idField = defineField.uuid().auto().required()
    const timestampFields = {
      createdAt: defineField.date().auto().required(),
-     updatedAt: defineField.date().auto().required()
+     updatedAt: defineField.date().auto().required(),
    }
-   
+
    // 在实体中复用
    const User = defineEntity('User', {
      id: idField,
      ...timestampFields,
-     name: defineField.string().required()
+     name: defineField.string().required(),
    })
    ```
 
 2. **实体组合**
+
    ```typescript
    // 定义基础实体
    const BaseEntity = defineEntity('BaseEntity', {
      id: defineField.uuid().auto().required(),
      createdAt: defineField.date().auto().required(),
-     updatedAt: defineField.date().auto().required()
+     updatedAt: defineField.date().auto().required(),
    })
-   
+
    // 继承基础实体
    const User = defineEntity('User', {
      name: defineField.string().required(),
-     email: defineField.email().required()
+     email: defineField.email().required(),
    }).extends(BaseEntity)
    ```
 
 3. **权限控制**
    ```typescript
-   const User = defineEntity('User', {
-     id: defineField.uuid().auto().required(),
-     email: defineField.email().required(),
-     password: defineField.string().permissions({
-       read: [{ role: 'admin' }],
-       write: [{ role: 'owner' }]
-     })
-   }, {
-     permissions: {
-       read: [{ role: 'authenticated' }],
-       create: [{ role: 'admin' }],
-       update: [{ role: 'owner' }],
-       delete: [{ role: 'admin' }]
+   const User = defineEntity(
+     'User',
+     {
+       id: defineField.uuid().auto().required(),
+       email: defineField.email().required(),
+       password: defineField.string().permissions({
+         read: [{ role: 'admin' }],
+         write: [{ role: 'owner' }],
+       }),
+     },
+     {
+       permissions: {
+         read: [{ role: 'authenticated' }],
+         create: [{ role: 'admin' }],
+         update: [{ role: 'owner' }],
+         delete: [{ role: 'admin' }],
+       },
      }
-   })
+   )
    ```
 
 ### 注意事项
@@ -711,7 +723,7 @@ await Promise.all([
 - **源码位置**: `packages/schema/`
 - **相关包**: @linch-kit/core (基础设施)
 - **被依赖包**: @linch-kit/auth, @linch-kit/crud, @linch-kit/trpc
-- **外部依赖**: 
+- **外部依赖**:
   - zod ^3.25.67 (运行时验证)
   - ts-morph ^26.0.0 (TypeScript 代码操作)
   - @prisma/generator-helper ^6.10.1 (Prisma 生成器)
@@ -721,6 +733,7 @@ await Promise.all([
 ## 📊 开发状态
 
 ### ✅ 已完成功能 (90%)
+
 - 完整的字段类型系统 (13种类型)
 - 函数式 defineField API
 - defineEntity 实体定义系统
@@ -732,12 +745,14 @@ await Promise.all([
 - Schema 组合和复用功能
 
 ### 🚧 开发中功能 (10%)
+
 - Schema 验证系统完善
 - 数据库迁移系统
 - CLI 命令实现
 - 性能优化和缓存机制
 
 ### 📋 计划功能
+
 - 更多代码生成器 (GraphQL, OpenAPI)
 - 可视化 Schema 编辑器
 - 高级权限控制系统

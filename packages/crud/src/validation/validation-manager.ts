@@ -1,12 +1,18 @@
 /**
  * 验证管理器 - 简化版本，确保编译通过
- * 
+ *
  * 提供基础的数据验证功能
  */
 
 import type { Entity, FieldDefinition } from '@linch-kit/schema'
 
-import type { SchemaRegistry, Logger, IValidationManager, ValidationError, QueryInput } from '../types'
+import type {
+  SchemaRegistry,
+  Logger,
+  IValidationManager,
+  ValidationError,
+  QueryInput,
+} from '../types'
 
 /**
  * 验证管理器实现

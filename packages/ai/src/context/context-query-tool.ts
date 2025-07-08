@@ -1,6 +1,6 @@
 /**
  * Context Query Tool for Claude Code
- * 
+ *
  * 为 Claude Code 提供知识图谱查询能力
  * 只负责查询和返回上下文信息，不生成代码
  */
@@ -18,16 +18,16 @@ import type { GraphNode, GraphRelationship } from '../types/index.js'
 export interface ContextInfo {
   /** 相关的实体（类、接口、函数等） */
   entities: EntityInfo[]
-  
+
   /** 实体间的关系 */
   relationships: RelationshipInfo[]
-  
+
   /** 相关文档引用 */
   documentation: DocReference[]
-  
+
   /** 使用示例 */
   examples: Example[]
-  
+
   /** 查询元数据 */
   metadata: {
     query: string
@@ -107,10 +107,10 @@ export interface Pattern {
 export interface IContextQueryTool {
   /** 查询项目上下文 */
   queryContext(query: string): Promise<ContextInfo>
-  
+
   /** 获取相关代码模式 */
   findPatterns(description: string): Promise<Pattern[]>
-  
+
   /** 查找最佳实践 */
   getBestPractices(scenario: string): Promise<BestPractice[]>
 }
@@ -140,10 +140,10 @@ export class ContextQueryTool implements IContextQueryTool {
 
     try {
       this.logger.info('初始化 Context Query Tool...')
-      
+
       // 连接知识图谱
       await this.queryEngine.connect()
-      
+
       this.isInitialized = true
       this.logger.info('Context Query Tool 初始化完成')
     } catch (error) {
@@ -157,14 +157,14 @@ export class ContextQueryTool implements IContextQueryTool {
    */
   async queryContext(query: string): Promise<ContextInfo> {
     await this.ensureInitialized()
-    
+
     const startTime = Date.now()
     this.logger.info('开始查询上下文', { query })
 
     try {
       // 1. 使用智能查询引擎查询知识图谱
       const queryResult = await this.queryEngine.query(query)
-      
+
       // 2. 分析查询结果
       const analysis = await this.contextAnalyzer.analyze(
         query,
@@ -182,15 +182,15 @@ export class ContextQueryTool implements IContextQueryTool {
           query,
           timestamp: new Date().toISOString(),
           relevance_score: queryResult.confidence,
-          total_results: queryResult.results.nodes.length
-        }
+          total_results: queryResult.results.nodes.length,
+        },
       }
 
       const duration = Date.now() - startTime
       this.logger.info('上下文查询完成', {
         duration,
         entities: contextInfo.entities.length,
-        relationships: contextInfo.relationships.length
+        relationships: contextInfo.relationships.length,
       })
 
       return contextInfo
@@ -205,16 +205,16 @@ export class ContextQueryTool implements IContextQueryTool {
    */
   async findPatterns(description: string): Promise<Pattern[]> {
     await this.ensureInitialized()
-    
+
     this.logger.info('查找代码模式', { description })
 
     try {
       // 查询相关模式
       const context = await this.queryContext(description)
-      
+
       // 从上下文中提取模式
       const patterns: Pattern[] = []
-      
+
       // 分析实体间的关系模式
       const relationshipPatterns = this.analyzeRelationshipPatterns(
         context.entities,
@@ -239,12 +239,12 @@ export class ContextQueryTool implements IContextQueryTool {
    */
   async getBestPractices(scenario: string): Promise<BestPractice[]> {
     await this.ensureInitialized()
-    
+
     this.logger.info('获取最佳实践', { scenario })
 
     try {
       const practices: BestPractice[] = []
-      
+
       // LinchKit 核心最佳实践
       if (scenario.includes('日志') || scenario.includes('log')) {
         practices.push({
@@ -252,7 +252,7 @@ export class ContextQueryTool implements IContextQueryTool {
           description: '使用 @linch-kit/core 的 createLogger 而不是 console.log',
           category: '日志管理',
           examples: [`import { createLogger } from '@linch-kit/core/server'`],
-          references: ['@linch-kit/core/server']
+          references: ['@linch-kit/core/server'],
         })
       }
 
@@ -262,7 +262,7 @@ export class ContextQueryTool implements IContextQueryTool {
           description: '使用 @linch-kit/core 的 ConfigManager 管理配置',
           category: '配置管理',
           examples: [`import { ConfigManager } from '@linch-kit/core'`],
-          references: ['@linch-kit/core']
+          references: ['@linch-kit/core'],
         })
       }
 
@@ -272,7 +272,7 @@ export class ContextQueryTool implements IContextQueryTool {
           description: '使用 @linch-kit/schema 进行数据验证',
           category: '数据验证',
           examples: [`import { createSchema } from '@linch-kit/schema'`],
-          references: ['@linch-kit/schema']
+          references: ['@linch-kit/schema'],
         })
       }
 
@@ -282,7 +282,7 @@ export class ContextQueryTool implements IContextQueryTool {
           description: '使用 @linch-kit/trpc 创建类型安全的 API',
           category: 'API 开发',
           examples: [`import { createProtectedProcedure } from '@linch-kit/trpc'`],
-          references: ['@linch-kit/trpc']
+          references: ['@linch-kit/trpc'],
         })
       }
 
@@ -308,16 +308,25 @@ export class ContextQueryTool implements IContextQueryTool {
   }
 
   private extractEntities(nodes: GraphNode[]): EntityInfo[] {
-    return nodes.map(node => ({
-      id: node.id,
-      name: node.name || 'Unknown',
-      type: node.type as EntityInfo['type'],
-      package: ((node.metadata as Record<string, unknown>)?.metadata_package as string) || 'unknown',
-      description: (node.properties?.description as string) || (node.properties?.prop_signature as string) || undefined,
-      path: (node.properties?.prop_file_path as string) || (node.properties?.metadata_source_file as string) || undefined,
-      exports: node.properties?.exports as string[] | undefined,
-      relevance: this.calculateRelevance(node)
-    })).sort((a, b) => b.relevance - a.relevance)
+    return nodes
+      .map(node => ({
+        id: node.id,
+        name: node.name || 'Unknown',
+        type: node.type as EntityInfo['type'],
+        package:
+          ((node.metadata as Record<string, unknown>)?.metadata_package as string) || 'unknown',
+        description:
+          (node.properties?.description as string) ||
+          (node.properties?.prop_signature as string) ||
+          undefined,
+        path:
+          (node.properties?.prop_file_path as string) ||
+          (node.properties?.metadata_source_file as string) ||
+          undefined,
+        exports: node.properties?.exports as string[] | undefined,
+        relevance: this.calculateRelevance(node),
+      }))
+      .sort((a, b) => b.relevance - a.relevance)
   }
 
   private extractRelationships(relationships: GraphRelationship[]): RelationshipInfo[] {
@@ -325,24 +334,26 @@ export class ContextQueryTool implements IContextQueryTool {
       from: rel.source,
       to: rel.target,
       type: rel.type as RelationshipInfo['type'],
-      description: rel.properties?.description as string | undefined
+      description: rel.properties?.description as string | undefined,
     }))
   }
 
   private findRelatedDocs(analysis: Record<string, unknown>): DocReference[] {
     const docs: DocReference[] = []
-    
+
     // 从分析结果中提取文档引用
     if (analysis.suggested_imports) {
-      (analysis.suggested_imports as Array<Record<string, unknown>>).forEach((imp: Record<string, unknown>) => {
-        if (imp.documentation) {
-          docs.push({
-            title: imp.module as string,
-            path: imp.documentation as string,
-            relevance: imp.confidence as number
-          })
+      ;(analysis.suggested_imports as Array<Record<string, unknown>>).forEach(
+        (imp: Record<string, unknown>) => {
+          if (imp.documentation) {
+            docs.push({
+              title: imp.module as string,
+              path: imp.documentation as string,
+              relevance: imp.confidence as number,
+            })
+          }
         }
-      })
+      )
     }
 
     return docs
@@ -350,18 +361,20 @@ export class ContextQueryTool implements IContextQueryTool {
 
   private findExamples(analysis: Record<string, unknown>): Example[] {
     const examples: Example[] = []
-    
+
     // 从分析结果中提取示例
     if (analysis.patterns) {
-      (analysis.patterns as Array<Record<string, unknown>>).forEach((pattern: Record<string, unknown>) => {
-        if (pattern.example) {
-          examples.push({
-            description: pattern.description as string,
-            code: pattern.example as string,
-            source: (pattern.source as string) || 'pattern'
-          })
+      ;(analysis.patterns as Array<Record<string, unknown>>).forEach(
+        (pattern: Record<string, unknown>) => {
+          if (pattern.example) {
+            examples.push({
+              description: pattern.description as string,
+              code: pattern.example as string,
+              source: (pattern.source as string) || 'pattern',
+            })
+          }
         }
-      })
+      )
     }
 
     return examples
@@ -370,15 +383,15 @@ export class ContextQueryTool implements IContextQueryTool {
   private calculateRelevance(node: GraphNode): number {
     // 简单的相关性计算
     let relevance = 0.5
-    
+
     if (node.properties?.importance) {
       relevance += (node.properties.importance as number) * 0.3
     }
-    
+
     if (node.properties?.usage_count) {
       relevance += Math.min((node.properties.usage_count as number) / 100, 0.2)
     }
-    
+
     return Math.min(relevance, 1.0)
   }
 
@@ -387,7 +400,7 @@ export class ContextQueryTool implements IContextQueryTool {
     relationships: RelationshipInfo[]
   ): Pattern[] {
     const patterns: Pattern[] = []
-    
+
     // 分析实现模式
     const implementsRelations = relationships.filter(r => r.type === 'IMPLEMENTS')
     if (implementsRelations.length > 0) {
@@ -396,7 +409,7 @@ export class ContextQueryTool implements IContextQueryTool {
         name: '接口实现模式',
         description: `发现 ${implementsRelations.length} 个接口实现关系`,
         usage: '通过接口定义契约，实现类提供具体功能',
-        related_entities: Array.from(interfaces)
+        related_entities: Array.from(interfaces),
       })
     }
 
@@ -407,7 +420,7 @@ export class ContextQueryTool implements IContextQueryTool {
         name: '继承模式',
         description: `发现 ${extendsRelations.length} 个继承关系`,
         usage: '通过继承复用基类功能',
-        related_entities: extendsRelations.map(r => r.from)
+        related_entities: extendsRelations.map(r => r.from),
       })
     }
 
@@ -416,7 +429,7 @@ export class ContextQueryTool implements IContextQueryTool {
 
   private findUsagePatterns(context: ContextInfo): Pattern[] {
     const patterns: Pattern[] = []
-    
+
     // 分析常见的调用模式
     const callRelations = context.relationships.filter(r => r.type === 'CALLS')
     if (callRelations.length > 3) {
@@ -426,7 +439,7 @@ export class ContextQueryTool implements IContextQueryTool {
           name: '常用功能模式',
           description: '被多个模块频繁调用的功能',
           usage: '这些功能是系统的核心能力',
-          related_entities: frequentCalls
+          related_entities: frequentCalls,
         })
       }
     }
@@ -436,7 +449,7 @@ export class ContextQueryTool implements IContextQueryTool {
 
   private findFrequentTargets(relations: RelationshipInfo[]): string[] {
     const targetCount = new Map<string, number>()
-    
+
     relations.forEach(rel => {
       const count = targetCount.get(rel.to) || 0
       targetCount.set(rel.to, count + 1)
@@ -451,11 +464,9 @@ export class ContextQueryTool implements IContextQueryTool {
 
   private extractBestPracticesFromContext(context: ContextInfo): BestPractice[] {
     const practices: BestPractice[] = []
-    
+
     // 从实体中提取 LinchKit 包的使用建议
-    const linchkitEntities = context.entities.filter(e => 
-      e.package.startsWith('@linch-kit/')
-    )
+    const linchkitEntities = context.entities.filter(e => e.package.startsWith('@linch-kit/'))
 
     linchkitEntities.forEach(entity => {
       if (entity.description && entity.exports) {
@@ -464,7 +475,7 @@ export class ContextQueryTool implements IContextQueryTool {
           description: entity.description,
           category: entity.package,
           examples: entity.exports.map(exp => `import { ${exp} } from '${entity.package}'`),
-          references: [entity.package]
+          references: [entity.package],
         })
       }
     })

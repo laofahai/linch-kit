@@ -23,7 +23,8 @@ export const logger = {
       uiLogger.error(message, error, data)
     }
   },
-  fatal: (message: string, error?: Error, data?: Record<string, unknown>) => uiLogger.fatal(message, error, data)
+  fatal: (message: string, error?: Error, data?: Record<string, unknown>) =>
+    uiLogger.fatal(message, error, data),
 }
 
 /**
@@ -42,7 +43,7 @@ const uiI18n = createPackageI18n({
       'form.create_title': '创建{entity}',
       'form.edit_title': '编辑{entity}',
       'form.view_title': '查看{entity}',
-      
+
       // 表格相关
       'table.actions': '操作',
       'table.view': '查看',
@@ -58,12 +59,12 @@ const uiI18n = createPackageI18n({
       'table.page': '第',
       'table.previous': '上一页',
       'table.next': '下一页',
-      
+
       // 通用
       'common.yes': '是',
-      'common.no': '否'
+      'common.no': '否',
     },
-    'en': {
+    en: {
       // 表单相关
       'form.create': 'Create',
       'form.update': 'Update',
@@ -72,7 +73,7 @@ const uiI18n = createPackageI18n({
       'form.create_title': 'Create {entity}',
       'form.edit_title': 'Edit {entity}',
       'form.view_title': 'View {entity}',
-      
+
       // 表格相关
       'table.actions': 'Actions',
       'table.view': 'View',
@@ -88,12 +89,12 @@ const uiI18n = createPackageI18n({
       'table.page': 'Page',
       'table.previous': 'Previous',
       'table.next': 'Next',
-      
+
       // 通用
       'common.yes': 'Yes',
-      'common.no': 'No'
-    }
-  }
+      'common.no': 'No',
+    },
+  },
 })
 
 /**
@@ -103,10 +104,10 @@ const uiI18n = createPackageI18n({
 export function useUITranslation() {
   // 使用Core包的翻译系统，获取用户传入的翻译函数
   const coreT = coreUseTranslation()
-  
+
   // 返回UI包的翻译函数
   return {
-    t: uiI18n.getTranslation(coreT)
+    t: uiI18n.getTranslation(coreT),
   }
 }
 
@@ -138,6 +139,6 @@ export function getThemeConfig(): UIThemeConfig {
     colorMode: getUIConfig('theme.colorMode', 'auto'),
     primaryColor: getUIConfig('theme.primaryColor', '#3b82f6'),
     borderRadius: getUIConfig('theme.borderRadius', 'md'),
-    density: getUIConfig('theme.density', 'comfortable')
+    density: getUIConfig('theme.density', 'comfortable'),
   }
 }

@@ -31,7 +31,7 @@ describe('Schema Builder', () => {
       const result = builder.fields({
         name: defineField.string().required().build(),
         email: defineField.email().required().build(),
-        age: defineField.number().optional().build()
+        age: defineField.number().optional().build(),
       })
       expect(result).toBeDefined()
       expect(result).toBeInstanceOf(SchemaBuilder)
@@ -44,7 +44,7 @@ describe('Schema Builder', () => {
         .field('name', defineField.string().required().build())
         .field('email', defineField.email().required().build())
         .field('age', defineField.number().optional().build())
-      
+
       expect(builder).toBeDefined()
       expect(builder).toBeInstanceOf(SchemaBuilder)
     })
@@ -54,10 +54,10 @@ describe('Schema Builder', () => {
         .field('name', defineField.string().required().build())
         .fields({
           email: defineField.email().required().build(),
-          age: defineField.number().optional().build()
+          age: defineField.number().optional().build(),
         })
         .field('isActive', defineField.boolean().build())
-      
+
       expect(builder).toBeDefined()
       expect(builder).toBeInstanceOf(SchemaBuilder)
     })
@@ -68,7 +68,7 @@ describe('Schema Builder', () => {
       const builder = new SchemaBuilder('User')
         .field('name', defineField.string().required().build())
         .field('email', defineField.email().required().build())
-      
+
       const entity = builder.build()
       expect(entity).toBeDefined()
       expect(entity.name).toBe('User')
@@ -79,12 +79,12 @@ describe('Schema Builder', () => {
     it('should build entity with options', () => {
       const builder = new SchemaBuilder('User')
         .field('name', defineField.string().required().build())
-        .options({ 
+        .options({
           tableName: 'users',
           timestamps: true,
-          softDelete: true
+          softDelete: true,
         })
-      
+
       const entity = builder.build()
       expect(entity).toBeDefined()
       expect(entity.name).toBe('User')
@@ -107,7 +107,7 @@ describe('Schema Builder', () => {
       const builder = new SchemaBuilder('User')
         .field('name', defineField.string().required().build())
         .field('name', defineField.text().optional().build()) // 覆盖定义
-      
+
       const entity = builder.build()
       expect(entity).toBeDefined()
       expect(entity.fields.name.type).toBe('text')
@@ -120,7 +120,7 @@ describe('Schema Builder', () => {
       const builder = new SchemaBuilder('User')
         .field('name', defineField.string().required().build())
         .field('age', defineField.number().optional().build())
-      
+
       const entity = builder.build()
       expect(entity.fields.name.type).toBe('string')
       expect(entity.fields.age.type).toBe('number')
@@ -132,7 +132,7 @@ describe('Schema Builder', () => {
         .field('name', defineField.i18n(['en', 'zh-CN']).required().build())
         .field('category', defineField.enum(['electronics', 'clothing', 'books']).build())
         .field('metadata', defineField.json().optional().build())
-      
+
       const entity = builder.build()
       expect(entity.fields.id.type).toBe('uuid')
       expect(entity.fields.name.type).toBe('i18n')
@@ -148,9 +148,9 @@ describe('Schema Builder', () => {
         .options({
           tableName: 'users',
           schema: 'public',
-          indexes: [{ fields: ['name'] }]
+          indexes: [{ fields: ['name'] }],
         })
-      
+
       const entity = builder.build()
       expect(entity.options?.tableName).toBe('users')
       expect(entity.options?.schema).toBe('public')
@@ -163,9 +163,9 @@ describe('Schema Builder', () => {
         .options({
           timestamps: true,
           softDelete: true,
-          audit: true
+          audit: true,
         })
-      
+
       const entity = builder.build()
       expect(entity.options?.timestamps).toBe(true)
       expect(entity.options?.softDelete).toBe(true)

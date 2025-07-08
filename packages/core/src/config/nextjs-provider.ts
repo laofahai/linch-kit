@@ -53,7 +53,7 @@ export class NextjsEnvProvider {
       id: 'nextjs-env',
       type: 'env',
       priority: 100, // 高优先级
-      load: () => this.load()
+      load: () => this.load(),
     }
   }
 
@@ -89,7 +89,7 @@ export class NextjsEnvProvider {
    */
   async getNextjsConfig(): Promise<NextjsEnvConfig> {
     const allVars = await this.load()
-    
+
     const publicVars: Record<string, string> = {}
     const privateVars: Record<string, string> = {}
 
@@ -106,7 +106,7 @@ export class NextjsEnvProvider {
       publicVars,
       privateVars,
       envFiles: this.getEnvFiles(),
-      nodeEnv: this.nodeEnv as 'development' | 'production' | 'test'
+      nodeEnv: this.nodeEnv as 'development' | 'production' | 'test',
     }
   }
 
@@ -168,8 +168,10 @@ export class NextjsEnvProvider {
    */
   private parseEnvValue(value: string): string {
     // 移除引号
-    if ((value.startsWith('"') && value.endsWith('"')) ||
-        (value.startsWith("'") && value.endsWith("'"))) {
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
       value = value.slice(1, -1)
     }
 
@@ -186,9 +188,7 @@ export class NextjsEnvProvider {
    * @description 应用Next.js的变量处理规则
    * @private
    */
-  private processNextjsVars(
-    config: Record<string, ConfigValue>
-  ): Record<string, ConfigValue> {
+  private processNextjsVars(config: Record<string, ConfigValue>): Record<string, ConfigValue> {
     const processed: Record<string, ConfigValue> = {}
 
     for (const [key, value] of Object.entries(config)) {
@@ -242,7 +242,7 @@ export class NextjsEnvProvider {
     return {
       valid: missing.length === 0,
       missing,
-      warnings
+      warnings,
     }
   }
 }
@@ -255,10 +255,10 @@ export class NextjsEnvProvider {
  * @example
  * ```typescript
  * import { createNextjsEnvProvider } from '@linch-kit/core'
- * 
+ *
  * const provider = createNextjsEnvProvider()
  * const configSource = provider.createConfigSource()
- * 
+ *
  * // 在配置管理器中使用
  * await configManager.loadConfig(configSource)
  * ```

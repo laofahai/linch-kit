@@ -8,5 +8,5 @@ export default defineConfig({
   sourcemap: true,
   target: 'es2022',
   splitting: false,
-  minify: false
+  minify: false,
 })

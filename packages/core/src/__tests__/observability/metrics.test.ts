@@ -14,12 +14,12 @@ vi.mock('prom-client', () => {
       dec: vi.fn(),
       observe: vi.fn(),
       startTimer: vi.fn().mockReturnValue(() => {}),
-      labels: vi.fn().mockReturnThis()
+      labels: vi.fn().mockReturnThis(),
     }
-    
+
     // Return a function that returns the methods
     return Object.assign(methods, {
-      labels: vi.fn().mockReturnValue(methods)
+      labels: vi.fn().mockReturnValue(methods),
     })
   }
 
@@ -27,14 +27,14 @@ vi.mock('prom-client', () => {
     register: {
       metrics: vi.fn().mockResolvedValue(''),
       clear: vi.fn(),
-      getMetricsAsJSON: vi.fn().mockReturnValue([])
+      getMetricsAsJSON: vi.fn().mockReturnValue([]),
     },
     collectDefaultMetrics: vi.fn(),
     Counter: vi.fn().mockImplementation(() => createMockMetric('Counter')),
     Gauge: vi.fn().mockImplementation(() => createMockMetric('Gauge')),
     Histogram: vi.fn().mockImplementation(() => createMockMetric('Histogram')),
     Summary: vi.fn().mockImplementation(() => createMockMetric('Summary')),
-    Registry: vi.fn()
+    Registry: vi.fn(),
   }
 })
 
@@ -69,7 +69,7 @@ describe('LinchKitMetricCollector', () => {
       const counter = collector.createCounter({
         name: 'test_counter',
         help: 'Test counter metric',
-        labels: ['method', 'status']
+        labels: ['method', 'status'],
       })
 
       expect(counter).toBeDefined()
@@ -81,7 +81,7 @@ describe('LinchKitMetricCollector', () => {
     it('should increment counter', () => {
       const counter = collector.createCounter({
         name: 'test_counter',
-        help: 'Test counter metric'
+        help: 'Test counter metric',
       })
 
       counter.inc()
@@ -95,7 +95,7 @@ describe('LinchKitMetricCollector', () => {
     it('should get counter value', () => {
       const counter = collector.createCounter({
         name: 'test_counter',
-        help: 'Test counter metric'
+        help: 'Test counter metric',
       })
 
       const value = counter.get()
@@ -105,7 +105,7 @@ describe('LinchKitMetricCollector', () => {
     it('should reset counter', () => {
       const counter = collector.createCounter({
         name: 'test_counter',
-        help: 'Test counter metric'
+        help: 'Test counter metric',
       })
 
       counter.reset()
@@ -118,7 +118,7 @@ describe('LinchKitMetricCollector', () => {
       const gauge = collector.createGauge({
         name: 'test_gauge',
         help: 'Test gauge metric',
-        labels: ['queue', 'priority']
+        labels: ['queue', 'priority'],
       })
 
       expect(gauge).toBeDefined()
@@ -132,7 +132,7 @@ describe('LinchKitMetricCollector', () => {
     it('should set gauge value', () => {
       const gauge = collector.createGauge({
         name: 'test_gauge',
-        help: 'Test gauge metric'
+        help: 'Test gauge metric',
       })
 
       gauge.set(42)
@@ -144,7 +144,7 @@ describe('LinchKitMetricCollector', () => {
     it('should increment and decrement gauge', () => {
       const gauge = collector.createGauge({
         name: 'test_gauge',
-        help: 'Test gauge metric'
+        help: 'Test gauge metric',
       })
 
       gauge.inc()
@@ -162,7 +162,7 @@ describe('LinchKitMetricCollector', () => {
       const histogram = collector.createHistogram({
         name: 'test_histogram',
         help: 'Test histogram metric',
-        buckets: [0.1, 0.5, 1.0, 2.0, 5.0]
+        buckets: [0.1, 0.5, 1.0, 2.0, 5.0],
       })
 
       expect(histogram).toBeDefined()
@@ -174,7 +174,7 @@ describe('LinchKitMetricCollector', () => {
     it('should observe histogram values', () => {
       const histogram = collector.createHistogram({
         name: 'test_histogram',
-        help: 'Test histogram metric'
+        help: 'Test histogram metric',
       })
 
       histogram.observe(0.5)
@@ -186,19 +186,19 @@ describe('LinchKitMetricCollector', () => {
     it('should start and stop timer', () => {
       const histogram = collector.createHistogram({
         name: 'test_histogram',
-        help: 'Test histogram metric'
+        help: 'Test histogram metric',
       })
 
       const endTimer = histogram.startTimer()
       expect(typeof endTimer).toBe('function')
-      
+
       endTimer()
     })
 
     it('should get histogram statistics', () => {
       const histogram = collector.createHistogram({
         name: 'test_histogram',
-        help: 'Test histogram metric'
+        help: 'Test histogram metric',
       })
 
       const stats = histogram.get()
@@ -213,7 +213,7 @@ describe('LinchKitMetricCollector', () => {
       const summary = collector.createSummary({
         name: 'test_summary',
         help: 'Test summary metric',
-        percentiles: [0.5, 0.9, 0.99]
+        percentiles: [0.5, 0.9, 0.99],
       })
 
       expect(summary).toBeDefined()
@@ -225,7 +225,7 @@ describe('LinchKitMetricCollector', () => {
     it('should observe summary values', () => {
       const summary = collector.createSummary({
         name: 'test_summary',
-        help: 'Test summary metric'
+        help: 'Test summary metric',
       })
 
       summary.observe(0.1)
@@ -257,7 +257,7 @@ describe('LinchKitMetricCollector', () => {
       expect(() => {
         collector.createCounter({
           name: '', // Invalid empty name
-          help: 'Test counter'
+          help: 'Test counter',
         })
       }).toThrow()
     })
@@ -266,7 +266,7 @@ describe('LinchKitMetricCollector', () => {
       expect(() => {
         collector.createCounter({
           name: 'test_counter',
-          help: '' // Invalid empty help
+          help: '', // Invalid empty help
         })
       }).toThrow()
     })
@@ -274,13 +274,13 @@ describe('LinchKitMetricCollector', () => {
     it('should handle duplicate metric names', () => {
       collector.createCounter({
         name: 'duplicate_metric',
-        help: 'First metric'
+        help: 'First metric',
       })
 
       expect(() => {
         collector.createCounter({
           name: 'duplicate_metric',
-          help: 'Second metric'
+          help: 'Second metric',
         })
       }).toThrow()
     })
@@ -289,14 +289,14 @@ describe('LinchKitMetricCollector', () => {
   describe('Default Metrics', () => {
     it('should collect default metrics when enabled', () => {
       const collectorWithDefaults = new LinchKitMetricCollector()
-      
+
       // Verify that the collector was created
       expect(collectorWithDefaults).toBeInstanceOf(LinchKitMetricCollector)
     })
 
     it('should not collect default metrics when disabled', () => {
       const collectorWithoutDefaults = new LinchKitMetricCollector()
-      
+
       expect(collectorWithoutDefaults).toBeInstanceOf(LinchKitMetricCollector)
     })
   })
@@ -306,7 +306,7 @@ describe('LinchKitMetricCollector', () => {
       const counter = collector.createCounter({
         name: 'labeled_counter',
         help: 'Counter with labels',
-        labels: ['method', 'status', 'endpoint']
+        labels: ['method', 'status', 'endpoint'],
       })
 
       counter.inc(1, { method: 'GET', status: '200', endpoint: '/api/users' })
@@ -319,7 +319,7 @@ describe('LinchKitMetricCollector', () => {
     it('should get total value across all labels', () => {
       const counter = collector.createCounter({
         name: 'labeled_counter_total',
-        help: 'Counter for total calculation'
+        help: 'Counter for total calculation',
       })
 
       const totalValue = counter.get()
@@ -331,31 +331,33 @@ describe('LinchKitMetricCollector', () => {
     it('should handle high frequency metric updates', () => {
       const counter = collector.createCounter({
         name: 'performance_counter',
-        help: 'Performance test counter'
+        help: 'Performance test counter',
       })
 
       const start = Date.now()
-      
+
       for (let i = 0; i < 1000; i++) {
         counter.inc()
       }
-      
+
       const duration = Date.now() - start
       expect(duration).toBeLessThan(1000) // Should complete in less than 1 second
     })
 
     it('should handle multiple metrics efficiently', () => {
       const metrics = []
-      
+
       for (let i = 0; i < 100; i++) {
-        metrics.push(collector.createCounter({
-          name: `perf_counter_${i}`,
-          help: `Performance counter ${i}`
-        }))
+        metrics.push(
+          collector.createCounter({
+            name: `perf_counter_${i}`,
+            help: `Performance counter ${i}`,
+          })
+        )
       }
-      
+
       expect(metrics).toHaveLength(100)
-      
+
       // Update all metrics
       metrics.forEach(counter => counter.inc())
     })

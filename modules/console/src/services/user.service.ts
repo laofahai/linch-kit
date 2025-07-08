@@ -1,8 +1,8 @@
 /**
  * 用户管理服务
- * 
+ *
  * 基于 @linch-kit/crud 和 @linch-kit/auth 的用户管理业务逻辑
- * 
+ *
  * TODO: 当 CRUD 和 Auth API 稳定后重新实现
  */
 
@@ -17,7 +17,7 @@ export const CreateUserInput = z.object({
   password: z.string().min(8).optional(),
   roles: z.array(z.string()).default([]),
   tenantId: z.string().optional(),
-  settings: z.record(z.unknown()).optional()
+  settings: z.record(z.unknown()).optional(),
 })
 
 /**

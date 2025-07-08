@@ -18,9 +18,5 @@ export interface AuthProviderProps {
  * 包装NextAuth.js的SessionProvider，提供统一的认证上下文
  */
 export function AuthProvider({ children, session }: AuthProviderProps): ReactNode {
-  return (
-    <SessionProvider session={session}>
-      {children}
-    </SessionProvider>
-  )
+  return <SessionProvider session={session}>{children}</SessionProvider>
 }

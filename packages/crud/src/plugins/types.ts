@@ -2,7 +2,12 @@
  * CRUD 插件系统类型定义
  */
 
-import type { CreateInput, UpdateInput, CrudOptions as _CrudOptions, FindOptions as _FindOptions } from '../types'
+import type {
+  CreateInput,
+  UpdateInput,
+  CrudOptions as _CrudOptions,
+  FindOptions as _FindOptions,
+} from '../types'
 
 /**
  * 钩子上下文 - 提供操作的详细上下文信息
@@ -37,11 +42,7 @@ export interface GlobalCrudHooks {
     context: HookContext
   ): Promise<CreateInput<T>>
 
-  afterCreate?<T>(
-    entityName: string,
-    result: T,
-    context: HookContext
-  ): Promise<void>
+  afterCreate?<T>(entityName: string, result: T, context: HookContext): Promise<void>
 
   beforeUpdate?<T>(
     entityName: string,
@@ -66,11 +67,7 @@ export interface GlobalCrudHooks {
     context: HookContext
   ): Promise<void>
 
-  afterDelete?(
-    entityName: string,
-    existing: unknown,
-    context: HookContext
-  ): Promise<void>
+  afterDelete?(entityName: string, existing: unknown, context: HookContext): Promise<void>
 
   beforeQuery?(
     entityName: string,
@@ -120,11 +117,7 @@ export interface GlobalCrudHooks {
   ): Promise<void>
 
   // 全局缓存钩子
-  beforeCacheGet?(
-    key: string,
-    entityName: string,
-    context?: HookContext
-  ): Promise<string>
+  beforeCacheGet?(key: string, entityName: string, context?: HookContext): Promise<string>
 
   afterCacheGet?<T>(
     key: string,
@@ -155,15 +148,9 @@ export interface GlobalCrudHooks {
  */
 export interface EntityCrudHooks {
   // 实体特定操作钩子
-  beforeEntityCreate?<T>(
-    data: CreateInput<T>,
-    context: HookContext
-  ): Promise<CreateInput<T>>
+  beforeEntityCreate?<T>(data: CreateInput<T>, context: HookContext): Promise<CreateInput<T>>
 
-  afterEntityCreate?<T>(
-    result: T,
-    context: HookContext
-  ): Promise<void>
+  afterEntityCreate?<T>(result: T, context: HookContext): Promise<void>
 
   beforeEntityUpdate?<T>(
     id: string,
@@ -179,16 +166,9 @@ export interface EntityCrudHooks {
     context: HookContext
   ): Promise<void>
 
-  beforeEntityDelete?(
-    id: string,
-    existing: unknown,
-    context: HookContext
-  ): Promise<void>
+  beforeEntityDelete?(id: string, existing: unknown, context: HookContext): Promise<void>
 
-  afterEntityDelete?(
-    existing: unknown,
-    context: HookContext
-  ): Promise<void>
+  afterEntityDelete?(existing: unknown, context: HookContext): Promise<void>
 
   beforeEntityQuery?(
     query: Record<string, unknown>,
@@ -320,24 +300,16 @@ export interface ConditionalCrudHooks {
 /**
  * 组合钩子接口 - 包含所有类型的钩子
  */
-export interface CrudPluginHooks extends 
-  GlobalCrudHooks, 
-  EntityCrudHooks, 
-  FieldCrudHooks, 
-  ConditionalCrudHooks {
-  
+export interface CrudPluginHooks
+  extends GlobalCrudHooks,
+    EntityCrudHooks,
+    FieldCrudHooks,
+    ConditionalCrudHooks {
   // 钩子选择器 - 决定钩子是否应该执行
-  shouldExecuteHook?(
-    hookName: string,
-    entityName: string,
-    context: HookContext
-  ): Promise<boolean>
+  shouldExecuteHook?(hookName: string, entityName: string, context: HookContext): Promise<boolean>
 
   // 钩子优先级 - 数字越小优先级越高
-  getHookPriority?(
-    hookName: string,
-    entityName: string
-  ): number
+  getHookPriority?(hookName: string, entityName: string): number
 }
 
 /**
@@ -346,25 +318,25 @@ export interface CrudPluginHooks extends
 export interface CrudPlugin {
   /** 插件名称 */
   name: string
-  
+
   /** 插件版本 */
   version: string
-  
+
   /** 插件描述 */
   description?: string
-  
+
   /** 插件依赖 */
   dependencies?: string[]
-  
+
   /** 插件钩子 */
   hooks?: CrudPluginHooks
-  
+
   /** 插件初始化 */
   initialize?(): Promise<void>
-  
+
   /** 插件销毁 */
   destroy?(): Promise<void>
-  
+
   /** 插件配置 */
   configure?(config: Record<string, unknown>): Promise<void>
 }
@@ -392,10 +364,10 @@ export interface PluginMetadata {
 export interface PluginRegistrationOptions {
   /** 是否自动初始化 */
   autoInitialize?: boolean
-  
+
   /** 插件配置 */
   config?: Record<string, unknown>
-  
+
   /** 是否覆盖已存在的插件 */
   override?: boolean
 }

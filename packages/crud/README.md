@@ -29,23 +29,23 @@ import { UserEntity } from './entities'
 const userCRUD = createCRUD('User', UserEntity, {
   permissions: true,
   validation: true,
-  cache: true
+  cache: true,
 })
 
 // 基础操作
 const user = await userCRUD.create({
   name: 'John Doe',
-  email: 'john@example.com'
+  email: 'john@example.com',
 })
 
 const users = await userCRUD.findMany({
   where: { status: 'active' },
   orderBy: { createdAt: 'desc' },
-  take: 10
+  take: 10,
 })
 
 await userCRUD.update(userId, {
-  name: 'Jane Doe'
+  name: 'Jane Doe',
 })
 
 await userCRUD.delete(userId)
@@ -59,34 +59,28 @@ const results = await userCRUD.findMany({
   where: {
     AND: [
       { status: 'active' },
-      { 
-        OR: [
-          { role: 'admin' },
-          { permissions: { some: { name: 'manage_users' } } }
-        ]
-      }
-    ]
+      {
+        OR: [{ role: 'admin' }, { permissions: { some: { name: 'manage_users' } } }],
+      },
+    ],
   },
   include: {
     posts: {
       where: { published: true },
       orderBy: { createdAt: 'desc' },
-      take: 5
-    }
+      take: 5,
+    },
   },
-  orderBy: [
-    { role: 'asc' },
-    { createdAt: 'desc' }
-  ],
+  orderBy: [{ role: 'asc' }, { createdAt: 'desc' }],
   skip: 0,
-  take: 20
+  take: 20,
 })
 
 // 聚合查询
 const stats = await userCRUD.aggregate({
   _count: true,
   _avg: { age: true },
-  groupBy: ['role', 'status']
+  groupBy: ['role', 'status'],
 })
 ```
 
@@ -96,20 +90,20 @@ const stats = await userCRUD.aggregate({
 // 批量创建
 const users = await userCRUD.createMany([
   { name: 'User 1', email: 'user1@example.com' },
-  { name: 'User 2', email: 'user2@example.com' }
+  { name: 'User 2', email: 'user2@example.com' },
 ])
 
 // 批量更新
 await userCRUD.updateMany({
   where: { status: 'pending' },
-  data: { status: 'active' }
+  data: { status: 'active' },
 })
 
 // 批量删除
 await userCRUD.deleteMany({
-  where: { 
-    lastLoginAt: { lt: new Date('2023-01-01') }
-  }
+  where: {
+    lastLoginAt: { lt: new Date('2023-01-01') },
+  },
 })
 ```
 
@@ -131,13 +125,13 @@ const postCRUD = createCRUD('Post', PostEntity, {
     },
     delete: async (user, post) => {
       return user.role === 'admin'
-    }
-  }
+    },
+  },
 })
 
 // 使用时自动应用权限
 const posts = await postCRUD.findMany({
-  user: currentUser // 自动过滤用户无权访问的数据
+  user: currentUser, // 自动过滤用户无权访问的数据
 })
 ```
 
@@ -146,20 +140,20 @@ const posts = await postCRUD.findMany({
 ```typescript
 const userCRUD = createCRUD('User', UserEntity, {
   hooks: {
-    beforeCreate: async (data) => {
+    beforeCreate: async data => {
       // 数据预处理
       data.email = data.email.toLowerCase()
       return data
     },
-    afterCreate: async (user) => {
+    afterCreate: async user => {
       // 发送欢迎邮件
       await sendWelcomeEmail(user.email)
     },
     beforeUpdate: async (id, data) => {
       // 记录变更历史
       await auditLog.record('user.update', { id, changes: data })
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -173,10 +167,10 @@ const productCRUD = createCRUD('Product', ProductEntity, {
     warmup: async () => {
       // 预热缓存
       return await prisma.product.findMany({
-        where: { featured: true }
+        where: { featured: true },
       })
-    }
-  }
+    },
+  },
 })
 ```
 
@@ -186,13 +180,16 @@ const productCRUD = createCRUD('Product', ProductEntity, {
 import { transaction } from '@linch-kit/crud'
 
 // 事务操作
-const result = await transaction(async (tx) => {
+const result = await transaction(async tx => {
   const user = await userCRUD.create(userData, { tx })
-  const profile = await profileCRUD.create({
-    ...profileData,
-    userId: user.id
-  }, { tx })
-  
+  const profile = await profileCRUD.create(
+    {
+      ...profileData,
+      userId: user.id,
+    },
+    { tx }
+  )
+
   return { user, profile }
 })
 ```

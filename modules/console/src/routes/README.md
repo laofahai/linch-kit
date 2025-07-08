@@ -20,14 +20,14 @@ Console 模块的路由系统提供了完整的路由配置和导航生成功能
 import { ConsoleRouter } from '@linch-kit/console/routes'
 import { getCurrentUser, getUserPermissions } from '~/lib/auth'
 
-export default async function AdminPage({ 
-  params 
-}: { 
-  params: { slug?: string[] } 
+export default async function AdminPage({
+  params
+}: {
+  params: { slug?: string[] }
 }) {
   const user = await getCurrentUser()
   const permissions = await getUserPermissions(user.id)
-  
+
   return (
     <ConsoleRouter
       config={{
@@ -55,12 +55,12 @@ import { usePermissions } from '~/hooks/usePermissions'
 
 export function Sidebar() {
   const permissions = usePermissions()
-  
+
   const consoleRoutes = createConsoleRoutes({
     basePath: '/admin',
     features: ['dashboard', 'tenants', 'users', 'plugins']
   })
-  
+
   return (
     <nav className="space-y-1">
       {consoleRoutes.navigation.map(item => (
@@ -83,25 +83,25 @@ export function Sidebar() {
 interface ConsoleConfig {
   // 基础路径，默认 '/admin'
   basePath?: string
-  
+
   // 启用的功能模块
   features?: ConsoleFeature[]
-  
+
   // 权限配置
   permissions?: {
-    access?: string[]    // 访问 Console 的权限
-    admin?: string[]     // 管理员权限
+    access?: string[] // 访问 Console 的权限
+    admin?: string[] // 管理员权限
   }
-  
+
   // 主题配置
   theme?: {
-    primary?: string     // 主色调
-    darkMode?: boolean   // 暗色模式
+    primary?: string // 主色调
+    darkMode?: boolean // 暗色模式
   }
-  
+
   // 自定义路由
   customRoutes?: ConsoleRoute[]
-  
+
   // 禁用的默认路由
   disabledRoutes?: string[]
 }
@@ -110,15 +110,15 @@ interface ConsoleConfig {
 ### 功能模块
 
 ```typescript
-type ConsoleFeature = 
-  | 'dashboard'    // 仪表板
-  | 'tenants'      // 租户管理
-  | 'users'        // 用户管理
-  | 'permissions'  // 权限管理
-  | 'plugins'      // 插件市场
-  | 'monitoring'   // 系统监控
-  | 'schemas'      // Schema 管理
-  | 'settings'     // 系统设置
+type ConsoleFeature =
+  | 'dashboard' // 仪表板
+  | 'tenants' // 租户管理
+  | 'users' // 用户管理
+  | 'permissions' // 权限管理
+  | 'plugins' // 插件市场
+  | 'monitoring' // 系统监控
+  | 'schemas' // Schema 管理
+  | 'settings' // 系统设置
 ```
 
 ## 高级用法
@@ -135,15 +135,15 @@ const customRoutes: ConsoleRoute[] = [
       icon: 'Star',
       requireAuth: true,
       permissions: ['custom:read'],
-      order: 10
-    }
-  }
+      order: 10,
+    },
+  },
 ]
 
 const config: ConsoleConfig = {
   basePath: '/admin',
   features: ['dashboard', 'tenants'],
-  customRoutes
+  customRoutes,
 }
 ```
 
@@ -153,7 +153,7 @@ const config: ConsoleConfig = {
 const config: ConsoleConfig = {
   basePath: '/admin',
   features: ['dashboard', 'tenants', 'users', 'plugins'],
-  disabledRoutes: ['/settings'] // 禁用设置页面
+  disabledRoutes: ['/settings'], // 禁用设置页面
 }
 ```
 
@@ -201,16 +201,16 @@ const breadcrumbs = router.getBreadcrumbs('/admin/tenants/123')
 
 ### 权限映射
 
-| 功能模块 | 权限列表 |
-|---------|---------|
-| dashboard | `console:dashboard:read` |
-| tenants | `console:tenant:read`, `console:tenant:create`, `console:tenant:update`, `console:tenant:delete` |
-| users | `console:user:read`, `console:user:create`, `console:user:update`, `console:user:delete` |
+| 功能模块    | 权限列表                                                                                           |
+| ----------- | -------------------------------------------------------------------------------------------------- |
+| dashboard   | `console:dashboard:read`                                                                           |
+| tenants     | `console:tenant:read`, `console:tenant:create`, `console:tenant:update`, `console:tenant:delete`   |
+| users       | `console:user:read`, `console:user:create`, `console:user:update`, `console:user:delete`           |
 | permissions | `console:permission:read`, `console:permission:manage`, `console:role:read`, `console:role:manage` |
-| plugins | `console:plugin:read`, `console:plugin:install`, `console:plugin:configure` |
-| monitoring | `console:monitoring:read`, `console:monitoring:metrics`, `console:monitoring:alerts` |
-| schemas | `console:schema:read`, `console:schema:design`, `console:schema:generate` |
-| settings | `console:settings:read`, `console:settings:update` |
+| plugins     | `console:plugin:read`, `console:plugin:install`, `console:plugin:configure`                        |
+| monitoring  | `console:monitoring:read`, `console:monitoring:metrics`, `console:monitoring:alerts`               |
+| schemas     | `console:schema:read`, `console:schema:design`, `console:schema:generate`                          |
+| settings    | `console:settings:read`, `console:settings:update`                                                 |
 
 ## 国际化
 
@@ -232,11 +232,11 @@ const breadcrumbs = router.getBreadcrumbs('/admin/tenants/123')
 所有类型都完全导出，提供完整的 TypeScript 支持：
 
 ```typescript
-import type { 
+import type {
   ConsoleConfig,
   ConsoleRoute,
   NavigationItem,
-  RouteContext
+  RouteContext,
 } from '@linch-kit/console/routes'
 ```
 

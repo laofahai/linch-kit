@@ -7,10 +7,7 @@ interface BackToTopProps {
   className?: string
 }
 
-export const BackToTop: React.FC<BackToTopProps> = ({
-  threshold = 400,
-  className = ''
-}) => {
+export const BackToTop: React.FC<BackToTopProps> = ({ threshold = 400, className = '' }) => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
@@ -32,7 +29,7 @@ export const BackToTop: React.FC<BackToTopProps> = ({
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     })
   }
 

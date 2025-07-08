@@ -64,7 +64,7 @@ function App() {
       config={{
         basePath: '/admin',
         features: ['dashboard', 'tenants', 'users', 'plugins', 'monitoring'],
-        theme: { primary: '#3b82f6' }
+        theme: { primary: '#3b82f6' },
       }}
     >
       <YourApp />
@@ -94,7 +94,7 @@ import { createConsoleRoutes, ConsoleRouter } from '@linch-kit/console'
 
 const consoleRoutes = createConsoleRoutes({
   basePath: '/admin',
-  features: ['dashboard', 'tenants', 'users', 'plugins']
+  features: ['dashboard', 'tenants', 'users', 'plugins'],
 })
 
 export default function AdminLayout() {
@@ -121,15 +121,15 @@ interface ConsoleProviderProps {
   devtools?: boolean
 }
 
-<ConsoleProvider
+;<ConsoleProvider
   config={{
     basePath: '/admin',
     features: ['dashboard', 'tenants', 'users'],
     theme: { primary: '#3b82f6', darkMode: false },
     permissions: {
       access: ['console:access'],
-      admin: ['console:admin']
-    }
+      admin: ['console:admin'],
+    },
   }}
   tenantId="tenant-123"
   permissions={['console:access', 'tenant:read', 'user:manage']}
@@ -169,8 +169,8 @@ import { PermissionGuard, FeatureGuard } from '@linch-kit/console'
 </PermissionGuard>
 
 // 多权限检查
-<PermissionGuard 
-  permissions={['user:read', 'user:write']} 
+<PermissionGuard
+  permissions={['user:read', 'user:write']}
   requireAll={true}
 >
   <UserManagement />
@@ -190,13 +190,12 @@ import { PermissionGuard, FeatureGuard } from '@linch-kit/console'
 
 ```tsx
 import { TenantList } from '@linch-kit/console'
-
-<TenantList
+;<TenantList
   pageSize={10}
   searchable={true}
   filters={['status', 'plan']}
   actions={['view', 'edit', 'suspend', 'delete']}
-  onTenantClick={(tenant) => router.push(`/admin/tenants/${tenant.id}`)}
+  onTenantClick={tenant => router.push(`/admin/tenants/${tenant.id}`)}
 />
 ```
 
@@ -206,13 +205,12 @@ import { TenantList } from '@linch-kit/console'
 
 ```tsx
 import { TenantCreate } from '@linch-kit/console'
-
-<TenantCreate
-  onSuccess={(tenant) => {
+;<TenantCreate
+  onSuccess={tenant => {
     toast.success('租户创建成功')
     router.push(`/admin/tenants/${tenant.id}`)
   }}
-  onError={(error) => {
+  onError={error => {
     toast.error('创建失败：' + error.message)
   }}
 />
@@ -223,12 +221,12 @@ import { TenantCreate } from '@linch-kit/console'
 #### 数据获取 Hooks
 
 ```tsx
-import { 
+import {
   useDashboard,
   useSystemStats,
   useSystemHealth,
   useTenants,
-  useCreateTenant
+  useCreateTenant,
 } from '@linch-kit/console'
 
 // 仪表板数据
@@ -245,12 +243,12 @@ const { data: tenants } = useTenants({
   page: 1,
   pageSize: 10,
   search: 'example',
-  status: 'active'
+  status: 'active',
 })
 
 // 创建租户
 const createTenant = useCreateTenant()
-const handleCreate = async (data) => {
+const handleCreate = async data => {
   await createTenant.mutateAsync(data)
 }
 ```
@@ -258,11 +256,7 @@ const handleCreate = async (data) => {
 #### 权限 Hooks
 
 ```tsx
-import { 
-  useConsolePermission,
-  useConsolePermissions,
-  useConsoleContext
-} from '@linch-kit/console'
+import { useConsolePermission, useConsolePermissions, useConsoleContext } from '@linch-kit/console'
 
 // 单个权限检查
 const canCreateTenant = useConsolePermission('tenant:create')
@@ -271,12 +265,7 @@ const canCreateTenant = useConsolePermission('tenant:create')
 const canManageUsers = useConsolePermissions(['user:read', 'user:write'], true)
 
 // Console 上下文
-const { 
-  config, 
-  tenantId, 
-  permissions, 
-  isAdmin 
-} = useConsoleContext()
+const { config, tenantId, permissions, isAdmin } = useConsoleContext()
 ```
 
 ### 服务层 API
@@ -295,7 +284,7 @@ const tenant = await tenantService.create({
   slug: 'example-company',
   domain: 'example.com',
   plan: 'professional',
-  maxUsers: 100
+  maxUsers: 100,
 })
 
 // 查询租户列表
@@ -303,13 +292,13 @@ const result = await tenantService.list({
   page: 1,
   pageSize: 10,
   search: 'example',
-  status: 'active'
+  status: 'active',
 })
 
 // 更新租户
 const updated = await tenantService.update('tenant-id', {
   maxUsers: 200,
-  plan: 'enterprise'
+  plan: 'enterprise',
 })
 ```
 
@@ -318,13 +307,13 @@ const updated = await tenantService.update('tenant-id', {
 Console 模块提供完整的企业级数据模型：
 
 ```tsx
-import { 
+import {
   TenantEntity,
   TenantQuotasEntity,
   PluginEntity,
   SystemMetricEntity,
   AuditLogEntity,
-  ConsoleEntities
+  ConsoleEntities,
 } from '@linch-kit/console/entities'
 
 // 获取所有实体
@@ -343,25 +332,25 @@ const tenantType = TenantEntity.createSchema
 interface ConsoleConfig {
   /** 基础路径 */
   basePath?: string
-  
+
   /** 启用的功能模块 */
   features?: ConsoleFeature[]
-  
+
   /** 权限配置 */
   permissions?: {
     access: string[]
     admin: string[]
   }
-  
+
   /** 主题配置 */
   theme?: {
     primary: string
     darkMode: boolean
   }
-  
+
   /** 自定义路由 */
   customRoutes?: ConsoleRoute[]
-  
+
   /** 禁用的路由 */
   disabledRoutes?: string[]
 }
@@ -370,15 +359,15 @@ interface ConsoleConfig {
 ### 功能模块
 
 ```typescript
-type ConsoleFeature = 
-  | 'dashboard'    // 仪表板
-  | 'tenants'      // 租户管理
-  | 'users'        // 用户管理
-  | 'permissions'  // 权限管理
-  | 'plugins'      // 插件管理
-  | 'monitoring'   // 系统监控
-  | 'schemas'      // Schema 管理
-  | 'settings'     // 系统设置
+type ConsoleFeature =
+  | 'dashboard' // 仪表板
+  | 'tenants' // 租户管理
+  | 'users' // 用户管理
+  | 'permissions' // 权限管理
+  | 'plugins' // 插件管理
+  | 'monitoring' // 系统监控
+  | 'schemas' // Schema 管理
+  | 'settings' // 系统设置
 ```
 
 ## 🌐 国际化
@@ -390,7 +379,7 @@ import { useConsoleTranslation } from '@linch-kit/console'
 
 function MyComponent() {
   const t = useConsoleTranslation()
-  
+
   return (
     <div>
       <h1>{t('dashboard.title')}</h1>
@@ -452,7 +441,7 @@ import { createConsoleRoutes } from '@linch-kit/console'
 
 const routes = createConsoleRoutes({
   basePath: '/admin',
-  features: ['dashboard', 'tenants', 'users']
+  features: ['dashboard', 'tenants', 'users'],
 })
 
 export default function ConsolePage({ params }: { params: { slug?: string[] } }) {
@@ -468,7 +457,7 @@ import { createConsoleRouter } from '@linch-kit/console/api'
 import { createTRPCRouter } from '@linch-kit/trpc'
 
 const appRouter = createTRPCRouter({
-  console: createConsoleRouter({ db })
+  console: createConsoleRouter({ db }),
 })
 
 export { appRouter }
@@ -512,12 +501,9 @@ import { ConsoleProvider } from '@linch-kit/console'
 
 function App() {
   const { user, permissions } = useSession()
-  
+
   return (
-    <ConsoleProvider
-      tenantId={user?.tenantId}
-      permissions={permissions}
-    >
+    <ConsoleProvider tenantId={user?.tenantId} permissions={permissions}>
       {children}
     </ConsoleProvider>
   )
@@ -575,13 +561,11 @@ import { ConsoleProvider, Dashboard } from '@linch-kit/console'
 
 test('renders dashboard', () => {
   render(
-    <ConsoleProvider
-      permissions={['console:access']}
-    >
+    <ConsoleProvider permissions={['console:access']}>
       <Dashboard />
     </ConsoleProvider>
   )
-  
+
   expect(screen.getByText('仪表板')).toBeInTheDocument()
 })
 ```
@@ -594,13 +578,11 @@ import { useConsolePermission, ConsoleProvider } from '@linch-kit/console'
 
 test('permission check works', () => {
   const wrapper = ({ children }) => (
-    <ConsoleProvider permissions={['tenant:create']}>
-      {children}
-    </ConsoleProvider>
+    <ConsoleProvider permissions={['tenant:create']}>{children}</ConsoleProvider>
   )
-  
+
   const { result } = renderHook(() => useConsolePermission('tenant:create'), { wrapper })
-  
+
   expect(result.current).toBe(true)
 })
 ```
@@ -610,53 +592,51 @@ test('permission check works', () => {
 ### 常见问题
 
 #### 1. tRPC 集成错误
+
 ```
 Error: Cannot resolve tRPC client
 ```
 
 **解决方案**：确保正确配置 tRPC 客户端
+
 ```tsx
-<ConsoleProvider apiClient={trpcClient}>
-  {children}
-</ConsoleProvider>
+<ConsoleProvider apiClient={trpcClient}>{children}</ConsoleProvider>
 ```
 
 #### 2. 权限检查失败
+
 ```
 Error: Permission denied
 ```
 
 **解决方案**：检查权限配置
+
 ```tsx
-<ConsoleProvider 
-  permissions={['console:access', 'tenant:read']}
->
-  {children}
-</ConsoleProvider>
+<ConsoleProvider permissions={['console:access', 'tenant:read']}>{children}</ConsoleProvider>
 ```
 
 #### 3. 样式问题
+
 ```
 Error: Tailwind classes not working
 ```
 
 **解决方案**：确保 Tailwind CSS 配置正确
+
 ```js
 // tailwind.config.js
 module.exports = {
   content: [
     './node_modules/@linch-kit/console/dist/**/*.{js,ts,jsx,tsx}',
     // ... other paths
-  ]
+  ],
 }
 ```
 
 ### 调试模式
 
 ```tsx
-<ConsoleProvider devtools={true}>
-  {children}
-</ConsoleProvider>
+<ConsoleProvider devtools={true}>{children}</ConsoleProvider>
 ```
 
 ## 🤝 贡献

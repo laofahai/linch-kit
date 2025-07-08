@@ -12,11 +12,11 @@ import { EventEmitter } from 'eventemitter3'
 // LRUCache value type for ConfigValue
 type CacheValue = NonNullable<ConfigValue> | {}
 
-import type { 
+import type {
   ConfigManager as IConfigManager,
   ConfigSource,
   ConfigValue,
-  TenantContext
+  TenantContext,
 } from '../types'
 import { useTranslation } from '../i18n'
 import type { TranslationFunction } from '../i18n'
@@ -81,12 +81,12 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
     t?: TranslationFunction
   }) {
     super()
-    
+
     this.t = options?.t || useTranslation()
-    
+
     // 初始化全局配置
     this.globalConfig = options?.globalSchema || convict({})
-    
+
     // 初始化全局缓存
     const cacheOptions = options?.cacheOptions || { max: 1000, ttl: 1000 * 60 * 60 } // 1小时TTL
     this.globalCache = new LRUCache<string, CacheValue>(cacheOptions)
@@ -101,14 +101,12 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
     const { tenantId, schema, sources = [], cacheOptions } = options
 
     if (this.tenants.has(tenantId)) {
-      throw new Error(
-        this.t('config.tenant.exists', { tenantId })
-      )
+      throw new Error(this.t('config.tenant.exists', { tenantId }))
     }
 
     // 创建租户专用配置实例
     const config = schema || convict({})
-    
+
     // 创建租户专用缓存
     const cache = new LRUCache<string, CacheValue>(
       cacheOptions || { max: 500, ttl: 1000 * 60 * 30 } // 30分钟TTL
@@ -122,7 +120,7 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
       } catch (error) {
         this.emit('config:tenant:error', {
           tenantId,
-          error: error instanceof Error ? error.message : String(error)
+          error: error instanceof Error ? error.message : String(error),
         })
       }
     }
@@ -132,9 +130,9 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
       config.validate({ allowed: 'strict' })
     } catch (error) {
       throw new Error(
-        this.t('config.tenant.validate.error', { 
-          tenantId, 
-          error: error instanceof Error ? error.message : String(error)
+        this.t('config.tenant.validate.error', {
+          tenantId,
+          error: error instanceof Error ? error.message : String(error),
         })
       )
     }
@@ -145,7 +143,7 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
       config,
       cache,
       lastUpdated: new Date(),
-      version: 1
+      version: 1,
     }
 
     this.tenants.set(tenantId, tenantConfig)
@@ -164,11 +162,11 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
 
     // 清理缓存
     tenant.cache.clear()
-    
+
     // 删除租户
     this.tenants.delete(tenantId)
     this.emit('tenant:deleted', { tenantId })
-    
+
     return true
   }
 
@@ -194,11 +192,7 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
    * @param defaultValue 默认值
    * @param context 租户上下文
    */
-  get<T = unknown>(
-    key: string, 
-    defaultValue?: T,
-    context?: TenantContext
-  ): T {
+  get<T = unknown>(key: string, defaultValue?: T, context?: TenantContext): T {
     const tenantId = context?.tenantId
 
     if (tenantId) {
@@ -229,16 +223,10 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
    * 获取租户配置
    * @private
    */
-  private getTenantConfig<T = unknown>(
-    tenantId: string, 
-    key: string, 
-    defaultValue?: T
-  ): T {
+  private getTenantConfig<T = unknown>(tenantId: string, key: string, defaultValue?: T): T {
     const tenant = this.tenants.get(tenantId)
     if (!tenant) {
-      throw new Error(
-        this.t('config.tenant.not.found', { tenantId })
-      )
+      throw new Error(this.t('config.tenant.not.found', { tenantId }))
     }
 
     // 尝试从缓存获取
@@ -252,10 +240,10 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const value = (tenant.config as any).get(key) as ConfigValue | null
-      
+
       // 缓存结果
       tenant.cache.set(cacheKey, (value ?? {}) as CacheValue)
-      
+
       return (value ?? defaultValue) as T
     } catch {
       return defaultValue as T
@@ -269,18 +257,16 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
   private setTenantConfig(tenantId: string, key: string, value: ConfigValue): void {
     const tenant = this.tenants.get(tenantId)
     if (!tenant) {
-      throw new Error(
-        this.t('config.tenant.not.found', { tenantId })
-      )
+      throw new Error(this.t('config.tenant.not.found', { tenantId }))
     }
 
     // 更新配置
     tenant.config.set(key, value)
-    
+
     // 更新缓存
     const cacheKey = `${tenantId}:${key}`
     tenant.cache.set(cacheKey, (value ?? {}) as CacheValue)
-    
+
     // 更新元数据
     tenant.lastUpdated = new Date()
     tenant.version += 1
@@ -304,10 +290,10 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const value = (this.globalConfig as any).get(key) as ConfigValue | null
-      
+
       // 缓存结果
       this.globalCache.set(key, (value ?? {}) as CacheValue)
-      
+
       return (value ?? defaultValue) as T
     } catch {
       return defaultValue as T
@@ -321,7 +307,7 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
   private setGlobalConfig(key: string, value: ConfigValue): void {
     // 更新配置
     this.globalConfig.set(key, value)
-    
+
     // 更新缓存
     this.globalCache.set(key, (value ?? {}) as CacheValue)
   }
@@ -333,7 +319,7 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
    */
   async loadConfig(source: ConfigSource, context?: TenantContext): Promise<void> {
     const data = await this.loadFromSource(source)
-    
+
     if (context?.tenantId) {
       // 加载到租户配置
       const tenant = this.tenants.get(context.tenantId)
@@ -342,10 +328,10 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
         tenant.cache.clear() // 清除缓存
         tenant.lastUpdated = new Date()
         tenant.version += 1
-        
-        this.emit('tenant:updated', { 
-          tenantId: context.tenantId, 
-          version: tenant.version 
+
+        this.emit('tenant:updated', {
+          tenantId: context.tenantId,
+          version: tenant.version,
         })
       }
     } else {
@@ -371,9 +357,7 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
       case 'env':
         return process.env as Record<string, ConfigValue>
       default:
-        throw new Error(
-          this.t('config.source.unsupported', { type: source.type })
-        )
+        throw new Error(this.t('config.source.unsupported', { type: source.type }))
     }
   }
 
@@ -413,7 +397,7 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
     if (!tenant) {
       return {
         valid: false,
-        errors: [this.t('config.tenant.not.found', { tenantId })]
+        errors: [this.t('config.tenant.not.found', { tenantId })],
       }
     }
 
@@ -423,13 +407,13 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
     } catch (error) {
       return {
         valid: false,
-        errors: [error instanceof Error ? error.message : String(error)]
+        errors: [error instanceof Error ? error.message : String(error)],
       }
     }
   }
 
   // 为了兼容现有接口，实现这些方法但建议使用带context的版本
-  
+
   /**
    * @deprecated 使用 get(key, defaultValue, context) 替代
    */
@@ -491,7 +475,7 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
   async reload(): Promise<void> {
     // 重新加载全局配置
     this.globalCache.clear()
-    
+
     // 重新加载所有租户配置
     for (const tenant of this.tenants.values()) {
       tenant.cache.clear()
@@ -506,12 +490,12 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
   clear(): void {
     // 清除全局配置
     this.globalCache.clear()
-    
+
     // 清除所有租户配置
     for (const tenant of this.tenants.values()) {
       tenant.cache.clear()
     }
-    
+
     // 清除租户映射
     this.tenants.clear()
   }
@@ -525,9 +509,9 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
  * @example
  * ```typescript
  * import { createTenantConfigManager } from '@linch-kit/core'
- * 
+ *
  * const configManager = createTenantConfigManager()
- * 
+ *
  * // 创建租户
  * await configManager.createTenant({
  *   tenantId: 'tenant1',
@@ -535,7 +519,7 @@ export class TenantConfigManager extends EventEmitter implements IConfigManager 
  *     port: { format: 'port', default: 3000 }
  *   })
  * })
- * 
+ *
  * // 获取租户配置
  * const port = configManager.get('port', 3000, { tenantId: 'tenant1' })
  * ```

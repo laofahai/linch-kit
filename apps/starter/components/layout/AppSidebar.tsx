@@ -1,6 +1,6 @@
 /**
  * Modern Sidebar Layout Component for LinchKit Starter
- * 
+ *
  * Inspired by Vercel and Supabase design systems
  * Features: Mobile-first responsive design, smooth animations, modern aesthetics
  */
@@ -9,14 +9,14 @@
 
 import React, { ReactNode, useState, useEffect, useCallback } from 'react'
 import { cn } from '@linch-kit/ui/utils'
-import { 
-  Button, 
-  Sheet, 
+import {
+  Button,
+  Sheet,
   SheetContent,
-  Badge, 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
+  Badge,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   Breadcrumb,
@@ -24,13 +24,13 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator
+  BreadcrumbSeparator,
 } from '@linch-kit/ui'
-import { 
-  Menu, 
-  Home, 
-  Settings, 
-  Users, 
+import {
+  Menu,
+  Home,
+  Settings,
+  Users,
   BarChart3,
   ChevronLeft,
   ChevronDown,
@@ -38,7 +38,7 @@ import {
   LogOut,
   Globe,
   Building,
-  Shield
+  Shield,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useSession, signOut } from 'next-auth/react'
@@ -73,19 +73,19 @@ interface NavItem {
 // Navigation items with role-based access control
 function getNavItems(userRole: string | undefined): NavItem[] {
   const isAdmin = userRole === 'SUPER_ADMIN' || userRole === 'TENANT_ADMIN'
-  
+
   const baseItems: NavItem[] = [
-    { 
-      label: 'Overview', 
-      href: '/dashboard', 
-      icon: Home, 
-      active: true 
+    {
+      label: 'Overview',
+      href: '/dashboard',
+      icon: Home,
+      active: true,
     },
-    { 
-      label: 'Settings', 
-      href: '/dashboard/settings', 
-      icon: Settings
-    }
+    {
+      label: 'Settings',
+      href: '/dashboard/settings',
+      icon: Settings,
+    },
   ]
 
   // 管理功能 - 仅管理员可见
@@ -99,7 +99,7 @@ function getNavItems(userRole: string | undefined): NavItem[] {
         { label: 'Users', href: '/dashboard/admin/users', icon: Users },
         { label: 'Tenants', href: '/dashboard/admin/tenants', icon: Building },
         { label: 'System Settings', href: '/dashboard/admin/settings', icon: Settings },
-      ]
+      ],
     })
   }
 
@@ -109,11 +109,11 @@ function getNavItems(userRole: string | undefined): NavItem[] {
 /**
  * Vercel-style Navigation Item Component
  */
-function NavMenuItem({ 
-  item, 
-  isCollapsed, 
-  level = 0 
-}: { 
+function NavMenuItem({
+  item,
+  isCollapsed,
+  level = 0,
+}: {
   item: NavItem
   isCollapsed: boolean
   level?: number
@@ -122,7 +122,7 @@ function NavMenuItem({
   const { addTab } = useTabsStore()
   const Icon = item.icon
   const hasChildren = item.children && item.children.length > 0
-  
+
   const toggleExpanded = () => {
     if (hasChildren) {
       setIsExpanded(!isExpanded)
@@ -159,8 +159,8 @@ function NavMenuItem({
             size="sm"
             className={cn(
               'h-10 w-full p-0 text-sm font-medium rounded-none',
-              item.active 
-                ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground' 
+              item.active
+                ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground'
                 : 'text-muted-foreground'
             )}
             title={item.label}
@@ -173,7 +173,7 @@ function NavMenuItem({
             <Icon className="w-4 h-4 mr-2" />
             {item.label}
           </DropdownMenuItem>
-          {item.children!.map((childItem) => {
+          {item.children!.map(childItem => {
             const ChildIcon = childItem.icon
             return (
               <DropdownMenuItem key={childItem.href} onClick={() => handleNavClick(childItem)}>
@@ -196,8 +196,8 @@ function NavMenuItem({
           onClick={() => handleNavClick(item)}
           className={cn(
             'h-10 w-full p-0 text-sm font-medium rounded-none',
-            item.active 
-              ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground' 
+            item.active
+              ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground'
               : 'text-muted-foreground'
           )}
           title={item.label}
@@ -215,27 +215,31 @@ function NavMenuItem({
         className={cn(
           'group flex items-center gap-3 px-2 py-1.5 mx-1 rounded-lg text-sm font-medium transition-all duration-100 cursor-pointer',
           'hover:bg-accent/30 dark:hover:bg-accent/40 active:bg-accent/50 dark:active:bg-accent/60',
-          item.active 
-            ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground' 
+          item.active
+            ? 'bg-accent/20 text-accent-foreground dark:bg-accent/30 dark:text-accent-foreground'
             : 'text-muted-foreground',
           level > 0 && 'ml-4'
         )}
       >
-        <Icon className={cn(
-          'flex-shrink-0 transition-colors w-4 h-4',
-          item.active ? 'text-accent-foreground' : 'text-muted-foreground group-hover:text-accent-foreground'
-        )} />
-        
+        <Icon
+          className={cn(
+            'flex-shrink-0 transition-colors w-4 h-4',
+            item.active
+              ? 'text-accent-foreground'
+              : 'text-muted-foreground group-hover:text-accent-foreground'
+          )}
+        />
+
         <div className="flex items-center justify-between flex-1 min-w-0">
           <span className="truncate">{item.label}</span>
           <div className="flex items-center gap-2">
             {item.badge && (
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className={cn(
                   'text-xs px-1.5 py-0.5 h-5 border-0',
-                  item.active 
-                    ? 'bg-accent/30 text-accent-foreground' 
+                  item.active
+                    ? 'bg-accent/30 text-accent-foreground'
                     : 'bg-accent/10 text-muted-foreground'
                 )}
               >
@@ -243,22 +247,24 @@ function NavMenuItem({
               </Badge>
             )}
             {hasChildren && (
-              <ChevronDown className={cn(
-                'w-4 h-4 transition-transform duration-100',
-                isExpanded && 'rotate-180'
-              )} />
+              <ChevronDown
+                className={cn(
+                  'w-4 h-4 transition-transform duration-100',
+                  isExpanded && 'rotate-180'
+                )}
+              />
             )}
           </div>
         </div>
       </div>
-      
+
       {/* Submenu */}
       {hasChildren && isExpanded && !isCollapsed && (
         <div className="mt-1 space-y-1">
-          {item.children!.map((childItem) => (
-            <NavMenuItem 
-              key={childItem.href} 
-              item={childItem} 
+          {item.children!.map(childItem => (
+            <NavMenuItem
+              key={childItem.href}
+              item={childItem}
               isCollapsed={isCollapsed}
               level={level + 1}
             />
@@ -275,11 +281,11 @@ function NavMenuItem({
 function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onToggle: () => void }) {
   const { data: session } = useSession()
   const navItems = getNavItems((session?.user as { role?: string })?.role)
-  
+
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/sign-in' })
   }
-  
+
   const getUserInitials = (name: string | null | undefined) => {
     if (!name) return 'U'
     return name
@@ -289,53 +295,56 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
       .toUpperCase()
       .substring(0, 2)
   }
-  
+
   return (
-    <div className={cn(
-      'hidden md:flex h-screen bg-white dark:bg-black transition-all duration-150 ease-out',
-      'border-r border-gray-200 dark:border-gray-800 flex-col fixed',
-      isCollapsed ? 'w-16' : 'w-64'
-    )}>
+    <div
+      className={cn(
+        'hidden md:flex h-screen bg-white dark:bg-black transition-all duration-150 ease-out',
+        'border-r border-gray-200 dark:border-gray-800 flex-col fixed',
+        isCollapsed ? 'w-16' : 'w-64'
+      )}
+    >
       {/* Logo Section */}
       <div className="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-800">
-        <a href="/dashboard" className={cn(
-          "flex items-center transition-all duration-150 hover:opacity-80",
-          isCollapsed ? "justify-center w-full" : "gap-3"
-        )}>
+        <a
+          href="/dashboard"
+          className={cn(
+            'flex items-center transition-all duration-150 hover:opacity-80',
+            isCollapsed ? 'justify-center w-full' : 'gap-3'
+          )}
+        >
           <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center flex-shrink-0">
             <span className="text-white dark:text-black text-sm font-bold">L</span>
           </div>
-          <div className={cn(
-            "flex flex-col transition-all duration-150 overflow-hidden",
-            isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
-          )}>
-            <div className="font-semibold text-gray-900 dark:text-white text-sm whitespace-nowrap">LinchKit</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">Starter</div>
+          <div
+            className={cn(
+              'flex flex-col transition-all duration-150 overflow-hidden',
+              isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'
+            )}
+          >
+            <div className="font-semibold text-gray-900 dark:text-white text-sm whitespace-nowrap">
+              LinchKit
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+              Starter
+            </div>
           </div>
         </a>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 py-4 overflow-y-auto">
-        <div className={cn(
-          "space-y-1",
-          isCollapsed ? "px-0" : "px-2"
-        )}>
-          {navItems.map((item) => (
-            <NavMenuItem 
-              key={item.href} 
-              item={item} 
-              isCollapsed={isCollapsed}
-            />
+        <div className={cn('space-y-1', isCollapsed ? 'px-0' : 'px-2')}>
+          {navItems.map(item => (
+            <NavMenuItem key={item.href} item={item} isCollapsed={isCollapsed} />
           ))}
         </div>
       </nav>
 
       {/* User Section */}
-      <div className={cn(
-        "border-t border-gray-200 dark:border-gray-800",
-        isCollapsed ? "p-0" : "p-3"
-      )}>
+      <div
+        className={cn('border-t border-gray-200 dark:border-gray-800', isCollapsed ? 'p-0' : 'p-3')}
+      >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             {!isCollapsed ? (
@@ -343,9 +352,9 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
                 <div className="w-7 h-7 bg-accent/20 rounded-full flex items-center justify-center">
                   {session?.user?.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img 
-                      src={session.user.image} 
-                      alt={session.user.name || 'User'} 
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || 'User'}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
@@ -367,9 +376,9 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
               <Button variant="ghost" size="sm" className="h-10 w-full p-0 rounded-none">
                 {session?.user?.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img 
-                    src={session.user.image} 
-                    alt={session.user.name || 'User'} 
+                  <img
+                    src={session.user.image}
+                    alt={session.user.name || 'User'}
                     className="w-4 h-4 rounded-full object-cover"
                   />
                 ) : (
@@ -380,14 +389,18 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
               </Button>
             )}
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={isCollapsed ? "center" : "end"} side={isCollapsed ? "right" : "top"} className="w-56">
+          <DropdownMenuContent
+            align={isCollapsed ? 'center' : 'end'}
+            side={isCollapsed ? 'right' : 'top'}
+            className="w-56"
+          >
             <div className="flex items-center gap-3 p-2">
               <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
                 {session?.user?.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img 
-                    src={session.user.image} 
-                    alt={session.user.name || 'User'} 
+                  <img
+                    src={session.user.image}
+                    alt={session.user.name || 'User'}
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
@@ -424,21 +437,20 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
       </div>
 
       {/* Quick Actions & Toggle */}
-      <div className={cn(
-        "border-t border-gray-200 dark:border-gray-800",
-        isCollapsed ? "p-0" : "p-3"
-      )}>
+      <div
+        className={cn('border-t border-gray-200 dark:border-gray-800', isCollapsed ? 'p-0' : 'p-3')}
+      >
         {!isCollapsed ? (
           <div className="flex items-center gap-2">
             {/* Theme Toggle */}
             <ThemeToggle />
-            
+
             {/* Language Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                   title="Language"
                 >
@@ -446,15 +458,11 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="center">
-                <DropdownMenuItem>
-                  English
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  中文
-                </DropdownMenuItem>
+                <DropdownMenuItem>English</DropdownMenuItem>
+                <DropdownMenuItem>中文</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             {/* Collapse Toggle */}
             <Button
               variant="ghost"
@@ -472,7 +480,7 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
             <div className="flex items-center justify-center h-10 w-full">
               <ThemeToggle className="h-10 w-full hover:bg-accent/30 dark:hover:bg-accent/40 active:bg-accent/50 dark:active:bg-accent/60 transition-colors rounded-none" />
             </div>
-            
+
             {/* Collapse Toggle */}
             <Button
               variant="ghost"
@@ -493,14 +501,20 @@ function DesktopSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onTog
 /**
  * Premium Mobile Sidebar Component
  */
-function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: (open: boolean) => void }) {
+function MobileSidebar({
+  isOpen,
+  onOpenChange,
+}: {
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   const { data: session } = useSession()
   const navItems = getNavItems((session?.user as { role?: string })?.role)
-  
+
   const handleSignOut = async () => {
     await signOut({ callbackUrl: '/sign-in' })
   }
-  
+
   const getUserInitials = (name: string | null | undefined) => {
     if (!name) return 'U'
     return name
@@ -510,14 +524,20 @@ function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange
       .toUpperCase()
       .substring(0, 2)
   }
-  
+
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="w-80 p-0 bg-white dark:bg-black border-gray-200 dark:border-gray-800">
+      <SheetContent
+        side="left"
+        className="w-80 p-0 bg-white dark:bg-black border-gray-200 dark:border-gray-800"
+      >
         <div className="flex flex-col h-full">
           {/* Logo Section */}
           <div className="flex items-center h-16 px-6 border-b border-gray-200 dark:border-gray-800">
-            <a href="/dashboard" className="flex items-center gap-3 transition-colors hover:opacity-80">
+            <a
+              href="/dashboard"
+              className="flex items-center gap-3 transition-colors hover:opacity-80"
+            >
               <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center">
                 <span className="text-white dark:text-black text-sm font-bold">L</span>
               </div>
@@ -531,12 +551,8 @@ function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange
           {/* Navigation */}
           <nav className="flex-1 py-4 overflow-y-auto">
             <div className="space-y-1 px-4">
-              {navItems.map((item) => (
-                <NavMenuItem 
-                  key={item.href} 
-                  item={item} 
-                  isCollapsed={false}
-                />
+              {navItems.map(item => (
+                <NavMenuItem key={item.href} item={item} isCollapsed={false} />
               ))}
             </div>
           </nav>
@@ -547,9 +563,9 @@ function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange
               <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
                 {session?.user?.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img 
-                    src={session.user.image} 
-                    alt={session.user.name || 'User'} 
+                  <img
+                    src={session.user.image}
+                    alt={session.user.name || 'User'}
                     className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
@@ -582,7 +598,7 @@ function MobileSidebar({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange
  */
 function useSidebarState() {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  
+
   // Load state from localStorage on mount
   useEffect(() => {
     const savedState = localStorage.getItem('sidebar-collapsed')
@@ -590,14 +606,14 @@ function useSidebarState() {
       setIsCollapsed(JSON.parse(savedState))
     }
   }, [])
-  
+
   // Save state to localStorage when changed
   const toggleSidebar = useCallback(() => {
     const newState = !isCollapsed
     setIsCollapsed(newState)
     localStorage.setItem('sidebar-collapsed', JSON.stringify(newState))
   }, [isCollapsed])
-  
+
   return { isCollapsed, toggleSidebar }
 }
 
@@ -608,7 +624,7 @@ export function AppSidebarLayout({
   children,
   title = 'LinchKit Dashboard',
   breadcrumbs = [],
-  className
+  className,
 }: AppSidebarLayoutProps) {
   const { isCollapsed, toggleSidebar } = useSidebarState()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -630,21 +646,27 @@ export function AppSidebarLayout({
     <div className={cn('flex min-h-screen bg-white dark:bg-black', className)}>
       {/* Desktop Sidebar */}
       <DesktopSidebar isCollapsed={isCollapsed} onToggle={toggleSidebar} />
-      
+
       {/* Mobile Sidebar */}
       <MobileSidebar isOpen={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen} />
 
       {/* Main Content */}
-      <div className={cn(
-        'flex-1 flex flex-col min-w-0 transition-all duration-150',
-        'md:ml-64',
-        isCollapsed && 'md:ml-16'
-      )}>
+      <div
+        className={cn(
+          'flex-1 flex flex-col min-w-0 transition-all duration-150',
+          'md:ml-64',
+          isCollapsed && 'md:ml-16'
+        )}
+      >
         {/* 统一动态导航栏 - 优化版本 */}
-        <header className={cn(
-          "sticky top-0 z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md flex items-center justify-between",
-          shouldShowTabs ? "h-16 px-0" : "h-16 px-4 md:px-6 border-b border-gray-200 dark:border-gray-800"
-        )}>
+        <header
+          className={cn(
+            'sticky top-0 z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md flex items-center justify-between',
+            shouldShowTabs
+              ? 'h-16 px-0'
+              : 'h-16 px-4 md:px-6 border-b border-gray-200 dark:border-gray-800'
+          )}
+        >
           {shouldShowTabs ? (
             /* PC端：完整宽度的标签栏 */
             <div className="flex items-center w-full h-full">
@@ -659,7 +681,7 @@ export function AppSidebarLayout({
                   <Menu className="w-5 h-5" />
                 </Button>
               </div>
-              
+
               {/* 标签栏占满宽度 */}
               <div className="flex-1 h-full">
                 <TabsContainer headerOnly={true} />
@@ -716,19 +738,13 @@ export function AppSidebarLayout({
             /* PC端：标签页内容区域（不包含标签栏） */
             <div className="h-full">
               {/* 显示所有标签页内容，但只有活动的可见 */}
-              {tabs.map((tab) => (
-                <TabContent
-                  key={tab.id}
-                  tab={tab}
-                  isActive={tab.id === activeTabId}
-                />
+              {tabs.map(tab => (
+                <TabContent key={tab.id} tab={tab} isActive={tab.id === activeTabId} />
               ))}
             </div>
           ) : (
             /* 移动端：传统页面内容 */
-            <div className="h-full overflow-auto p-4 md:p-6">
-              {children}
-            </div>
+            <div className="h-full overflow-auto p-4 md:p-6">{children}</div>
           )}
         </main>
       </div>
@@ -747,13 +763,7 @@ export interface AppPageProps {
   className?: string
 }
 
-export function AppPage({
-  title,
-  description,
-  actions,
-  children,
-  className
-}: AppPageProps) {
+export function AppPage({ title, description, actions, children, className }: AppPageProps) {
   return (
     <div className={cn('space-y-6', className)}>
       {/* Page Header */}
@@ -771,19 +781,13 @@ export function AppPage({
               </p>
             )}
           </div>
-          
-          {actions && (
-            <div className="flex items-center gap-3 flex-shrink-0">
-              {actions}
-            </div>
-          )}
+
+          {actions && <div className="flex items-center gap-3 flex-shrink-0">{actions}</div>}
         </div>
       )}
-      
+
       {/* Page Content */}
-      <div className="space-y-6">
-        {children}
-      </div>
+      <div className="space-y-6">{children}</div>
     </div>
   )
 }

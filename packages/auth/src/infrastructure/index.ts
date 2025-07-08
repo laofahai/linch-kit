@@ -3,9 +3,7 @@
  * 集成 @linch-kit/core 的日志、国际化、配置管理功能
  */
 
-import {
-  createLogger
-} from '@linch-kit/core'
+import { createLogger } from '@linch-kit/core'
 
 import { authI18n, useAuthTranslation } from '../i18n'
 
@@ -14,7 +12,7 @@ import { authI18n, useAuthTranslation } from '../i18n'
  */
 export const logger = createLogger({
   name: 'auth',
-  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info'
+  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
 })
 
 /**
@@ -63,12 +61,12 @@ export const defaultAuthInfrastructureConfig: AuthInfrastructureConfig = {
     requireUppercase: true,
     requireLowercase: true,
     requireNumbers: true,
-    requireSymbols: false
+    requireSymbols: false,
   },
   lockoutPolicy: {
     maxAttempts: 5,
-    lockoutDuration: 15
-  }
+    lockoutDuration: 15,
+  },
 }
 
 /**
@@ -94,15 +92,15 @@ export const logDebug = (message: string, data?: Record<string, unknown>): void 
  * 审计日志记录辅助函数
  */
 export const logAuditEvent = (
-  eventType: string, 
-  userId?: string, 
+  eventType: string,
+  userId?: string,
   details?: Record<string, unknown>
 ): void => {
   logInfo(`Audit: ${eventType}`, {
     eventType,
     userId,
     details,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   })
 }
 
@@ -119,7 +117,7 @@ export const logSecurityEvent = (
     eventType,
     severity,
     details,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   }
 
   switch (severity) {

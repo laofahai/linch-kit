@@ -62,22 +62,22 @@ export interface UserMFAStatus {
 
 /**
  * 多因子认证管理器
- * 
+ *
  * @description 提供完整的 MFA 功能
  * @example
  * ```typescript
  * import { MFAManager } from '@linch-kit/auth'
- * 
+ *
  * const mfaManager = new MFAManager({
  *   enabled: true,
  *   methods: ['totp', 'sms'],
  *   issuer: 'MyApp'
  * })
- * 
+ *
  * // 为用户设置 TOTP
  * const setup = await mfaManager.setupTOTP(user)
  * console.log('QR Code URL:', setup.qrCodeUrl)
- * 
+ *
  * // 验证 TOTP 代码
  * const result = await mfaManager.verifyTOTP(user, '123456')
  * ```
@@ -91,7 +91,7 @@ export class MFAManager {
 
   /**
    * 检查 MFA 是否启用
-   * 
+   *
    * @description 检查系统级别的 MFA 是否启用
    * @returns MFA 是否启用
    */
@@ -101,7 +101,7 @@ export class MFAManager {
 
   /**
    * 获取用户 MFA 状态
-   * 
+   *
    * @description 获取用户的 MFA 配置状态
    * @param user 用户信息
    * @returns 用户 MFA 状态
@@ -109,17 +109,17 @@ export class MFAManager {
   async getUserMFAStatus(user: LinchKitUser): Promise<UserMFAStatus> {
     // 这里应该连接到数据库查询用户 MFA 设置
     console.log(`Getting MFA status for user ${user.id}`)
-    
+
     return {
       enabled: false,
       methods: [],
-      backupCodesRemaining: 0
+      backupCodesRemaining: 0,
     }
   }
 
   /**
    * 设置 TOTP
-   * 
+   *
    * @description 为用户设置 TOTP 多因子认证
    * @param user 用户信息
    * @returns TOTP 设置信息
@@ -141,13 +141,13 @@ export class MFAManager {
     return {
       secret,
       qrCodeUrl,
-      backupCodes
+      backupCodes,
     }
   }
 
   /**
    * 验证 TOTP 代码
-   * 
+   *
    * @description 验证用户提供的 TOTP 代码
    * @param user 用户信息
    * @param code TOTP 代码
@@ -158,7 +158,7 @@ export class MFAManager {
       return {
         success: false,
         method: 'totp',
-        errorMessage: 'TOTP is not enabled'
+        errorMessage: 'TOTP is not enabled',
       }
     }
 
@@ -168,12 +168,12 @@ export class MFAManager {
         return {
           success: false,
           method: 'totp',
-          errorMessage: 'TOTP not set up for this user'
+          errorMessage: 'TOTP not set up for this user',
         }
       }
 
       const isValid = this.validateTOTPCode(secret, code)
-      
+
       if (isValid) {
         await this.updateLastMFAUsed(user.id, 'totp')
       }
@@ -181,20 +181,20 @@ export class MFAManager {
       return {
         success: isValid,
         method: 'totp',
-        errorMessage: isValid ? undefined : 'Invalid TOTP code'
+        errorMessage: isValid ? undefined : 'Invalid TOTP code',
       }
     } catch {
       return {
         success: false,
         method: 'totp',
-        errorMessage: 'Error verifying TOTP code'
+        errorMessage: 'Error verifying TOTP code',
       }
     }
   }
 
   /**
    * 发送 SMS 验证码
-   * 
+   *
    * @description 向用户手机发送 SMS 验证码
    * @param user 用户信息
    * @param phoneNumber 手机号码
@@ -206,19 +206,19 @@ export class MFAManager {
     }
 
     const code = this.generateSMSCode()
-    
+
     // 保存验证码到缓存（设置过期时间）
     await this.saveSMSCode(user.id, code)
 
     // 发送 SMS
     const sent = await this.sendSMS(phoneNumber, code)
-    
+
     return sent
   }
 
   /**
    * 验证 SMS 代码
-   * 
+   *
    * @description 验证用户提供的 SMS 代码
    * @param user 用户信息
    * @param code SMS 代码
@@ -229,7 +229,7 @@ export class MFAManager {
       return {
         success: false,
         method: 'sms',
-        errorMessage: 'SMS is not enabled'
+        errorMessage: 'SMS is not enabled',
       }
     }
 
@@ -244,13 +244,13 @@ export class MFAManager {
     return {
       success: isValid,
       method: 'sms',
-      errorMessage: isValid ? undefined : 'Invalid SMS code'
+      errorMessage: isValid ? undefined : 'Invalid SMS code',
     }
   }
 
   /**
    * 验证备用代码
-   * 
+   *
    * @description 验证用户提供的备用代码
    * @param user 用户信息
    * @param code 备用代码
@@ -270,13 +270,13 @@ export class MFAManager {
       success: isValid,
       method: 'backup_codes',
       errorMessage: isValid ? undefined : 'Invalid backup code',
-      backupCodeUsed: isValid
+      backupCodeUsed: isValid,
     }
   }
 
   /**
    * 生成新的备用代码
-   * 
+   *
    * @description 为用户生成新的备用代码
    * @param user 用户信息
    * @returns 新的备用代码列表
@@ -289,7 +289,7 @@ export class MFAManager {
 
   /**
    * 禁用用户 MFA
-   * 
+   *
    * @description 禁用用户的所有 MFA 方法
    * @param user 用户信息
    */
@@ -319,11 +319,11 @@ export class MFAManager {
   private generateBackupCodes(): string[] {
     const count = this.config.backupCodesCount || 10
     const codes: string[] = []
-    
+
     for (let i = 0; i < count; i++) {
       codes.push(Math.random().toString(36).substring(2, 10).toUpperCase())
     }
-    
+
     return codes
   }
 
@@ -399,7 +399,7 @@ export class MFAManager {
 
 /**
  * 创建 MFA 管理器实例
- * 
+ *
  * @description 便捷的工厂函数
  * @param config MFA 配置
  * @returns MFA 管理器实例

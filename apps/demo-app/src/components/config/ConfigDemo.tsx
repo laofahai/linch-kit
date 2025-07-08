@@ -16,47 +16,47 @@ const mockConfigs = {
     name: 'linchkit_dev',
     ssl: false,
     poolSize: 10,
-    timeout: 5000
+    timeout: 5000,
   },
   auth: {
     jwt: {
       secret: 'demo-jwt-secret',
       expiresIn: '1h',
-      refreshExpiresIn: '7d'
+      refreshExpiresIn: '7d',
     },
     oauth: {
       google: {
         clientId: 'google-client-id',
         clientSecret: '***hidden***',
-        enabled: true
+        enabled: true,
       },
       github: {
         clientId: 'github-client-id',
         clientSecret: '***hidden***',
-        enabled: false
-      }
+        enabled: false,
+      },
     },
     rateLimit: {
       windowMs: 900000,
-      maxRequests: 100
-    }
+      maxRequests: 100,
+    },
   },
   monitoring: {
     metrics: {
       enabled: true,
       port: 9090,
-      path: '/metrics'
+      path: '/metrics',
     },
     logging: {
       level: 'info',
       format: 'json',
-      outputs: ['console', 'file']
+      outputs: ['console', 'file'],
     },
     tracing: {
       enabled: true,
       serviceName: 'linchkit-app',
-      endpoint: 'http://localhost:14268/api/traces'
-    }
+      endpoint: 'http://localhost:14268/api/traces',
+    },
   },
   features: {
     userRegistration: true,
@@ -64,8 +64,8 @@ const mockConfigs = {
     twoFactorAuth: false,
     socialLogin: true,
     darkMode: true,
-    maintenanceMode: false
-  }
+    maintenanceMode: false,
+  },
 }
 
 interface ConfigSection {
@@ -80,44 +80,53 @@ const configSections: ConfigSection[] = [
     key: 'database',
     name: '数据库配置',
     description: '数据库连接和性能设置',
-    icon: '🗄️'
+    icon: '🗄️',
   },
   {
     key: 'auth',
     name: '认证配置',
     description: 'JWT、OAuth和安全设置',
-    icon: '🔐'
+    icon: '🔐',
   },
   {
     key: 'monitoring',
     name: '监控配置',
     description: '指标、日志和链路追踪',
-    icon: '📊'
+    icon: '📊',
   },
   {
     key: 'features',
     name: '功能开关',
     description: '特性标志和功能控制',
-    icon: '🎛️'
-  }
+    icon: '🎛️',
+  },
 ]
 
 export function ConfigDemo() {
   const [selectedSection, setSelectedSection] = useState<string>('database')
-  const [environment, setEnvironment] = useState<'development' | 'staging' | 'production'>('development')
+  const [environment, setEnvironment] = useState<'development' | 'staging' | 'production'>(
+    'development'
+  )
   const [tenant, setTenant] = useState<string>('default')
   const [configs, setConfigs] = useState(mockConfigs)
   const [validationResult, setValidationResult] = useState<string>('')
-  const [configStats, setConfigStats] = useState<{ totalConfigs: number; validConfigs: number; lastUpdated: string } | null>(null)
-  const [_configManager] = useState(() => new ConfigManager({
-    sources: [
-      { type: 'env', priority: 1 },
-      { type: 'file', path: './config/default.json', priority: 2 },
-      { type: 'database', priority: 3 }
-    ],
-    environment: 'development',
-    tenant: 'default'
-  }))
+  const [configStats, setConfigStats] = useState<{
+    totalConfigs: number
+    validConfigs: number
+    lastUpdated: string
+  } | null>(null)
+  const [_configManager] = useState(
+    () =>
+      new ConfigManager({
+        sources: [
+          { type: 'env', priority: 1 },
+          { type: 'file', path: './config/default.json', priority: 2 },
+          { type: 'database', priority: 3 },
+        ],
+        environment: 'development',
+        tenant: 'default',
+      })
+  )
 
   useEffect(() => {
     // 模拟配置加载
@@ -128,10 +137,10 @@ export function ConfigDemo() {
     try {
       // 模拟异步配置加载
       await new Promise(resolve => setTimeout(resolve, 500))
-      
+
       // 根据环境和租户调整配置
       const envConfigs = { ...mockConfigs }
-      
+
       if (environment === 'production') {
         envConfigs.database.host = 'prod-db.example.com'
         envConfigs.database.ssl = true
@@ -140,11 +149,11 @@ export function ConfigDemo() {
         envConfigs.database.host = 'staging-db.example.com'
         envConfigs.monitoring.logging.level = 'debug'
       }
-      
+
       if (tenant !== 'default') {
         envConfigs.database.name = `linchkit_${tenant}_${environment}`
       }
-      
+
       setConfigs(envConfigs)
     } catch (error) {
       console.error('配置加载失败:', error)
@@ -159,16 +168,20 @@ export function ConfigDemo() {
   const validateConfig = () => {
     const currentConfig = getCurrentConfig()
     const configKeys = Object.keys(currentConfig)
-    const validKeys = configKeys.filter(key => currentConfig[key] !== undefined && currentConfig[key] !== '')
-    
-    setValidationResult(`✅ 配置验证完成: ${selectedSection} 包含 ${configKeys.length} 项配置，其中 ${validKeys.length} 项有效`)
+    const validKeys = configKeys.filter(
+      key => currentConfig[key] !== undefined && currentConfig[key] !== ''
+    )
+
+    setValidationResult(
+      `✅ 配置验证完成: ${selectedSection} 包含 ${configKeys.length} 项配置，其中 ${validKeys.length} 项有效`
+    )
   }
 
   const getConfigStats = () => {
     const allConfigs = Object.values(configs).reduce((total, section) => {
       return total + Object.keys(section).length
     }, 0)
-    
+
     const validConfigs = Object.values(configs).reduce((total, section) => {
       return total + Object.values(section).filter(val => val !== undefined && val !== '').length
     }, 0)
@@ -176,7 +189,7 @@ export function ConfigDemo() {
     setConfigStats({
       totalConfigs: allConfigs,
       validConfigs,
-      lastUpdated: new Date().toLocaleString('zh-CN')
+      lastUpdated: new Date().toLocaleString('zh-CN'),
     })
   }
 
@@ -185,11 +198,11 @@ export function ConfigDemo() {
       const updated = { ...prev }
       const keys = path.split('.')
       let current = updated as Record<string, unknown>
-      
+
       for (let i = 0; i < keys.length - 1; i++) {
         current = current[keys[i]]
       }
-      
+
       current[keys[keys.length - 1]] = value
       return updated
     })
@@ -214,9 +227,7 @@ export function ConfigDemo() {
     if (Array.isArray(value)) {
       return (
         <div key={key} className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {key}
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{key}</label>
           <div className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded">
             [{value.map(item => `"${item}"`).join(', ')}]
           </div>
@@ -231,7 +242,7 @@ export function ConfigDemo() {
             <input
               type="checkbox"
               checked={value}
-              onChange={(e) => updateConfig(fullPath, e.target.checked)}
+              onChange={e => updateConfig(fullPath, e.target.checked)}
               className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
             <span className="text-sm font-medium text-gray-700">{key}</span>
@@ -243,13 +254,11 @@ export function ConfigDemo() {
     if (typeof value === 'number') {
       return (
         <div key={key} className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {key}
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{key}</label>
           <input
             type="number"
             value={value}
-            onChange={(e) => updateConfig(fullPath, parseInt(e.target.value))}
+            onChange={e => updateConfig(fullPath, parseInt(e.target.value))}
             className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -260,13 +269,11 @@ export function ConfigDemo() {
     const isSecret = key.toLowerCase().includes('secret') || key.toLowerCase().includes('password')
     return (
       <div key={key} className="mb-3">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {key}
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{key}</label>
         <input
           type={isSecret ? 'password' : 'text'}
           value={isSecret && typeof value === 'string' && value.includes('*') ? value : value}
-          onChange={(e) => updateConfig(fullPath, e.target.value)}
+          onChange={e => updateConfig(fullPath, e.target.value)}
           className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder={isSecret ? '••••••••' : ''}
         />
@@ -281,12 +288,12 @@ export function ConfigDemo() {
         <h3 className="text-lg font-semibold mb-4">🌍 环境和租户</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              环境
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">环境</label>
             <select
               value={environment}
-              onChange={(e) => setEnvironment(e.target.value as 'development' | 'staging' | 'production')}
+              onChange={e =>
+                setEnvironment(e.target.value as 'development' | 'staging' | 'production')
+              }
               className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="development">开发环境 (Development)</option>
@@ -295,12 +302,10 @@ export function ConfigDemo() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              租户
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">租户</label>
             <select
               value={tenant}
-              onChange={(e) => setTenant(e.target.value)}
+              onChange={e => setTenant(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="default">默认租户</option>
@@ -315,7 +320,7 @@ export function ConfigDemo() {
       {/* 配置分类导航 */}
       <div className="space-y-2">
         <h3 className="text-lg font-semibold mb-4">📋 配置分类</h3>
-        {configSections.map((section) => (
+        {configSections.map(section => (
           <button
             key={section.key}
             onClick={() => setSelectedSection(section.key)}
@@ -329,9 +334,11 @@ export function ConfigDemo() {
               <span className="text-lg">{section.icon}</span>
               <div>
                 <div className="font-medium">{section.name}</div>
-                <div className={`text-sm ${
-                  selectedSection === section.key ? 'text-blue-100' : 'text-gray-500'
-                }`}>
+                <div
+                  className={`text-sm ${
+                    selectedSection === section.key ? 'text-blue-100' : 'text-gray-500'
+                  }`}
+                >
                   {section.description}
                 </div>
               </div>
@@ -348,25 +355,25 @@ export function ConfigDemo() {
             {configSections.find(s => s.key === selectedSection)?.name}
           </h3>
           <div className="flex flex-wrap gap-2">
-            <button 
+            <button
               onClick={() => setValidationResult('✅ 配置已保存到本地存储')}
               className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
             >
               保存配置
             </button>
-            <button 
+            <button
               onClick={loadConfig}
               className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               重新加载
             </button>
-            <button 
+            <button
               onClick={validateConfig}
               className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
             >
               🔍 验证配置
             </button>
-            <button 
+            <button
               onClick={getConfigStats}
               className="px-3 py-1 text-sm bg-orange-600 text-white rounded hover:bg-orange-700"
             >
@@ -403,16 +410,15 @@ export function ConfigDemo() {
           </div>
         )}
 
-        <div className="space-y-4">
-        </div>
+        <div className="space-y-4"></div>
+
+        <div className="space-y-4"></div>
 
         <div className="space-y-4">
-        </div>
-
-        <div className="space-y-4">
-          {getCurrentConfig() && Object.entries(getCurrentConfig()).map(([key, value]) =>
-            renderConfigValue(key, value, selectedSection)
-          )}
+          {getCurrentConfig() &&
+            Object.entries(getCurrentConfig()).map(([key, value]) =>
+              renderConfigValue(key, value, selectedSection)
+            )}
         </div>
 
         {/* 配置来源信息 */}

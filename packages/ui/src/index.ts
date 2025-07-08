@@ -10,7 +10,7 @@ export * from './plugin'
 // 基础组件
 export * from './components'
 
-// Schema驱动组件  
+// Schema驱动组件
 export * from './forms'
 export * from './tables'
 

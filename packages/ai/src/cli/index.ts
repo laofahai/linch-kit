@@ -1,6 +1,6 @@
 /**
  * LinchKit AI CLI Module
- * 
+ *
  * @linch-kit/ai 包的 CLI 功能入口
  */
 

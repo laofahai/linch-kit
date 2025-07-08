@@ -1,8 +1,8 @@
 /**
  * @linch-kit/schema 日志系统集成
- * 
+ *
  * 使用@linch-kit/core的日志系统
- * 
+ *
  * @module infrastructure/logger
  */
 
@@ -13,7 +13,7 @@ import { createLogger } from '@linch-kit/core'
  * 使用Core包的日志系统
  */
 export const logger = createLogger({
-  name: 'schema'
+  name: 'schema',
 }) as ReturnType<typeof createLogger>
 
 /**

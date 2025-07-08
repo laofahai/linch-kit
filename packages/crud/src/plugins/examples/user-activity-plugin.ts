@@ -1,6 +1,6 @@
 /**
  * 用户活动插件示例 - 展示实体级和条件钩子的使用
- * 
+ *
  * 功能：
  * - 专门监控 User 实体的操作
  * - 记录用户登录、注册、状态变更
@@ -10,12 +10,12 @@
 
 import type { Logger as _Logger } from '@linch-kit/core'
 
-import type { 
-  CrudPluginHooks, 
-  HookContext, 
+import type {
+  CrudPluginHooks,
+  HookContext,
   FieldChange,
   CreateInput as _CreateInput,
-  UpdateInput as _UpdateInput
+  UpdateInput as _UpdateInput,
 } from '../types'
 import { BaseCrudPlugin } from '../base-plugin'
 
@@ -56,7 +56,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     super({
       name: 'user-activity-plugin',
       version: '1.0.0',
-      description: '用户活动插件 - 专门监控用户实体的操作和活动'
+      description: '用户活动插件 - 专门监控用户实体的操作和活动',
     })
   }
 
@@ -125,7 +125,14 @@ export class UserActivityPlugin extends BaseCrudPlugin {
         context: HookContext
       ): Promise<void> => {
         if (entityName === 'User') {
-          await this.handleUserRelationChange(id, relationName, changeType, relatedIds, entity, context)
+          await this.handleUserRelationChange(
+            id,
+            relationName,
+            changeType,
+            relatedIds,
+            entity,
+            context
+          )
         }
       },
 
@@ -142,7 +149,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
       // 钩子优先级 - 用户活动插件优先级较高
       getHookPriority: (hookName: string, entityName: string): number => {
         return entityName === 'User' ? 10 : 100
-      }
+      },
     }
   }
 
@@ -156,7 +163,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     // 记录注册活动
     await this.recordUserActivity(userId, 'USER_REGISTERED', context, {
       registrationMethod: context.metadata?.registrationMethod,
-      referrer: context.metadata?.referrer
+      referrer: context.metadata?.referrer,
     })
 
     // 初始化用户统计
@@ -165,12 +172,12 @@ export class UserActivityPlugin extends BaseCrudPlugin {
       loginCount: 0,
       profileUpdateCount: 0,
       statusChangeCount: 0,
-      relationChangeCount: 0
+      relationChangeCount: 0,
     })
 
     this.log('info', `User registered: ${userId}`, {
       userId,
-      registrationMethod: context.metadata?.registrationMethod
+      registrationMethod: context.metadata?.registrationMethod,
     })
   }
 
@@ -187,7 +194,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     if (!userId) return
 
     // 分析字段变更
-    const importantChanges = changes.filter(change => 
+    const importantChanges = changes.filter(change =>
       ['email', 'phone', 'avatar', 'displayName', 'bio'].includes(change.fieldName)
     )
 
@@ -195,21 +202,21 @@ export class UserActivityPlugin extends BaseCrudPlugin {
       // 记录资料更新活动
       await this.recordUserActivity(userId, 'PROFILE_UPDATED', context, {
         changedFields: importantChanges.map(c => c.fieldName),
-        changeCount: importantChanges.length
+        changeCount: importantChanges.length,
       })
 
       // 更新统计
       const stats = this.getUserStats(userId)
       stats.profileUpdateCount++
       stats.lastProfileUpdateAt = context.timestamp
-      
+
       // 更新最后活跃时间（用户主动更新资料）
       await this.updateLastActiveAt(userId, context.timestamp, context)
     }
 
     this.log('info', `User profile updated: ${userId}`, {
       userId,
-      changedFields: importantChanges.map(c => c.fieldName)
+      changedFields: importantChanges.map(c => c.fieldName),
     })
   }
 
@@ -223,7 +230,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     // 记录用户删除活动
     await this.recordUserActivity(userId, 'USER_DELETED', context, {
       deletionReason: context.metadata?.deletionReason,
-      softDelete: context.metadata?.softDelete
+      softDelete: context.metadata?.softDelete,
     })
 
     // 清理用户统计（如果是硬删除）
@@ -233,7 +240,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
 
     this.log('warn', `User deleted: ${userId}`, {
       userId,
-      softDelete: context.metadata?.softDelete
+      softDelete: context.metadata?.softDelete,
     })
   }
 
@@ -255,15 +262,15 @@ export class UserActivityPlugin extends BaseCrudPlugin {
       case 'lastLoginAt':
         await this.handleUserLogin(userId, newValue as Date, context)
         break
-      
+
       case 'email':
         await this.handleEmailChange(userId, oldValue as string, newValue as string, context)
         break
-      
+
       case 'avatar':
         await this.handleAvatarChange(userId, oldValue as string, newValue as string, context)
         break
-      
+
       case 'preferences':
         await this.handlePreferencesChange(userId, oldValue, newValue, context)
         break
@@ -284,7 +291,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     await this.recordUserActivity(userId, 'STATUS_CHANGED', context, {
       oldStatus,
       newStatus,
-      statusChangeReason: context.metadata?.statusChangeReason
+      statusChangeReason: context.metadata?.statusChangeReason,
     })
 
     // 更新统计
@@ -301,7 +308,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     this.log('info', `User status changed: ${userId} ${oldStatus} → ${newStatus}`, {
       userId,
       oldStatus,
-      newStatus
+      newStatus,
     })
   }
 
@@ -321,7 +328,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
       relationName,
       changeType,
       relatedIds,
-      relatedCount: relatedIds.length
+      relatedCount: relatedIds.length,
     })
 
     // 更新统计
@@ -333,11 +340,11 @@ export class UserActivityPlugin extends BaseCrudPlugin {
       case 'roles':
         await this.handleUserRoleChange(userId, changeType, relatedIds, context)
         break
-      
+
       case 'teams':
         await this.handleUserTeamChange(userId, changeType, relatedIds, context)
         break
-      
+
       case 'permissions':
         await this.handleUserPermissionChange(userId, changeType, relatedIds, context)
         break
@@ -347,7 +354,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
       userId,
       relationName,
       changeType,
-      relatedCount: relatedIds.length
+      relatedCount: relatedIds.length,
     })
   }
 
@@ -356,35 +363,43 @@ export class UserActivityPlugin extends BaseCrudPlugin {
   /**
    * 处理用户登录
    */
-  private async handleUserLogin(userId: string, loginTime: Date, context: HookContext): Promise<void> {
+  private async handleUserLogin(
+    userId: string,
+    loginTime: Date,
+    context: HookContext
+  ): Promise<void> {
     await this.recordUserActivity(userId, 'USER_LOGIN', context, {
       loginTime,
-      loginMethod: context.metadata?.loginMethod
+      loginMethod: context.metadata?.loginMethod,
     })
 
     const stats = this.getUserStats(userId)
     stats.loginCount++
     stats.lastLoginAt = loginTime
-    
+
     // 更新最后活跃时间
     await this.updateLastActiveAt(userId, loginTime, context)
   }
-  
+
   /**
    * 更新用户最后活跃时间
    */
-  private async updateLastActiveAt(userId: string, activeTime: Date, context: HookContext): Promise<void> {
+  private async updateLastActiveAt(
+    userId: string,
+    activeTime: Date,
+    context: HookContext
+  ): Promise<void> {
     // 记录活跃度活动
     await this.recordUserActivity(userId, 'USER_ACTIVE', context, {
       activeTime,
-      activityType: context.metadata?.activityType || 'general'
+      activityType: context.metadata?.activityType || 'general',
     })
-    
+
     // 这里应该调用实际的数据更新逻辑
     // 在真实实现中，这里会调用 CRUD 操作来更新数据库
     this.log('info', `用户活跃时间已更新: ${userId}`, {
       userId,
-      activeTime: activeTime.toISOString()
+      activeTime: activeTime.toISOString(),
     })
   }
 
@@ -399,7 +414,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
   ): Promise<void> {
     await this.recordUserActivity(userId, 'EMAIL_CHANGED', context, {
       oldEmail: this.maskEmail(oldEmail),
-      newEmail: this.maskEmail(newEmail)
+      newEmail: this.maskEmail(newEmail),
     })
   }
 
@@ -414,7 +429,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
   ): Promise<void> {
     await this.recordUserActivity(userId, 'AVATAR_CHANGED', context, {
       hasOldAvatar: !!oldAvatar,
-      hasNewAvatar: !!newAvatar
+      hasNewAvatar: !!newAvatar,
     })
   }
 
@@ -428,7 +443,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     context: HookContext
   ): Promise<void> {
     await this.recordUserActivity(userId, 'PREFERENCES_CHANGED', context, {
-      preferencesCount: Object.keys(newPreferences as Record<string, unknown> || {}).length
+      preferencesCount: Object.keys((newPreferences as Record<string, unknown>) || {}).length,
     })
   }
 
@@ -438,7 +453,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
   private async handleUserSuspension(userId: string, context: HookContext): Promise<void> {
     await this.recordUserActivity(userId, 'USER_SUSPENDED', context, {
       suspensionReason: context.metadata?.suspensionReason,
-      suspendedBy: context.user
+      suspendedBy: context.user,
     })
   }
 
@@ -447,7 +462,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
    */
   private async handleUserReactivation(userId: string, context: HookContext): Promise<void> {
     await this.recordUserActivity(userId, 'USER_REACTIVATED', context, {
-      reactivatedBy: context.user
+      reactivatedBy: context.user,
     })
   }
 
@@ -463,7 +478,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     await this.recordUserActivity(userId, 'ROLES_CHANGED', context, {
       changeType,
       roleIds,
-      roleCount: roleIds.length
+      roleCount: roleIds.length,
     })
   }
 
@@ -479,7 +494,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     await this.recordUserActivity(userId, 'TEAMS_CHANGED', context, {
       changeType,
       teamIds,
-      teamCount: teamIds.length
+      teamCount: teamIds.length,
     })
   }
 
@@ -495,7 +510,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
     await this.recordUserActivity(userId, 'PERMISSIONS_CHANGED', context, {
       changeType,
       permissionIds,
-      permissionCount: permissionIds.length
+      permissionCount: permissionIds.length,
     })
   }
 
@@ -517,10 +532,10 @@ export class UserActivityPlugin extends BaseCrudPlugin {
       timestamp: context.timestamp,
       metadata: {
         ...context.metadata,
-        ...metadata
+        ...metadata,
       },
       ipAddress: context.metadata?.ipAddress as string,
-      userAgent: context.metadata?.userAgent as string
+      userAgent: context.metadata?.userAgent as string,
     }
 
     this.userActivities.push(activity)
@@ -536,7 +551,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
         loginCount: 0,
         profileUpdateCount: 0,
         statusChangeCount: 0,
-        relationChangeCount: 0
+        relationChangeCount: 0,
       })
     }
     return this.userStats.get(userId)!
@@ -556,7 +571,7 @@ export class UserActivityPlugin extends BaseCrudPlugin {
    * 从上下文提取用户ID
    */
   private extractUserIdFromContext(context: HookContext): string | undefined {
-    return context.metadata?.targetUserId as string || this.extractUserId(context.user)
+    return (context.metadata?.targetUserId as string) || this.extractUserId(context.user)
   }
 
   /**
@@ -564,12 +579,11 @@ export class UserActivityPlugin extends BaseCrudPlugin {
    */
   private maskEmail(email: string): string {
     if (!email || !email.includes('@')) return '***'
-    
+
     const [localPart, domain] = email.split('@')
-    const maskedLocal = localPart.length > 2 
-      ? `${localPart[0]}***${localPart[localPart.length - 1]}`
-      : '***'
-    
+    const maskedLocal =
+      localPart.length > 2 ? `${localPart[0]}***${localPart[localPart.length - 1]}` : '***'
+
     return `${maskedLocal}@${domain}`
   }
 

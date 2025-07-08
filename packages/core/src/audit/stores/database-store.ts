@@ -13,7 +13,10 @@ interface SimplePrismaClient {
   $disconnect: () => Promise<void>
   audit_logs: {
     create: (data: { data: Record<string, unknown> }) => Promise<Record<string, unknown>>
-    createMany: (data: { data: Record<string, unknown>[]; skipDuplicates?: boolean }) => Promise<{ count: number }>
+    createMany: (data: {
+      data: Record<string, unknown>[]
+      skipDuplicates?: boolean
+    }) => Promise<{ count: number }>
     findMany: (query: Record<string, unknown>) => Promise<Record<string, unknown>[]>
     count: (query: Record<string, unknown>) => Promise<number>
     deleteMany: (query: Record<string, unknown>) => Promise<{ count: number }>
@@ -61,12 +64,12 @@ export class DatabaseAuditStore implements AuditStore {
       requestId: event.requestId,
       traceId: event.traceId,
       retentionPolicy: event.retentionPolicy,
-      classification: event.classification
+      classification: event.classification,
     }))
 
     await this.prisma.audit_logs.createMany({
       data,
-      skipDuplicates: true
+      skipDuplicates: true,
     })
   }
 
@@ -83,50 +86,50 @@ export class DatabaseAuditStore implements AuditStore {
       }
       where.timestamp = timestamp
     }
-    
+
     if (filter.userIds?.length) {
       where.userId = { in: filter.userIds }
     }
-    
+
     if (filter.eventTypes?.length) {
       where.eventType = { in: filter.eventTypes }
     }
-    
+
     if (filter.categories?.length) {
       where.category = { in: filter.categories }
     }
-    
+
     if (filter.severities?.length) {
       where.severity = { in: filter.severities }
     }
-    
+
     if (filter.services?.length) {
       where.service = { in: filter.services }
     }
-    
+
     if (filter.resources?.length) {
       where.resource = { in: filter.resources }
     }
-    
+
     if (filter.success !== undefined) {
       where.success = filter.success
     }
-    
+
     if (filter.search) {
       where.OR = [
         { eventType: { contains: filter.search, mode: 'insensitive' } },
         { resource: { contains: filter.search, mode: 'insensitive' } },
-        { errorMessage: { contains: filter.search, mode: 'insensitive' } }
+        { errorMessage: { contains: filter.search, mode: 'insensitive' } },
       ]
     }
 
     const results = await this.prisma.audit_logs.findMany({
       where,
       orderBy: {
-        [filter.orderBy || 'timestamp']: filter.orderDirection?.toLowerCase() || 'desc'
+        [filter.orderBy || 'timestamp']: filter.orderDirection?.toLowerCase() || 'desc',
       },
       skip: filter.offset || 0,
-      take: filter.limit || 100
+      take: filter.limit || 100,
     })
 
     return results.map(this.transformToAuditEvent)
@@ -145,15 +148,15 @@ export class DatabaseAuditStore implements AuditStore {
       }
       where.timestamp = timestamp
     }
-    
+
     if (filter.userIds?.length) {
       where.userId = { in: filter.userIds }
     }
-    
+
     if (filter.categories?.length) {
       where.category = { in: filter.categories }
     }
-    
+
     if (filter.services?.length) {
       where.service = { in: filter.services }
     }
@@ -167,13 +170,13 @@ export class DatabaseAuditStore implements AuditStore {
     switch (format) {
       case 'json':
         return JSON.stringify(events, null, 2)
-      
+
       case 'csv':
         return this.exportToCsv(events)
-      
+
       case 'xml':
         return this.exportToXml(events)
-      
+
       default:
         throw new Error(`Unsupported export format: ${format}`)
     }
@@ -183,9 +186,9 @@ export class DatabaseAuditStore implements AuditStore {
     const result = await this.prisma.audit_logs.deleteMany({
       where: {
         timestamp: {
-          lt: beforeDate
-        }
-      }
+          lt: beforeDate,
+        },
+      },
     })
 
     return result.count
@@ -211,8 +214,8 @@ export class DatabaseAuditStore implements AuditStore {
       id: record.id as string,
       timestamp: record.timestamp as Date,
       eventType: record.eventType as string,
-      category: record.category as "SECURITY" | "DATA" | "SYSTEM" | "BUSINESS",
-      severity: record.severity as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
+      category: record.category as 'SECURITY' | 'DATA' | 'SYSTEM' | 'BUSINESS',
+      severity: record.severity as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
       operation: record.operation as string,
       resource: record.resource as string,
       resourceId: record.resourceId as string | undefined,
@@ -228,7 +231,12 @@ export class DatabaseAuditStore implements AuditStore {
       requestId: record.requestId as string | undefined,
       traceId: record.traceId as string | undefined,
       retentionPolicy: record.retentionPolicy as string | undefined,
-      classification: record.classification as "PUBLIC" | "INTERNAL" | "CONFIDENTIAL" | "RESTRICTED" | undefined
+      classification: record.classification as
+        | 'PUBLIC'
+        | 'INTERNAL'
+        | 'CONFIDENTIAL'
+        | 'RESTRICTED'
+        | undefined,
     }
   }
 
@@ -236,44 +244,67 @@ export class DatabaseAuditStore implements AuditStore {
     if (events.length === 0) return ''
 
     const headers = [
-      'id', 'timestamp', 'eventType', 'category', 'severity',
-      'operation', 'resource', 'resourceId', 'userId', 'userAgent',
-      'ipAddress', 'sessionId', 'success', 'errorCode', 'errorMessage',
-      'service', 'requestId', 'traceId', 'retentionPolicy', 'classification'
+      'id',
+      'timestamp',
+      'eventType',
+      'category',
+      'severity',
+      'operation',
+      'resource',
+      'resourceId',
+      'userId',
+      'userAgent',
+      'ipAddress',
+      'sessionId',
+      'success',
+      'errorCode',
+      'errorMessage',
+      'service',
+      'requestId',
+      'traceId',
+      'retentionPolicy',
+      'classification',
     ]
 
     const csvRows = [
       headers.join(','),
       ...events.map(event => {
-        return headers.map(header => {
-          const value = event[header as keyof AuditEvent]
-          if (value === null || value === undefined) return ''
-          if (typeof value === 'object') return `"${JSON.stringify(value).replace(/"/g, '""')}"`
-          if (typeof value === 'string' && (value.includes(',') || value.includes('"') || value.includes('\n'))) {
-            return `"${value.replace(/"/g, '""')}"`
-          }
-          return String(value)
-        }).join(',')
-      })
+        return headers
+          .map(header => {
+            const value = event[header as keyof AuditEvent]
+            if (value === null || value === undefined) return ''
+            if (typeof value === 'object') return `"${JSON.stringify(value).replace(/"/g, '""')}"`
+            if (
+              typeof value === 'string' &&
+              (value.includes(',') || value.includes('"') || value.includes('\n'))
+            ) {
+              return `"${value.replace(/"/g, '""')}"`
+            }
+            return String(value)
+          })
+          .join(',')
+      }),
     ]
 
     return csvRows.join('\n')
   }
 
   private exportToXml(events: AuditEvent[]): string {
-    const xmlEvents = events.map(event => {
-      const fields = Object.entries(event)
-        .filter(([_, value]) => value !== null && value !== undefined)
-        .map(([key, value]) => {
-          if (typeof value === 'object') {
-            return `    <${key}><![CDATA[${JSON.stringify(value)}]]></${key}>`
-          }
-          return `    <${key}><![CDATA[${String(value)}]]></${key}>`
-        })
-        .join('\n')
+    const xmlEvents = events
+      .map(event => {
+        const fields = Object.entries(event)
+          .filter(([_, value]) => value !== null && value !== undefined)
+          .map(([key, value]) => {
+            if (typeof value === 'object') {
+              return `    <${key}><![CDATA[${JSON.stringify(value)}]]></${key}>`
+            }
+            return `    <${key}><![CDATA[${String(value)}]]></${key}>`
+          })
+          .join('\n')
 
-      return `  <event>\n${fields}\n  </event>`
-    }).join('\n')
+        return `  <event>\n${fields}\n  </event>`
+      })
+      .join('\n')
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <auditEvents>

@@ -3,10 +3,8 @@ import { SchemaDemo } from '@/components/schema/SchemaDemo'
 export default function SchemaPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
-        LinchKit Schema驱动演示
-      </h1>
-      
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">LinchKit Schema驱动演示</h1>
+
       <div className="bg-blue-50 p-6 rounded-lg mb-8">
         <h2 className="text-xl font-semibold mb-4">🏗️ Schema驱动开发理念</h2>
         <p className="text-gray-700 mb-4">

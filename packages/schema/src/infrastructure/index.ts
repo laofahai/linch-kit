@@ -21,7 +21,4 @@ export { packageI18n, useSchemaTranslation } from './i18n'
 /**
  * Schema包配置管理
  */
-export {
-  defaultSchemaConfig,
-  type SchemaConfig
-} from './config' 
+export { defaultSchemaConfig, type SchemaConfig } from './config'

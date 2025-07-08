@@ -1,6 +1,6 @@
 /**
  * 审计日志插件示例 - 展示细粒度钩子的使用
- * 
+ *
  * 功能：
  * - 记录所有 CRUD 操作的详细日志
  * - 特别关注敏感实体（User、Payment）的变更
@@ -10,12 +10,12 @@
 
 import type { Logger as _Logger } from '@linch-kit/core'
 
-import type { 
-  CrudPluginHooks, 
-  HookContext, 
+import type {
+  CrudPluginHooks,
+  HookContext,
   FieldChange,
   CreateInput as _CreateInput,
-  UpdateInput as _UpdateInput
+  UpdateInput as _UpdateInput,
 } from '../types'
 import { BaseCrudPlugin } from '../base-plugin'
 
@@ -48,28 +48,36 @@ export class AuditLogPlugin extends BaseCrudPlugin {
     super({
       name: 'audit-log-plugin',
       version: '1.0.0',
-      description: '审计日志插件 - 记录所有CRUD操作的详细日志'
+      description: '审计日志插件 - 记录所有CRUD操作的详细日志',
     })
   }
 
   get hooks(): CrudPluginHooks {
     return {
       // 全局钩子 - 记录所有实体的操作
-      afterCreate: async <T>(entityName: string, result: T, context: HookContext): Promise<void> => {
+      afterCreate: async <T>(
+        entityName: string,
+        result: T,
+        context: HookContext
+      ): Promise<void> => {
         await this.logOperation('CREATE', entityName, result, context)
       },
 
       afterUpdate: async <T>(
-        entityName: string, 
-        result: T, 
-        existing: unknown, 
-        changes: FieldChange[], 
+        entityName: string,
+        result: T,
+        existing: unknown,
+        changes: FieldChange[],
         context: HookContext
       ): Promise<void> => {
         await this.logOperation('UPDATE', entityName, result, context, changes)
       },
 
-      afterDelete: async (entityName: string, existing: unknown, context: HookContext): Promise<void> => {
+      afterDelete: async (
+        entityName: string,
+        existing: unknown,
+        context: HookContext
+      ): Promise<void> => {
         await this.logOperation('DELETE', entityName, existing, context)
       },
 
@@ -97,11 +105,11 @@ export class AuditLogPlugin extends BaseCrudPlugin {
       ): Promise<void> => {
         if (this.isSensitiveField(fieldName)) {
           await this.logSensitiveFieldChange(
-            entityName, 
-            fieldName, 
-            oldValue, 
-            newValue, 
-            operation, 
+            entityName,
+            fieldName,
+            oldValue,
+            newValue,
+            operation,
             context
           )
         }
@@ -146,7 +154,7 @@ export class AuditLogPlugin extends BaseCrudPlugin {
       // 钩子优先级 - 审计日志应该最后执行
       getHookPriority: (_hookName: string, _entityName: string): number => {
         return 1000 // 低优先级，最后执行
-      }
+      },
     }
   }
 
@@ -171,7 +179,9 @@ export class AuditLogPlugin extends BaseCrudPlugin {
       ipAddress: context.metadata?.ipAddress as string,
       changes,
       metadata: context.metadata,
-      sensitiveFields: changes?.filter(c => this.isSensitiveField(c.fieldName)).map(c => c.fieldName)
+      sensitiveFields: changes
+        ?.filter(c => this.isSensitiveField(c.fieldName))
+        .map(c => c.fieldName),
     }
 
     this.auditLogs.push(logEntry)
@@ -184,7 +194,7 @@ export class AuditLogPlugin extends BaseCrudPlugin {
     this.log('info', `Audit log recorded: ${operation} ${entityName}`, {
       entityId: logEntry.entityId,
       userId: logEntry.userId,
-      changesCount: changes?.length || 0
+      changesCount: changes?.length || 0,
     })
   }
 
@@ -205,8 +215,8 @@ export class AuditLogPlugin extends BaseCrudPlugin {
       userId: this.extractUserId(user),
       metadata: {
         fieldName,
-        ...context.metadata
-      }
+        ...context.metadata,
+      },
     }
 
     this.auditLogs.push(logEntry)
@@ -214,7 +224,7 @@ export class AuditLogPlugin extends BaseCrudPlugin {
 
     this.log('warn', `Sensitive field accessed: ${entityName}.${fieldName}`, {
       userId: logEntry.userId,
-      fieldName
+      fieldName,
     })
   }
 
@@ -235,13 +245,15 @@ export class AuditLogPlugin extends BaseCrudPlugin {
       operation: 'FIELD_CHANGE',
       entityName,
       userId: this.extractUserId(context.user),
-      changes: [{
-        fieldName,
-        oldValue: this.maskSensitiveValue(oldValue),
-        newValue: this.maskSensitiveValue(newValue),
-        action: operation === 'create' ? 'added' : 'modified'
-      }],
-      metadata: context.metadata
+      changes: [
+        {
+          fieldName,
+          oldValue: this.maskSensitiveValue(oldValue),
+          newValue: this.maskSensitiveValue(newValue),
+          action: operation === 'create' ? 'added' : 'modified',
+        },
+      ],
+      metadata: context.metadata,
     }
 
     this.auditLogs.push(logEntry)
@@ -249,7 +261,7 @@ export class AuditLogPlugin extends BaseCrudPlugin {
 
     this.log('warn', `Sensitive field changed: ${entityName}.${fieldName}`, {
       userId: logEntry.userId,
-      operation
+      operation,
     })
   }
 
@@ -271,23 +283,25 @@ export class AuditLogPlugin extends BaseCrudPlugin {
       entityName,
       entityId: id,
       userId: this.extractUserId(context.user),
-      changes: [{
-        fieldName: 'status',
-        oldValue: oldStatus,
-        newValue: newStatus,
-        action: 'modified'
-      }],
+      changes: [
+        {
+          fieldName: 'status',
+          oldValue: oldStatus,
+          newValue: newStatus,
+          action: 'modified',
+        },
+      ],
       metadata: {
         ...context.metadata,
-        entitySnapshot: this.createEntitySnapshot(entity)
-      }
+        entitySnapshot: this.createEntitySnapshot(entity),
+      },
     }
 
     this.auditLogs.push(logEntry)
     await this.persistAuditLog(logEntry)
 
     this.log('info', `Status changed: ${entityName}[${id}] ${oldStatus} → ${newStatus}`, {
-      userId: logEntry.userId
+      userId: logEntry.userId,
     })
   }
 
@@ -334,15 +348,17 @@ export class AuditLogPlugin extends BaseCrudPlugin {
   }
 
   private isSensitiveField(fieldName: string): boolean {
-    return this.sensitiveFields.has(fieldName) || 
-           fieldName.toLowerCase().includes('password') ||
-           fieldName.toLowerCase().includes('secret') ||
-           fieldName.toLowerCase().includes('token')
+    return (
+      this.sensitiveFields.has(fieldName) ||
+      fieldName.toLowerCase().includes('password') ||
+      fieldName.toLowerCase().includes('secret') ||
+      fieldName.toLowerCase().includes('token')
+    )
   }
 
   private isSensitiveOperation(
-    entityName: string, 
-    operation: string, 
+    entityName: string,
+    operation: string,
     changes?: FieldChange[]
   ): boolean {
     // 敏感实体的所有操作
@@ -390,9 +406,9 @@ export class AuditLogPlugin extends BaseCrudPlugin {
       // 例如：数据库、消息队列、文件系统等
       this.log('debug', 'Audit log persisted', { id: logEntry.id })
     } catch (error) {
-      this.log('error', 'Failed to persist audit log', { 
-        id: logEntry.id, 
-        error: error instanceof Error ? error.message : 'Unknown error'
+      this.log('error', 'Failed to persist audit log', {
+        id: logEntry.id,
+        error: error instanceof Error ? error.message : 'Unknown error',
       })
     }
   }

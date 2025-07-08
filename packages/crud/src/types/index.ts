@@ -1,6 +1,6 @@
 /**
  * @linch-kit/crud 类型定义
- * 
+ *
  * 提供CRUD操作相关的所有类型定义，包括：
  * - 查询类型
  * - 操作选项
@@ -32,17 +32,17 @@ export interface SchemaRegistry {
    * 获取实体定义
    */
   getEntity(name: string): Entity | undefined
-  
+
   /**
    * 注册实体
    */
   registerEntity(entity: Entity): void
-  
+
   /**
    * 获取所有实体名称
    */
   getEntityNames(): string[]
-  
+
   /**
    * 检查实体是否存在
    */
@@ -52,15 +52,15 @@ export interface SchemaRegistry {
 /**
  * 查询操作符
  */
-export type Operator = 
-  | '=' 
-  | '!=' 
-  | '>' 
-  | '>=' 
-  | '<' 
-  | '<=' 
-  | 'like' 
-  | 'in' 
+export type Operator =
+  | '='
+  | '!='
+  | '>'
+  | '>='
+  | '<'
+  | '<='
+  | 'like'
+  | 'in'
   | 'not_in'
   | 'is_null'
   | 'is_not_null'
@@ -358,7 +358,13 @@ export interface ICrudManager {
   delete(entityName: string, id: string, options?: CrudOptions): Promise<boolean>
   count(entityName: string, query?: QueryInput, options?: FindOptions): Promise<number>
   exists(entityName: string, query?: QueryInput, options?: FindOptions): Promise<boolean>
-  paginate<T>(entityName: string, query?: QueryInput, page?: number, pageSize?: number, options?: FindOptions): Promise<PaginatedResult<T>>
+  paginate<T>(
+    entityName: string,
+    query?: QueryInput,
+    page?: number,
+    pageSize?: number,
+    options?: FindOptions
+  ): Promise<PaginatedResult<T>>
 }
 
 /**
@@ -390,9 +396,18 @@ export interface IQueryBuilder<T = unknown> {
  */
 export interface IBatchOperations {
   createMany<T>(entityName: string, data: CreateInput<T>[], options?: BatchOptions): Promise<T[]>
-  updateMany<T>(entityName: string, query: QueryInput, data: UpdateInput<T>, options?: BatchOptions): Promise<number>
+  updateMany<T>(
+    entityName: string,
+    query: QueryInput,
+    data: UpdateInput<T>,
+    options?: BatchOptions
+  ): Promise<number>
   deleteMany(entityName: string, query: QueryInput, options?: BatchOptions): Promise<number>
-  upsertMany<T extends { id: unknown }>(entityName: string, data: UpsertInput<T>[], options?: UpsertOptions): Promise<T[]>
+  upsertMany<T extends { id: unknown }>(
+    entityName: string,
+    data: UpsertInput<T>[],
+    options?: UpsertOptions
+  ): Promise<T[]>
 }
 
 /**
@@ -415,8 +430,17 @@ export interface IPermissionChecker {
   checkRead(entity: Entity, user: LinchKitUser, resource?: unknown): Promise<void>
   checkUpdate(entity: Entity, user: LinchKitUser, resource: unknown, data: unknown): Promise<void>
   checkDelete(entity: Entity, user: LinchKitUser, resource: unknown): Promise<void>
-  filterFields<T>(entity: Entity, user: LinchKitUser, data: T[], operation: 'read' | 'write'): Promise<Partial<T>[]>
-  buildRowFilter(entity: Entity, user: LinchKitUser, operation: 'read' | 'write' | 'delete'): Promise<Record<string, unknown>>
+  filterFields<T>(
+    entity: Entity,
+    user: LinchKitUser,
+    data: T[],
+    operation: 'read' | 'write'
+  ): Promise<Partial<T>[]>
+  buildRowFilter(
+    entity: Entity,
+    user: LinchKitUser,
+    operation: 'read' | 'write' | 'delete'
+  ): Promise<Record<string, unknown>>
 }
 
 /**

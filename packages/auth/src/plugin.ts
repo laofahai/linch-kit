@@ -5,7 +5,12 @@
 
 import type { Plugin, PluginConfig } from '@linch-kit/core'
 
-import { logError, logInfo, useAuthTranslation, type AuthInfrastructureConfig } from './infrastructure'
+import {
+  logError,
+  logInfo,
+  useAuthTranslation,
+  type AuthInfrastructureConfig,
+} from './infrastructure'
 
 /**
  * Auth插件配置接口
@@ -37,7 +42,7 @@ export const defaultAuthPluginConfig: AuthPluginConfig = {
   enableSessionManagement: true,
   enablePermissionEngine: true,
   enableAuditLogging: true,
-  defaultProviders: ['credentials']
+  defaultProviders: ['credentials'],
 }
 
 /**
@@ -50,7 +55,7 @@ export const authPlugin: Plugin = {
     version: '0.1.0',
     description: 'Enterprise authentication and authorization system for LinchKit',
     author: 'LinchKit Team',
-    dependencies: ['core', 'schema']
+    dependencies: ['core', 'schema'],
   },
 
   defaultConfig: defaultAuthPluginConfig,
@@ -71,7 +76,7 @@ export const authPlugin: Plugin = {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       logError('Failed to initialize Auth plugin', error instanceof Error ? error : undefined, {
-        error: errorMessage
+        error: errorMessage,
       })
       throw error
     }
@@ -111,7 +116,7 @@ export const authPlugin: Plugin = {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       logError('Failed to setup Auth plugin', error instanceof Error ? error : undefined, {
-        error: errorMessage
+        error: errorMessage,
       })
       throw error
     }
@@ -127,8 +132,8 @@ export const authPlugin: Plugin = {
       enabledFeatures: {
         sessionManagement: config.enableSessionManagement,
         permissionEngine: config.enablePermissionEngine,
-        auditLogging: config.enableAuditLogging
-      }
+        auditLogging: config.enableAuditLogging,
+      },
     })
   },
 
@@ -155,7 +160,7 @@ export const authPlugin: Plugin = {
   async destroy(_config: AuthPluginConfig): Promise<void> {
     // 完全清理插件资源
     logInfo('Auth plugin destroyed')
-  }
+  },
 }
 
 /**
@@ -167,7 +172,7 @@ async function initializeAuthInfrastructure(config: AuthPluginConfig): Promise<v
   // 初始化配置管理（使用传入的config）
 
   logInfo('Auth infrastructure initialized', {
-    infrastructure: config.infrastructure
+    infrastructure: config.infrastructure,
   })
 }
 
@@ -177,7 +182,7 @@ async function initializeAuthInfrastructure(config: AuthPluginConfig): Promise<v
 async function initializeAuthProviders(config: AuthPluginConfig): Promise<void> {
   // 初始化默认的认证提供商
   logInfo('Auth providers initialized', {
-    providers: config.defaultProviders
+    providers: config.defaultProviders,
   })
 }
 
@@ -213,7 +218,7 @@ async function registerAuthCliCommands(): Promise<void> {
   // 这些命令将集成到Core的CLI系统中
   logInfo('Auth CLI commands registered', {
     commandCount: authCommands.length,
-    commands: authCommands.map(cmd => cmd.name)
+    commands: authCommands.map(cmd => cmd.name),
   })
 }
 

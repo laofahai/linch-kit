@@ -1,6 +1,6 @@
 /**
  * @linch-kit/auth 企业级扩展测试
- * 
+ *
  * @description 测试企业级认证扩展功能
  * @author LinchKit Team
  * @since 0.1.0
@@ -22,7 +22,7 @@ describe('EnterpriseAuthExtensions', () => {
       enableAuditLog: true,
       enableRoleBasedAccess: true,
       sessionTimeout: 3600,
-      maxConcurrentSessions: 5
+      maxConcurrentSessions: 5,
     })
 
     mockUser = {
@@ -30,7 +30,7 @@ describe('EnterpriseAuthExtensions', () => {
       email: 'test@example.com',
       name: 'Test User',
       roles: ['user'],
-      tenantId: 'test-tenant'
+      tenantId: 'test-tenant',
     } as LinchKitUser
 
     vi.clearAllMocks()
@@ -61,7 +61,7 @@ describe('EnterpriseAuthExtensions', () => {
         tenantId: 'custom-tenant',
         enableMFA: false,
         enableAuditLog: false,
-        sessionTimeout: 7200
+        sessionTimeout: 7200,
       }
 
       const customEnterprise = new EnterpriseAuthExtensions(config)
@@ -88,7 +88,7 @@ describe('EnterpriseAuthExtensions', () => {
     it('should check admin access permissions', async () => {
       const adminUser = {
         ...mockUser,
-        roles: ['admin']
+        roles: ['admin'],
       } as LinchKitUser
 
       const result = await enterprise.checkUserAccess(adminUser, 'admin')
@@ -114,7 +114,7 @@ describe('EnterpriseAuthExtensions', () => {
     it('should deny cross-tenant access', async () => {
       const otherTenantUser = {
         ...mockUser,
-        tenantId: 'other-tenant'
+        tenantId: 'other-tenant',
       } as LinchKitUser
 
       const result = await enterprise.checkUserAccess(otherTenantUser)
@@ -140,7 +140,7 @@ describe('EnterpriseAuthExtensions', () => {
      */
     it('should pass verification when MFA is disabled', async () => {
       const noMFAEnterprise = new EnterpriseAuthExtensions({
-        enableMFA: false
+        enableMFA: false,
       })
 
       const result = await noMFAEnterprise.verifyMFA(mockUser, '123456')
@@ -158,7 +158,7 @@ describe('EnterpriseAuthExtensions', () => {
       const minimalEnterprise = new EnterpriseAuthExtensions({
         enableMFA: false,
         enableAuditLog: false,
-        enableRoleBasedAccess: false
+        enableRoleBasedAccess: false,
       })
 
       expect(minimalEnterprise).toBeDefined()

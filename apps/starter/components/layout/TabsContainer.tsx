@@ -32,15 +32,11 @@ export function TabsContainer({ className, headerOnly = false }: TabsContainerPr
     <div className={cn('flex flex-col h-full', className)}>
       {/* 标签栏 */}
       <TabsBar />
-      
+
       {/* 标签内容区域 */}
       <div className="flex-1 overflow-hidden">
-        {tabs.map((tab) => (
-          <TabContent
-            key={tab.id}
-            tab={tab}
-            isActive={tab.id === activeTabId}
-          />
+        {tabs.map(tab => (
+          <TabContent key={tab.id} tab={tab} isActive={tab.id === activeTabId} />
         ))}
       </div>
     </div>

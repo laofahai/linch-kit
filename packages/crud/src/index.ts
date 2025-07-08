@@ -1,8 +1,8 @@
 /**
  * @linch-kit/crud - CRUD操作包
- * 
+ *
  * 提供类型安全的CRUD操作，平衡封装便利性和Prisma原生灵活性
- * 
+ *
  * 核心特性：
  * - 便捷的高层CRUD API
  * - 直接的Prisma原生访问

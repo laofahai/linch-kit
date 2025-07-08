@@ -1,6 +1,6 @@
 /**
  * 查询条件构建器 - 专门处理 WHERE 条件
- * 
+ *
  * 使用策略模式处理不同类型的查询操作符
  */
 
@@ -24,9 +24,7 @@ class EqualityStrategy implements ConditionStrategy {
   constructor(private readonly isNegated: boolean = false) {}
 
   build(field: string, value: unknown): Record<string, unknown> {
-    return this.isNegated 
-      ? { [field]: { not: value } }
-      : { [field]: value }
+    return this.isNegated ? { [field]: { not: value } } : { [field]: value }
   }
 
   validate(field: string, value: unknown, _entity: Entity): void {
@@ -50,7 +48,9 @@ class ComparisonStrategy implements ConditionStrategy {
   validate(field: string, _value: unknown, _entity: Entity): void {
     const fieldDef = _entity.fields[field]
     if (fieldDef && !['number', 'integer', 'float', 'date', 'datetime'].includes(fieldDef.type)) {
-      throw new Error(`Comparison operator ${this.operator} not compatible with field type ${fieldDef.type}`)
+      throw new Error(
+        `Comparison operator ${this.operator} not compatible with field type ${fieldDef.type}`
+      )
     }
   }
 }
@@ -60,11 +60,11 @@ class ComparisonStrategy implements ConditionStrategy {
  */
 class LikeStrategy implements ConditionStrategy {
   build(field: string, value: unknown): Record<string, unknown> {
-    return { 
-      [field]: { 
-        contains: value, 
-        mode: 'insensitive' 
-      } 
+    return {
+      [field]: {
+        contains: value,
+        mode: 'insensitive',
+      },
     }
   }
 
@@ -100,9 +100,7 @@ class NullStrategy implements ConditionStrategy {
   constructor(private readonly isNegated: boolean = false) {}
 
   build(field: string, _value: unknown): Record<string, unknown> {
-    return this.isNegated 
-      ? { [field]: { not: null } }
-      : { [field]: null }
+    return this.isNegated ? { [field]: { not: null } } : { [field]: null }
   }
 
   validate(_field: string, _value: unknown, _entity: Entity): void {
@@ -125,7 +123,7 @@ class BetweenStrategy implements ConditionStrategy {
     if (!Array.isArray(value) || value.length !== 2) {
       throw new Error(`Between operator requires array with exactly 2 values for field '${field}'`)
     }
-    
+
     const fieldDef = entity.fields[field]
     if (fieldDef && !['number', 'integer', 'float', 'date', 'datetime'].includes(fieldDef.type)) {
       throw new Error(`Between operator not compatible with field type ${fieldDef.type}`)
@@ -178,11 +176,15 @@ export class QueryConditionBuilder {
     try {
       strategy.validate(field, value, this.entity)
     } catch (error) {
-      this.logger.error('Condition validation failed', error instanceof Error ? error : new Error('Unknown error'), {
-        field,
-        operator,
-        value
-      })
+      this.logger.error(
+        'Condition validation failed',
+        error instanceof Error ? error : new Error('Unknown error'),
+        {
+          field,
+          operator,
+          value,
+        }
+      )
       throw error
     }
 
@@ -206,17 +208,24 @@ export class QueryConditionBuilder {
         const conditionClause = condition.strategy.build(condition.field, condition.value)
         this.mergeConditions(whereClause, conditionClause)
       } catch (error) {
-        this.logger.error('Failed to build condition', error instanceof Error ? error : new Error('Unknown error'), {
-          field: condition.field,
-          value: condition.value
-        })
+        this.logger.error(
+          'Failed to build condition',
+          error instanceof Error ? error : new Error('Unknown error'),
+          {
+            field: condition.field,
+            value: condition.value,
+          }
+        )
         throw error
       }
     }
 
     return {
       ...existingQuery,
-      where: this.mergeWithExistingWhere(existingQuery.where as Record<string, unknown>, whereClause)
+      where: this.mergeWithExistingWhere(
+        existingQuery.where as Record<string, unknown>,
+        whereClause
+      ),
     }
   }
 
@@ -228,13 +237,13 @@ export class QueryConditionBuilder {
       if (field in target) {
         // 字段已存在，需要合并条件
         if (typeof target[field] === 'object' && typeof condition === 'object') {
-          target[field] = { ...target[field] as Record<string, unknown>, ...condition as Record<string, unknown> }
+          target[field] = {
+            ...(target[field] as Record<string, unknown>),
+            ...(condition as Record<string, unknown>),
+          }
         } else {
           // 冲突处理：转换为 AND 条件
-          target.AND = [
-            { [field]: target[field] },
-            { [field]: condition }
-          ]
+          target.AND = [{ [field]: target[field] }, { [field]: condition }]
           delete target[field]
         }
       } else {
@@ -257,7 +266,7 @@ export class QueryConditionBuilder {
     // 如果现有条件已经是 AND 结构
     if (existing.AND && Array.isArray(existing.AND)) {
       return {
-        AND: [...existing.AND, newConditions]
+        AND: [...existing.AND, newConditions],
       }
     }
 

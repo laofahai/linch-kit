@@ -11,7 +11,9 @@ export interface ConsoleRoute {
   /** 路由路径 */
   path: string
   /** 页面组件 */
-  component: ComponentType<Record<string, unknown>> | LazyExoticComponent<ComponentType<Record<string, unknown>>>
+  component:
+    | ComponentType<Record<string, unknown>>
+    | LazyExoticComponent<ComponentType<Record<string, unknown>>>
   /** 路由元数据 */
   meta?: {
     /** 页面标题 */
@@ -90,7 +92,7 @@ export interface ConsoleConfig {
 /**
  * Console 功能模块
  */
-export type ConsoleFeature = 
+export type ConsoleFeature =
   | 'dashboard'
   | 'tenants'
   | 'users'

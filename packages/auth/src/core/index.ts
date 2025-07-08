@@ -1,8 +1,8 @@
 /**
  * @linch-kit/auth 核心功能导出
- * 
+ *
  * 导出Auth包的核心业务逻辑，包括认证管理、权限引擎、会话管理等
- * 
+ *
  * @module core
  */
 
@@ -54,7 +54,7 @@ export {
   createAuthManager,
   createJWTSessionManager,
   createPermissionEngine,
-  createTOTPManager
+  createTOTPManager,
 } from '../factory'
 
 // ==================== 核心类型重导出 ====================
@@ -71,5 +71,5 @@ export type {
   SessionData,
   PermissionRule,
   AuditEvent,
-  IAuditLogger
+  IAuditLogger,
 } from '../types'

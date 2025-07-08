@@ -7,6 +7,7 @@
 ## 🏗️ 核心架构原则
 
 ### 设计哲学
+
 - **稳定优先**: 基于现有 6+1 架构扩展，保持架构稳定性
 - **职责明确**: 每个包的扩展都在其职责范围内
 - **向后兼容**: 现有功能不受影响，平滑演进
@@ -14,6 +15,7 @@
 - **AI 友好**: 架构设计便于 AI 理解和操作
 
 ### 依赖层次关系
+
 ```
 L0: @linch-kit/core      → 基础设施 (日志、配置、插件系统)
   ↓
@@ -29,6 +31,7 @@ L4: modules/console      → 管理平台 (多租户、权限管理)
 ```
 
 **核心约束**:
+
 - **严格单向依赖**: 上层可以依赖下层，下层不能依赖上层
 - **禁止循环依赖**: 任何包之间不允许循环依赖
 - **最小依赖原则**: 每个包只依赖必要的下层包
@@ -36,6 +39,7 @@ L4: modules/console      → 管理平台 (多租户、权限管理)
 ## 🎯 四层架构设计
 
 ### 应用层 (Applications)
+
 ```
 apps/starter        # 生产级基础应用 - 多标签工作台
 apps/demo-app       # 功能演示应用 - 展示各包功能
@@ -43,11 +47,13 @@ apps/website        # 文档平台 - Nextra 4 + i18n
 ```
 
 **应用层特点**:
+
 - **独立部署**: 每个应用可以独立部署和运行
 - **功能集成**: 集成多个模块和包提供完整功能
 - **用户入口**: 面向最终用户的交互界面
 
 ### 模块层 (Modules)
+
 ```
 modules/console     # 企业级管理控制台 (已完成)
 modules/crm         # 客户关系管理 (规划中)
@@ -55,11 +61,13 @@ modules/cms         # 内容管理系统 (规划中)
 ```
 
 **模块层特点**:
+
 - **功能库定位**: 通过 npm 包被应用集成使用
 - **业务聚合**: 聚合多个包功能实现完整业务流程
 - **可选集成**: 应用可以选择性集成所需模块
 
 ### 包层 (Packages - 核心6包)
+
 ```
 @linch-kit/core     # L0: 基础设施包
 @linch-kit/schema   # L1: Schema引擎包
@@ -70,11 +78,13 @@ modules/cms         # 内容管理系统 (规划中)
 ```
 
 **包层特点**:
+
 - **原子功能**: 每个包提供单一领域的原子功能
 - **高复用性**: 可以被模块层和应用层复用
 - **类型安全**: 完整的 TypeScript 类型支持
 
 ### 基础设施层 (Infrastructure)
+
 ```
 数据库: PostgreSQL + Prisma
 认证: NextAuth.js 5.0
@@ -86,9 +96,11 @@ AI: Neo4j 知识图谱 + Graph RAG
 ## 📦 核心包详细架构
 
 ### L0: @linch-kit/core (基础设施)
+
 **职责**: 提供整个框架的基础设施服务
 
 **核心功能**:
+
 - **日志系统**: 基于 Pino 的结构化日志
 - **配置管理**: 类型安全的配置系统
 - **插件系统**: 可扩展的插件架构
@@ -104,9 +116,11 @@ eventBus.emit('user.created', { userId: '123' })
 ```
 
 ### L1: @linch-kit/schema (Schema引擎)
+
 **职责**: Schema 定义、验证和类型生成
 
 **核心功能**:
+
 - **实体定义**: `defineEntity()` API
 - **关系定义**: 实体间关系建模
 - **类型生成**: 自动生成 TypeScript 类型
@@ -121,14 +135,16 @@ export const UserSchema = defineEntity('User', {
   id: z.string().uuid(),
   name: z.string().min(1),
   email: z.string().email(),
-  role: z.enum(['USER', 'ADMIN'])
+  role: z.enum(['USER', 'ADMIN']),
 })
 ```
 
 ### L2: @linch-kit/auth (认证权限)
+
 **职责**: 用户认证和权限管理
 
 **核心功能**:
+
 - **认证集成**: NextAuth.js 5.0 集成
 - **权限控制**: CASL 能力访问控制
 - **会话管理**: 类型安全的会话处理
@@ -146,9 +162,11 @@ if (can(user, 'read', 'User')) {
 ```
 
 ### L2: @linch-kit/crud (CRUD操作)
+
 **职责**: 通用的增删改查操作
 
 **核心功能**:
+
 - **类型安全 CRUD**: 基于 Schema 的 CRUD 操作
 - **权限集成**: 与 @linch-kit/auth 深度集成
 - **查询构建**: 类型安全的查询 API
@@ -164,9 +182,11 @@ const user = await userCRUD.create({ name: 'John', email: 'john@example.com' })
 ```
 
 ### L3: @linch-kit/trpc (API层)
+
 **职责**: 端到端类型安全的 API
 
 **核心功能**:
+
 - **tRPC 集成**: 完整的 tRPC 服务器和客户端
 - **类型安全**: 编译时类型检查
 - **中间件系统**: 认证、权限、日志中间件
@@ -177,19 +197,20 @@ const user = await userCRUD.create({ name: 'John', email: 'john@example.com' })
 // 使用示例
 import { createRouter } from '@linch-kit/trpc'
 
-export const userRouter = createRouter()
-  .query('getUser', {
-    input: z.string(),
-    resolve: async ({ input, ctx }) => {
-      return await ctx.db.user.findUnique({ where: { id: input } })
-    }
-  })
+export const userRouter = createRouter().query('getUser', {
+  input: z.string(),
+  resolve: async ({ input, ctx }) => {
+    return await ctx.db.user.findUnique({ where: { id: input } })
+  },
+})
 ```
 
 ### L3: @linch-kit/ui (UI组件)
+
 **职责**: 可复用的 UI 组件库
 
 **核心功能**:
+
 - **shadcn/ui 集成**: 现代 UI 组件库
 - **主题系统**: Tailwind CSS 4 主题支持
 - **表单组件**: 基于 Schema 的表单生成
@@ -205,9 +226,11 @@ import { Button, Form, DataTable } from '@linch-kit/ui'
 ```
 
 ### L4: modules/console (管理平台)
+
 **职责**: 企业级管理控制台
 
 **核心功能**:
+
 - **多租户管理**: 租户创建、配置、监控
 - **用户权限管理**: 用户、角色、权限管理界面
 - **系统监控**: 系统状态、性能监控
@@ -217,6 +240,7 @@ import { Button, Form, DataTable } from '@linch-kit/ui'
 ## 🔄 数据流架构
 
 ### 请求处理流程
+
 ```
 用户请求 → Next.js Router → tRPC Handler → 权限检查 → CRUD 操作 → 数据库
                 ↑              ↑           ↑         ↑          ↑
@@ -224,6 +248,7 @@ import { Button, Form, DataTable } from '@linch-kit/ui'
 ```
 
 ### Schema 驱动流程
+
 ```
 Schema 定义 → 类型生成 → API 生成 → 表单生成 → 验证规则
      ↑          ↑         ↑         ↑         ↑
@@ -233,6 +258,7 @@ Schema 定义 → 类型生成 → API 生成 → 表单生成 → 验证规则
 ## 🧠 AI 集成架构
 
 ### Neo4j 知识图谱
+
 ```
 代码库扫描 → AST 分析 → 图谱构建 → 关系分析 → AI 查询接口
     ↑          ↑         ↑         ↑         ↑
@@ -240,11 +266,13 @@ Schema 定义 → 类型生成 → API 生成 → 表单生成 → 验证规则
 ```
 
 **图谱 Schema**:
+
 - **节点类型**: Package, Function, Class, Interface, Schema
 - **关系类型**: CALLS, EXTENDS, IMPLEMENTS, IMPORTS, DEPENDS_ON
 - **数据状态**: 5,446+ 节点，7,969+ 关系
 
 ### AI Session 工具集成
+
 ```
 bun run ai:session → 意图识别 → 图谱查询 → 上下文生成 → AI 响应
         ↑              ↑         ↑         ↑         ↑
@@ -254,16 +282,19 @@ bun run ai:session → 意图识别 → 图谱查询 → 上下文生成 → AI 
 ## 🎯 架构扩展原则
 
 ### 水平扩展 (同层扩展)
+
 - **新包**: 在同一层级添加新的包 (如 @linch-kit/analytics)
 - **新模块**: 在模块层添加新的业务模块
 - **新应用**: 创建新的应用集成现有功能
 
 ### 垂直扩展 (功能增强)
+
 - **包内扩展**: 在现有包内增加新功能
 - **配置驱动**: 通过配置启用新特性
 - **插件机制**: 通过插件系统扩展功能
 
 ### 扩展约束
+
 - ✅ **遵循依赖方向**: 新功能不能违反依赖层次
 - ✅ **保持职责边界**: 功能添加要符合包的职责定义
 - ✅ **向后兼容**: 新功能不能破坏现有 API
@@ -272,18 +303,21 @@ bun run ai:session → 意图识别 → 图谱查询 → 上下文生成 → AI 
 ## 📊 架构健康指标
 
 ### 代码质量指标
+
 - **测试覆盖率**: core >95%, 其他 >80%
 - **类型覆盖率**: 100% TypeScript 严格模式
 - **构建时间**: 全量构建 <10秒
 - **包大小**: 核心包 <50KB gzipped
 
 ### 依赖健康指标
+
 - **依赖深度**: 最大依赖层级 ≤4
 - **循环依赖**: 0个循环依赖
 - **外部依赖**: 最小化第三方依赖
 - **安全漏洞**: 0个高危漏洞
 
 ### 性能指标
+
 - **API 响应时间**: 平均 <200ms
 - **首屏加载**: <3秒
 - **构建缓存命中率**: >80%

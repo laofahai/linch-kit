@@ -22,10 +22,7 @@
     "jsx": "react-jsx",
     "allowJs": true
   },
-  "include": [
-    "*.ts",
-    "*.tsx"
-  ],
+  "include": ["*.ts", "*.tsx"],
   "exclude": [
     "node_modules",
     "dist",

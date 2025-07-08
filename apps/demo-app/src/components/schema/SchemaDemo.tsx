@@ -24,7 +24,10 @@ interface FieldBuilder {
 }
 
 const defineField = (type: string): FieldBuilder => {
-  const createBuilder = (currentType: string, currentRules: Record<string, unknown>): FieldBuilder => {
+  const createBuilder = (
+    currentType: string,
+    currentRules: Record<string, unknown>
+  ): FieldBuilder => {
     const builder: FieldBuilder = {
       type: currentType,
       rules: currentRules,
@@ -32,20 +35,24 @@ const defineField = (type: string): FieldBuilder => {
       generated: () => createBuilder(currentType, { ...currentRules, generated: true }),
       required: () => createBuilder(currentType, { ...currentRules, required: true }),
       unique: () => createBuilder(currentType, { ...currentRules, unique: true }),
-      description: (_desc: string) => createBuilder(currentType, { ...currentRules, description: _desc }),
+      description: (_desc: string) =>
+        createBuilder(currentType, { ...currentRules, description: _desc }),
       min: (_val: number) => createBuilder(currentType, { ...currentRules, min: _val }),
       max: (_val: number) => createBuilder(currentType, { ...currentRules, max: _val }),
       values: (_vals: string[]) => createBuilder(currentType, { ...currentRules, values: _vals }),
       default: (_val: unknown) => createBuilder(currentType, { ...currentRules, default: _val }),
       optional: () => createBuilder(currentType, { ...currentRules, optional: true }),
-      items: (_itemType: string) => createBuilder(currentType, { ...currentRules, items: _itemType }),
-      properties: (_props: Record<string, unknown>) => createBuilder(currentType, { ...currentRules, properties: _props }),
+      items: (_itemType: string) =>
+        createBuilder(currentType, { ...currentRules, items: _itemType }),
+      properties: (_props: Record<string, unknown>) =>
+        createBuilder(currentType, { ...currentRules, properties: _props }),
       onUpdate: (_val: string) => createBuilder(currentType, { ...currentRules, onUpdate: _val }),
-      relation: (_target: string) => createBuilder(currentType, { ...currentRules, relation: _target })
+      relation: (_target: string) =>
+        createBuilder(currentType, { ...currentRules, relation: _target }),
     }
     return builder
   }
-  
+
   return createBuilder(type, {})
 }
 
@@ -67,17 +74,23 @@ const UserSchema = defineEntity({
     email: defineField('email').required().unique().description('邮箱地址'),
     name: defineField('string').required().min(2).max(50).description('用户姓名'),
     age: defineField('number').optional().min(0).max(150).description('年龄'),
-    role: defineField('enum').values(['admin', 'user', 'guest']).default('user').description('用户角色'),
+    role: defineField('enum')
+      .values(['admin', 'user', 'guest'])
+      .default('user')
+      .description('用户角色'),
     isActive: defineField('boolean').default(true).description('是否激活'),
     tags: defineField('array').items('string').optional().description('标签列表'),
-    profile: defineField('object').properties({
-      bio: defineField('string').optional().max(500),
-      website: defineField('url').optional(),
-      phone: defineField('phone').optional()
-    }).optional().description('个人资料'),
+    profile: defineField('object')
+      .properties({
+        bio: defineField('string').optional().max(500),
+        website: defineField('url').optional(),
+        phone: defineField('phone').optional(),
+      })
+      .optional()
+      .description('个人资料'),
     createdAt: defineField('datetime').default('now()').description('创建时间'),
-    updatedAt: defineField('datetime').default('now()').onUpdate('now()').description('更新时间')
-  }
+    updatedAt: defineField('datetime').default('now()').onUpdate('now()').description('更新时间'),
+  },
 })
 
 const PostSchema = defineEntity({
@@ -87,19 +100,22 @@ const PostSchema = defineEntity({
     id: defineField('string').primaryKey().generated(),
     title: defineField('string').required().min(1).max(200).description('文章标题'),
     content: defineField('text').required().description('文章内容'),
-    status: defineField('enum').values(['draft', 'published', 'archived']).default('draft').description('发布状态'),
+    status: defineField('enum')
+      .values(['draft', 'published', 'archived'])
+      .default('draft')
+      .description('发布状态'),
     authorId: defineField('string').required().relation('User').description('作者ID'),
     publishedAt: defineField('datetime').optional().description('发布时间'),
     tags: defineField('array').items('string').optional().description('文章标签'),
-    metadata: defineField('json').optional().description('元数据')
+    metadata: defineField('json').optional().description('元数据'),
   },
   relations: {
     author: {
       type: 'belongsTo',
       target: 'User',
-      foreignKey: 'authorId'
-    }
-  }
+      foreignKey: 'authorId',
+    },
+  },
 })
 
 export function SchemaDemo() {
@@ -108,14 +124,18 @@ export function SchemaDemo() {
   const [validationResult, setValidationResult] = useState<string>('')
 
   const currentSchema = selectedEntity === 'User' ? UserSchema : PostSchema
-  
+
   // 验证Schema功能
   const validateSchema = () => {
     const schema = currentSchema
     const fieldCount = Object.keys(schema.fields).length
-    const requiredFields = Object.entries(schema.fields).filter(([, field]) => field.rules.required).length
-    
-    setValidationResult(`✅ Schema验证通过: ${schema.name} 包含 ${fieldCount} 个字段，其中 ${requiredFields} 个必填字段`)
+    const requiredFields = Object.entries(schema.fields).filter(
+      ([, field]) => field.rules.required
+    ).length
+
+    setValidationResult(
+      `✅ Schema验证通过: ${schema.name} 包含 ${fieldCount} 个字段，其中 ${requiredFields} 个必填字段`
+    )
   }
 
   const generateTypeScript = () => {
@@ -325,7 +345,7 @@ export const postRouter = router({
       <div className="space-y-6">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold mb-4">📋 Schema定义</h3>
-          
+
           <div className="flex flex-wrap gap-2 mb-4">
             <button
               onClick={() => setSelectedEntity('User')}
@@ -354,7 +374,7 @@ export const postRouter = router({
               🔍 验证Schema
             </button>
           </div>
-          
+
           {validationResult && (
             <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded text-green-800 text-sm">
               {validationResult}
@@ -363,8 +383,8 @@ export const postRouter = router({
 
           <div className="bg-gray-50 p-4 rounded border text-sm font-mono overflow-x-auto">
             <pre className="whitespace-pre-wrap">
-{selectedEntity === 'User' 
-  ? `const UserSchema = defineEntity({
+              {selectedEntity === 'User'
+                ? `const UserSchema = defineEntity({
   name: 'User',
   displayName: '用户',
   fields: {
@@ -387,7 +407,7 @@ export const postRouter = router({
       .default('now()').onUpdate('now()')
   }
 })`
-  : `const PostSchema = defineEntity({
+                : `const PostSchema = defineEntity({
   name: 'Post',
   displayName: '文章',
   fields: {
@@ -445,7 +465,7 @@ export const postRouter = router({
       {/* 代码生成区域 */}
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-4">🔄 自动生成代码</h3>
-        
+
         <div className="flex space-x-2 mb-4">
           <button
             onClick={() => setGeneratedCode('typescript')}

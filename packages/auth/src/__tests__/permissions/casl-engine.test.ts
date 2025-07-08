@@ -1,6 +1,6 @@
 /**
  * @linch-kit/auth CASL 权限引擎测试
- * 
+ *
  * @description 测试基于 CASL 的权限控制功能
  * @author LinchKit Team
  * @since 0.1.0
@@ -18,13 +18,13 @@ mock.module('@casl/ability', () => ({
     cannot: mock(),
     build: mock(() => ({
       can: mock(() => true),
-      cannot: mock(() => false)
-    }))
+      cannot: mock(() => false),
+    })),
   })),
   createMongoAbility: mock(() => ({
     can: mock(() => true),
-    cannot: mock(() => false)
-  }))
+    cannot: mock(() => false),
+  })),
 }))
 
 describe('CASLPermissionEngine', () => {
@@ -34,19 +34,19 @@ describe('CASLPermissionEngine', () => {
 
   beforeEach(() => {
     permissionEngine = new CASLPermissionEngine()
-    
+
     mockUser = {
       id: 'user-123',
       email: 'test@example.com',
       name: 'Test User',
       roles: ['user'],
-      permissions: ['read:posts', 'write:posts']
+      permissions: ['read:posts', 'write:posts'],
     } as User
 
     mockContext = {
       tenantId: 'test-tenant',
       ip: '192.168.1.1',
-      userAgent: 'Test Browser'
+      userAgent: 'Test Browser',
     }
 
     // Bun test doesn't need explicit mock clearing in beforeEach
@@ -63,12 +63,7 @@ describe('CASLPermissionEngine', () => {
      * @expect 返回正确的权限检查结果
      */
     it('should check basic user permissions', async () => {
-      const result = await permissionEngine.check(
-        mockUser,
-        'read',
-        'posts',
-        mockContext
-      )
+      const result = await permissionEngine.check(mockUser, 'read', 'posts', mockContext)
 
       expect(typeof result).toBe('boolean')
     })
@@ -81,15 +76,10 @@ describe('CASLPermissionEngine', () => {
     it('should grant admin users all permissions', async () => {
       const adminUser = {
         ...mockUser,
-        roles: ['admin']
+        roles: ['admin'],
       } as User
 
-      const result = await permissionEngine.check(
-        adminUser,
-        'delete',
-        'posts',
-        mockContext
-      )
+      const result = await permissionEngine.check(adminUser, 'delete', 'posts', mockContext)
 
       expect(typeof result).toBe('boolean')
     })
@@ -103,15 +93,10 @@ describe('CASLPermissionEngine', () => {
       const limitedUser = {
         ...mockUser,
         roles: ['guest'],
-        permissions: ['read:posts']
+        permissions: ['read:posts'],
       } as User
 
-      const result = await permissionEngine.check(
-        limitedUser,
-        'delete',
-        'posts',
-        mockContext
-      )
+      const result = await permissionEngine.check(limitedUser, 'delete', 'posts', mockContext)
 
       expect(typeof result).toBe('boolean')
     })
@@ -126,7 +111,7 @@ describe('CASLPermissionEngine', () => {
     it('should create permission engine with configuration', () => {
       const customEngine = new CASLPermissionEngine({
         defaultRole: 'guest',
-        enableAuditLog: true
+        enableAuditLog: true,
       })
 
       expect(customEngine).toBeDefined()
@@ -150,12 +135,7 @@ describe('CASLPermissionEngine', () => {
      * @expect 返回布尔值结果
      */
     it('should perform basic permission checks', async () => {
-      const result = await permissionEngine.check(
-        mockUser,
-        'read',
-        'posts',
-        mockContext
-      )
+      const result = await permissionEngine.check(mockUser, 'read', 'posts', mockContext)
 
       expect(typeof result).toBe('boolean')
     })
@@ -168,15 +148,10 @@ describe('CASLPermissionEngine', () => {
     it('should check permissions for different roles', async () => {
       const adminUser = {
         ...mockUser,
-        roles: ['admin']
+        roles: ['admin'],
       } as User
 
-      const result = await permissionEngine.check(
-        adminUser,
-        'manage',
-        'users',
-        mockContext
-      )
+      const result = await permissionEngine.check(adminUser, 'manage', 'users', mockContext)
 
       expect(typeof result).toBe('boolean')
     })
@@ -191,12 +166,7 @@ describe('CASLPermissionEngine', () => {
     it('should handle invalid user objects', async () => {
       const invalidUser = null as any
 
-      const result = await permissionEngine.check(
-        invalidUser,
-        'read',
-        'posts',
-        mockContext
-      )
+      const result = await permissionEngine.check(invalidUser, 'read', 'posts', mockContext)
 
       expect(result).toBe(false)
     })
@@ -207,12 +177,7 @@ describe('CASLPermissionEngine', () => {
      * @expect 优雅地处理无效操作
      */
     it('should handle invalid permission actions', async () => {
-      const result = await permissionEngine.check(
-        mockUser,
-        '',
-        'posts',
-        mockContext
-      )
+      const result = await permissionEngine.check(mockUser, '', 'posts', mockContext)
 
       expect(typeof result).toBe('boolean')
     })
@@ -227,7 +192,7 @@ describe('CASLPermissionEngine', () => {
       const malformedUser = {
         id: 'user-123',
         roles: null,
-        permissions: undefined
+        permissions: undefined,
       } as any
 
       await expect(async () => {

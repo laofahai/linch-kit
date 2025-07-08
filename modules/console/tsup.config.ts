@@ -19,13 +19,13 @@ export default defineConfig({
     '@linch-kit/auth',
     '@linch-kit/crud',
     '@linch-kit/trpc',
-    '@linch-kit/ui'
+    '@linch-kit/ui',
   ],
   treeshake: true,
   splitting: false,
   sourcemap: true,
   minify: false,
   banner: {
-    js: `'use client';`
-  }
+    js: `'use client';`,
+  },
 })

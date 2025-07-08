@@ -16,36 +16,42 @@ LinchKit Demo App 是一个功能完整的演示应用，旨在展示 LinchKit �
 ## ✨ 核心功能模块
 
 ### 🏗️ Schema 模块演示
+
 - **动态 Schema 定义** - 实时创建和修改 Schema
 - **代码生成预览** - 展示 Prisma、TypeScript 代码生成结果
 - **字段类型展示** - 涵盖所有支持的字段类型和验证规则
 - **关系定义** - OneToOne、OneToMany、ManyToMany 关系演示
 
 ### 🔐 Auth 模块演示
+
 - **多提供商认证** - 展示 Google、GitHub、邮箱登录
 - **权限系统** - RBAC/ABAC 权限控制演示
 - **多租户切换** - 租户隔离和切换功能
 - **会话管理** - 令牌刷新、登出等会话操作
 
 ### 🚀 tRPC 模块演示
+
 - **端到端类型安全** - 展示从服务端到客户端的类型安全
 - **实时查询** - useQuery、useMutation 的实际使用
 - **订阅功能** - WebSocket 实时数据订阅
 - **错误处理** - 优雅的错误处理和用户反馈
 
 ### ⚙️ Config 模块演示
+
 - **动态配置管理** - 运行时配置读取和更新
 - **环境变量** - 不同环境下的配置管理
 - **配置验证** - Schema 驱动的配置验证
 - **热重载** - 配置变更的实时响应
 
 ### 🧩 Plugins 模块演示
+
 - **插件市场** - 插件发现、安装、配置
 - **生命周期管理** - 插件启用、禁用、卸载
 - **插件开发** - 自定义插件开发示例
 - **插件通信** - 插件间的事件通信机制
 
 ### 🌐 I18n 模块演示
+
 - **多语言切换** - 中英文界面切换
 - **动态加载** - 按需加载语言包
 - **格式化支持** - 数字、日期、货币格式化
@@ -200,6 +206,7 @@ apps/demo-app/
 ### 添加新的演示模块
 
 1. **创建页面组件**:
+
 ```typescript
 // src/app/new-feature/page.tsx
 import { NewFeatureDemo } from '@/components/new-feature/NewFeatureDemo'
@@ -215,6 +222,7 @@ export default function NewFeaturePage() {
 ```
 
 2. **创建演示组件**:
+
 ```typescript
 // src/components/new-feature/NewFeatureDemo.tsx
 'use client'
@@ -224,7 +232,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui'
 
 export function NewFeatureDemo() {
   const [demoState, setDemoState] = useState({})
-  
+
   return (
     <Card>
       <CardHeader>
@@ -239,22 +247,25 @@ export function NewFeatureDemo() {
 ```
 
 3. **添加导航链接**:
+
 ```typescript
 // src/components/layout/Navigation.tsx
 const navItems = [
   // ... 现有项目
-  { href: '/new-feature', label: 'New Feature' }
+  { href: '/new-feature', label: 'New Feature' },
 ]
 ```
 
 ### 集成新的 LinchKit 包
 
 1. **安装包依赖**:
+
 ```bash
 bun add @linch-kit/new-package
 ```
 
 2. **配置 Provider**:
+
 ```typescript
 // src/components/providers/LinchKitProvider.tsx
 import { NewPackageProvider } from '@linch-kit/new-package'
@@ -273,13 +284,14 @@ export function LinchKitProvider({ children }) {
 ```
 
 3. **创建演示组件**:
+
 ```typescript
 // src/components/new-package/PackageDemo.tsx
 import { useNewPackage } from '@linch-kit/new-package'
 
 export function PackageDemo() {
   const { data, isLoading } = useNewPackage()
-  
+
   // 演示组件实现
 }
 ```
@@ -296,7 +308,7 @@ describe('SchemaDemo', () => {
     render(<SchemaDemo />)
     expect(screen.getByText('Create Schema')).toBeInTheDocument()
   })
-  
+
   test('generates code preview', async () => {
     render(<SchemaDemo />)
     // 测试代码生成功能
@@ -381,6 +393,7 @@ Error: P1001 Can't reach database server
 ```
 
 **解决方案**：
+
 1. 检查 PostgreSQL 服务是否运行
 2. 验证 `DATABASE_URL` 配置
 3. 确认数据库用户权限
@@ -400,6 +413,7 @@ Error: OAuth configuration error
 ```
 
 **解决方案**：
+
 1. 检查 OAuth 应用配置
 2. 验证回调 URL 设置
 3. 确认客户端 ID 和密钥正确
@@ -411,6 +425,7 @@ Error: TRPCClientError: INTERNAL_SERVER_ERROR
 ```
 
 **解决方案**：
+
 1. 检查服务端路由配置
 2. 验证中间件设置
 3. 查看服务端日志

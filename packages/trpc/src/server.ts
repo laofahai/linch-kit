@@ -1,6 +1,6 @@
 /**
  * @linch-kit/trpc - LinchKit tRPC API Layer (Server)
- * 
+ *
  * 服务端专用的tRPC功能
  */
 
@@ -15,26 +15,28 @@ import superjson from 'superjson'
 /**
  * 创建基础 tRPC 实例
  */
-const t = initTRPC.context<{
-  user?: {
-    id: string
-    email?: string
-    name?: string
-  }
-  services: {
-    logger: {
-      debug: (message: string, meta?: Record<string, unknown>) => void
-      info: (message: string, meta?: Record<string, unknown>) => void
-      warn: (message: string, meta?: Record<string, unknown>) => void
-      error: (message: string, meta?: Record<string, unknown>) => void
+const t = initTRPC
+  .context<{
+    user?: {
+      id: string
+      email?: string
+      name?: string
     }
-    config: {
-      get: (key: string) => unknown
+    services: {
+      logger: {
+        debug: (message: string, meta?: Record<string, unknown>) => void
+        info: (message: string, meta?: Record<string, unknown>) => void
+        warn: (message: string, meta?: Record<string, unknown>) => void
+        error: (message: string, meta?: Record<string, unknown>) => void
+      }
+      config: {
+        get: (key: string) => unknown
+      }
     }
-  }
-}>().create({
-  transformer: superjson
-})
+  }>()
+  .create({
+    transformer: superjson,
+  })
 
 /**
  * 基础路由器和过程构建器
@@ -59,8 +61,8 @@ export const protectedProcedure = t.procedure.use(
     return next({
       ctx: {
         ...ctx,
-        user: ctx.user
-      }
+        user: ctx.user,
+      },
     })
   })
 )
@@ -72,7 +74,7 @@ export const adminProcedure = protectedProcedure.use(
   t.middleware(({ ctx, next }) => {
     // 简化的管理员检查 - 实际应用中应该集成权限系统
     return next({
-      ctx
+      ctx,
     })
   })
 )
@@ -82,30 +84,34 @@ export const adminProcedure = protectedProcedure.use(
  */
 export const healthRouter = router({
   ping: publicProcedure
-    .output(z.object({
-      message: z.string(),
-      timestamp: z.string(),
-      uptime: z.number()
-    }))
+    .output(
+      z.object({
+        message: z.string(),
+        timestamp: z.string(),
+        uptime: z.number(),
+      })
+    )
     .query(() => {
       return {
         message: 'pong',
         timestamp: new Date().toISOString(),
-        uptime: process.uptime()
+        uptime: process.uptime(),
       }
     }),
-    
+
   status: publicProcedure
-    .output(z.object({
-      status: z.enum(['healthy', 'degraded', 'unhealthy']),
-      timestamp: z.string()
-    }))
+    .output(
+      z.object({
+        status: z.enum(['healthy', 'degraded', 'unhealthy']),
+        timestamp: z.string(),
+      })
+    )
     .query(() => {
       return {
         status: 'healthy' as const,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
-    })
+    }),
 })
 
 /**
@@ -113,14 +119,16 @@ export const healthRouter = router({
  */
 export const systemRouter = router({
   info: publicProcedure
-    .output(z.object({
-      name: z.string(),
-      version: z.string(),
-      environment: z.string(),
-      nodeVersion: z.string(),
-      uptime: z.number(),
-      timestamp: z.string()
-    }))
+    .output(
+      z.object({
+        name: z.string(),
+        version: z.string(),
+        environment: z.string(),
+        nodeVersion: z.string(),
+        uptime: z.number(),
+        timestamp: z.string(),
+      })
+    )
     .query(() => {
       return {
         name: '@linch-kit/trpc',
@@ -128,9 +136,9 @@ export const systemRouter = router({
         environment: process.env.NODE_ENV || 'development',
         nodeVersion: process.version,
         uptime: process.uptime(),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
-    })
+    }),
 })
 
 /**
@@ -138,7 +146,7 @@ export const systemRouter = router({
  */
 export const appRouter = router({
   health: healthRouter,
-  system: systemRouter
+  system: systemRouter,
 })
 
 /**
@@ -161,7 +169,7 @@ export function createLinchKitContext(options: {
     // 简化的上下文创建 - 实际应用中可以扩展
     return {
       user: undefined, // 在具体应用中实现认证逻辑
-      services: options.services
+      services: options.services,
     }
   }
 }
@@ -179,9 +187,9 @@ export const createTRPCContext = createLinchKitContext({
       error: (message: string, meta?: Record<string, unknown>) => console.error(message, meta),
     },
     config: {
-      get: (key: string) => process.env[key]
-    }
-  }
+      get: (key: string) => process.env[key],
+    },
+  },
 })
 
 // 导出类型

@@ -14,27 +14,27 @@ export interface Tab {
 interface TabsState {
   tabs: Tab[]
   activeTabId: string | null
-  
+
   // 标签页操作
   addTab: (tab: Omit<Tab, 'id'>) => void
   removeTab: (id: string) => void
   setActiveTab: (id: string) => void
   updateTab: (id: string, updates: Partial<Tab>) => void
-  
+
   // 标签页排序
   reorderTabs: (sourceIndex: number, destinationIndex: number) => void
-  
+
   // 标签页状态
   pinTab: (id: string) => void
   unpinTab: (id: string) => void
   closeOthers: (id: string) => void
   closeTabs: (ids: string[]) => void
-  
+
   // 工具方法
   getActiveTab: () => Tab | null
   getTabById: (id: string) => Tab | null
   getTabByPath: (path: string) => Tab | null
-  
+
   // 状态重置
   reset: () => void
 }
@@ -59,17 +59,17 @@ export const useTabsStore = create<TabsState>()(
     (set, get) => ({
       tabs: defaultTabs,
       activeTabId: 'dashboard',
-      
-      addTab: (tabData) => {
+
+      addTab: tabData => {
         const { tabs } = get()
-        
+
         // 检查是否已存在相同路径的标签页
         const existingTab = tabs.find(tab => tab.path === tabData.path)
         if (existingTab) {
           set({ activeTabId: existingTab.id })
           return
         }
-        
+
         // 创建新标签页
         const newTab: Tab = {
           id: generateTabId(tabData.path),
@@ -78,26 +78,26 @@ export const useTabsStore = create<TabsState>()(
           modified: false,
           ...tabData,
         }
-        
+
         set(state => ({
           tabs: [...state.tabs, newTab],
           activeTabId: newTab.id,
         }))
       },
-      
-      removeTab: (id) => {
+
+      removeTab: id => {
         const { tabs, activeTabId } = get()
         const tabIndex = tabs.findIndex(tab => tab.id === id)
-        
+
         if (tabIndex === -1) return
-        
+
         const tab = tabs[tabIndex]
-        
+
         // 不能关闭不可关闭的标签页
         if (tab.closable === false) return
-        
+
         const newTabs = tabs.filter(tab => tab.id !== id)
-        
+
         // 如果关闭的是当前活动标签页，需要选择新的活动标签页
         let newActiveTabId = activeTabId
         if (activeTabId === id) {
@@ -109,102 +109,92 @@ export const useTabsStore = create<TabsState>()(
             newActiveTabId = null
           }
         }
-        
+
         set({
           tabs: newTabs,
           activeTabId: newActiveTabId,
         })
       },
-      
-      setActiveTab: (id) => {
+
+      setActiveTab: id => {
         const { tabs } = get()
         const tab = tabs.find(tab => tab.id === id)
         if (tab) {
           set({ activeTabId: id })
         }
       },
-      
+
       updateTab: (id, updates) => {
         set(state => ({
-          tabs: state.tabs.map(tab =>
-            tab.id === id ? { ...tab, ...updates } : tab
-          ),
+          tabs: state.tabs.map(tab => (tab.id === id ? { ...tab, ...updates } : tab)),
         }))
       },
-      
+
       reorderTabs: (sourceIndex, destinationIndex) => {
         const { tabs } = get()
         const newTabs = [...tabs]
         const [reorderedTab] = newTabs.splice(sourceIndex, 1)
         newTabs.splice(destinationIndex, 0, reorderedTab)
-        
+
         set({ tabs: newTabs })
       },
-      
-      pinTab: (id) => {
+
+      pinTab: id => {
         set(state => ({
-          tabs: state.tabs.map(tab =>
-            tab.id === id ? { ...tab, pinned: true } : tab
-          ),
+          tabs: state.tabs.map(tab => (tab.id === id ? { ...tab, pinned: true } : tab)),
         }))
       },
-      
-      unpinTab: (id) => {
+
+      unpinTab: id => {
         set(state => ({
-          tabs: state.tabs.map(tab =>
-            tab.id === id ? { ...tab, pinned: false } : tab
-          ),
+          tabs: state.tabs.map(tab => (tab.id === id ? { ...tab, pinned: false } : tab)),
         }))
       },
-      
-      closeOthers: (id) => {
+
+      closeOthers: id => {
         const { tabs } = get()
         const targetTab = tabs.find(tab => tab.id === id)
         if (!targetTab) return
-        
-        const newTabs = tabs.filter(tab => 
-          tab.id === id || tab.closable === false || tab.pinned
-        )
-        
+
+        const newTabs = tabs.filter(tab => tab.id === id || tab.closable === false || tab.pinned)
+
         set({
           tabs: newTabs,
           activeTabId: id,
         })
       },
-      
-      closeTabs: (ids) => {
+
+      closeTabs: ids => {
         const { tabs, activeTabId } = get()
-        const newTabs = tabs.filter(tab => 
-          !ids.includes(tab.id) || tab.closable === false
-        )
-        
+        const newTabs = tabs.filter(tab => !ids.includes(tab.id) || tab.closable === false)
+
         // 如果当前活动标签页被关闭，选择新的活动标签页
         let newActiveTabId = activeTabId
         if (activeTabId && ids.includes(activeTabId)) {
           newActiveTabId = newTabs.length > 0 ? newTabs[0].id : null
         }
-        
+
         set({
           tabs: newTabs,
           activeTabId: newActiveTabId,
         })
       },
-      
+
       getActiveTab: () => {
         const { tabs, activeTabId } = get()
         return tabs.find(tab => tab.id === activeTabId) || null
       },
-      
-      getTabById: (id) => {
+
+      getTabById: id => {
         const { tabs } = get()
         return tabs.find(tab => tab.id === id) || null
       },
-      
-      getTabByPath: (path) => {
+
+      getTabByPath: path => {
         const { tabs } = get()
         return tabs.find(tab => tab.path === path) || null
       },
-      
+
       reset: () => {
         set({
           tabs: defaultTabs,
@@ -215,7 +205,7 @@ export const useTabsStore = create<TabsState>()(
     {
       name: 'tabs-storage',
       // 只持久化必要的状态
-      partialize: (state) => ({
+      partialize: state => ({
         tabs: state.tabs,
         activeTabId: state.activeTabId,
       }),

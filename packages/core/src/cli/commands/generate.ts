@@ -1,6 +1,6 @@
 /**
  * linch generate 命令
- * 
+ *
  * 这只是一个命令组，具体的生成命令由各个包自己实现
  */
 
@@ -23,11 +23,10 @@ const generateCommand: CLICommand = {
     Logger.info('  linch generate:page      - 生成页面 (@linch-kit/console)')
     Logger.info('')
     Logger.info('提示: 各个生成命令由对应的包提供，请确保已安装相关包')
-    
-    return { success: true }
-  }
-}
 
+    return { success: true }
+  },
+}
 
 export function registerGenerateCommands(cli: CLIManager) {
   // 只注册 generate 命令本身

@@ -9,6 +9,7 @@
 ### 开发环境要求
 
 #### Node.js 环境
+
 ```bash
 # 强制要求的 Node.js 版本
 NODE_VERSION="v20.19.2"
@@ -18,6 +19,7 @@ export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"
 ```
 
 #### 包管理器
+
 ```bash
 # 强制使用 bun，禁止 npm/yarn
 PACKAGE_MANAGER="bun"
@@ -34,6 +36,7 @@ bun test                 # 运行测试
 ## 🗄️ 数据库配置
 
 ### PostgreSQL 配置
+
 ```bash
 # 数据库连接
 DATABASE_URL="postgresql://username:password@localhost:5432/linchkit_dev"
@@ -49,6 +52,7 @@ DIRECT_URL="postgresql://user:pass@production-host:5432/linchkit_prod"
 ```
 
 ### Prisma 配置
+
 ```bash
 # Prisma CLI 命令
 bunx prisma generate      # 生成 Prisma 客户端
@@ -60,6 +64,7 @@ bunx prisma studio       # 打开 Prisma Studio
 ## 🔐 认证配置
 
 ### NextAuth.js 配置
+
 ```bash
 # NextAuth 核心配置
 NEXTAUTH_URL="http://localhost:3000"
@@ -71,6 +76,7 @@ NEXTAUTH_SECRET="production-secret-key-minimum-32-characters"
 ```
 
 ### OAuth 提供商配置
+
 ```bash
 # GitHub OAuth
 GITHUB_CLIENT_ID="your-github-client-id"
@@ -88,6 +94,7 @@ DISCORD_CLIENT_SECRET="your-discord-client-secret"
 ## 🧠 AI 服务配置
 
 ### Neo4j 图数据库
+
 ```bash
 # Neo4j 连接配置 (AI 知识图谱)
 NEO4J_CONNECTION_URI="neo4j+s://your-instance.databases.neo4j.io"
@@ -101,6 +108,7 @@ NEO4J_PASSWORD="local-password"
 ```
 
 ### AI Session 工具配置
+
 ```bash
 # AI Session 工具启用
 AI_SESSION_ENABLED="true"
@@ -117,6 +125,7 @@ QUERY_CACHE_ENABLED="true"  # 启用查询缓存
 ## 📧 邮件服务配置
 
 ### SMTP 配置
+
 ```bash
 # SMTP 服务器配置
 SMTP_HOST="smtp.gmail.com"
@@ -132,6 +141,7 @@ EMAIL_ENABLED="true"
 ## 📁 文件存储配置
 
 ### 本地存储
+
 ```bash
 # 本地文件存储路径
 UPLOAD_DIR="./uploads"
@@ -140,6 +150,7 @@ ALLOWED_FILE_TYPES="jpg,jpeg,png,gif,pdf,doc,docx"
 ```
 
 ### 云存储 (可选)
+
 ```bash
 # AWS S3 配置
 AWS_ACCESS_KEY_ID="your-aws-access-key"
@@ -155,6 +166,7 @@ STORAGE_PROVIDER="s3"  # s3 | gcs | azure
 ## 🔍 监控和日志配置
 
 ### 日志配置
+
 ```bash
 # 日志级别
 LOG_LEVEL="info"  # error, warn, info, debug, trace
@@ -168,6 +180,7 @@ LOG_ROTATION="daily"
 ```
 
 ### 监控配置
+
 ```bash
 # OpenTelemetry 配置
 OTEL_ENABLED="false"
@@ -182,6 +195,7 @@ HEALTH_CHECK_PATH="/health"
 ## 🌐 应用配置
 
 ### Next.js 应用配置
+
 ```bash
 # 应用基础配置
 APP_NAME="LinchKit"
@@ -199,6 +213,7 @@ RATE_LIMIT_MAX="100"  # 每分钟最大请求数
 ```
 
 ### UI 主题配置
+
 ```bash
 # 主题系统
 DEFAULT_THEME="light"  # light | dark | system
@@ -212,6 +227,7 @@ UI_COMPACT_MODE="false"
 ## 🏢 多租户配置
 
 ### 租户系统
+
 ```bash
 # 多租户功能
 MULTITENANCY_ENABLED="true"
@@ -223,6 +239,7 @@ TENANT_SUBDOMAIN_ENABLED="false"
 ```
 
 ### 权限系统
+
 ```bash
 # CASL 权限配置
 PERMISSIONS_ENABLED="true"
@@ -236,6 +253,7 @@ PERMISSIONS_CACHE_TTL="3600"  # 秒
 ## 🔧 开发工具配置
 
 ### 构建配置
+
 ```bash
 # 构建优化
 BUILD_ANALYZE="false"
@@ -248,6 +266,7 @@ DEV_HOT_RELOAD="true"
 ```
 
 ### 测试配置
+
 ```bash
 # 测试环境
 TEST_DATABASE_URL="postgresql://postgres:test@localhost:5432/linchkit_test"
@@ -261,6 +280,7 @@ COVERAGE_REPORTS="text,html,lcov"
 ## 📋 配置文件示例
 
 ### .env.local (开发环境)
+
 ```bash
 # 数据库
 DATABASE_URL="postgresql://postgres:password@localhost:5432/linchkit_dev"
@@ -286,6 +306,7 @@ AI_SESSION_ENABLED="true"
 ```
 
 ### .env.production (生产环境)
+
 ```bash
 # 数据库
 DATABASE_URL="postgresql://user:pass@prod-host:5432/linchkit_prod"
@@ -314,12 +335,14 @@ OTEL_ENABLED="true"
 ## ⚠️ 安全注意事项
 
 ### 敏感信息管理
+
 - ✅ **使用环境变量**: 所有敏感信息都通过环境变量配置
 - ✅ **不提交 .env 文件**: .env 文件已加入 .gitignore
 - ✅ **生产环境密钥**: 生产环境使用强密钥和不同的配置
 - ✅ **定期轮换**: 定期轮换 API 密钥和数据库密码
 
 ### 权限配置
+
 - ✅ **最小权限原则**: 数据库用户只授予必要权限
 - ✅ **网络隔离**: 生产数据库限制网络访问
 - ✅ **审计日志**: 启用所有敏感操作的审计日志
@@ -327,13 +350,16 @@ OTEL_ENABLED="true"
 ## 🔍 配置验证
 
 ### 启动时检查
+
 LinchKit 在启动时会自动验证以下配置：
+
 - 必需环境变量是否存在
 - 数据库连接是否正常
 - 外部服务（如 Neo4j）是否可达
 - 文件权限是否正确
 
 ### 配置诊断命令
+
 ```bash
 # 检查配置
 bun run config:check

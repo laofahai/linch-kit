@@ -8,12 +8,12 @@
 
 import { useState, useEffect } from 'react'
 import { api as trpc } from '@/lib/trpc-client'
-import { 
-  Button, 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
   Table,
   TableBody,
@@ -35,7 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
   Label,
-  useToast
+  useToast,
 } from '@linch-kit/ui'
 import { Logger } from '@linch-kit/core'
 import { ChevronLeft, ChevronRight, Search, UserPlus, MoreHorizontal } from 'lucide-react'
@@ -58,15 +58,19 @@ export default function UsersPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [showStatusDialog, setShowStatusDialog] = useState(false)
   const [newStatus, setNewStatus] = useState<User['status']>('ACTIVE')
-  
+
   const limit = 10
 
   // 使用 tRPC hook 获取用户列表
-  const { data: userListData, isLoading: loading, refetch } = trpc.user.list.useQuery({
+  const {
+    data: userListData,
+    isLoading: loading,
+    refetch,
+  } = trpc.user.list.useQuery({
     limit,
     offset: (currentPage - 1) * limit,
     search: search || undefined,
-    role: roleFilter === 'all' ? undefined : roleFilter as User['role'],
+    role: roleFilter === 'all' ? undefined : (roleFilter as User['role']),
   })
 
   const users = userListData?.users || []
@@ -74,7 +78,7 @@ export default function UsersPage() {
 
   // 更新用户状态 mutation
   const updateStatusMutation = trpc.user.updateStatus.useMutation({
-    onSuccess: (result) => {
+    onSuccess: result => {
       if (result.success) {
         toast({
           title: '操作成功',
@@ -84,7 +88,7 @@ export default function UsersPage() {
         refetch() // 刷新列表
       }
     },
-    onError: (error) => {
+    onError: error => {
       Logger.error('更新用户状态失败', error as unknown as Error)
       toast({
         title: '操作失败',
@@ -96,7 +100,7 @@ export default function UsersPage() {
 
   const updateUserStatus = () => {
     if (!selectedUser) return
-    
+
     updateStatusMutation.mutate({
       userId: selectedUser.id,
       status: newStatus,
@@ -138,11 +142,11 @@ export default function UsersPage() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">用户管理</h1>
-            <p className="text-muted-foreground mt-2">
-              管理系统中的所有用户账户和权限
-            </p>
+            <p className="text-muted-foreground mt-2">管理系统中的所有用户账户和权限</p>
           </div>
-          <Button onClick={() => toast({ title: '功能开发中', description: '创建用户功能即将推出' })}>
+          <Button
+            onClick={() => toast({ title: '功能开发中', description: '创建用户功能即将推出' })}
+          >
             <UserPlus className="h-4 w-4 mr-2" />
             创建用户
           </Button>
@@ -158,7 +162,7 @@ export default function UsersPage() {
               <Input
                 placeholder="搜索用户名或邮箱..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={e => setSearch(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -181,9 +185,7 @@ export default function UsersPage() {
       <Card>
         <CardHeader>
           <CardTitle>用户列表</CardTitle>
-          <CardDescription>
-            共 {total} 个用户
-          </CardDescription>
+          <CardDescription>共 {total} 个用户</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -216,7 +218,7 @@ export default function UsersPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  users.map((user) => (
+                  users.map(user => (
                     <TableRow key={user.id}>
                       <TableCell className="font-medium">{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
@@ -224,10 +226,9 @@ export default function UsersPage() {
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
                       <TableCell>{new Date(user.createdAt).toLocaleDateString('zh-CN')}</TableCell>
                       <TableCell>
-                        {user.lastLoginAt 
+                        {user.lastLoginAt
                           ? new Date(user.lastLoginAt).toLocaleDateString('zh-CN')
-                          : '从未登录'
-                        }
+                          : '从未登录'}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
@@ -253,7 +254,8 @@ export default function UsersPage() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-4">
               <p className="text-sm text-muted-foreground">
-                显示第 {(currentPage - 1) * limit + 1} - {Math.min(currentPage * limit, total)} 条，共 {total} 条
+                显示第 {(currentPage - 1) * limit + 1} - {Math.min(currentPage * limit, total)}{' '}
+                条，共 {total} 条
               </p>
               <div className="flex items-center gap-2">
                 <Button
@@ -288,9 +290,7 @@ export default function UsersPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>更新用户状态</DialogTitle>
-            <DialogDescription>
-              修改用户 {selectedUser?.name} 的账户状态
-            </DialogDescription>
+            <DialogDescription>修改用户 {selectedUser?.name} 的账户状态</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
@@ -299,7 +299,7 @@ export default function UsersPage() {
               </Label>
               <Select
                 value={newStatus}
-                onValueChange={(value) => setNewStatus(value as User['status'])}
+                onValueChange={value => setNewStatus(value as User['status'])}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue />

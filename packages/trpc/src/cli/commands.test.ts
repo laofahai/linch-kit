@@ -24,13 +24,13 @@ const mockJoin = vi.fn()
 const originalConsole = {
   log: console.log,
   warn: console.warn,
-  error: console.error
+  error: console.error,
 }
 
 const mockConsole = {
   log: vi.fn(),
   warn: vi.fn(),
-  error: vi.fn()
+  error: vi.fn(),
 }
 
 // 测试上下文类型
@@ -41,18 +41,18 @@ interface TestCLIContext {
 describe('@linch-kit/trpc CLI Commands', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    
+
     // Mock console 方法
     console.log = mockConsole.log
     console.warn = mockConsole.warn
     console.error = mockConsole.error
-    
+
     // Mock 文件系统默认行为
     mockExistsSync.mockReturnValue(true)
     mockMkdirSync.mockReturnValue(undefined)
     mockWriteFileSync.mockReturnValue(undefined)
     mockJoin.mockImplementation((...paths) => paths.join('/'))
-    
+
     // 手动设置 mock (Bun 不支持 vi.mocked)
     // vi.mocked(existsSync).mockImplementation(mockExistsSync)
     // vi.mocked(mkdirSync).mockImplementation(mockMkdirSync)
@@ -62,7 +62,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
-    
+
     // 恢复 console 方法
     console.log = originalConsole.log
     console.warn = originalConsole.warn
@@ -100,7 +100,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
     it('should have all required options', () => {
       const options = generateTrpcCommand.options || []
       const optionNames = options.map(opt => opt.name)
-      
+
       expect(optionNames).toContain('--schema')
       expect(optionNames).toContain('--output')
       expect(optionNames).toContain('--crud')
@@ -114,7 +114,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
     it('should have correct default values', () => {
       const options = generateTrpcCommand.options || []
       const optionsMap = new Map(options.map(opt => [opt.name, opt]))
-      
+
       expect(optionsMap.get('--schema')?.defaultValue).toBe('./src/schema')
       expect(optionsMap.get('--output')?.defaultValue).toBe('./src/trpc')
       expect(optionsMap.get('--crud')?.defaultValue).toBe(true)
@@ -127,7 +127,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
       const options = generateTrpcCommand.options || []
       const booleanOptions = options.filter(opt => opt.type === 'boolean')
       const booleanNames = booleanOptions.map(opt => opt.name)
-      
+
       expect(booleanNames).toContain('--crud')
       expect(booleanNames).toContain('--auth')
       expect(booleanNames).toContain('--permissions')
@@ -139,7 +139,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
     it('should have aliases for key options', () => {
       const options = generateTrpcCommand.options || []
       const aliasMap = new Map(options.map(opt => [opt.name, opt.alias]))
-      
+
       expect(aliasMap.get('--schema')).toBe('-s')
       expect(aliasMap.get('--output')).toBe('-o')
     })
@@ -156,8 +156,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -165,7 +165,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
       expect(result).toEqual({
         success: true,
         entities: [],
-        files: []
+        files: [],
       })
 
       expect(mockConsole.log).toHaveBeenCalledWith('Starting tRPC router generation...')
@@ -184,8 +184,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -206,8 +206,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: false,
           validation: false,
           openapi: true,
-          client: true
-        }
+          client: true,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -226,8 +226,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -247,8 +247,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -273,8 +273,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -294,8 +294,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -306,7 +306,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
 
     it('should handle missing options gracefully', async () => {
       const context: TestCLIContext = {
-        options: {}
+        options: {},
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -319,8 +319,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
       const context: TestCLIContext = {
         options: {
           schema: undefined,
-          output: undefined
-        }
+          output: undefined,
+        },
       }
 
       // 应该不抛出错误，使用默认值或处理 undefined
@@ -339,8 +339,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       await generateTrpcCommand.handler(context)
@@ -360,8 +360,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -382,8 +382,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: true,
-          client: true
-        }
+          client: true,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -400,13 +400,13 @@ describe('@linch-kit/trpc CLI Commands', () => {
         options: {
           schema: './src/schema',
           output: './src/trpc',
-          crud: 'true',  // 字符串形式的布尔值
+          crud: 'true', // 字符串形式的布尔值
           auth: 'false',
           permissions: 1, // 数字形式的布尔值
           validation: 0,
           openapi: true,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -423,8 +423,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -441,8 +441,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: [],
           validation: {},
           openapi: '',
-          client: 0
-        }
+          client: 0,
+        },
       }
 
       await expect(generateTrpcCommand.handler(context)).resolves.toBeDefined()
@@ -460,14 +460,14 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       // 并发执行多个命令
-      const promises = Array(5).fill(null).map(() => 
-        generateTrpcCommand.handler(context)
-      )
+      const promises = Array(5)
+        .fill(null)
+        .map(() => generateTrpcCommand.handler(context))
 
       const results = await Promise.all(promises)
 
@@ -486,7 +486,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
         permissions: true,
         validation: true,
         openapi: false,
-        client: false
+        client: false,
       }
 
       // 添加大量额外选项
@@ -495,7 +495,7 @@ describe('@linch-kit/trpc CLI Commands', () => {
       }
 
       const context: TestCLIContext = {
-        options: largeOptions
+        options: largeOptions,
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -515,8 +515,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -537,8 +537,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: true,
-          client: true
-        }
+          client: true,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)
@@ -559,8 +559,8 @@ describe('@linch-kit/trpc CLI Commands', () => {
           permissions: true,
           validation: true,
           openapi: false,
-          client: false
-        }
+          client: false,
+        },
       }
 
       const result = await generateTrpcCommand.handler(context)

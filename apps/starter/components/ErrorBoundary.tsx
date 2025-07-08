@@ -67,12 +67,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                  应用出现错误
-                </h3>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">应用出现错误</h3>
               </div>
             </div>
-            
+
             <div className="mb-4">
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 应用运行时出现了一个错误，我们已经记录了这个问题。请刷新页面重试。

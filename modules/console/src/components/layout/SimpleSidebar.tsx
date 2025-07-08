@@ -1,6 +1,6 @@
 /**
  * 简单的 Sidebar 布局组件
- * 
+ *
  * 不依赖复杂的 shadcn sidebar，自实现简单可靠的侧边栏
  */
 
@@ -9,16 +9,7 @@
 import React, { ReactNode, useState } from 'react'
 import { cn } from '@linch-kit/ui/utils'
 import { Button, Separator } from '@linch-kit/ui'
-import { 
-  Menu, 
-  X, 
-  Home, 
-  Settings, 
-  Users, 
-  BarChart3,
-  FileText,
-  HelpCircle
-} from 'lucide-react'
+import { Menu, X, Home, Settings, Users, BarChart3, FileText, HelpCircle } from 'lucide-react'
 
 export interface SimpleSidebarProps {
   /** 页面内容 */
@@ -58,10 +49,10 @@ export function SimpleSidebar({
   children,
   title = 'LinchKit Dashboard',
   breadcrumbs = [],
-  className
+  className,
 }: SimpleSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  
+
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed)
   }
@@ -69,7 +60,7 @@ export function SimpleSidebar({
   return (
     <div className={cn('flex min-h-screen bg-gray-50', className)}>
       {/* Sidebar */}
-      <div 
+      <div
         className={cn(
           'bg-white border-r border-gray-200 transition-all duration-300 ease-in-out',
           isCollapsed ? 'w-16' : 'w-64'
@@ -98,7 +89,7 @@ export function SimpleSidebar({
         {/* Navigation */}
         <nav className="p-4">
           <div className="space-y-2">
-            {defaultNavItems.map((item) => {
+            {defaultNavItems.map(item => {
               const Icon = item.icon
               return (
                 <a
@@ -106,8 +97,8 @@ export function SimpleSidebar({
                   href={item.href}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
-                    item.active 
-                      ? 'bg-blue-50 text-blue-700 font-medium' 
+                    item.active
+                      ? 'bg-blue-50 text-blue-700 font-medium'
                       : 'text-gray-700 hover:bg-gray-100',
                     isCollapsed && 'justify-center'
                   )}
@@ -124,9 +115,7 @@ export function SimpleSidebar({
         {/* Sidebar Footer */}
         {!isCollapsed && (
           <div className="absolute bottom-4 left-4 right-4">
-            <div className="text-xs text-gray-500 text-center">
-              © 2024 LinchKit
-            </div>
+            <div className="text-xs text-gray-500 text-center">© 2024 LinchKit</div>
           </div>
         )}
       </div>
@@ -135,12 +124,7 @@ export function SimpleSidebar({
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center px-6">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleSidebar}
-            className="mr-4"
-          >
+          <Button variant="ghost" size="sm" onClick={toggleSidebar} className="mr-4">
             {isCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
           </Button>
 
@@ -165,9 +149,7 @@ export function SimpleSidebar({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto">{children}</main>
       </div>
     </div>
   )
@@ -189,7 +171,7 @@ export function SidebarPage({
   description,
   actions,
   children,
-  className
+  className,
 }: SidebarPageProps) {
   return (
     <div className={cn('p-6', className)}>
@@ -199,30 +181,18 @@ export function SidebarPage({
           <div className="flex items-start justify-between">
             <div className="flex-1">
               {title && (
-                <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-                  {title}
-                </h1>
+                <h1 className="text-3xl font-bold tracking-tight text-gray-900">{title}</h1>
               )}
-              {description && (
-                <p className="mt-2 text-sm text-gray-600">
-                  {description}
-                </p>
-              )}
+              {description && <p className="mt-2 text-sm text-gray-600">{description}</p>}
             </div>
-            
-            {actions && (
-              <div className="ml-6 flex items-center space-x-4">
-                {actions}
-              </div>
-            )}
+
+            {actions && <div className="ml-6 flex items-center space-x-4">{actions}</div>}
           </div>
         </div>
       )}
-      
+
       {/* Page Content */}
-      <div className="space-y-6">
-        {children}
-      </div>
+      <div className="space-y-6">{children}</div>
     </div>
   )
 }

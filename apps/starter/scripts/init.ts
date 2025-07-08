@@ -1,20 +1,19 @@
 #!/usr/bin/env tsx
 /**
  * LinchKit Starter 初始化脚本
- * 
+ *
  * 用于初始化新的 LinchKit 项目
  * 使用方法: pnpm init:project
  */
 
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs'
-import { join } from 'path'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { execSync } from 'child_process'
 import readline from 'readline'
 import { Logger } from '@linch-kit/core'
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 })
 
 function question(query: string): Promise<string> {
@@ -71,7 +70,6 @@ async function main() {
     console.log('2. 运行 pnpm dev 启动开发服务器')
     console.log('3. 访问 http://localhost:3000')
     console.log('\n祝你使用愉快！🎉')
-
   } catch (error) {
     Logger.error('初始化失败:', error as Error)
     process.exit(1)
@@ -104,7 +102,7 @@ async function createEnvFile() {
 
   // 交互式配置
   console.log('\n请配置基本信息:')
-  
+
   // 数据库配置
   const dbUrl = await question('PostgreSQL 连接字符串 (回车使用默认值): ')
   if (dbUrl) {
@@ -161,7 +159,7 @@ async function initDatabase() {
 
 async function createAdminUser() {
   console.log('\n创建管理员账号:')
-  
+
   const email = await question('管理员邮箱: ')
   const password = await question('管理员密码: ')
   const name = await question('管理员姓名 (可选): ')

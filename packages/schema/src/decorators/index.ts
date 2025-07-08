@@ -12,11 +12,17 @@
  * 包含实体装饰器、字段装饰器、链式装饰器等
  */
 export {
-  ChainField, Default,
-  Description, Entity,
-  Field, getEntitiesFromClasses, getEntityFromClass, Index, Required, SoftDelete, Table,
-  Timestamps, Unique
-} from './minimal';
-
-
-
+  ChainField,
+  Default,
+  Description,
+  Entity,
+  Field,
+  getEntitiesFromClasses,
+  getEntityFromClass,
+  Index,
+  Required,
+  SoftDelete,
+  Table,
+  Timestamps,
+  Unique,
+} from './minimal'

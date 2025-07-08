@@ -3,10 +3,10 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   transpilePackages: [
     '@linch-kit/core',
-    '@linch-kit/schema', 
+    '@linch-kit/schema',
     '@linch-kit/auth',
     '@linch-kit/crud',
-    '@linch-kit/trpc'
+    '@linch-kit/trpc',
   ],
   eslint: {
     ignoreDuringBuilds: true,

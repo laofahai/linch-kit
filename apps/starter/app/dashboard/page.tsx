@@ -3,17 +3,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui'
 import { Badge } from '@linch-kit/ui'
 import { Button } from '@linch-kit/ui'
-import { 
-  TrendingUp, 
-  Users, 
-  DollarSign, 
-  Activity, 
-  ArrowRight, 
+import {
+  TrendingUp,
+  Users,
+  DollarSign,
+  Activity,
+  ArrowRight,
   Plus,
   BarChart3,
   Settings,
   User,
-  Clock
+  Clock,
 } from 'lucide-react'
 
 export default function DashboardPage() {
@@ -45,7 +45,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-      
+
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-green-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -83,7 +83,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -101,11 +101,13 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-orange-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">System Status</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              System Status
+            </CardTitle>
             <div className="h-8 w-8 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
               <Clock className="h-4 w-4 text-green-600" />
             </div>
@@ -113,7 +115,10 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">99.9%</div>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20">
+              <Badge
+                variant="outline"
+                className="text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20"
+              >
                 Healthy
               </Badge>
               <span className="text-xs text-muted-foreground">Uptime</span>
@@ -121,7 +126,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Quick Actions Section */}
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
@@ -151,7 +156,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Recent Activity</CardTitle>

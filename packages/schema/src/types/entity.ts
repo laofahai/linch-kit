@@ -1,6 +1,6 @@
 /**
  * @linch-kit/schema 实体类型定义
- * 
+ *
  * @description 实体相关的类型定义
  * @author LinchKit Team
  * @since 0.1.0
@@ -108,7 +108,7 @@ export interface Entity<T = Record<string, unknown>> {
 /**
  * 迁移操作类型
  */
-export type MigrationOperation = 
+export type MigrationOperation =
   | 'CREATE_TABLE'
   | 'DROP_TABLE'
   | 'ADD_COLUMN'
@@ -143,4 +143,6 @@ export type CreateInput<T = Record<string, unknown>> = Omit<T, 'id' | 'createdAt
 /**
  * 更新输入类型
  */
-export type UpdateInput<T = Record<string, unknown>> = Partial<Omit<T, 'id' | 'createdAt' | 'updatedAt'>>
+export type UpdateInput<T = Record<string, unknown>> = Partial<
+  Omit<T, 'id' | 'createdAt' | 'updatedAt'>
+>

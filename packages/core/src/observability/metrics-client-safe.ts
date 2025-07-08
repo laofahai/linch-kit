@@ -3,14 +3,7 @@
  * @module observability/metrics-client-safe
  */
 
-import type { 
-  MetricCollector, 
-  Counter, 
-  Gauge, 
-  Histogram, 
-  Summary, 
-  MetricConfig 
-} from '../types'
+import type { MetricCollector, Counter, Gauge, Histogram, Summary, MetricConfig } from '../types'
 
 /**
  * Client-side Counter stub implementation
@@ -66,7 +59,11 @@ class ClientHistogramStub implements Histogram {
     return () => {} // No-op on client side
   }
 
-  get(_labels?: Record<string, string>): { buckets: Record<string, number>; count: number; sum: number } {
+  get(_labels?: Record<string, string>): {
+    buckets: Record<string, number>
+    count: number
+    sum: number
+  } {
     return { buckets: {}, count: 0, sum: 0 }
   }
 
@@ -83,7 +80,11 @@ class ClientSummaryStub implements Summary {
     // No-op on client side
   }
 
-  get(_labels?: Record<string, string>): { quantiles: Record<string, number>; count: number; sum: number } {
+  get(_labels?: Record<string, string>): {
+    quantiles: Record<string, number>
+    count: number
+    sum: number
+  } {
     return { quantiles: {}, count: 0, sum: 0 }
   }
 
@@ -152,10 +153,12 @@ export async function createMetricCollector(config: unknown = {}): Promise<Metri
     const serverMetrics = await loadServerMetrics()
     if (serverMetrics) {
       // Type cast to avoid type conflicts between client/server configs
-      return serverMetrics.createMetricCollector(config as Parameters<typeof serverMetrics.createMetricCollector>[0])
+      return serverMetrics.createMetricCollector(
+        config as Parameters<typeof serverMetrics.createMetricCollector>[0]
+      )
     }
   }
-  
+
   return new ClientMetricCollector()
 }
 
@@ -165,11 +168,4 @@ export async function createMetricCollector(config: unknown = {}): Promise<Metri
 export const metrics = new ClientMetricCollector()
 
 // Re-export types
-export type {
-  MetricCollector,
-  Counter,
-  Gauge,
-  Histogram,
-  Summary,
-  MetricConfig
-} from '../types'
+export type { MetricCollector, Counter, Gauge, Histogram, Summary, MetricConfig } from '../types'

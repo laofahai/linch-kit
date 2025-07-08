@@ -7,7 +7,7 @@ export const zhCN = {
     // 模块名称
     name: '控制台',
     description: '企业级管理控制台',
-    
+
     // 导航菜单
     nav: {
       dashboard: '仪表板',
@@ -17,9 +17,9 @@ export const zhCN = {
       plugins: '插件市场',
       monitoring: '系统监控',
       schemas: 'Schema管理',
-      settings: '系统设置'
+      settings: '系统设置',
     },
-    
+
     // 实体相关
     entities: {
       // 租户实体
@@ -40,22 +40,22 @@ export const zhCN = {
           metadata: '元数据',
           createdAt: '创建时间',
           updatedAt: '更新时间',
-          deletedAt: '删除时间'
+          deletedAt: '删除时间',
         },
         status: {
           active: '活跃',
           suspended: '已暂停',
           deleted: '已删除',
-          pending: '待激活'
+          pending: '待激活',
         },
         plan: {
           free: '免费版',
           starter: '入门版',
           professional: '专业版',
-          enterprise: '企业版'
-        }
+          enterprise: '企业版',
+        },
       },
-      
+
       // 租户配额实体
       tenantQuotas: {
         name: '租户配额',
@@ -73,10 +73,10 @@ export const zhCN = {
           maxSchemas: '最大Schema数',
           currentSchemas: '当前Schema数',
           createdAt: '创建时间',
-          updatedAt: '更新时间'
-        }
+          updatedAt: '更新时间',
+        },
       },
-      
+
       // 插件实体
       plugin: {
         name: '插件',
@@ -111,7 +111,7 @@ export const zhCN = {
           reviewedBy: '审核人',
           createdAt: '创建时间',
           updatedAt: '更新时间',
-          publishedAt: '发布时间'
+          publishedAt: '发布时间',
         },
         category: {
           ui: 'UI组件',
@@ -121,16 +121,16 @@ export const zhCN = {
           monitoring: '监控',
           automation: '自动化',
           workflow: '工作流',
-          other: '其他'
+          other: '其他',
         },
         status: {
           draft: '草稿',
           published: '已发布',
           deprecated: '已弃用',
-          removed: '已移除'
-        }
+          removed: '已移除',
+        },
       },
-      
+
       // 系统指标实体
       systemMetric: {
         name: '系统指标',
@@ -142,7 +142,7 @@ export const zhCN = {
           source: '来源',
           hostname: '主机名',
           tenant: '租户',
-          timestamp: '时间戳'
+          timestamp: '时间戳',
         },
         type: {
           cpu: 'CPU',
@@ -153,10 +153,10 @@ export const zhCN = {
           api: 'API',
           cache: '缓存',
           queue: '队列',
-          custom: '自定义'
-        }
+          custom: '自定义',
+        },
       },
-      
+
       // 审计日志实体
       auditLog: {
         name: '审计日志',
@@ -171,15 +171,15 @@ export const zhCN = {
           context: '上下文',
           user: '用户',
           tenant: '租户',
-          createdAt: '创建时间'
+          createdAt: '创建时间',
         },
         status: {
           success: '成功',
           failure: '失败',
-          warning: '警告'
-        }
+          warning: '警告',
+        },
       },
-      
+
       // 告警规则实体
       alertRule: {
         name: '告警规则',
@@ -196,16 +196,16 @@ export const zhCN = {
           notificationChannels: '通知渠道',
           tenant: '租户',
           createdAt: '创建时间',
-          updatedAt: '更新时间'
+          updatedAt: '更新时间',
         },
         severity: {
           low: '低',
           medium: '中',
           high: '高',
-          critical: '紧急'
-        }
+          critical: '紧急',
+        },
       },
-      
+
       // 告警事件实体
       alertEvent: {
         name: '告警事件',
@@ -219,15 +219,15 @@ export const zhCN = {
           acknowledgedAt: '确认时间',
           resolvedBy: '解决人',
           resolvedAt: '解决时间',
-          triggeredAt: '触发时间'
+          triggeredAt: '触发时间',
         },
         status: {
           triggered: '已触发',
           acknowledged: '已确认',
-          resolved: '已解决'
-        }
+          resolved: '已解决',
+        },
       },
-      
+
       // 用户扩展字段
       user: {
         fields: {
@@ -240,10 +240,10 @@ export const zhCN = {
           isSystemAdmin: '系统管理员',
           apiKey: 'API密钥',
           apiKeyCreatedAt: 'API密钥创建时间',
-          apiKeyLastUsedAt: 'API密钥最后使用时间'
-        }
+          apiKeyLastUsedAt: 'API密钥最后使用时间',
+        },
       },
-      
+
       // 用户活动实体
       userActivity: {
         name: '用户活动',
@@ -258,7 +258,7 @@ export const zhCN = {
           ipAddress: 'IP地址',
           userAgent: '用户代理',
           metadata: '元数据',
-          createdAt: '创建时间'
+          createdAt: '创建时间',
         },
         type: {
           login: '登录',
@@ -268,10 +268,10 @@ export const zhCN = {
           data_export: '数据导出',
           settings_change: '设置变更',
           password_change: '密码变更',
-          role_change: '角色变更'
-        }
+          role_change: '角色变更',
+        },
       },
-      
+
       // 用户通知实体
       userNotification: {
         name: '用户通知',
@@ -287,7 +287,7 @@ export const zhCN = {
           readAt: '阅读时间',
           metadata: '元数据',
           createdAt: '创建时间',
-          expiresAt: '过期时间'
+          expiresAt: '过期时间',
         },
         type: {
           info: '信息',
@@ -295,11 +295,11 @@ export const zhCN = {
           error: '错误',
           success: '成功',
           system: '系统',
-          security: '安全'
-        }
-      }
+          security: '安全',
+        },
+      },
     },
-    
+
     // 通用操作
     actions: {
       create: '创建',
@@ -319,9 +319,9 @@ export const zhCN = {
       uninstall: '卸载',
       configure: '配置',
       acknowledge: '确认',
-      resolve: '解决'
+      resolve: '解决',
     },
-    
+
     // 消息提示
     messages: {
       success: {
@@ -333,14 +333,14 @@ export const zhCN = {
         installed: '插件安装成功',
         uninstalled: '插件卸载成功',
         notification: {
-          created: '通知创建成功'
+          created: '通知创建成功',
         },
         tenant: {
-          switched: '租户切换成功'
+          switched: '租户切换成功',
         },
         export: {
-          completed: '数据导出完成'
-        }
+          completed: '数据导出完成',
+        },
       },
       error: {
         createFailed: '创建{{entity}}失败',
@@ -351,22 +351,22 @@ export const zhCN = {
         quotaExceeded: '{{resource}}配额已超限',
         notification: {
           markReadFailed: '标记通知已读失败',
-          createFailed: '创建通知失败'
+          createFailed: '创建通知失败',
         },
         tenant: {
-          switchFailed: '切换租户失败'
+          switchFailed: '切换租户失败',
         },
         export: {
-          failed: '数据导出失败'
-        }
+          failed: '数据导出失败',
+        },
       },
       confirm: {
         delete: '确定要删除此{{entity}}吗？',
         suspend: '确定要暂停此租户吗？',
-        uninstall: '确定要卸载此插件吗？'
-      }
+        uninstall: '确定要卸载此插件吗？',
+      },
     },
-    
+
     // 仪表板
     dashboard: {
       title: '仪表板',
@@ -374,7 +374,7 @@ export const zhCN = {
       overview: '系统概览',
       settings: '设置',
       reports: '报表',
-      
+
       stats: {
         totalTenants: '租户总数',
         activeTenants: '活跃租户',
@@ -386,48 +386,48 @@ export const zhCN = {
         systemHealth: '系统健康度',
         tenantGrowth: '租户增长',
         userGrowth: '用户增长',
-        pluginGrowth: '插件增长'
+        pluginGrowth: '插件增长',
       },
-      
+
       charts: {
         userGrowth: '用户增长',
         apiUsage: 'API使用情况',
         resourceUsage: '资源使用情况',
-        tenantActivity: '租户活跃度'
+        tenantActivity: '租户活跃度',
       },
-      
+
       systemHealth: {
         title: '系统健康状态',
         status: {
           healthy: '健康',
           warning: '警告',
           error: '错误',
-          unknown: '未知'
+          unknown: '未知',
         },
-        lastCheck: '最后检查'
+        lastCheck: '最后检查',
       },
-      
+
       quickActions: {
         title: '快速操作',
         createTenant: '创建租户',
         manageUsers: '管理用户',
         managePlugins: '管理插件',
         viewMonitoring: '查看监控',
-        viewLogs: '查看日志'
+        viewLogs: '查看日志',
       },
-      
+
       recentActivity: {
         title: '最近活动',
-        empty: '暂无最近活动'
+        empty: '暂无最近活动',
       },
-      
+
       systemResources: {
         title: '系统资源',
         cpu: 'CPU使用率',
         memory: '内存使用率',
-        disk: '磁盘使用率'
+        disk: '磁盘使用率',
       },
-      
+
       tenantOverview: {
         title: '租户概览',
         empty: '暂无租户数据',
@@ -435,25 +435,25 @@ export const zhCN = {
           name: '名称',
           status: '状态',
           users: '用户数',
-          plugins: '插件数'
-        }
+          plugins: '插件数',
+        },
       },
-      
+
       pluginStatus: {
         title: '插件状态',
         empty: '暂无插件数据',
         status: {
           active: '运行中',
           inactive: '已停用',
-          error: '错误'
-        }
+          error: '错误',
+        },
       },
-      
+
       recentAlerts: {
-        title: '最近告警'
-      }
+        title: '最近告警',
+      },
     },
-    
+
     // 租户管理
     tenants: {
       title: '租户管理',
@@ -461,9 +461,9 @@ export const zhCN = {
       editTenant: '编辑租户',
       tenantDetails: '租户详情',
       quotaManagement: '配额管理',
-      billingInfo: '计费信息'
+      billingInfo: '计费信息',
     },
-    
+
     // 用户管理
     users: {
       title: '用户管理',
@@ -471,9 +471,9 @@ export const zhCN = {
       editUser: '编辑用户',
       userProfile: '用户资料',
       roleAssignment: '角色分配',
-      activityLog: '活动日志'
+      activityLog: '活动日志',
     },
-    
+
     // 权限管理
     permissions: {
       title: '权限管理',
@@ -481,9 +481,9 @@ export const zhCN = {
       createRole: '创建角色',
       editRole: '编辑角色',
       permissions: '权限',
-      assignPermissions: '分配权限'
+      assignPermissions: '分配权限',
     },
-    
+
     // 插件市场
     plugins: {
       title: '插件市场',
@@ -494,9 +494,9 @@ export const zhCN = {
       details: '插件详情',
       reviews: '评价',
       installation: '安装',
-      configuration: '配置'
+      configuration: '配置',
     },
-    
+
     // 系统监控
     monitoring: {
       title: '系统监控',
@@ -506,9 +506,9 @@ export const zhCN = {
       health: '健康检查',
       performance: '性能',
       createAlert: '创建告警规则',
-      alertHistory: '告警历史'
+      alertHistory: '告警历史',
     },
-    
+
     // Schema 管理
     schemas: {
       title: 'Schema管理',
@@ -517,7 +517,7 @@ export const zhCN = {
       createEntity: '创建实体',
       editEntity: '编辑实体',
       generateCode: '生成代码',
-      migrations: '数据迁移'
-    }
-  }
+      migrations: '数据迁移',
+    },
+  },
 }

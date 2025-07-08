@@ -74,36 +74,31 @@ export class ConfigWatcher extends EventEmitter {
    * @returns 监听器ID
    */
   watch(options: ConfigWatchOptions): string {
-    const watcherId = options.id || `watcher-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    
+    const watcherId =
+      options.id || `watcher-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+
     if (this.watchers.has(watcherId)) {
-      throw new Error(
-        this.t('config.watcher.exists', { watcherId })
-      )
+      throw new Error(this.t('config.watcher.exists', { watcherId }))
     }
 
     const {
       paths,
       ignored = ['**/node_modules/**', '**/.git/**'],
       ignoreInitial = true,
-      debounceDelay = 300
+      debounceDelay = 300,
     } = options
 
     // 过滤存在的路径
     const existingPaths = paths.filter(path => {
       if (!existsSync(path)) {
-        console.warn(
-          this.t('config.watcher.path.not.found', { path })
-        )
+        console.warn(this.t('config.watcher.path.not.found', { path }))
         return false
       }
       return true
     })
 
     if (existingPaths.length === 0) {
-      throw new Error(
-        this.t('config.watcher.no.valid.paths')
-      )
+      throw new Error(this.t('config.watcher.no.valid.paths'))
     }
 
     // 创建chokidar监听器
@@ -114,8 +109,8 @@ export class ConfigWatcher extends EventEmitter {
       usePolling: false, // 使用原生事件
       awaitWriteFinish: {
         stabilityThreshold: 100,
-        pollInterval: 100
-      }
+        pollInterval: 100,
+      },
     })
 
     // 设置事件监听
@@ -149,12 +144,12 @@ export class ConfigWatcher extends EventEmitter {
       // 关闭监听器
       await watcher.close()
       this.watchers.delete(watcherId)
-      
+
       return true
     } catch (error) {
       this.emit('watcher:error', {
         watcherId,
-        error: error instanceof Error ? error : new Error(String(error))
+        error: error instanceof Error ? error : new Error(String(error)),
       })
       return false
     }
@@ -165,9 +160,7 @@ export class ConfigWatcher extends EventEmitter {
    */
   async unwatchAll(): Promise<void> {
     const watcherIds = Array.from(this.watchers.keys())
-    await Promise.all(
-      watcherIds.map(id => this.unwatch(id))
-    )
+    await Promise.all(watcherIds.map(id => this.unwatch(id)))
   }
 
   /**
@@ -191,10 +184,12 @@ export class ConfigWatcher extends EventEmitter {
    * @param watcherId 监听器ID
    * @returns 监听器信息
    */
-  getWatcherInfo(watcherId: string): {
-    paths: string[]
-    isReady: boolean
-  } | undefined {
+  getWatcherInfo(watcherId: string):
+    | {
+        paths: string[]
+        isReady: boolean
+      }
+    | undefined {
     const watcher = this.watchers.get(watcherId)
     if (!watcher) {
       return undefined
@@ -202,7 +197,7 @@ export class ConfigWatcher extends EventEmitter {
 
     const watched = watcher.getWatched()
     const paths: string[] = []
-    
+
     for (const [dir, files] of Object.entries(watched)) {
       for (const file of files as string[]) {
         paths.push(`${dir}/${file}`)
@@ -211,7 +206,7 @@ export class ConfigWatcher extends EventEmitter {
 
     return {
       paths,
-      isReady: watcher.options.ignoreInitial ? true : false // 简化的就绪状态
+      isReady: watcher.options.ignoreInitial ? true : false, // 简化的就绪状态
     }
   }
 
@@ -219,11 +214,7 @@ export class ConfigWatcher extends EventEmitter {
    * 设置监听器事件
    * @private
    */
-  private setupWatcherEvents(
-    watcher: FSWatcher,
-    watcherId: string,
-    debounceDelay: number
-  ): void {
+  private setupWatcherEvents(watcher: FSWatcher, watcherId: string, debounceDelay: number): void {
     // 文件添加事件
     watcher.on('add', (path: string) => {
       this.handleFileEvent('add', path, watcherId, debounceDelay)
@@ -262,7 +253,7 @@ export class ConfigWatcher extends EventEmitter {
     debounceDelay: number
   ): void {
     const debounceKey = `${watcherId}:${path}`
-    
+
     // 清除之前的定时器
     const existingTimer = this.debounceTimers.get(debounceKey)
     if (existingTimer) {
@@ -275,7 +266,7 @@ export class ConfigWatcher extends EventEmitter {
         type,
         path,
         watcherId,
-        timestamp: new Date()
+        timestamp: new Date(),
       }
 
       // 发送对应的事件
@@ -306,9 +297,7 @@ export class ConfigWatcher extends EventEmitter {
   addPaths(watcherId: string, paths: string[]): void {
     const watcher = this.watchers.get(watcherId)
     if (!watcher) {
-      throw new Error(
-        this.t('config.watcher.not.found', { watcherId })
-      )
+      throw new Error(this.t('config.watcher.not.found', { watcherId }))
     }
 
     const existingPaths = paths.filter(existsSync)
@@ -325,9 +314,7 @@ export class ConfigWatcher extends EventEmitter {
   removePaths(watcherId: string, paths: string[]): void {
     const watcher = this.watchers.get(watcherId)
     if (!watcher) {
-      throw new Error(
-        this.t('config.watcher.not.found', { watcherId })
-      )
+      throw new Error(this.t('config.watcher.not.found', { watcherId }))
     }
 
     watcher.unwatch(paths)
@@ -342,15 +329,15 @@ export class ConfigWatcher extends EventEmitter {
  * @example
  * ```typescript
  * import { createConfigWatcher } from '@linch-kit/core'
- * 
+ *
  * const watcher = createConfigWatcher()
- * 
+ *
  * // 监听配置文件
  * const watcherId = watcher.watch({
  *   paths: ['./config.json', './.env'],
  *   debounceDelay: 500
  * })
- * 
+ *
  * // 监听变更事件
  * watcher.on('file:changed', (event) => {
  *   console.log(`配置文件 ${event.path} 已变更`)
@@ -359,9 +346,7 @@ export class ConfigWatcher extends EventEmitter {
  * ```
  * @since 0.1.0
  */
-export function createConfigWatcher(options?: {
-  t?: TranslationFunction
-}): ConfigWatcher {
+export function createConfigWatcher(options?: { t?: TranslationFunction }): ConfigWatcher {
   return new ConfigWatcher(options)
 }
 
@@ -375,14 +360,14 @@ export function createConfigWatcher(options?: {
  * @example
  * ```typescript
  * import { createSimpleConfigWatcher } from '@linch-kit/core'
- * 
+ *
  * const { watcherId, unwatch } = createSimpleConfigWatcher(
  *   ['./config.json'],
  *   (event) => {
  *     console.log('配置已变更:', event.path)
  *   }
  * )
- * 
+ *
  * // 稍后取消监听
  * await unwatch()
  * ```
@@ -397,17 +382,17 @@ export function createSimpleConfigWatcher(
   unwatch: () => Promise<void>
 } {
   const watcher = createConfigWatcher()
-  
+
   const watcherId = watcher.watch({
     paths,
-    ...options
+    ...options,
   })
 
   // 监听所有变更事件
   const eventTypes: Array<keyof ConfigWatcherEvents> = [
     'file:added',
-    'file:changed', 
-    'file:removed'
+    'file:changed',
+    'file:removed',
   ]
 
   eventTypes.forEach(eventType => {
@@ -418,6 +403,6 @@ export function createSimpleConfigWatcher(
     watcherId,
     unwatch: async () => {
       await watcher.unwatch(watcherId)
-    }
+    },
   }
 }

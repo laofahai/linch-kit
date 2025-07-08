@@ -1,6 +1,6 @@
 /**
  * linch build 命令
- * 
+ *
  * 构建生产版本
  */
 
@@ -19,14 +19,14 @@ const buildCommand: CLICommand = {
       name: 'analyze',
       description: '分析构建包大小',
       type: 'boolean',
-      defaultValue: false
+      defaultValue: false,
     },
     {
       name: 'profile',
       description: '生成性能分析文件',
       type: 'boolean',
-      defaultValue: false
-    }
+      defaultValue: false,
+    },
   ],
   handler: async ({ options }) => {
     try {
@@ -53,10 +53,10 @@ const buildCommand: CLICommand = {
 
       // 4. 构建项目
       Logger.info('构建项目...')
-      
+
       const env: Record<string, string> = {
         ...process.env,
-        NODE_ENV: 'production'
+        NODE_ENV: 'production',
       }
 
       if (options.analyze) {
@@ -73,11 +73,11 @@ const buildCommand: CLICommand = {
 
       if (isNextApp) {
         execSync('next build', { stdio: 'inherit', env })
-        
+
         // 显示构建信息
         Logger.info('✅ Next.js 项目构建完成')
         Logger.info('构建输出: .next/')
-        
+
         if (options.analyze) {
           Logger.info('包分析报告已生成')
         }
@@ -95,10 +95,10 @@ const buildCommand: CLICommand = {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       }
     }
-  }
+  },
 }
 
 export function registerBuildCommand(cli: CLIManager) {

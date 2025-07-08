@@ -34,7 +34,7 @@ export class NextjsClientEnvProvider {
       id: 'nextjs-client-env',
       type: 'env',
       priority: 90, // 略低于服务端优先级
-      load: () => this.load()
+      load: () => this.load(),
     }
   }
 
@@ -45,7 +45,7 @@ export class NextjsClientEnvProvider {
    */
   async load(): Promise<Record<string, ConfigValue>> {
     const config: Record<string, ConfigValue> = {}
-    
+
     // 仅在浏览器环境中提取公共环境变量
     if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
       Object.keys(process.env).forEach(key => {
@@ -57,10 +57,10 @@ export class NextjsClientEnvProvider {
         }
       })
     }
-    
+
     // 添加NODE_ENV
     config.NODE_ENV = process.env.NODE_ENV || 'development'
-    
+
     return config
   }
 
@@ -71,7 +71,7 @@ export class NextjsClientEnvProvider {
    */
   async getNextjsConfig(): Promise<NextjsClientEnvConfig> {
     const allVars = await this.load()
-    
+
     const publicVars: Record<string, string> = {}
 
     for (const [key, value] of Object.entries(allVars)) {
@@ -82,7 +82,7 @@ export class NextjsClientEnvProvider {
 
     return {
       publicVars,
-      nodeEnv: (allVars.NODE_ENV as 'development' | 'production' | 'test') || 'development'
+      nodeEnv: (allVars.NODE_ENV as 'development' | 'production' | 'test') || 'development',
     }
   }
 }

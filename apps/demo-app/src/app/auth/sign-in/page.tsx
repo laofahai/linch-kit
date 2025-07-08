@@ -10,19 +10,15 @@ export default function SignInPage() {
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
               登录到 LinchKit
             </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
-              使用您的账户凭据登录
-            </p>
+            <p className="mt-2 text-center text-sm text-gray-600">使用您的账户凭据登录</p>
           </div>
-          
+
           <div className="bg-white p-8 rounded-lg shadow-md">
             <LoginForm />
           </div>
-          
+
           <div className="text-center">
-            <p className="text-sm text-gray-600">
-              演示账户：使用任意邮箱和密码即可登录
-            </p>
+            <p className="text-sm text-gray-600">演示账户：使用任意邮箱和密码即可登录</p>
           </div>
         </div>
       </div>

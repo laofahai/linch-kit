@@ -24,7 +24,7 @@ export type PostUpdate = Partial<Omit<Post, 'id' | 'createdAt' | 'updatedAt'>>
 export const PostEntity = {
   type: {} as Post,
   createSchema: {} as PostCreate,
-  updateSchema: {} as PostUpdate
+  updateSchema: {} as PostUpdate,
 }
 
 export const PostCreateSchema = PostEntity.createSchema

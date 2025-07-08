@@ -60,9 +60,7 @@ export interface CommandResult {
 /**
  * 命令执行器类型
  */
-export type CommandHandler = (
-  context: CommandContext
-) => Promise<CommandResult> | CommandResult
+export type CommandHandler = (context: CommandContext) => Promise<CommandResult> | CommandResult
 
 /**
  * 命令中间件类型
@@ -81,7 +79,19 @@ export interface CLICommand {
   /** 命令描述 */
   description: string
   /** 命令类别 */
-  category: 'core' | 'plugin' | 'config' | 'schema' | 'dev' | 'ops' | 'deploy' | 'util' | 'trpc' | 'auth' | 'crud' | 'ui'
+  category:
+    | 'core'
+    | 'plugin'
+    | 'config'
+    | 'schema'
+    | 'dev'
+    | 'ops'
+    | 'deploy'
+    | 'util'
+    | 'trpc'
+    | 'auth'
+    | 'crud'
+    | 'ui'
   /** 命令选项 */
   options?: CommandOption[]
   /** 命令执行器 */
@@ -115,13 +125,13 @@ export interface CLIManager {
    * @param command 命令定义
    */
   registerCommand(command: CLICommand): void
-  
+
   /**
    * 注册多个命令
    * @param commands 命令数组
    */
   registerCommands(commands: CLICommand[]): void
-  
+
   /**
    * 执行命令
    * @param name 命令名称
@@ -129,29 +139,29 @@ export interface CLIManager {
    * @param options 执行选项
    */
   executeCommand(
-    name: string, 
-    args: string[], 
+    name: string,
+    args: string[],
     options?: { t?: TranslationFunction }
   ): Promise<CommandResult>
-  
+
   /**
    * 获取所有命令
    * @param category 类别过滤
    */
   getCommands(category?: string): CLICommand[]
-  
+
   /**
    * 获取命令帮助
    * @param name 命令名称
    */
   getCommandHelp(name?: string): string
-  
+
   /**
    * 检查命令是否存在
    * @param name 命令名称
    */
   hasCommand(name: string): boolean
-  
+
   /**
    * 移除命令
    * @param name 命令名称
@@ -189,25 +199,19 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
   registerCommand(command: CLICommand): void {
     // 检查命令是否已存在
     if (this.commands.has(command.name)) {
-      throw new Error(
-        this.t('cli.command.duplicate', { name: command.name })
-      )
+      throw new Error(this.t('cli.command.duplicate', { name: command.name }))
     }
 
     // 存储命令定义
     this.commands.set(command.name, command)
 
     // 创建Commander命令
-    const cmd = this.program
-      .command(command.name)
-      .description(command.description)
+    const cmd = this.program.command(command.name).description(command.description)
 
     // 添加选项
     command.options?.forEach(option => {
-      const flag = option.required 
-        ? `--${option.name} <value>`
-        : `--${option.name} [value]`
-      
+      const flag = option.required ? `--${option.name} <value>` : `--${option.name} [value]`
+
       if (option.defaultValue !== undefined) {
         cmd.option(flag, option.description, option.defaultValue as string | boolean)
       } else {
@@ -224,38 +228,38 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
     cmd.action(async (...args) => {
       const [options] = args.slice(-1)
       const commandArgs = args.slice(0, -1)
-      
+
       const context: CommandContext = {
         args: commandArgs,
         options,
         t: this.t,
-        commandName: command.name
+        commandName: command.name,
       }
 
       try {
         this.emit('command:executing', { name: command.name, context })
-        
+
         const startTime = Date.now()
         let result = await this.executeWithMiddleware(command, context)
-        
+
         result = {
           ...result,
-          duration: Date.now() - startTime
+          duration: Date.now() - startTime,
         }
 
         this.emit('command:executed', { name: command.name, result, context })
-        
+
         if (!result.success) {
           process.exit(1)
         }
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error))
         this.emit('command:error', { name: command.name, error: err, context })
-        
+
         console.error(
-          this.t('cli.command.error', { 
-            name: command.name, 
-            error: err.message 
+          this.t('cli.command.error', {
+            name: command.name,
+            error: err.message,
           })
         )
         process.exit(1)
@@ -275,8 +279,8 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
   }
 
   async executeCommand(
-    name: string, 
-    args: string[], 
+    name: string,
+    args: string[],
     options?: { t?: TranslationFunction }
   ): Promise<CommandResult> {
     const command = this.commands.get(name)
@@ -288,15 +292,15 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
       args,
       options: {},
       t: options?.t || this.t,
-      commandName: name
+      commandName: name,
     }
 
     const startTime = Date.now()
     const result = await this.executeWithMiddleware(command, context)
-    
+
     return {
       ...result,
-      duration: Date.now() - startTime
+      duration: Date.now() - startTime,
     }
   }
 
@@ -305,7 +309,7 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
    * @private
    */
   private async executeWithMiddleware(
-    command: CLICommand, 
+    command: CLICommand,
     context: CommandContext
   ): Promise<CommandResult> {
     if (!command.middleware?.length) {
@@ -313,12 +317,12 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
     }
 
     let index = 0
-    
+
     const next = async (): Promise<CommandResult> => {
       if (index >= command.middleware!.length) {
         return await command.handler(context)
       }
-      
+
       const middleware = command.middleware![index++]
       return await middleware(context, next)
     }
@@ -328,9 +332,7 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
 
   getCommands(category?: string): CLICommand[] {
     const commands = Array.from(this.commands.values())
-    return category 
-      ? commands.filter(cmd => cmd.category === category)
-      : commands
+    return category ? commands.filter(cmd => cmd.category === category) : commands
   }
 
   getCommandHelp(name?: string): string {
@@ -372,9 +374,9 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
  * @example
  * ```typescript
  * import { createCLIManager } from '@linch-kit/core'
- * 
+ *
  * const cli = createCLIManager()
- * 
+ *
  * // 注册命令
  * cli.registerCommand({
  *   name: 'hello',
@@ -385,15 +387,13 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
  *     return { success: true }
  *   }
  * })
- * 
+ *
  * // 执行命令
  * await cli.executeCommand('hello', ['LinchKit'])
  * ```
  * @since 0.1.0
  */
-export function createCLIManager(options?: { 
-  t?: TranslationFunction 
-}): CLIManager {
+export function createCLIManager(options?: { t?: TranslationFunction }): CLIManager {
   return new CLIManagerImpl(options)
 }
 
@@ -424,20 +424,20 @@ export function registerCoreCLICommands(cliManager: CLIManager): void {
           name: 'skip-env',
           description: '跳过环境变量配置',
           type: 'boolean',
-          defaultValue: false
+          defaultValue: false,
         },
         {
           name: 'skip-deps',
           description: '跳过依赖安装',
           type: 'boolean',
-          defaultValue: false
+          defaultValue: false,
         },
         {
           name: 'skip-db',
           description: '跳过数据库初始化',
           type: 'boolean',
-          defaultValue: false
-        }
+          defaultValue: false,
+        },
       ],
       handler: async ({ options: _options, t }) => {
         try {
@@ -447,7 +447,7 @@ export function registerCoreCLICommands(cliManager: CLIManager): void {
 
           // 简化的初始化逻辑
           console.log(t('cli.init.starting'))
-          
+
           // 这里会调用实际的初始化逻辑
           // 暂时简化实现
           console.log('✅ LinchKit 项目初始化完成！')
@@ -460,10 +460,10 @@ export function registerCoreCLICommands(cliManager: CLIManager): void {
         } catch (error) {
           return {
             success: false,
-            error: error instanceof Error ? error.message : String(error)
+            error: error instanceof Error ? error.message : String(error),
           }
         }
-      }
+      },
     },
     {
       name: 'info',
@@ -490,8 +490,8 @@ export function registerCoreCLICommands(cliManager: CLIManager): void {
         console.log('')
         console.log('📖 文档: https://linch-kit.dev')
         return { success: true }
-      }
-    }
+      },
+    },
   ]
 
   cliManager.registerCommands(commands)

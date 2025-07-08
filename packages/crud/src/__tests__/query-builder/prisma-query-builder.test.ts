@@ -2,9 +2,11 @@ import { describe, it, expect, beforeEach, mock } from 'bun:test'
 import type { Entity } from '@linch-kit/schema'
 import type { PluginManager } from '@linch-kit/core'
 
-import { PrismaQueryBuilder, QueryBuilderFactory } from '../../core/query-builder/prisma-query-builder'
+import {
+  PrismaQueryBuilder,
+  QueryBuilderFactory,
+} from '../../core/query-builder/prisma-query-builder'
 import type { SchemaRegistry, Logger, PerformanceMetrics } from '../../types'
-
 
 // Mock 依赖
 const mockEntity: Entity = {
@@ -17,7 +19,7 @@ const mockEntity: Entity = {
     score: { type: 'float', required: false },
     status: { type: 'string', required: false },
     profile: { type: 'relation', required: false },
-    posts: { type: 'relation', required: false }
+    posts: { type: 'relation', required: false },
   },
   options: {},
   validate: async () => true,
@@ -26,7 +28,7 @@ const mockEntity: Entity = {
   validateUpdate: (data: unknown) => data,
   clone: () => mockEntity,
   extend: () => mockEntity,
-  withOptions: () => mockEntity
+  withOptions: () => mockEntity,
 }
 
 const mockSchemaRegistry: SchemaRegistry = {
@@ -46,7 +48,7 @@ const mockSchemaRegistry: SchemaRegistry = {
   createTableSchema: mock(() => ({})),
   createValidationSchema: mock(() => ({})),
   createRulesSchema: mock(() => ({})),
-  createSeederSchema: mock(() => ({}))
+  createSeederSchema: mock(() => ({})),
 }
 
 const mockLogger: Logger = {
@@ -56,7 +58,7 @@ const mockLogger: Logger = {
   error: mock(() => {}),
   trace: mock(() => {}),
   fatal: mock(() => {}),
-  child: mock(() => mockLogger)
+  child: mock(() => mockLogger),
 }
 
 const mockPerformanceMetrics: PerformanceMetrics = {
@@ -64,20 +66,20 @@ const mockPerformanceMetrics: PerformanceMetrics = {
   entityName: 'TestEntity',
   duration: 100,
   queryComplexity: 1,
-  timestamp: new Date()
+  timestamp: new Date(),
 }
 
 const mockExecutorResult = {
   data: [{ id: '1', name: 'test' }],
-  metrics: mockPerformanceMetrics
+  metrics: mockPerformanceMetrics,
 }
 
 const mockPrisma = {
   testEntity: {
     findMany: mock(() => Promise.resolve([])),
     findFirst: mock(() => Promise.resolve(null)),
-    count: mock(() => Promise.resolve(0))
-  }
+    count: mock(() => Promise.resolve(0)),
+  },
 }
 
 const mockPluginManager: PluginManager = {
@@ -87,7 +89,7 @@ const mockPluginManager: PluginManager = {
   getAll: mock(() => []),
   clear: mock(() => {}),
   initialize: mock(() => Promise.resolve()),
-  shutdown: mock(() => Promise.resolve())
+  shutdown: mock(() => Promise.resolve()),
 }
 
 describe('PrismaQueryBuilder', () => {
@@ -105,16 +107,16 @@ describe('PrismaQueryBuilder', () => {
     logger = mockLogger
     pluginManager = mockPluginManager
     queryBuilder = new PrismaQueryBuilder(entityName, prisma, schemaRegistry, logger, pluginManager)
-    
+
     // Mock executor 方法
     queryBuilder.executor = {
       findMany: mock(() => Promise.resolve(mockExecutorResult)),
       findFirst: mock(() => Promise.resolve({ data: null, metrics: mockPerformanceMetrics })),
       exists: mock(() => Promise.resolve({ data: false, metrics: mockPerformanceMetrics })),
       count: mock(() => Promise.resolve({ data: 0, metrics: mockPerformanceMetrics })),
-      aggregate: mock(() => Promise.resolve({ data: 0, metrics: mockPerformanceMetrics }))
+      aggregate: mock(() => Promise.resolve({ data: 0, metrics: mockPerformanceMetrics })),
     } as any
-    
+
     // Mock buildFinalQuery to bypass validation
     queryBuilder.buildFinalQuery = mock(() => Promise.resolve({}))
   })
@@ -126,7 +128,12 @@ describe('PrismaQueryBuilder', () => {
     })
 
     it('should create instance without plugin manager', () => {
-      const builderWithoutPlugin = new PrismaQueryBuilder(entityName, prisma, schemaRegistry, logger)
+      const builderWithoutPlugin = new PrismaQueryBuilder(
+        entityName,
+        prisma,
+        schemaRegistry,
+        logger
+      )
       expect(builderWithoutPlugin).toBeDefined()
     })
 
@@ -137,7 +144,13 @@ describe('PrismaQueryBuilder', () => {
     })
 
     it('should create static instance with plugin manager', () => {
-      const staticBuilder = PrismaQueryBuilder.create(entityName, prisma, schemaRegistry, logger, pluginManager)
+      const staticBuilder = PrismaQueryBuilder.create(
+        entityName,
+        prisma,
+        schemaRegistry,
+        logger,
+        pluginManager
+      )
       expect(staticBuilder).toBeDefined()
       expect(staticBuilder).toBeInstanceOf(PrismaQueryBuilder)
     })
@@ -169,11 +182,8 @@ describe('PrismaQueryBuilder', () => {
     })
 
     it('should execute query with chained conditions', async () => {
-      queryBuilder
-        .where('name', '=', 'test')
-        .limit(10)
-        .orderBy('name', 'asc')
-      
+      queryBuilder.where('name', '=', 'test').limit(10).orderBy('name', 'asc')
+
       const result = await queryBuilder.execute()
       expect(result).toEqual([{ id: '1', name: 'test' }])
       expect(queryBuilder.executor.findMany).toHaveBeenCalled()
@@ -190,7 +200,11 @@ describe('PrismaQueryBuilder', () => {
     it('should execute avg aggregation', async () => {
       const result = await queryBuilder.avg('score')
       expect(result).toBe(0)
-      expect(queryBuilder.executor.aggregate).toHaveBeenCalledWith(expect.any(Object), 'avg', 'score')
+      expect(queryBuilder.executor.aggregate).toHaveBeenCalledWith(
+        expect.any(Object),
+        'avg',
+        'score'
+      )
     })
 
     it('should execute min aggregation', async () => {
@@ -216,12 +230,16 @@ describe('PrismaQueryBuilder', () => {
   describe('Pagination', () => {
     beforeEach(() => {
       // Mock count to return 50
-      queryBuilder.executor.count = mock(() => Promise.resolve({ data: 50, metrics: mockPerformanceMetrics }))
+      queryBuilder.executor.count = mock(() =>
+        Promise.resolve({ data: 50, metrics: mockPerformanceMetrics })
+      )
       // Mock execute to return data
-      queryBuilder.execute = mock(() => Promise.resolve([
-        { id: '1', name: 'test1' },
-        { id: '2', name: 'test2' }
-      ]))
+      queryBuilder.execute = mock(() =>
+        Promise.resolve([
+          { id: '1', name: 'test1' },
+          { id: '2', name: 'test2' },
+        ])
+      )
     })
 
     it('should execute paginated query with default parameters', async () => {
@@ -233,7 +251,7 @@ describe('PrismaQueryBuilder', () => {
         total: 50,
         totalPages: 3,
         hasNext: true,
-        hasPrevious: false
+        hasPrevious: false,
       })
     })
 
@@ -246,7 +264,7 @@ describe('PrismaQueryBuilder', () => {
         total: 50,
         totalPages: 5,
         hasNext: true,
-        hasPrevious: true
+        hasPrevious: true,
       })
     })
 
@@ -258,14 +276,16 @@ describe('PrismaQueryBuilder', () => {
         total: 50,
         totalPages: 3,
         hasNext: false,
-        hasPrevious: true
+        hasPrevious: true,
       })
     })
 
     it('should handle empty result set', async () => {
-      queryBuilder.executor.count = mock(() => Promise.resolve({ data: 0, metrics: mockPerformanceMetrics }))
+      queryBuilder.executor.count = mock(() =>
+        Promise.resolve({ data: 0, metrics: mockPerformanceMetrics })
+      )
       queryBuilder.execute = mock(() => Promise.resolve([]))
-      
+
       const result = await queryBuilder.paginateExecute()
       expect(result.data).toHaveLength(0)
       expect(result.pagination).toEqual({
@@ -274,7 +294,7 @@ describe('PrismaQueryBuilder', () => {
         total: 0,
         totalPages: 0,
         hasNext: false,
-        hasPrevious: false
+        hasPrevious: false,
       })
     })
   })
@@ -283,7 +303,7 @@ describe('PrismaQueryBuilder', () => {
     it('should add simple include relation', () => {
       const result = queryBuilder.includeWith('profile', () => {})
       expect(result).toBe(queryBuilder)
-      
+
       const query = queryBuilder.build()
       expect(query.include).toBeDefined()
       expect((query.include as any).profile).toBe(true)
@@ -293,11 +313,11 @@ describe('PrismaQueryBuilder', () => {
       const callback = mock((qb: PrismaQueryBuilder) => {
         qb.where('status', '=', 'active')
       })
-      
+
       queryBuilder.includeWith('posts', callback)
       // 由于 getRelationEntity 返回 null，callback 不会被调用，但 include 会被设置为 true
       expect(callback).not.toHaveBeenCalled()
-      
+
       const query = queryBuilder.build()
       expect(query.include).toBeDefined()
       expect((query.include as any).posts).toBe(true)
@@ -305,14 +325,16 @@ describe('PrismaQueryBuilder', () => {
 
     it('should log warning for non-existent relation', () => {
       queryBuilder.includeWith('nonExistentRelation', () => {})
-      expect(mockLogger.warn).toHaveBeenCalledWith('Relation entity not found for nonExistentRelation')
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'Relation entity not found for nonExistentRelation'
+      )
     })
 
     it('should handle multiple includes', () => {
       queryBuilder
-        .includeWith('profile', (qb) => qb.where('active', '=', true))
-        .includeWith('posts', (qb) => qb.limit(5))
-      
+        .includeWith('profile', qb => qb.where('active', '=', true))
+        .includeWith('posts', qb => qb.limit(5))
+
       const query = queryBuilder.build()
       expect(query.include).toBeDefined()
       expect((query.include as any).profile).toBeDefined()
@@ -324,21 +346,21 @@ describe('PrismaQueryBuilder', () => {
     it('should add raw query', () => {
       const result = queryBuilder.raw('SELECT * FROM users WHERE age > ?', [18])
       expect(result).toBe(queryBuilder)
-      
+
       const query = queryBuilder.build()
       expect((query as any)._raw).toEqual({
         sql: 'SELECT * FROM users WHERE age > ?',
-        params: [18]
+        params: [18],
       })
     })
 
     it('should add raw query without parameters', () => {
       queryBuilder.raw('SELECT * FROM users')
-      
+
       const query = queryBuilder.build()
       expect((query as any)._raw).toEqual({
         sql: 'SELECT * FROM users',
-        params: []
+        params: [],
       })
     })
 
@@ -346,23 +368,20 @@ describe('PrismaQueryBuilder', () => {
       queryBuilder.raw('SELECT * FROM users')
       expect(mockLogger.warn).toHaveBeenCalledWith('Using raw SQL query', {
         sql: 'SELECT * FROM users',
-        params: []
+        params: [],
       })
     })
   })
 
   describe('Query Builder Management', () => {
     it('should clone query builder', () => {
-      queryBuilder
-        .where('name', '=', 'test')
-        .limit(10)
-        .include('profile')
-      
+      queryBuilder.where('name', '=', 'test').limit(10).include('profile')
+
       const cloned = queryBuilder.clone()
       expect(cloned).toBeDefined()
       expect(cloned).not.toBe(queryBuilder)
       expect(cloned).toBeInstanceOf(PrismaQueryBuilder)
-      
+
       const originalQuery = queryBuilder.build()
       const clonedQuery = cloned.build()
       expect(clonedQuery).toEqual(originalQuery)
@@ -370,13 +389,13 @@ describe('PrismaQueryBuilder', () => {
 
     it('should create independent clone', () => {
       queryBuilder.where('name', '=', 'test')
-      
+
       const cloned = queryBuilder.clone()
       cloned.where('age', '>', 18)
-      
+
       const originalQuery = queryBuilder.build()
       const clonedQuery = cloned.build()
-      
+
       expect(originalQuery).not.toEqual(clonedQuery)
     })
   })
@@ -388,11 +407,11 @@ describe('PrismaQueryBuilder', () => {
         .whereIn('status', ['active', 'pending'])
         .whereBetween('age', [18, 65])
         .include('profile')
-        .includeWith('posts', (qb) => qb.limit(5).orderBy('createdAt', 'desc'))
+        .includeWith('posts', qb => qb.limit(5).orderBy('createdAt', 'desc'))
         .orderBy('name', 'asc')
         .limit(20)
         .offset(10)
-      
+
       const result = await queryBuilder.execute()
       expect(result).toEqual([{ id: '1', name: 'test' }])
       expect(queryBuilder.executor.findMany).toHaveBeenCalled()
@@ -408,12 +427,12 @@ describe('PrismaQueryBuilder', () => {
     it('should record metrics for all operations', async () => {
       const recordMetricsSpy = mock(() => Promise.resolve())
       queryBuilder.recordMetrics = recordMetricsSpy
-      
+
       await queryBuilder.execute()
       await queryBuilder.first()
       await queryBuilder.count()
       await queryBuilder.sum('age')
-      
+
       expect(recordMetricsSpy).toHaveBeenCalledTimes(4)
     })
   })
@@ -434,13 +453,25 @@ describe('QueryBuilderFactory', () => {
     })
 
     it('should create query builder with plugin manager', () => {
-      const builder = QueryBuilderFactory.create(entityName, prisma, schemaRegistry, logger, pluginManager)
+      const builder = QueryBuilderFactory.create(
+        entityName,
+        prisma,
+        schemaRegistry,
+        logger,
+        pluginManager
+      )
       expect(builder).toBeDefined()
       expect(builder).toBeInstanceOf(PrismaQueryBuilder)
     })
 
     it('should create query builder with plugins', () => {
-      const builder = QueryBuilderFactory.createWithPlugins(entityName, prisma, schemaRegistry, logger, pluginManager)
+      const builder = QueryBuilderFactory.createWithPlugins(
+        entityName,
+        prisma,
+        schemaRegistry,
+        logger,
+        pluginManager
+      )
       expect(builder).toBeDefined()
       expect(builder).toBeInstanceOf(PrismaQueryBuilder)
     })
@@ -448,7 +479,7 @@ describe('QueryBuilderFactory', () => {
     it('should create different instances', () => {
       const builder1 = QueryBuilderFactory.create(entityName, prisma, schemaRegistry, logger)
       const builder2 = QueryBuilderFactory.create(entityName, prisma, schemaRegistry, logger)
-      
+
       expect(builder1).not.toBe(builder2)
       expect(builder1).toBeInstanceOf(PrismaQueryBuilder)
       expect(builder2).toBeInstanceOf(PrismaQueryBuilder)
@@ -463,9 +494,14 @@ describe('QueryBuilderFactory', () => {
     }
 
     it('should support typed query builder', () => {
-      const builder = QueryBuilderFactory.create<TestUser>(entityName, prisma, schemaRegistry, logger)
+      const builder = QueryBuilderFactory.create<TestUser>(
+        entityName,
+        prisma,
+        schemaRegistry,
+        logger
+      )
       expect(builder).toBeDefined()
-      
+
       // 这些操作应该是类型安全的
       builder.where('name', '=', 'test')
       builder.orderBy('age', 'desc')
@@ -473,13 +509,18 @@ describe('QueryBuilderFactory', () => {
     })
 
     it('should support typed aggregation operations', async () => {
-      const builder = QueryBuilderFactory.create<TestUser>(entityName, prisma, schemaRegistry, logger)
-      
+      const builder = QueryBuilderFactory.create<TestUser>(
+        entityName,
+        prisma,
+        schemaRegistry,
+        logger
+      )
+
       // Mock executor for typed builder
       builder.executor = {
-        aggregate: mock(() => Promise.resolve({ data: 25, metrics: mockPerformanceMetrics }))
+        aggregate: mock(() => Promise.resolve({ data: 25, metrics: mockPerformanceMetrics })),
       } as any
-      
+
       const avgAge = await builder.avg('age')
       expect(avgAge).toBe(25)
     })

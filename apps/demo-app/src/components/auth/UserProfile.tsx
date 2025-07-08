@@ -9,7 +9,11 @@ import { useAuth } from './AuthProvider'
 export function UserProfile() {
   const { user, session, isLoading, refreshSession, validateAuth, getAuthStats } = useAuth()
   const [validationResult, setValidationResult] = useState<string>('')
-  const [authStats, setAuthStats] = useState<{ sessionCount: number; lastActivity: Date | null; permissions: string[] } | null>(null)
+  const [authStats, setAuthStats] = useState<{
+    sessionCount: number
+    lastActivity: Date | null
+    permissions: string[]
+  } | null>(null)
 
   if (isLoading) {
     return (
@@ -29,9 +33,7 @@ export function UserProfile() {
           <span className="text-gray-400">⚪</span>
           <span className="text-gray-600">未登录</span>
         </div>
-        <p className="text-gray-500 text-sm mt-2">
-          请先登录以查看用户信息
-        </p>
+        <p className="text-gray-500 text-sm mt-2">请先登录以查看用户信息</p>
       </div>
     )
   }
@@ -74,11 +76,11 @@ export function UserProfile() {
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">角色:</span>
-            <span className={`px-2 py-1 rounded text-xs font-medium ${
-              user.role === 'admin' 
-                ? 'bg-red-100 text-red-800' 
-                : 'bg-green-100 text-green-800'
-            }`}>
+            <span
+              className={`px-2 py-1 rounded text-xs font-medium ${
+                user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+              }`}
+            >
               {user.role}
             </span>
           </div>
@@ -98,28 +100,30 @@ export function UserProfile() {
           <div className="flex justify-between">
             <span className="text-gray-600">创建时间:</span>
             <span className="text-green-800">
-              {formatDistanceToNow(session.createdAt, { 
-                addSuffix: true, 
-                locale: zhCN 
+              {formatDistanceToNow(session.createdAt, {
+                addSuffix: true,
+                locale: zhCN,
               })}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">过期时间:</span>
             <span className="text-green-800">
-              {formatDistanceToNow(session.expiresAt, { 
-                addSuffix: true, 
-                locale: zhCN 
+              {formatDistanceToNow(session.expiresAt, {
+                addSuffix: true,
+                locale: zhCN,
               })}
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">状态:</span>
-            <span className={`px-2 py-1 rounded text-xs font-medium ${
-              session.expiresAt > new Date() 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-red-100 text-red-800'
-            }`}>
+            <span
+              className={`px-2 py-1 rounded text-xs font-medium ${
+                session.expiresAt > new Date()
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
+              }`}
+            >
               {session.expiresAt > new Date() ? '有效' : '已过期'}
             </span>
           </div>
@@ -167,7 +171,7 @@ export function UserProfile() {
             <div className="flex justify-between">
               <span className="text-gray-600">最后活动:</span>
               <span className="font-medium">
-                {authStats.lastActivity 
+                {authStats.lastActivity
                   ? formatDistanceToNow(authStats.lastActivity, { addSuffix: true, locale: zhCN })
                   : '无'}
               </span>
@@ -176,10 +180,7 @@ export function UserProfile() {
               <span className="text-gray-600 block mb-2">用户权限:</span>
               <div className="flex flex-wrap gap-1">
                 {authStats.permissions.map((perm, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
-                  >
+                  <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
                     {perm}
                   </span>
                 ))}

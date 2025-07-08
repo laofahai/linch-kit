@@ -11,7 +11,7 @@ import type {
   FieldDefinition,
   CreateInput,
   UpdateInput,
-  I18nFieldOptions
+  I18nFieldOptions,
 } from '../types'
 
 import { fieldToZod } from './field'
@@ -21,7 +21,7 @@ import { fieldToZod } from './field'
  */
 const DEFAULT_ENTITY_OPTIONS: EntityOptions = {
   timestamps: true,
-  softDelete: false
+  softDelete: false,
 }
 
 /**
@@ -31,20 +31,17 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
   name: string
   fields: Record<keyof T, FieldDefinition>
   options: EntityOptions
-  
+
   // Zod Schemas
   zodSchema: z.ZodObject<Record<string, z.ZodSchema>>
   createSchema: z.ZodObject<Record<string, z.ZodSchema>>
   updateSchema: z.ZodObject<Record<string, z.ZodSchema>>
 
-  constructor(
-    name: string,
-    definition: EntityDefinition<Record<keyof T, FieldDefinition>>
-  ) {
+  constructor(name: string, definition: EntityDefinition<Record<keyof T, FieldDefinition>>) {
     this.name = name
     this.fields = definition.fields as Record<keyof T, FieldDefinition>
     this.options = { ...DEFAULT_ENTITY_OPTIONS, ...definition.options }
-    
+
     // 构建Zod Schemas
     this.zodSchema = this.buildZodSchema()
     this.createSchema = this.buildCreateSchema()
@@ -110,26 +107,26 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
    */
   private buildZodSchema(): z.ZodObject<Record<string, z.ZodSchema>> {
     const shape: Record<string, z.ZodSchema> = {}
-    
+
     // 添加ID字段
     shape.id = z.string().uuid()
-    
+
     // 添加用户定义的字段
     Object.entries(this.fields).forEach(([key, field]) => {
       shape[key] = fieldToZod(field as FieldDefinition)
     })
-    
+
     // 添加时间戳字段
     if (this.options.timestamps) {
       shape.createdAt = z.date()
       shape.updatedAt = z.date()
     }
-    
+
     // 添加软删除字段
     if (this.options.softDelete) {
       shape.deletedAt = z.date().nullable().optional()
     }
-    
+
     return z.object(shape)
   }
 
@@ -138,17 +135,21 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
    */
   private buildCreateSchema(): z.ZodObject<Record<string, z.ZodSchema>> {
     const shape: Record<string, z.ZodSchema> = {}
-    
+
     // 只包含用户定义的字段（排除自动生成的字段）
     Object.entries(this.fields).forEach(([key, field]) => {
       const fieldDef = field as FieldDefinition
       // 跳过关系字段的反向引用
-      if (fieldDef.type === 'relation' && 'relationType' in fieldDef && fieldDef.relationType === 'oneToMany') {
+      if (
+        fieldDef.type === 'relation' &&
+        'relationType' in fieldDef &&
+        fieldDef.relationType === 'oneToMany'
+      ) {
         return
       }
       shape[key] = fieldToZod(fieldDef)
     })
-    
+
     return z.object(shape)
   }
 
@@ -157,18 +158,22 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
    */
   private buildUpdateSchema(): z.ZodObject<Record<string, z.ZodSchema>> {
     const shape: Record<string, z.ZodSchema> = {}
-    
+
     // 所有字段都是可选的
     Object.entries(this.fields).forEach(([key, field]) => {
       const fieldDef = field as FieldDefinition
       // 跳过关系字段的反向引用
-      if (fieldDef.type === 'relation' && 'relationType' in fieldDef && fieldDef.relationType === 'oneToMany') {
+      if (
+        fieldDef.type === 'relation' &&
+        'relationType' in fieldDef &&
+        fieldDef.relationType === 'oneToMany'
+      ) {
         return
       }
       const fieldSchema = fieldToZod(fieldDef)
       shape[key] = fieldSchema.optional()
     })
-    
+
     return z.object(shape).partial()
   }
 
@@ -236,11 +241,10 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
    * 获取关系字段
    */
   getRelationFields(): Array<[string, FieldDefinition]> {
-    return Object.entries(this.fields)
-      .filter(([_, field]) => {
-        const fieldDef = field as FieldDefinition
-        return fieldDef.type === 'relation'
-      }) as Array<[string, FieldDefinition]>
+    return Object.entries(this.fields).filter(([_, field]) => {
+      const fieldDef = field as FieldDefinition
+      return fieldDef.type === 'relation'
+    }) as Array<[string, FieldDefinition]>
   }
 
   /**
@@ -250,7 +254,7 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
     return new EntityImpl(this.name, {
       name: this.name,
       fields: { ...this.fields },
-      options: { ...this.options }
+      options: { ...this.options },
     })
   }
 
@@ -263,17 +267,22 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
     // 转换构建器对象为字段定义
     const processedFields: Record<string, FieldDefinition> = {}
     Object.entries(fields).forEach(([key, value]) => {
-      if (value && typeof value === 'object' && 'build' in value && typeof value.build === 'function') {
+      if (
+        value &&
+        typeof value === 'object' &&
+        'build' in value &&
+        typeof value.build === 'function'
+      ) {
         processedFields[key] = value.build()
       } else {
         processedFields[key] = value as FieldDefinition
       }
     })
-    
+
     return new EntityImpl(this.name, {
       name: this.name,
       fields: { ...this.fields, ...processedFields },
-      options: { ...this.options }
+      options: { ...this.options },
     }) as Entity
   }
 
@@ -284,20 +293,18 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
     return new EntityImpl(this.name, {
       name: this.name,
       fields: { ...this.fields },
-      options: { ...this.options, ...options }
+      options: { ...this.options, ...options },
     })
   }
-
-
 }
 
 /**
  * 定义实体 - 支持两种调用方式
- * 
+ *
  * @param name - 实体名称
  * @param definition - 实体定义或字段定义
  * @returns 实体对象
- * 
+ *
  * @example
  * ```typescript
  * // 方式1: 传入完整定义
@@ -312,7 +319,7 @@ export class EntityImpl<T = Record<string, unknown>> implements Entity<T> {
  *     timestamps: true
  *   }
  * })
- * 
+ *
  * // 方式2: 只传入字段定义（简化写法）
  * const User = defineEntity('User', {
  *   name: defineField.string().required(),
@@ -334,7 +341,12 @@ export function defineEntity<T extends Record<string, FieldDefinition>>(
     // 转换FieldBuilder对象为FieldDefinition对象
     const fields: Record<string, FieldDefinition> = {}
     Object.entries(definition as Record<string, unknown>).forEach(([key, value]) => {
-      if (value && typeof value === 'object' && 'build' in value && typeof value.build === 'function') {
+      if (
+        value &&
+        typeof value === 'object' &&
+        'build' in value &&
+        typeof value.build === 'function'
+      ) {
         // 这是一个FieldBuilder对象
         fields[key] = (value as { build(): FieldDefinition }).build()
       } else {
@@ -349,7 +361,12 @@ export function defineEntity<T extends Record<string, FieldDefinition>>(
     if (def.fields) {
       const fields: Record<string, FieldDefinition> = {}
       Object.entries(def.fields).forEach(([key, value]) => {
-        if (value && typeof value === 'object' && 'build' in value && typeof value.build === 'function') {
+        if (
+          value &&
+          typeof value === 'object' &&
+          'build' in value &&
+          typeof value.build === 'function'
+        ) {
           fields[key] = (value as { build(): FieldDefinition }).build()
         } else {
           fields[key] = value as FieldDefinition
@@ -366,10 +383,10 @@ export function defineEntity<T extends Record<string, FieldDefinition>>(
 
 /**
  * 批量定义实体
- * 
+ *
  * @param entities - 实体定义映射
  * @returns 实体映射
- * 
+ *
  * @example
  * ```typescript
  * const entities = defineEntities({
@@ -412,28 +429,28 @@ export function isEntity(value: unknown): value is Entity {
  */
 export function entityToTypeString(entity: Entity): string {
   const fields: string[] = []
-  
+
   // ID字段
   fields.push('id: string')
-  
+
   // 用户定义的字段
   Object.entries(entity.fields).forEach(([name, field]) => {
     const optional = field.required ? '' : '?'
     const type = fieldToTsType(field)
     fields.push(`${name}${optional}: ${type}`)
   })
-  
+
   // 时间戳字段
   if (entity.options.timestamps) {
     fields.push('createdAt: Date')
     fields.push('updatedAt: Date')
   }
-  
+
   // 软删除字段
   if (entity.options.softDelete) {
     fields.push('deletedAt?: Date | null')
   }
-  
+
   return `export interface ${entity.name} {\n  ${fields.join('\n  ')}\n}`
 }
 
@@ -448,31 +465,31 @@ function fieldToTsType(field: FieldDefinition): string {
     case 'uuid':
     case 'text':
       return 'string'
-    
+
     case 'number':
       return 'number'
-    
+
     case 'boolean':
       return 'boolean'
-    
+
     case 'date':
       return 'Date'
-    
+
     case 'json':
       return 'Record<string, unknown>'
-    
+
     case 'enum':
       return field.values.map(v => `'${v}'`).join(' | ')
-    
+
     case 'array':
       return `${fieldToTsType(field.items)}[]`
-    
+
     case 'relation':
       if (field.relationType === 'oneToMany' || field.relationType === 'manyToMany') {
         return `${field.target}[]`
       }
       return field.target
-    
+
     case 'i18n':
       if (field.type === 'i18n') {
         const i18nField = field as I18nFieldOptions
@@ -480,7 +497,7 @@ function fieldToTsType(field: FieldDefinition): string {
         return `Partial<Record<${locales}, string>>`
       }
       return 'Record<string, string>'
-    
+
     default:
       return 'unknown'
   }

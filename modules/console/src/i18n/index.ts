@@ -1,6 +1,6 @@
 /**
  * Console 包国际化配置
- * 
+ *
  * 使用 @linch-kit/core 的 i18n 系统，遵循 LinchKit 包级 i18n 模式
  */
 
@@ -29,7 +29,7 @@ const defaultMessages = {
     'common.description': '描述',
     'common.createdAt': '创建时间',
     'common.updatedAt': '更新时间',
-    
+
     // 租户管理
     'tenant.title': '租户管理',
     'tenant.name': '租户名称',
@@ -49,7 +49,7 @@ const defaultMessages = {
     'tenant.delete': '删除租户',
     'tenant.quotas': '配额管理',
     'tenant.settings': '租户设置',
-    
+
     // 用户管理
     'user.title': '用户管理',
     'user.email': '邮箱地址',
@@ -73,7 +73,7 @@ const defaultMessages = {
     'user.resetPassword': '重置密码',
     'user.enableMfa': '启用多因子认证',
     'user.disableMfa': '禁用多因子认证',
-    
+
     // 权限管理
     'permission.title': '权限管理',
     'permission.roles': '角色管理',
@@ -90,7 +90,7 @@ const defaultMessages = {
     'permission.edit': '编辑权限',
     'permission.assign': '分配权限',
     'permission.revoke': '撤销权限',
-    
+
     // 插件管理
     'plugin.title': '插件管理',
     'plugin.marketplace': '插件市场',
@@ -113,7 +113,7 @@ const defaultMessages = {
     'plugin.disable': '禁用',
     'plugin.configure': '配置',
     'plugin.update': '更新',
-    
+
     // 监控相关
     'monitoring.title': '系统监控',
     'monitoring.dashboard': '监控面板',
@@ -127,7 +127,7 @@ const defaultMessages = {
     'monitoring.network': '网络流量',
     'monitoring.database': '数据库性能',
     'monitoring.api': 'API响应时间',
-    
+
     // Dashboard 仪表板
     'dashboard.title': '仪表板',
     'dashboard.description': '系统概览和关键指标',
@@ -165,7 +165,7 @@ const defaultMessages = {
     'dashboard.pluginStatus.status.active': '运行中',
     'dashboard.pluginStatus.status.inactive': '已停用',
     'dashboard.recentAlerts.title': '最近告警',
-    
+
     // 错误消息
     'error.validation.required': '此字段为必填项',
     'error.validation.email': '请输入有效的邮箱地址',
@@ -178,7 +178,7 @@ const defaultMessages = {
     'error.plugin.notFound': '插件不存在',
     'error.plugin.installFailed': '插件安装失败',
     'error.server.internal': '服务器内部错误，请稍后重试',
-    
+
     // 成功消息
     'success.tenant.created': '租户创建成功',
     'success.tenant.updated': '租户更新成功',
@@ -189,10 +189,10 @@ const defaultMessages = {
     'success.plugin.installed': '插件安装成功',
     'success.plugin.uninstalled': '插件卸载成功',
     'success.plugin.enabled': '插件启用成功',
-    'success.plugin.disabled': '插件禁用成功'
+    'success.plugin.disabled': '插件禁用成功',
   },
-  
-  'en': {
+
+  en: {
     // Common
     'common.loading': 'Loading...',
     'common.save': 'Save',
@@ -211,7 +211,7 @@ const defaultMessages = {
     'common.description': 'Description',
     'common.createdAt': 'Created At',
     'common.updatedAt': 'Updated At',
-    
+
     // Tenant Management
     'tenant.title': 'Tenant Management',
     'tenant.name': 'Tenant Name',
@@ -231,7 +231,7 @@ const defaultMessages = {
     'tenant.delete': 'Delete Tenant',
     'tenant.quotas': 'Quota Management',
     'tenant.settings': 'Tenant Settings',
-    
+
     // User Management
     'user.title': 'User Management',
     'user.email': 'Email Address',
@@ -255,7 +255,7 @@ const defaultMessages = {
     'user.resetPassword': 'Reset Password',
     'user.enableMfa': 'Enable MFA',
     'user.disableMfa': 'Disable MFA',
-    
+
     // Permission Management
     'permission.title': 'Permission Management',
     'permission.roles': 'Role Management',
@@ -272,7 +272,7 @@ const defaultMessages = {
     'permission.edit': 'Edit Permission',
     'permission.assign': 'Assign Permission',
     'permission.revoke': 'Revoke Permission',
-    
+
     // Plugin Management
     'plugin.title': 'Plugin Management',
     'plugin.marketplace': 'Plugin Marketplace',
@@ -295,7 +295,7 @@ const defaultMessages = {
     'plugin.disable': 'Disable',
     'plugin.configure': 'Configure',
     'plugin.update': 'Update',
-    
+
     // Monitoring
     'monitoring.title': 'System Monitoring',
     'monitoring.dashboard': 'Dashboard',
@@ -309,7 +309,7 @@ const defaultMessages = {
     'monitoring.network': 'Network Traffic',
     'monitoring.database': 'Database Performance',
     'monitoring.api': 'API Response Time',
-    
+
     // Dashboard
     'dashboard.title': 'Dashboard',
     'dashboard.description': 'System overview and key metrics',
@@ -347,7 +347,7 @@ const defaultMessages = {
     'dashboard.pluginStatus.status.active': 'Active',
     'dashboard.pluginStatus.status.inactive': 'Inactive',
     'dashboard.recentAlerts.title': 'Recent Alerts',
-    
+
     // Error Messages
     'error.validation.required': 'This field is required',
     'error.validation.email': 'Please enter a valid email address',
@@ -360,7 +360,7 @@ const defaultMessages = {
     'error.plugin.notFound': 'Plugin not found',
     'error.plugin.installFailed': 'Plugin installation failed',
     'error.server.internal': 'Internal server error, please try again',
-    
+
     // Success Messages
     'success.tenant.created': 'Tenant created successfully',
     'success.tenant.updated': 'Tenant updated successfully',
@@ -371,8 +371,8 @@ const defaultMessages = {
     'success.plugin.installed': 'Plugin installed successfully',
     'success.plugin.uninstalled': 'Plugin uninstalled successfully',
     'success.plugin.enabled': 'Plugin enabled successfully',
-    'success.plugin.disabled': 'Plugin disabled successfully'
-  }
+    'success.plugin.disabled': 'Plugin disabled successfully',
+  },
 }
 
 /**
@@ -382,7 +382,7 @@ export const consoleI18n = createPackageI18n({
   packageName: 'console',
   defaultLocale: 'zh-CN',
   defaultMessages,
-  keyPrefix: 'console'
+  keyPrefix: 'console',
 })
 
 /**
@@ -399,7 +399,7 @@ export const useConsoleTranslation = (userT?: TranslationFunction) =>
 export const consoleI18nResource = {
   namespace: 'console',
   defaultLocale: 'zh-CN',
-  messages: defaultMessages
+  messages: defaultMessages,
 }
 
 /**

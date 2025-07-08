@@ -1,15 +1,20 @@
 /**
  * 权限检查器 - 与 @linch-kit/auth 深度集成
- * 
+ *
  * 提供细粒度的权限控制：
  * - 实体级权限检查
- * - 字段级权限控制  
+ * - 字段级权限控制
  * - 行级权限过滤
  * - 条件权限解析
  */
 
 import type { Entity, FieldDefinition as _FieldDefinition } from '@linch-kit/schema'
-import type { LinchKitUser, IPermissionChecker as AuthPermissionChecker, PermissionAction, PermissionSubject } from '@linch-kit/auth'
+import type {
+  LinchKitUser,
+  IPermissionChecker as AuthPermissionChecker,
+  PermissionAction,
+  PermissionSubject,
+} from '@linch-kit/auth'
 import type { PluginManager } from '@linch-kit/core'
 
 import type { SchemaRegistry, Logger, IPermissionChecker } from '../types'
@@ -33,11 +38,7 @@ export class PermissionChecker implements IPermissionChecker {
     // 实体级权限检查
     const canCreate = await this.checkEntityPermission(user, entity.name, 'create')
     if (!canCreate) {
-      throw new PermissionError(
-        `No permission to create ${entity.name}`,
-        'create',
-        entity.name
-      )
+      throw new PermissionError(`No permission to create ${entity.name}`, 'create', entity.name)
     }
 
     // 字段级权限检查
@@ -53,11 +54,7 @@ export class PermissionChecker implements IPermissionChecker {
   async checkRead(entity: Entity, user: LinchKitUser, resource?: unknown): Promise<void> {
     const canRead = await this.checkEntityPermission(user, entity.name, 'read')
     if (!canRead) {
-      throw new PermissionError(
-        `No permission to read ${entity.name}`,
-        'read',
-        entity.name
-      )
+      throw new PermissionError(`No permission to read ${entity.name}`, 'read', entity.name)
     }
 
     // 行级权限检查
@@ -87,11 +84,7 @@ export class PermissionChecker implements IPermissionChecker {
   ): Promise<void> {
     const canUpdate = await this.checkEntityPermission(user, entity.name, 'update')
     if (!canUpdate) {
-      throw new PermissionError(
-        `No permission to update ${entity.name}`,
-        'update',
-        entity.name
-      )
+      throw new PermissionError(`No permission to update ${entity.name}`, 'update', entity.name)
     }
 
     // 行级权限检查
@@ -117,11 +110,7 @@ export class PermissionChecker implements IPermissionChecker {
   async checkDelete(entity: Entity, user: LinchKitUser, resource: unknown): Promise<void> {
     const canDelete = await this.checkEntityPermission(user, entity.name, 'delete')
     if (!canDelete) {
-      throw new PermissionError(
-        `No permission to delete ${entity.name}`,
-        'delete',
-        entity.name
-      )
+      throw new PermissionError(`No permission to delete ${entity.name}`, 'delete', entity.name)
     }
 
     // 行级权限检查
@@ -148,7 +137,7 @@ export class PermissionChecker implements IPermissionChecker {
     operation: 'read' | 'write'
   ): Promise<Partial<T>[]> {
     return await Promise.all(
-      data.map(async (item) => {
+      data.map(async item => {
         const filteredItem: Partial<T> = {}
 
         for (const [fieldName, fieldValue] of Object.entries(item as Record<string, unknown>)) {
@@ -156,12 +145,12 @@ export class PermissionChecker implements IPermissionChecker {
 
           // 检查字段权限
           if (await this.checkFieldPermission(entity, user, fieldName, operation, item)) {
-            (filteredItem as Record<string, unknown>)[fieldName] = fieldValue
+            ;(filteredItem as Record<string, unknown>)[fieldName] = fieldValue
           } else {
             this.logger.debug(`Field ${fieldName} filtered out due to permissions`, {
               entityName: entity.name,
               userId: user.id || 'unknown',
-              operation
+              operation,
             })
           }
         }
@@ -195,18 +184,16 @@ export class PermissionChecker implements IPermissionChecker {
           action as PermissionAction,
           entity.name as PermissionSubject
         )
-        
+
         if (accessibleResources && Array.isArray(accessibleResources)) {
           filters.id = { in: accessibleResources.map((r: Record<string, unknown>) => r.id) }
         }
       } catch (error) {
-        this.logger.warn('Failed to get accessible resources from auth', 
-          { 
-            error: error instanceof Error ? error.message : 'Unknown error',
-            entityName: entity.name, 
-            userId: user.id || 'unknown' 
-          }
-        )
+        this.logger.warn('Failed to get accessible resources from auth', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          entityName: entity.name,
+          userId: user.id || 'unknown',
+        })
       }
     }
 
@@ -215,10 +202,10 @@ export class PermissionChecker implements IPermissionChecker {
       entity,
       user,
       operation,
-      filters
+      filters,
     })
 
-    return { ...filters, ...(pluginFilters as Record<string, unknown> || {}) }
+    return { ...filters, ...((pluginFilters as Record<string, unknown>) || {}) }
   }
 
   /**
@@ -239,7 +226,7 @@ export class PermissionChecker implements IPermissionChecker {
         )
       } catch (error) {
         this.logger.error(
-          'Failed to check entity permission', 
+          'Failed to check entity permission',
           error instanceof Error ? error : new Error('Unknown error'),
           { userId: user.id || 'unknown', entityName, operation }
         )
@@ -251,7 +238,7 @@ export class PermissionChecker implements IPermissionChecker {
     this.logger.warn('No auth permission checker configured, allowing access', {
       userId: user.id || 'unknown',
       entityName,
-      operation
+      operation,
     })
     return true
   }
@@ -268,11 +255,7 @@ export class PermissionChecker implements IPermissionChecker {
     // 使用 auth 包的权限检查器
     if (this.authPermissionChecker) {
       try {
-        return await this.authPermissionChecker.check(
-          user,
-          operation as PermissionAction,
-          resource
-        )
+        return await this.authPermissionChecker.check(user, operation as PermissionAction, resource)
       } catch (error) {
         this.logger.error(
           'Failed to check row permission',
@@ -316,7 +299,7 @@ export class PermissionChecker implements IPermissionChecker {
       fieldName,
       field,
       operation,
-      resource
+      resource,
     })
 
     return pluginResult !== false
@@ -373,7 +356,7 @@ export class PermissionChecker implements IPermissionChecker {
 
     for (const registration of plugins) {
       const plugin = registration.plugin
-      
+
       // 检查插件是否有对应的钩子
       const hook = (plugin as unknown as Record<string, unknown>)[hookName]
       if (typeof hook === 'function') {

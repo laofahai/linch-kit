@@ -5,13 +5,13 @@
 
 import { EventEmitter } from 'eventemitter3'
 
-import type { 
-  Plugin, 
-  PluginRegistration, 
-  PluginManager, 
-  PluginConfig, 
+import type {
+  Plugin,
+  PluginRegistration,
+  PluginManager,
+  PluginConfig,
   PluginStatus,
-  OperationResult 
+  OperationResult,
 } from '../types'
 
 /**
@@ -27,7 +27,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
   registerSync(plugin: Plugin, config: PluginConfig = {}): void {
     // Validate plugin metadata
     this.validatePluginMetadata(plugin)
-    
+
     // Validate plugin lifecycle methods
     this.validatePluginMethods(plugin)
 
@@ -44,7 +44,7 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       plugin,
       config: finalConfig,
       status: 'registered',
-      registeredAt: Date.now()
+      registeredAt: Date.now(),
     }
 
     this.plugins.set(id, registration)
@@ -131,7 +131,11 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       }
 
       this.setPluginStatus(pluginId, 'started')
-      this.safeEmit('pluginStarted', { type: 'pluginStarted', pluginId, plugin: registration.plugin })
+      this.safeEmit('pluginStarted', {
+        type: 'pluginStarted',
+        pluginId,
+        plugin: registration.plugin,
+      })
     } catch (error) {
       this.setPluginStatus(pluginId, 'error')
       throw error
@@ -161,7 +165,11 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       }
 
       this.setPluginStatus(pluginId, 'stopped')
-      this.safeEmit('pluginStopped', { type: 'pluginStopped', pluginId, plugin: registration.plugin })
+      this.safeEmit('pluginStopped', {
+        type: 'pluginStopped',
+        pluginId,
+        plugin: registration.plugin,
+      })
     } catch (error) {
       this.setPluginStatus(pluginId, 'error')
       throw error
@@ -173,24 +181,24 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
    */
   async startAll(): Promise<OperationResult[]> {
     const results: OperationResult[] = []
-    
+
     for (const [pluginId, registration] of this.plugins) {
       if (registration.config.enabled) {
         try {
           await this.startPlugin(pluginId)
           results.push({ success: true })
         } catch (error) {
-          results.push({ 
-            success: false, 
-            error: { 
-              code: 'START_FAILED', 
-              message: error instanceof Error ? error.message : 'Unknown error' 
-            } 
+          results.push({
+            success: false,
+            error: {
+              code: 'START_FAILED',
+              message: error instanceof Error ? error.message : 'Unknown error',
+            },
           })
         }
       }
     }
-    
+
     return results
   }
 
@@ -199,24 +207,24 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
    */
   async stopAll(): Promise<OperationResult[]> {
     const results: OperationResult[] = []
-    
+
     for (const [pluginId] of this.plugins) {
       if (this.pluginStatuses.get(pluginId) === 'started') {
         try {
           await this.stopPlugin(pluginId)
           results.push({ success: true })
         } catch (error) {
-          results.push({ 
-            success: false, 
-            error: { 
-              code: 'STOP_FAILED', 
-              message: error instanceof Error ? error.message : 'Unknown error' 
-            } 
+          results.push({
+            success: false,
+            error: {
+              code: 'STOP_FAILED',
+              message: error instanceof Error ? error.message : 'Unknown error',
+            },
           })
         }
       }
     }
-    
+
     return results
   }
 
@@ -255,12 +263,12 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       if (!this.plugins.has(depId)) {
         throw new Error(`Dependency ${depId} not found`)
       }
-      
+
       // Check for circular dependencies
       if (this.hasCircularDependency(depId, dependencies)) {
         throw new Error('Circular dependency detected')
       }
-      
+
       await this.startPlugin(depId)
     }
   }
@@ -283,13 +291,13 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
   private hasCircularDependency(pluginId: string, _dependencies: string[]): boolean {
     const visited = new Set<string>()
     const visiting = new Set<string>()
-    
+
     const visit = (id: string): boolean => {
       if (visited.has(id)) return false
       if (visiting.has(id)) return true
-      
+
       visiting.add(id)
-      
+
       const plugin = this.plugins.get(id)
       if (plugin) {
         const deps = plugin.plugin.metadata.dependencies || []
@@ -297,12 +305,12 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
           if (visit(depId)) return true
         }
       }
-      
+
       visiting.delete(id)
       visited.add(id)
       return false
     }
-    
+
     return visit(pluginId)
   }
 
@@ -312,13 +320,13 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       this.registerSync(plugin, config)
       return { success: true }
     } catch (error) {
-      return { 
-        success: false, 
-        error: { 
-          code: 'OPERATION_ERROR', 
+      return {
+        success: false,
+        error: {
+          code: 'OPERATION_ERROR',
           message: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined
-        } 
+          stack: error instanceof Error ? error.stack : undefined,
+        },
       }
     }
   }
@@ -327,15 +335,21 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
     try {
       const registration = this.plugins.get(pluginId)
       if (!registration) {
-        return { success: false, error: { code: 'PLUGIN_NOT_FOUND', message: `Plugin ${pluginId} not found` } }
+        return {
+          success: false,
+          error: { code: 'PLUGIN_NOT_FOUND', message: `Plugin ${pluginId} not found` },
+        }
       }
 
       // Check for dependents
       const dependents = this.getDependents(pluginId)
       if (dependents.length > 0) {
-        return { 
-          success: false, 
-          error: { code: 'PLUGIN_HAS_DEPENDENTS', message: `Cannot unregister ${pluginId}: required by ${dependents.join(', ')}` } 
+        return {
+          success: false,
+          error: {
+            code: 'PLUGIN_HAS_DEPENDENTS',
+            message: `Cannot unregister ${pluginId}: required by ${dependents.join(', ')}`,
+          },
         }
       }
 
@@ -355,13 +369,13 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
 
       return { success: true }
     } catch (error) {
-      return { 
-        success: false, 
-        error: { 
-          code: 'OPERATION_ERROR', 
+      return {
+        success: false,
+        error: {
+          code: 'OPERATION_ERROR',
           message: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined
-        } 
+          stack: error instanceof Error ? error.stack : undefined,
+        },
       }
     }
   }
@@ -371,13 +385,13 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       await this.startPlugin(pluginId)
       return { success: true }
     } catch (error) {
-      return { 
-        success: false, 
-        error: { 
-          code: 'OPERATION_ERROR', 
+      return {
+        success: false,
+        error: {
+          code: 'OPERATION_ERROR',
           message: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined
-        } 
+          stack: error instanceof Error ? error.stack : undefined,
+        },
       }
     }
   }
@@ -387,13 +401,13 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
       await this.stopPlugin(pluginId)
       return { success: true }
     } catch (error) {
-      return { 
-        success: false, 
-        error: { 
-          code: 'OPERATION_ERROR', 
+      return {
+        success: false,
+        error: {
+          code: 'OPERATION_ERROR',
           message: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined
-        } 
+          stack: error instanceof Error ? error.stack : undefined,
+        },
       }
     }
   }
@@ -442,14 +456,14 @@ export class PluginRegistry extends EventEmitter implements PluginManager {
 
   private getDependents(pluginId: string): string[] {
     const dependents: string[] = []
-    
+
     for (const [id, registration] of this.plugins) {
       const deps = registration.plugin.metadata.dependencies || []
       if (deps.includes(pluginId)) {
         dependents.push(id)
       }
     }
-    
+
     return dependents
   }
 

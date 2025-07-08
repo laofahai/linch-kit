@@ -36,26 +36,26 @@ L4: @linch-kit/console   管理平台 (多租户、权限管理)
 
 ### 核心包
 
-| 包 | 版本 | 描述 |
-|---|---|---|
-| **[@linch-kit/core](https://www.npmjs.com/package/@linch-kit/core)** | ![npm](https://img.shields.io/npm/v/@linch-kit/core) | 基础设施包 - 插件系统、配置管理、日志系统 |
-| **[@linch-kit/schema](https://www.npmjs.com/package/@linch-kit/schema)** | ![npm](https://img.shields.io/npm/v/@linch-kit/schema) | Schema 引擎 - 代码生成、验证、转换 |
-| **[@linch-kit/auth](https://www.npmjs.com/package/@linch-kit/auth)** | ![npm](https://img.shields.io/npm/v/@linch-kit/auth) | 认证权限 - NextAuth.js + CASL 权限控制 |
-| **[@linch-kit/crud](https://www.npmjs.com/package/@linch-kit/crud)** | ![npm](https://img.shields.io/npm/v/@linch-kit/crud) | CRUD 操作 - 类型安全、权限集成、复杂查询 |
-| **[@linch-kit/trpc](https://www.npmjs.com/package/@linch-kit/trpc)** | ![npm](https://img.shields.io/npm/v/@linch-kit/trpc) | API 层 - 端到端类型安全的 tRPC 集成 |
-| **[@linch-kit/ui](https://www.npmjs.com/package/@linch-kit/ui)** | ![npm](https://img.shields.io/npm/v/@linch-kit/ui) | UI 组件库 - shadcn/ui + 企业级组件 |
-| **[@linch-kit/ai](https://www.npmjs.com/package/@linch-kit/ai)** | ![npm](https://img.shields.io/npm/v/@linch-kit/ai) | AI 集成 - Graph RAG、智能查询、代码理解 |
+| 包                                                                       | 版本                                                   | 描述                                      |
+| ------------------------------------------------------------------------ | ------------------------------------------------------ | ----------------------------------------- |
+| **[@linch-kit/core](https://www.npmjs.com/package/@linch-kit/core)**     | ![npm](https://img.shields.io/npm/v/@linch-kit/core)   | 基础设施包 - 插件系统、配置管理、日志系统 |
+| **[@linch-kit/schema](https://www.npmjs.com/package/@linch-kit/schema)** | ![npm](https://img.shields.io/npm/v/@linch-kit/schema) | Schema 引擎 - 代码生成、验证、转换        |
+| **[@linch-kit/auth](https://www.npmjs.com/package/@linch-kit/auth)**     | ![npm](https://img.shields.io/npm/v/@linch-kit/auth)   | 认证权限 - NextAuth.js + CASL 权限控制    |
+| **[@linch-kit/crud](https://www.npmjs.com/package/@linch-kit/crud)**     | ![npm](https://img.shields.io/npm/v/@linch-kit/crud)   | CRUD 操作 - 类型安全、权限集成、复杂查询  |
+| **[@linch-kit/trpc](https://www.npmjs.com/package/@linch-kit/trpc)**     | ![npm](https://img.shields.io/npm/v/@linch-kit/trpc)   | API 层 - 端到端类型安全的 tRPC 集成       |
+| **[@linch-kit/ui](https://www.npmjs.com/package/@linch-kit/ui)**         | ![npm](https://img.shields.io/npm/v/@linch-kit/ui)     | UI 组件库 - shadcn/ui + 企业级组件        |
+| **[@linch-kit/ai](https://www.npmjs.com/package/@linch-kit/ai)**         | ![npm](https://img.shields.io/npm/v/@linch-kit/ai)     | AI 集成 - Graph RAG、智能查询、代码理解   |
 
 ### 企业模块
 
-| 包 | 版本 | 描述 |
-|---|---|---|
+| 包                                                                         | 版本                                                    | 描述                                      |
+| -------------------------------------------------------------------------- | ------------------------------------------------------- | ----------------------------------------- |
 | **[@linch-kit/console](https://www.npmjs.com/package/@linch-kit/console)** | ![npm](https://img.shields.io/npm/v/@linch-kit/console) | 管理平台 - 多租户管理、权限控制、系统监控 |
 
 ### 工具包
 
-| 包 | 版本 | 描述 |
-|---|---|---|
+| 包                                                                     | 版本                                                  | 描述                                |
+| ---------------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------- |
 | **[create-linch-kit](https://www.npmjs.com/package/create-linch-kit)** | ![npm](https://img.shields.io/npm/v/create-linch-kit) | 项目脚手架 - 一键创建 LinchKit 项目 |
 
 ## 🚀 快速开始
@@ -109,8 +109,8 @@ import { createCRUD } from '@linch-kit/crud'
 export const config = createConfig({
   app: {
     name: 'My App',
-    env: process.env.NODE_ENV
-  }
+    env: process.env.NODE_ENV,
+  },
 })
 
 export const logger = createLogger({ name: 'my-app' })
@@ -131,7 +131,7 @@ export const UserSchema = defineSchema('User', {
   name: z.string().min(1),
   role: z.enum(['USER', 'ADMIN']),
   createdAt: z.date(),
-  updatedAt: z.date()
+  updatedAt: z.date(),
 })
 
 // 自动生成类型和验证器
@@ -167,17 +167,20 @@ export function UserForm() {
 ## 🏢 企业功能
 
 ### 多租户架构
+
 - 租户数据隔离
 - 角色权限管理 (RBAC + ABAC)
 - 租户配置管理
 
 ### 认证与权限
+
 - NextAuth.js 5.0 集成
 - CASL 权限控制
 - 字段级权限过滤
 - 行级权限控制
 
 ### 管理平台
+
 - 统一管理控制台
 - 用户和权限管理
 - 系统监控和审计

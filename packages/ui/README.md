@@ -62,17 +62,16 @@ const userSchema = {
 
 ```tsx
 import { SchemaTable } from '@linch-kit/ui/tables'
-
-<SchemaTable
+;<SchemaTable
   schema={userSchema}
   data={users}
-  onEdit={(user) => console.log('编辑用户:', user)}
-  onDelete={(user) => console.log('删除用户:', user)}
+  onEdit={user => console.log('编辑用户:', user)}
+  onDelete={user => console.log('删除用户:', user)}
   pagination={{
     page: 1,
     pageSize: 10,
     total: 100,
-    onPageChange: (page) => setPage(page)
+    onPageChange: page => setPage(page),
   }}
 />
 ```
@@ -81,8 +80,7 @@ import { SchemaTable } from '@linch-kit/ui/tables'
 
 ```tsx
 import { Button, Input, Card } from '@linch-kit/ui/components'
-
-<Card>
+;<Card>
   <Input placeholder="请输入..." />
   <Button variant="primary">提交</Button>
 </Card>
@@ -118,22 +116,22 @@ await pluginSystem.register(uiPlugin)
 
 ### SchemaForm Props
 
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| schema | UIEntityDefinition | Schema定义 |
-| onSubmit | Function | 提交处理函数 |
-| mode | 'create' \| 'edit' \| 'view' | 表单模式 |
-| initialData | Record<string, unknown> | 初始数据 |
+| 属性        | 类型                         | 描述         |
+| ----------- | ---------------------------- | ------------ |
+| schema      | UIEntityDefinition           | Schema定义   |
+| onSubmit    | Function                     | 提交处理函数 |
+| mode        | 'create' \| 'edit' \| 'view' | 表单模式     |
+| initialData | Record<string, unknown>      | 初始数据     |
 
 ### SchemaTable Props
 
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| schema | UIEntityDefinition | Schema定义 |
-| data | Array<Record<string, unknown>> | 表格数据 |
-| onEdit | Function | 编辑处理函数 |
-| onDelete | Function | 删除处理函数 |
-| pagination | Object | 分页配置 |
+| 属性       | 类型                           | 描述         |
+| ---------- | ------------------------------ | ------------ |
+| schema     | UIEntityDefinition             | Schema定义   |
+| data       | Array<Record<string, unknown>> | 表格数据     |
+| onEdit     | Function                       | 编辑处理函数 |
+| onDelete   | Function                       | 删除处理函数 |
+| pagination | Object                         | 分页配置     |
 
 ## 🧪 开发
 

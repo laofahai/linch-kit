@@ -10,7 +10,7 @@ export default defineConfig({
     'src/tables/index.ts',
     'src/utils/index.ts',
     'src/components/ui/button.tsx',
-    'src/components/ui/card.tsx'
+    'src/components/ui/card.tsx',
   ],
   format: ['cjs', 'esm'],
   dts: true,
@@ -24,20 +24,20 @@ export default defineConfig({
     '@linch-kit/core',
     '@linch-kit/crud',
     '@linch-kit/schema',
-    'react-hook-form'  // 将 react-hook-form 也作为外部依赖
+    'react-hook-form', // 将 react-hook-form 也作为外部依赖
   ],
   treeshake: true,
   minify: false,
   target: 'es2020',
   esbuildOptions(options) {
     options.banner = {
-      js: '"use client"'
+      js: '"use client"',
     }
   },
   // 确保 ESM 输出格式正确
   outExtension({ format }) {
     return {
-      js: format === 'esm' ? '.mjs' : '.js'
+      js: format === 'esm' ? '.mjs' : '.js',
     }
   },
   // 复制CSS文件到dist目录
@@ -46,5 +46,5 @@ export default defineConfig({
     mkdirSync(stylesDir, { recursive: true })
     copyFileSync('src/styles/globals.css', 'dist/styles/globals.css')
     console.log('CSS files copied to dist/styles/')
-  }
+  },
 })

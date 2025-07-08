@@ -1,6 +1,6 @@
 /**
  * 创建租户页面
- * 
+ *
  * 表单页面用于创建新的租户
  */
 
@@ -11,11 +11,11 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { 
-  Card, 
-  CardContent, 
+import {
+  Card,
+  CardContent,
   CardDescription,
-  CardHeader, 
+  CardHeader,
   CardTitle,
   Button,
   Input,
@@ -28,7 +28,7 @@ import {
   Textarea,
   Switch,
   Alert,
-  AlertDescription
+  AlertDescription,
 } from '@linch-kit/ui'
 import { Building2, ArrowLeft, Save, X } from 'lucide-react'
 import Link from 'next/link'
@@ -39,7 +39,8 @@ import { useConsoleTranslation } from '../../i18n'
 // 表单验证Schema
 const createTenantSchema = z.object({
   name: z.string().min(1, '租户名称不能为空').max(100, '租户名称不能超过100个字符'),
-  slug: z.string()
+  slug: z
+    .string()
     .min(1, 'URL标识不能为空')
     .max(50, 'URL标识不能超过50个字符')
     .regex(/^[a-z0-9-]+$/, 'URL标识只能包含小写字母、数字和连字符'),
@@ -49,11 +50,17 @@ const createTenantSchema = z.object({
   plan: z.enum(['free', 'starter', 'professional', 'enterprise']),
   billingCycle: z.enum(['monthly', 'yearly']).optional(),
   maxUsers: z.number().min(1, '最大用户数必须大于0').max(10000, '最大用户数不能超过10000'),
-  maxStorage: z.number().min(100, '最大存储空间必须大于100MB').max(1000000, '最大存储空间不能超过1TB'),
-  maxApiCalls: z.number().min(1000, 'API调用次数必须大于1000').max(10000000, 'API调用次数不能超过1000万'),
+  maxStorage: z
+    .number()
+    .min(100, '最大存储空间必须大于100MB')
+    .max(1000000, '最大存储空间不能超过1TB'),
+  maxApiCalls: z
+    .number()
+    .min(1000, 'API调用次数必须大于1000')
+    .max(10000000, 'API调用次数不能超过1000万'),
   maxPlugins: z.number().min(1, '最大插件数必须大于0').max(100, '最大插件数不能超过100'),
   settings: z.record(z.any()).optional(),
-  autoActivate: z.boolean().default(true)
+  autoActivate: z.boolean().default(true),
 })
 
 type CreateTenantForm = z.infer<typeof createTenantSchema>
@@ -65,7 +72,7 @@ export function TenantCreate() {
   const router = useRouter()
   const _t = useConsoleTranslation()
   const { createTenant } = useTenantOperations()
-  
+
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const {
@@ -73,7 +80,7 @@ export function TenantCreate() {
     handleSubmit: handleFormSubmit,
     watch,
     setValue,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm<CreateTenantForm>({
     resolver: zodResolver(createTenantSchema),
     defaultValues: {
@@ -83,13 +90,13 @@ export function TenantCreate() {
       maxStorage: 1000,
       maxApiCalls: 10000,
       maxPlugins: 5,
-      autoActivate: true
-    }
+      autoActivate: true,
+    },
   })
 
   const planValue = watch('plan')
   const nameValue = watch('name')
-  
+
   // 根据计划自动设置配额
   React.useEffect(() => {
     const quotasByPlan = {
@@ -97,28 +104,28 @@ export function TenantCreate() {
         maxUsers: 5,
         maxStorage: 500,
         maxApiCalls: 5000,
-        maxPlugins: 2
+        maxPlugins: 2,
       },
       starter: {
         maxUsers: 10,
         maxStorage: 1000,
         maxApiCalls: 10000,
-        maxPlugins: 5
+        maxPlugins: 5,
       },
       professional: {
         maxUsers: 50,
         maxStorage: 10000,
         maxApiCalls: 100000,
-        maxPlugins: 20
+        maxPlugins: 20,
       },
       enterprise: {
         maxUsers: 1000,
         maxStorage: 100000,
         maxApiCalls: 1000000,
-        maxPlugins: 100
-      }
+        maxPlugins: 100,
+      },
     }
-    
+
     const quotas = quotasByPlan[planValue as keyof typeof quotasByPlan]
     if (quotas) {
       setValue('maxUsers', quotas.maxUsers)
@@ -127,7 +134,7 @@ export function TenantCreate() {
       setValue('maxPlugins', quotas.maxPlugins)
     }
   }, [planValue, setValue])
-  
+
   // 根据名称自动生成slug
   React.useEffect(() => {
     if (nameValue) {
@@ -140,24 +147,23 @@ export function TenantCreate() {
       setValue('slug', slug)
     }
   }, [nameValue, setValue])
-  
+
   // 提交表单
   const onSubmit = async (data: CreateTenantForm) => {
     setSubmitError(null)
-    
+
     try {
       const tenant = await createTenant.mutateAsync({
         ...data,
-        status: data.autoActivate ? 'active' : 'pending'
+        status: data.autoActivate ? 'active' : 'pending',
       })
-      
+
       // 跳转到租户详情页
       router.push(`/admin/tenants/${tenant.id}`)
     } catch (error: Record<string, unknown>) {
       setSubmitError(error.message || '创建租户失败')
     }
   }
-  
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -171,9 +177,7 @@ export function TenantCreate() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">创建租户</h1>
-          <p className="text-muted-foreground">
-            创建一个新的租户账户
-          </p>
+          <p className="text-muted-foreground">创建一个新的租户账户</p>
         </div>
       </div>
 
@@ -185,9 +189,7 @@ export function TenantCreate() {
               <Building2 className="h-5 w-5 mr-2" />
               基本信息
             </CardTitle>
-            <CardDescription>
-              设置租户的基本信息
-            </CardDescription>
+            <CardDescription>设置租户的基本信息</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -200,7 +202,7 @@ export function TenantCreate() {
                   error={errors.name?.message}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="slug">URL标识 *</Label>
                 <Input
@@ -214,7 +216,7 @@ export function TenantCreate() {
                 </p>
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="domain">自定义域名</Label>
               <Input
@@ -223,11 +225,9 @@ export function TenantCreate() {
                 {...register('domain')}
                 error={errors.domain?.message}
               />
-              <p className="text-xs text-muted-foreground">
-                可选，设置租户的自定义域名
-              </p>
+              <p className="text-xs text-muted-foreground">可选，设置租户的自定义域名</p>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="businessLicense">营业执照号码</Label>
               <Input
@@ -236,11 +236,9 @@ export function TenantCreate() {
                 {...register('businessLicense')}
                 error={errors.businessLicense?.message}
               />
-              <p className="text-xs text-muted-foreground">
-                可选，企业租户的营业执照注册号码
-              </p>
+              <p className="text-xs text-muted-foreground">可选，企业租户的营业执照注册号码</p>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="description">描述</Label>
               <Textarea
@@ -258,17 +256,17 @@ export function TenantCreate() {
         <Card>
           <CardHeader>
             <CardTitle>订阅计划</CardTitle>
-            <CardDescription>
-              选择租户的订阅计划和计费周期
-            </CardDescription>
+            <CardDescription>选择租户的订阅计划和计费周期</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="plan">订阅计划 *</Label>
-                <Select 
-                  value={watch('plan')} 
-                  onValueChange={(value) => setValue('plan', value as 'free' | 'starter' | 'professional' | 'enterprise')}
+                <Select
+                  value={watch('plan')}
+                  onValueChange={value =>
+                    setValue('plan', value as 'free' | 'starter' | 'professional' | 'enterprise')
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="选择订阅计划" />
@@ -281,12 +279,12 @@ export function TenantCreate() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="billingCycle">计费周期</Label>
-                <Select 
-                  value={watch('billingCycle') || 'monthly'} 
-                  onValueChange={(value) => setValue('billingCycle', value as 'monthly' | 'yearly')}
+                <Select
+                  value={watch('billingCycle') || 'monthly'}
+                  onValueChange={value => setValue('billingCycle', value as 'monthly' | 'yearly')}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="选择计费周期" />
@@ -305,9 +303,7 @@ export function TenantCreate() {
         <Card>
           <CardHeader>
             <CardTitle>配额设置</CardTitle>
-            <CardDescription>
-              根据订阅计划自动设置，也可以手动调整
-            </CardDescription>
+            <CardDescription>根据订阅计划自动设置，也可以手动调整</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -322,7 +318,7 @@ export function TenantCreate() {
                   error={errors.maxUsers?.message}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="maxStorage">最大存储空间 (MB) *</Label>
                 <Input
@@ -334,7 +330,7 @@ export function TenantCreate() {
                   error={errors.maxStorage?.message}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="maxApiCalls">API调用限制 (次/月) *</Label>
                 <Input
@@ -346,7 +342,7 @@ export function TenantCreate() {
                   error={errors.maxApiCalls?.message}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="maxPlugins">最大插件数 *</Label>
                 <Input
@@ -372,7 +368,7 @@ export function TenantCreate() {
               <Switch
                 id="autoActivate"
                 checked={watch('autoActivate')}
-                onCheckedChange={(checked) => setValue('autoActivate', checked)}
+                onCheckedChange={checked => setValue('autoActivate', checked)}
               />
               <Label htmlFor="autoActivate">创建后自动激活</Label>
             </div>

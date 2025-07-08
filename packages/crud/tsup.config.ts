@@ -14,6 +14,6 @@ export default defineConfig({
     '@prisma/client',
     'zod',
     'ioredis',
-    'lru-cache'
-  ]
+    'lru-cache',
+  ],
 })

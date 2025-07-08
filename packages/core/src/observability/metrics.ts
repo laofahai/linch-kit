@@ -10,17 +10,10 @@ import {
   Gauge as PromGauge,
   Histogram as PromHistogram,
   Summary as PromSummary,
-  Registry
+  Registry,
 } from 'prom-client'
 
-import type { 
-  MetricCollector, 
-  Counter, 
-  Gauge, 
-  Histogram, 
-  Summary, 
-  MetricConfig 
-} from '../types'
+import type { MetricCollector, Counter, Gauge, Histogram, Summary, MetricConfig } from '../types'
 
 /**
  * Prometheus metric value interface
@@ -50,9 +43,9 @@ class LinchKitCounter implements Counter {
 
   get(labels?: Record<string, string>): number {
     const metric = this.promCounter.get() as unknown as PromMetric
-    
+
     if (labels) {
-      const found = metric.values?.find((v: PromMetricValue) => 
+      const found = metric.values?.find((v: PromMetricValue) =>
         Object.entries(labels).every(([key, val]) => v.labels[key] === val)
       )
       return found?.value || 0
@@ -85,9 +78,9 @@ class LinchKitGauge implements Gauge {
 
   get(labels?: Record<string, string>): number {
     const metric = this.promGauge.get() as unknown as PromMetric
-    
+
     if (labels) {
-      const found = metric.values?.find((v: PromMetricValue) => 
+      const found = metric.values?.find((v: PromMetricValue) =>
         Object.entries(labels).every(([key, val]) => v.labels[key] === val)
       )
       return found?.value || 0
@@ -114,19 +107,24 @@ class LinchKitHistogram implements Histogram {
     return this.promHistogram.startTimer(labels)
   }
 
-  get(labels?: Record<string, string>): { buckets: Record<string, number>; count: number; sum: number } {
+  get(labels?: Record<string, string>): {
+    buckets: Record<string, number>
+    count: number
+    sum: number
+  } {
     const metric = this.promHistogram.get() as unknown as PromMetric
-    
+
     if (labels) {
       // 查找匹配标签的指标
-      const matchingValues = metric.values?.filter((v: PromMetricValue) => 
-        Object.entries(labels).every(([key, val]) => v.labels[key] === val)
-      ) || []
-      
+      const matchingValues =
+        metric.values?.filter((v: PromMetricValue) =>
+          Object.entries(labels).every(([key, val]) => v.labels[key] === val)
+        ) || []
+
       const buckets: Record<string, number> = {}
       let count = 0
       let sum = 0
-      
+
       for (const value of matchingValues) {
         if (value.metricName?.endsWith('_bucket')) {
           buckets[value.labels.le] = value.value
@@ -136,15 +134,15 @@ class LinchKitHistogram implements Histogram {
           sum = value.value
         }
       }
-      
+
       return { buckets, count, sum }
     }
-    
+
     // 聚合所有值
     const buckets: Record<string, number> = {}
     let count = 0
     let sum = 0
-    
+
     for (const value of metric.values || []) {
       if (value.metricName?.endsWith('_bucket')) {
         buckets[value.labels.le] = (buckets[value.labels.le] || 0) + value.value
@@ -154,7 +152,7 @@ class LinchKitHistogram implements Histogram {
         sum += value.value
       }
     }
-    
+
     return { buckets, count, sum }
   }
 
@@ -173,18 +171,23 @@ class LinchKitSummary implements Summary {
     this.promSummary.observe(labels || {}, value)
   }
 
-  get(labels?: Record<string, string>): { quantiles: Record<string, number>; count: number; sum: number } {
+  get(labels?: Record<string, string>): {
+    quantiles: Record<string, number>
+    count: number
+    sum: number
+  } {
     const metric = this.promSummary.get() as unknown as PromMetric
-    
+
     if (labels) {
-      const matchingValues = metric.values?.filter((v: PromMetricValue) => 
-        Object.entries(labels).every(([key, val]) => v.labels[key] === val)
-      ) || []
-      
+      const matchingValues =
+        metric.values?.filter((v: PromMetricValue) =>
+          Object.entries(labels).every(([key, val]) => v.labels[key] === val)
+        ) || []
+
       const quantiles: Record<string, number> = {}
       let count = 0
       let sum = 0
-      
+
       for (const value of matchingValues) {
         if (value.labels.quantile) {
           quantiles[value.labels.quantile] = value.value
@@ -194,15 +197,15 @@ class LinchKitSummary implements Summary {
           sum = value.value
         }
       }
-      
+
       return { quantiles, count, sum }
     }
-    
+
     // 聚合所有值
     const quantiles: Record<string, number> = {}
     let count = 0
     let sum = 0
-    
+
     for (const value of metric.values || []) {
       if (value.labels.quantile) {
         quantiles[value.labels.quantile] = (quantiles[value.labels.quantile] || 0) + value.value
@@ -212,7 +215,7 @@ class LinchKitSummary implements Summary {
         sum += value.value
       }
     }
-    
+
     return { quantiles, count, sum }
   }
 
@@ -237,9 +240,9 @@ export class LinchKitMetricCollector implements MetricCollector {
       name: config.name,
       help: config.help,
       labelNames: config.labels,
-      registers: [this.registry]
+      registers: [this.registry],
     })
-    
+
     return new LinchKitCounter(promCounter)
   }
 
@@ -248,9 +251,9 @@ export class LinchKitMetricCollector implements MetricCollector {
       name: config.name,
       help: config.help,
       labelNames: config.labels,
-      registers: [this.registry]
+      registers: [this.registry],
     })
-    
+
     return new LinchKitGauge(promGauge)
   }
 
@@ -260,9 +263,9 @@ export class LinchKitMetricCollector implements MetricCollector {
       help: config.help,
       labelNames: config.labels,
       buckets: config.buckets,
-      registers: [this.registry]
+      registers: [this.registry],
     })
-    
+
     return new LinchKitHistogram(promHistogram)
   }
 
@@ -272,9 +275,9 @@ export class LinchKitMetricCollector implements MetricCollector {
       help: config.help,
       labelNames: config.labels,
       percentiles: config.quantiles,
-      registers: [this.registry]
+      registers: [this.registry],
     })
-    
+
     return new LinchKitSummary(promSummary)
   }
 
@@ -299,7 +302,7 @@ export class LinchKitMetricCollector implements MetricCollector {
   collectDefaultMetrics(options?: { register?: Registry; prefix?: string }): void {
     collectDefaultMetrics({
       register: options?.register || this.registry,
-      prefix: options?.prefix
+      prefix: options?.prefix,
     })
   }
 }
@@ -320,15 +323,15 @@ export function createMetricCollector(config: MetricCollectorConfig = {}): Metri
   const {
     enableDefaultMetrics = true,
     defaultMetricsPrefix = 'linchkit_',
-    registry = new Registry()
+    registry = new Registry(),
   } = config
 
   const collector = new LinchKitMetricCollector(registry)
 
   if (enableDefaultMetrics) {
-    collector.collectDefaultMetrics({ 
-      register: registry, 
-      prefix: defaultMetricsPrefix 
+    collector.collectDefaultMetrics({
+      register: registry,
+      prefix: defaultMetricsPrefix,
     })
   }
 

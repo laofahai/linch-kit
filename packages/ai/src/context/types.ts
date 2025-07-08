@@ -12,7 +12,7 @@ export enum EntityType {
   INTERFACE = 'Interface',
   FUNCTION = 'Function',
   SCHEMA = 'Schema',
-  COMPONENT = 'Component'
+  COMPONENT = 'Component',
 }
 
 /**
@@ -23,7 +23,7 @@ export enum RelationType {
   EXTENDS = 'EXTENDS',
   USES = 'USES',
   CALLS = 'CALLS',
-  IMPORTS = 'IMPORTS'
+  IMPORTS = 'IMPORTS',
 }
 
 /**
@@ -37,7 +37,7 @@ export const EntityInfoSchema = z.object({
   description: z.string().optional(),
   path: z.string().optional(),
   exports: z.array(z.string()).optional(),
-  relevance: z.number().min(0).max(1)
+  relevance: z.number().min(0).max(1),
 })
 
 /**
@@ -47,7 +47,7 @@ export const RelationshipInfoSchema = z.object({
   from: z.string(),
   to: z.string(),
   type: z.enum(['IMPLEMENTS', 'EXTENDS', 'USES', 'CALLS', 'IMPORTS']),
-  description: z.string().optional()
+  description: z.string().optional(),
 })
 
 /**
@@ -57,7 +57,7 @@ export const DocReferenceSchema = z.object({
   title: z.string(),
   path: z.string(),
   section: z.string().optional(),
-  relevance: z.number().min(0).max(1)
+  relevance: z.number().min(0).max(1),
 })
 
 /**
@@ -66,7 +66,7 @@ export const DocReferenceSchema = z.object({
 export const ExampleSchema = z.object({
   description: z.string(),
   code: z.string(),
-  source: z.string()
+  source: z.string(),
 })
 
 /**
@@ -77,7 +77,7 @@ export const BestPracticeSchema = z.object({
   description: z.string(),
   category: z.string(),
   examples: z.array(z.string()),
-  references: z.array(z.string())
+  references: z.array(z.string()),
 })
 
 /**
@@ -87,7 +87,7 @@ export const PatternSchema = z.object({
   name: z.string(),
   description: z.string(),
   usage: z.string(),
-  related_entities: z.array(z.string())
+  related_entities: z.array(z.string()),
 })
 
 /**
@@ -102,8 +102,8 @@ export const ContextInfoSchema = z.object({
     query: z.string(),
     timestamp: z.string(),
     relevance_score: z.number().min(0).max(1),
-    total_results: z.number().int().min(0)
-  })
+    total_results: z.number().int().min(0),
+  }),
 })
 
 // 导出类型

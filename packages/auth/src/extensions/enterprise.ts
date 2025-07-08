@@ -26,18 +26,18 @@ export interface EnterpriseAuthConfig {
 
 /**
  * 企业级认证扩展类
- * 
+ *
  * @description 在 NextAuth.js 基础上添加企业级功能
  * @example
  * ```typescript
  * import { EnterpriseAuthExtensions } from '@linch-kit/auth'
- * 
+ *
  * const enterprise = new EnterpriseAuthExtensions({
  *   tenantId: 'company-123',
  *   enableMFA: true,
  *   enableAuditLog: true
  * })
- * 
+ *
  * // 检查用户权限
  * const hasAccess = await enterprise.checkUserAccess(user, 'admin')
  * ```
@@ -51,7 +51,7 @@ export class EnterpriseAuthExtensions {
 
   /**
    * 检查用户访问权限
-   * 
+   *
    * @description 基于角色和租户检查用户访问权限
    * @param user 用户信息
    * @param requiredRole 所需角色
@@ -85,7 +85,7 @@ export class EnterpriseAuthExtensions {
 
   /**
    * 验证多因子认证
-   * 
+   *
    * @description 验证用户的多因子认证状态
    * @param user 用户信息
    * @param mfaCode MFA 验证码
@@ -104,7 +104,7 @@ export class EnterpriseAuthExtensions {
 
   /**
    * 记录用户活动
-   * 
+   *
    * @description 记录用户的认证和访问活动
    * @param user 用户信息
    * @param action 操作类型
@@ -127,8 +127,8 @@ export class EnterpriseAuthExtensions {
       metadata: {
         userAgent: metadata?.userAgent,
         ipAddress: metadata?.ipAddress,
-        ...metadata
-      }
+        ...metadata,
+      },
     }
 
     // 这里应该连接到审计日志系统
@@ -137,7 +137,7 @@ export class EnterpriseAuthExtensions {
 
   /**
    * 检查会话有效性
-   * 
+   *
    * @description 检查用户会话是否仍然有效
    * @param session 用户会话
    * @returns 会话是否有效
@@ -164,7 +164,7 @@ export class EnterpriseAuthExtensions {
 
   /**
    * 获取用户活跃会话数量
-   * 
+   *
    * @description 获取用户当前活跃的会话数量
    * @param userId 用户ID
    * @returns 活跃会话数量
@@ -178,7 +178,7 @@ export class EnterpriseAuthExtensions {
 
   /**
    * 强制用户登出
-   * 
+   *
    * @description 强制用户从所有设备登出
    * @param userId 用户ID
    * @param reason 登出原因
@@ -186,18 +186,14 @@ export class EnterpriseAuthExtensions {
   async forceLogout(userId: string, reason?: string): Promise<void> {
     // 这里应该连接到会话管理系统
     console.log(`Force logout user ${userId}, reason: ${reason}`)
-    
+
     // 记录审计日志
-    await this.logUserActivity(
-      { id: userId } as LinchKitUser,
-      'FORCE_LOGOUT',
-      { reason }
-    )
+    await this.logUserActivity({ id: userId } as LinchKitUser, 'FORCE_LOGOUT', { reason })
   }
 
   /**
    * 获取用户权限列表
-   * 
+   *
    * @description 获取用户的所有权限
    * @param user 用户信息
    * @returns 权限列表
@@ -215,7 +211,7 @@ export class EnterpriseAuthExtensions {
 
   /**
    * 更新用户最后登录时间
-   * 
+   *
    * @description 更新用户的最后登录时间
    * @param userId 用户ID
    */
@@ -227,11 +223,13 @@ export class EnterpriseAuthExtensions {
 
 /**
  * 创建企业级认证扩展实例
- * 
+ *
  * @description 便捷的工厂函数
  * @param config 企业级配置
  * @returns 企业级认证扩展实例
  */
-export function createEnterpriseAuthExtensions(config: EnterpriseAuthConfig = {}): EnterpriseAuthExtensions {
+export function createEnterpriseAuthExtensions(
+  config: EnterpriseAuthConfig = {}
+): EnterpriseAuthExtensions {
   return new EnterpriseAuthExtensions(config)
 }

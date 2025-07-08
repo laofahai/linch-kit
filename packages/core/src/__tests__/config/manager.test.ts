@@ -6,13 +6,13 @@ import type { ConfigSource } from '../../types'
 // Mock fs/promises
 const mockReadFile = mock()
 mock.module('fs/promises', () => ({
-  readFile: mockReadFile
+  readFile: mockReadFile,
 }))
 
 // Mock yaml
 const mockYamlParse = mock()
 mock.module('yaml', () => ({
-  parse: mockYamlParse
+  parse: mockYamlParse,
 }))
 
 // Mock fetch for remote configs
@@ -22,7 +22,7 @@ describe('ConfigManager', () => {
   let manager: ConfigManager
   beforeEach(() => {
     manager = new ConfigManager()
-    
+
     // Clear all mocks
     mockReadFile.mockClear()
     mockYamlParse.mockClear()
@@ -53,7 +53,7 @@ describe('ConfigManager', () => {
 
     it('should check if configuration exists', () => {
       manager.set('exists', 'value')
-      
+
       expect(manager.has('exists')).toBe(true)
       expect(manager.has('does.not.exist')).toBe(false)
     })
@@ -80,7 +80,7 @@ describe('ConfigManager', () => {
       expect(all).toEqual({
         key1: 'value1',
         key2: 42,
-        key3: true
+        key3: true,
       })
     })
 
@@ -107,14 +107,14 @@ describe('ConfigManager', () => {
       expect(listener).toHaveBeenCalledWith({
         key: 'test.key',
         oldValue: undefined,
-        newValue: 'initial'
+        newValue: 'initial',
       })
 
       manager.set('test.key', 'updated')
       expect(listener).toHaveBeenCalledWith({
         key: 'test.key',
         oldValue: 'initial',
-        newValue: 'updated'
+        newValue: 'updated',
       })
     })
 
@@ -137,7 +137,7 @@ describe('ConfigManager', () => {
 
       expect(listener).toHaveBeenCalledWith({
         key: 'test.key',
-        oldValue: 'value'
+        oldValue: 'value',
       })
     })
   })
@@ -193,13 +193,13 @@ describe('ConfigManager', () => {
           data: {
             app: {
               name: 'TestApp',
-              version: '1.0.0'
+              version: '1.0.0',
             },
             database: {
               host: 'localhost',
-              port: 5432
-            }
-          }
+              port: 5432,
+            },
+          },
         }
 
         const listener = mock()
@@ -211,7 +211,7 @@ describe('ConfigManager', () => {
         expect(manager.get('database')).toEqual({ host: 'localhost', port: 5432 })
         expect(listener).toHaveBeenCalledWith({
           sourceId: 'test-object',
-          config: source.data
+          config: source.data,
         })
       })
     })
@@ -224,7 +224,7 @@ describe('ConfigManager', () => {
         const source: ConfigSource = {
           id: 'json-config',
           type: 'file',
-          path: '/path/to/config.json'
+          path: '/path/to/config.json',
         }
 
         await manager.loadConfig(source)
@@ -242,7 +242,7 @@ describe('ConfigManager', () => {
         const source: ConfigSource = {
           id: 'yaml-config',
           type: 'file',
-          path: '/path/to/config.yaml'
+          path: '/path/to/config.yaml',
         }
 
         await manager.loadConfig(source)
@@ -259,16 +259,18 @@ describe('ConfigManager', () => {
         const source: ConfigSource = {
           id: 'error-config',
           type: 'file',
-          path: '/nonexistent/config.json'
+          path: '/nonexistent/config.json',
         }
 
         const errorListener = mock()
         manager.on('config:error', errorListener)
 
-        await expect(manager.loadConfig(source)).rejects.toThrow('Failed to load config from /nonexistent/config.json')
+        await expect(manager.loadConfig(source)).rejects.toThrow(
+          'Failed to load config from /nonexistent/config.json'
+        )
         expect(errorListener).toHaveBeenCalledWith({
           sourceId: 'error-config',
-          error: expect.stringContaining('Failed to load config from /nonexistent/config.json')
+          error: expect.stringContaining('Failed to load config from /nonexistent/config.json'),
         })
       })
 
@@ -276,10 +278,12 @@ describe('ConfigManager', () => {
         const source: ConfigSource = {
           id: 'unsupported-config',
           type: 'file',
-          path: '/path/to/config.txt'
+          path: '/path/to/config.txt',
         }
 
-        await expect(manager.loadConfig(source)).rejects.toThrow('Unsupported file format: /path/to/config.txt')
+        await expect(manager.loadConfig(source)).rejects.toThrow(
+          'Unsupported file format: /path/to/config.txt'
+        )
       })
     })
 
@@ -303,7 +307,7 @@ describe('ConfigManager', () => {
         const source: ConfigSource = {
           id: 'env-config',
           type: 'env',
-          prefix: 'APP_'
+          prefix: 'APP_',
         }
 
         await manager.loadConfig(source)
@@ -320,7 +324,7 @@ describe('ConfigManager', () => {
 
         const source: ConfigSource = {
           id: 'all-env-config',
-          type: 'env'
+          type: 'env',
         }
 
         await manager.loadConfig(source)
@@ -340,7 +344,7 @@ describe('ConfigManager', () => {
 
         const source: ConfigSource = {
           id: 'typed-env-config',
-          type: 'env'
+          type: 'env',
         }
 
         await manager.loadConfig(source)
@@ -358,18 +362,18 @@ describe('ConfigManager', () => {
     describe('Remote Source', () => {
       it('should load JSON configuration from remote URL', async () => {
         const configData = { app: { name: 'RemoteApp' }, version: '2.0.0' }
-        
+
         // @ts-ignore
         global.fetch.mockResolvedValue({
           ok: true,
           headers: new Map([['content-type', 'application/json']]),
-          json: () => Promise.resolve(configData)
+          json: () => Promise.resolve(configData),
         })
 
         const source: ConfigSource = {
           id: 'remote-config',
           type: 'remote',
-          url: 'https://config.example.com/config.json'
+          url: 'https://config.example.com/config.json',
         }
 
         await manager.loadConfig(source)
@@ -382,18 +386,18 @@ describe('ConfigManager', () => {
       it('should load YAML configuration from remote URL', async () => {
         const configData = { app: { name: 'RemoteYamlApp' } }
         mockYamlParse.mockReturnValue(configData)
-        
+
         // @ts-ignore
         global.fetch.mockResolvedValue({
           ok: true,
           headers: new Map([['content-type', 'application/yaml']]),
-          text: () => Promise.resolve('app:\n  name: RemoteYamlApp')
+          text: () => Promise.resolve('app:\n  name: RemoteYamlApp'),
         })
 
         const source: ConfigSource = {
           id: 'remote-yaml-config',
           type: 'remote',
-          url: 'https://config.example.com/config.yaml'
+          url: 'https://config.example.com/config.yaml',
         }
 
         await manager.loadConfig(source)
@@ -406,16 +410,18 @@ describe('ConfigManager', () => {
         global.fetch.mockResolvedValue({
           ok: false,
           status: 404,
-          statusText: 'Not Found'
+          statusText: 'Not Found',
         })
 
         const source: ConfigSource = {
           id: 'remote-error-config',
           type: 'remote',
-          url: 'https://config.example.com/nonexistent.json'
+          url: 'https://config.example.com/nonexistent.json',
         }
 
-        await expect(manager.loadConfig(source)).rejects.toThrow('Failed to load remote config from https://config.example.com/nonexistent.json: HTTP 404: Not Found')
+        await expect(manager.loadConfig(source)).rejects.toThrow(
+          'Failed to load remote config from https://config.example.com/nonexistent.json: HTTP 404: Not Found'
+        )
       })
 
       it('should reject unsupported remote content types', async () => {
@@ -423,26 +429,30 @@ describe('ConfigManager', () => {
         global.fetch.mockResolvedValue({
           ok: true,
           headers: new Map([['content-type', 'text/plain']]),
-          text: () => Promise.resolve('plain text')
+          text: () => Promise.resolve('plain text'),
         })
 
         const source: ConfigSource = {
           id: 'unsupported-remote-config',
           type: 'remote',
-          url: 'https://config.example.com/config.txt'
+          url: 'https://config.example.com/config.txt',
         }
 
-        await expect(manager.loadConfig(source)).rejects.toThrow('Failed to load remote config from https://config.example.com/config.txt: Unsupported remote content type: text/plain')
+        await expect(manager.loadConfig(source)).rejects.toThrow(
+          'Failed to load remote config from https://config.example.com/config.txt: Unsupported remote content type: text/plain'
+        )
       })
     })
 
     it('should reject unsupported source types', async () => {
       const source = {
         id: 'unsupported-source',
-        type: 'unknown' as never
+        type: 'unknown' as never,
       }
 
-      await expect(manager.loadConfig(source)).rejects.toThrow('Unsupported config source type: unknown')
+      await expect(manager.loadConfig(source)).rejects.toThrow(
+        'Unsupported config source type: unknown'
+      )
     })
   })
 
@@ -453,7 +463,7 @@ describe('ConfigManager', () => {
         id: 'low-priority',
         type: 'object',
         priority: 0,
-        data: { app: { name: 'LowPriorityApp' }, port: 3000 }
+        data: { app: { name: 'LowPriorityApp' }, port: 3000 },
       })
 
       // High priority source
@@ -461,7 +471,7 @@ describe('ConfigManager', () => {
         id: 'high-priority',
         type: 'object',
         priority: 10,
-        data: { app: { name: 'HighPriorityApp' }, timeout: 5000 }
+        data: { app: { name: 'HighPriorityApp' }, timeout: 5000 },
       })
 
       expect(manager.get('app')).toEqual({ name: 'HighPriorityApp' })
@@ -476,7 +486,7 @@ describe('ConfigManager', () => {
       await manager.loadConfig({
         id: 'reload-test',
         type: 'object',
-        data: { version: '1.0.0' }
+        data: { version: '1.0.0' },
       })
 
       expect(manager.get('version')).toBe('1.0.0')
@@ -493,13 +503,13 @@ describe('ConfigManager', () => {
       await manager.loadConfig({
         id: 'source1',
         type: 'object',
-        data: { key1: 'value1' }
+        data: { key1: 'value1' },
       })
 
       await manager.loadConfig({
         id: 'source2',
         type: 'object',
-        data: { key2: 'value2' }
+        data: { key2: 'value2' },
       })
 
       expect(manager.get('key1')).toBe('value1')

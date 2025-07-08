@@ -2,11 +2,7 @@ import { router, publicProcedure, protectedProcedure } from '@linch-kit/trpc'
 import { z } from 'zod'
 
 import { TenantService, type TenantUpdateParams } from '../services/tenant.service'
-import { 
-  tenantCreateSchema, 
-  tenantUpdateSchema, 
-  tenantQuerySchema 
-} from '../entities/tenant'
+import { tenantCreateSchema, tenantUpdateSchema, tenantQuerySchema } from '../entities/tenant'
 
 // 用于依赖注入的全局变量
 let _globalTenantService: TenantService | null = null
@@ -32,51 +28,49 @@ export const tenantRouter = router({
   /**
    * 获取租户列表
    */
-  list: publicProcedure
-    .input(tenantQuerySchema)
-    .query(async ({ input, ctx: _ctx }) => {
-      // 暂时禁用认证检查进行测试
-      // if (!ctx.user) {
-      //   throw new Error('Unauthorized')
-      // }
+  list: publicProcedure.input(tenantQuerySchema).query(async ({ input, ctx: _ctx }) => {
+    // 暂时禁用认证检查进行测试
+    // if (!ctx.user) {
+    //   throw new Error('Unauthorized')
+    // }
 
-      // 暂时返回模拟数据进行测试
-      const result = {
-        data: [
-          {
-            id: 'tenant-1',
-            name: '演示公司',
-            slug: 'demo-company',
-            description: '这是一个演示租户',
-            status: 'active',
-            plan: 'professional',
-            maxUsers: 50,
-            maxStorage: BigInt(5 * 1024 * 1024 * 1024),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            _count: { users: 2, plugins: 3 }
-          },
-          {
-            id: 'tenant-2',
-            name: 'Startup Inc',
-            slug: 'startup-inc', 
-            description: '初创公司',
-            status: 'active',
-            plan: 'starter',
-            maxUsers: 10,
-            maxStorage: BigInt(1024 * 1024 * 1024),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            _count: { users: 1, plugins: 1 }
-          }
-        ],
-        total: 2,
-        page: input.page || 1,
-        pageSize: input.pageSize || 10,
-      }
+    // 暂时返回模拟数据进行测试
+    const result = {
+      data: [
+        {
+          id: 'tenant-1',
+          name: '演示公司',
+          slug: 'demo-company',
+          description: '这是一个演示租户',
+          status: 'active',
+          plan: 'professional',
+          maxUsers: 50,
+          maxStorage: BigInt(5 * 1024 * 1024 * 1024),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          _count: { users: 2, plugins: 3 },
+        },
+        {
+          id: 'tenant-2',
+          name: 'Startup Inc',
+          slug: 'startup-inc',
+          description: '初创公司',
+          status: 'active',
+          plan: 'starter',
+          maxUsers: 10,
+          maxStorage: BigInt(1024 * 1024 * 1024),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          _count: { users: 1, plugins: 1 },
+        },
+      ],
+      total: 2,
+      page: input.page || 1,
+      pageSize: input.pageSize || 10,
+    }
 
-      return result
-    }),
+    return result
+  }),
 
   /**
    * 获取租户详情
@@ -102,27 +96,27 @@ export const tenantRouter = router({
   /**
    * 创建租户
    */
-  create: protectedProcedure
-    .input(tenantCreateSchema)
-    .mutation(async ({ input, ctx }) => {
-      // 暂时允许所有已认证用户创建租户，后续实现权限检查
-      if (!ctx.user) {
-        throw new Error('Unauthorized')
-      }
+  create: protectedProcedure.input(tenantCreateSchema).mutation(async ({ input, ctx }) => {
+    // 暂时允许所有已认证用户创建租户，后续实现权限检查
+    if (!ctx.user) {
+      throw new Error('Unauthorized')
+    }
 
-      const tenantService = getTenantService()
-      const tenant = await tenantService.create(input)
-      return tenant
-    }),
+    const tenantService = getTenantService()
+    const tenant = await tenantService.create(input)
+    return tenant
+  }),
 
   /**
    * 更新租户
    */
   update: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      data: tenantUpdateSchema
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        data: tenantUpdateSchema,
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new Error('Unauthorized')
@@ -155,10 +149,12 @@ export const tenantRouter = router({
    * 启用/禁用租户
    */
   toggleStatus: protectedProcedure
-    .input(z.object({ 
-      id: z.string(),
-      status: z.enum(['active', 'suspended', 'deleted', 'pending'])
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        status: z.enum(['active', 'suspended', 'deleted', 'pending']),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       // 暂时允许所有已认证用户更改租户状态，后续实现权限检查
       if (!ctx.user) {
@@ -166,8 +162,8 @@ export const tenantRouter = router({
       }
 
       const tenantService = getTenantService()
-      const tenant = await tenantService.update(input.id, { 
-        status: input.status 
+      const tenant = await tenantService.update(input.id, {
+        status: input.status,
       })
       return tenant
     }),
@@ -183,7 +179,7 @@ export const tenantRouter = router({
       }
 
       const tenantService = getTenantService()
-      
+
       // 暂时返回模拟数据，后续实现真实统计
       if (!input.id) {
         // 获取所有租户的统计

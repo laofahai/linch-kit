@@ -1,6 +1,6 @@
 /**
  * LinchKit Vibe Coding Engine
- * 
+ *
  * AI-驱动的智能代码生成引擎
  */
 
@@ -12,7 +12,7 @@ export type {
   DependencyInfo,
   ValidationResult,
   IVibeCodingEngine,
-  IContextAnalyzer
+  IContextAnalyzer,
 } from './types.js'
 
 export {
@@ -22,7 +22,7 @@ export {
   GenerationContextSchema,
   ContextAnalysisSchema,
   GeneratedCodeSchema,
-  DependencyInfoSchema
+  DependencyInfoSchema,
 } from './types.js'
 
 // 核心引擎 (即将实现)

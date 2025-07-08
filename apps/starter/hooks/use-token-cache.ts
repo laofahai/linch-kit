@@ -37,7 +37,7 @@ export function useTokenCache(): UseTokenCacheReturn {
   const syncCacheState = useCallback(() => {
     const userInfo = tokenCache.getUserInfo()
     const authenticated = tokenCache.isAuthenticated()
-    
+
     setCachedUser(userInfo)
     setIsAuthenticated(authenticated)
   }, [])
@@ -46,34 +46,36 @@ export function useTokenCache(): UseTokenCacheReturn {
   const recoverSession = useCallback(async (): Promise<boolean> => {
     try {
       Logger.info('尝试恢复用户会话')
-      
+
       // 尝试从 NextAuth 获取最新会话
       const newSession = await getSession()
-      
+
       if (newSession?.user) {
         const userInfo = {
           id: newSession.user.id || '',
           email: newSession.user.email || '',
           name: newSession.user.name || null,
-          role: (newSession as any).roles?.[0] || 'USER'
+          role: (newSession as { user: { roles?: string[] } }).user.roles?.[0] || 'USER',
         }
 
         // 重新生成 Token 缓存
-        const tempToken = btoa(JSON.stringify({
-          userId: userInfo.id,
-          email: userInfo.email,
-          role: userInfo.role,
-          exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
-          iat: Math.floor(Date.now() / 1000)
-        }))
+        const tempToken = btoa(
+          JSON.stringify({
+            userId: userInfo.id,
+            email: userInfo.email,
+            role: userInfo.role,
+            exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
+            iat: Math.floor(Date.now() / 1000),
+          })
+        )
 
         tokenCache.setCachedToken(tempToken, 30 * 24 * 60 * 60, userInfo)
         syncCacheState()
-        
+
         Logger.info('用户会话恢复成功', { userId: userInfo.id })
         return true
       }
-      
+
       Logger.warn('无法恢复用户会话：没有有效的会话数据')
       return false
     } catch (error) {
@@ -95,32 +97,34 @@ export function useTokenCache(): UseTokenCacheReturn {
           id: session.user.id || '',
           email: session.user.email || '',
           name: session.user.name || null,
-          role: (session as any).roles?.[0] || 'USER'
+          role: (session as { user: { roles?: string[] } }).user.roles?.[0] || 'USER',
         }
 
         // 检查是否需要更新缓存
         const cached = tokenCache.getCachedToken()
         if (!cached || cached.userId !== userInfo.id) {
           // 生成临时token（在实际应用中，这应该从后端获取）
-          const tempToken = btoa(JSON.stringify({
-            userId: userInfo.id,
-            email: userInfo.email,
-            role: userInfo.role,
-            exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
-            iat: Math.floor(Date.now() / 1000)
-          }))
+          const tempToken = btoa(
+            JSON.stringify({
+              userId: userInfo.id,
+              email: userInfo.email,
+              role: userInfo.role,
+              exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
+              iat: Math.floor(Date.now() / 1000),
+            })
+          )
 
           tokenCache.setCachedToken(tempToken, 30 * 24 * 60 * 60, userInfo)
           syncCacheState()
         }
-        
-        Logger.info('Token缓存状态同步完成', { 
+
+        Logger.info('Token缓存状态同步完成', {
           userId: userInfo.id,
           hasSession: !!session,
-          hasCachedToken: !!cached
+          hasCachedToken: !!cached,
         })
       }
-      
+
       // 如果 NextAuth 状态为 loading，但本地有缓存，尝试恢复会话
       if (status === 'loading' && tokenCache.getCachedToken()) {
         Logger.info('检测到本地缓存，尝试恢复会话')
@@ -175,10 +179,13 @@ export function useTokenCache(): UseTokenCacheReturn {
   }, [syncCacheState])
 
   // 更新缓存
-  const updateCache = useCallback((token: string, expiresIn: number, userInfo: CachedToken['userInfo']) => {
-    tokenCache.setCachedToken(token, expiresIn, userInfo)
-    syncCacheState()
-  }, [syncCacheState])
+  const updateCache = useCallback(
+    (token: string, expiresIn: number, userInfo: CachedToken['userInfo']) => {
+      tokenCache.setCachedToken(token, expiresIn, userInfo)
+      syncCacheState()
+    },
+    [syncCacheState]
+  )
 
   return {
     cachedUser,
@@ -189,6 +196,6 @@ export function useTokenCache(): UseTokenCacheReturn {
     refreshToken,
     clearCache,
     updateCache,
-    recoverSession
+    recoverSession,
   }
 }

@@ -1,6 +1,6 @@
 /**
  * LinchKit CLI 主程序
- * 
+ *
  * 提供 LinchKit 框架的所有 CLI 命令
  */
 
@@ -10,7 +10,6 @@ import { CLIPluginManager } from './plugin'
 import { registerCoreCommands } from './commands/core'
 
 import { createCLIManager, type CLIManager } from './index'
-
 
 export class LinchKitCLI {
   private cli: CLIManager
@@ -24,15 +23,10 @@ export class LinchKitCLI {
   private async setupCLI() {
     // 修改程序信息
     const program = (this.cli as { program: unknown }).program
-    program
-      .name('linch')
-      .description('LinchKit AI-First 全栈开发框架 CLI')
-      .version('1.0.0')
+    program.name('linch').description('LinchKit AI-First 全栈开发框架 CLI').version('1.0.0')
 
     // 添加全局选项
-    program
-      .option('-d, --debug', '启用调试模式')
-      .option('--no-color', '禁用彩色输出')
+    program.option('-d, --debug', '启用调试模式').option('--no-color', '禁用彩色输出')
 
     // 注册核心命令
     registerCoreCommands(this.cli)
