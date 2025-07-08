@@ -37,36 +37,54 @@ jobs:
       - name: Install Playwright
         run: bun playwright install --with-deps ${{ matrix.project }}
 
-      - name: Build application
-        run: bun run build --filter=${{ matrix.app }}
+      - name: Build and start application
+        run: |
+          case "${{ matrix.app }}" in
+            starter)
+              cd apps/starter
+              bun run build
+              bun run start &
+              APP_PID=$!
+              echo "APP_PID=$APP_PID" >> $GITHUB_ENV
+              export PLAYWRIGHT_BASE_URL="http://localhost:3000"
+              ;;
+            demo-app)
+              cd apps/demo-app
+              bun run build  
+              bun run start &
+              APP_PID=$!
+              echo "APP_PID=$APP_PID" >> $GITHUB_ENV
+              export PLAYWRIGHT_BASE_URL="http://localhost:3001"
+              ;;
+            website)
+              cd apps/website
+              bun run build
+              bun run start &
+              APP_PID=$!
+              echo "APP_PID=$APP_PID" >> $GITHUB_ENV
+              export PLAYWRIGHT_BASE_URL="http://localhost:3002"
+              ;;
+          esac
+          
+          # 等待应用启动
+          sleep 15
+          
+          # 健康检查
+          timeout 30 bash -c 'until curl -f $PLAYWRIGHT_BASE_URL; do echo "Waiting for server..."; sleep 2; done'
 
-      - name: Start dev server and run E2E tests
+      - name: Run E2E tests
         run: |
           if [ "${{ inputs.target_url }}" != "" ]; then
             export PLAYWRIGHT_BASE_URL="${{ inputs.target_url }}"
-            bun playwright test e2e/${{ matrix.app }} --project=${{ matrix.project }}
-          else
-            # 启动对应应用的开发服务器并运行测试
-            case "${{ matrix.app }}" in
-              starter)
-                export PLAYWRIGHT_BASE_URL="http://localhost:3000"
-                cd apps/starter && bun dev &
-                ;;
-              demo-app)
-                export PLAYWRIGHT_BASE_URL="http://localhost:3001"
-                cd apps/demo-app && bun dev &
-                ;;
-              website)
-                export PLAYWRIGHT_BASE_URL="http://localhost:3002"
-                cd apps/website && bun dev &
-                ;;
-            esac
-            
-            # 等待服务器启动
-            sleep 30
-            
-            # 运行测试
-            bun playwright test e2e/${{ matrix.app }} --project=${{ matrix.project }}
+          fi
+          
+          bun playwright test e2e/${{ matrix.app }} --project=${{ matrix.project }}
+          
+      - name: Stop application
+        if: always()
+        run: |
+          if [ -n "$APP_PID" ]; then
+            kill $APP_PID || true
           fi
         env:
           CI: true
