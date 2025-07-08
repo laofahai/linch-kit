@@ -1,11 +1,7 @@
-开始开发 session：
+开始开发 session - 自动遵循 CLAUDE.md 约束
 
-1. 检查分支状态，如需要创建功能分支
-2. 查询 Graph RAG 相关实现
-3. 检查包复用可能性
-4. 制定开发计划
+请参考: @CLAUDE.md 中的开发流程约束
 
-请输入任务描述：$ARGUMENTS
+任务: $ARGUMENTS
 
-!git branch --show-current
-!bun run ai:session query "$ARGUMENTS" | head -10
+!bun run ai:session query "$ARGUMENTS"
