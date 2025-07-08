@@ -55,3 +55,8 @@ graph_db_connection.json
 
 # AI Graph Data (generated files)
 graph-data/
+# Playwright
+playwright-report/
+test-results/
+test-results.xml
+validation-report.json
