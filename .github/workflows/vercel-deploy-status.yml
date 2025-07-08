@@ -41,7 +41,7 @@ jobs:
       - name: Run smoke tests
         run: |
           export PLAYWRIGHT_BASE_URL="${{ github.event.deployment_status.target_url }}"
-          bun playwright test e2e/${{ steps.deployment.outputs.app }}/smoke.spec.ts --project=chromium --reporter=json > test-results.json
+          bun playwright test e2e/${{ steps.deployment.outputs.app }}/smoke.e2e.ts --project=chromium --reporter=json > test-results.json
         continue-on-error: true
 
       - name: Comment on PR
