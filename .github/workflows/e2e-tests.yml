@@ -40,12 +40,34 @@ jobs:
       - name: Build application
         run: bun run build --filter=${{ matrix.app }}
 
-      - name: Run E2E tests
+      - name: Start dev server and run E2E tests
         run: |
           if [ "${{ inputs.target_url }}" != "" ]; then
             export PLAYWRIGHT_BASE_URL="${{ inputs.target_url }}"
+            bun playwright test e2e/${{ matrix.app }} --project=${{ matrix.project }}
+          else
+            # 启动对应应用的开发服务器并运行测试
+            case "${{ matrix.app }}" in
+              starter)
+                export PLAYWRIGHT_BASE_URL="http://localhost:3000"
+                cd apps/starter && bun dev &
+                ;;
+              demo-app)
+                export PLAYWRIGHT_BASE_URL="http://localhost:3001"
+                cd apps/demo-app && bun dev &
+                ;;
+              website)
+                export PLAYWRIGHT_BASE_URL="http://localhost:3002"
+                cd apps/website && bun dev &
+                ;;
+            esac
+            
+            # 等待服务器启动
+            sleep 30
+            
+            # 运行测试
+            bun playwright test e2e/${{ matrix.app }} --project=${{ matrix.project }}
           fi
-          bun playwright test e2e/${{ matrix.app }} --project=${{ matrix.project }}
         env:
           CI: true
 
