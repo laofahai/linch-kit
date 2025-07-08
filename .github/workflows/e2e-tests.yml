@@ -45,34 +45,35 @@ jobs:
           case "${{ matrix.app }}" in
             starter)
               cd apps/starter
-              bun run build
-              bun run start &
+              PORT=3000 bun run build
+              PORT=3000 bun run start &
               APP_PID=$!
               echo "APP_PID=$APP_PID" >> $GITHUB_ENV
-              export PLAYWRIGHT_BASE_URL="http://localhost:3000"
+              echo "PLAYWRIGHT_BASE_URL=http://localhost:3000" >> $GITHUB_ENV
               ;;
             demo-app)
               cd apps/demo-app
-              bun run build  
-              bun run start &
+              PORT=3001 bun run build  
+              PORT=3001 bun run start &
               APP_PID=$!
               echo "APP_PID=$APP_PID" >> $GITHUB_ENV
-              export PLAYWRIGHT_BASE_URL="http://localhost:3001"
+              echo "PLAYWRIGHT_BASE_URL=http://localhost:3001" >> $GITHUB_ENV
               ;;
             website)
               cd apps/website
-              bun run build
-              bun run start &
+              PORT=3002 bun run build
+              PORT=3002 bun run start &
               APP_PID=$!
               echo "APP_PID=$APP_PID" >> $GITHUB_ENV
-              export PLAYWRIGHT_BASE_URL="http://localhost:3002"
+              echo "PLAYWRIGHT_BASE_URL=http://localhost:3002" >> $GITHUB_ENV
               ;;
           esac
           
           # 等待应用启动
           sleep 15
-          
-          # 健康检查
+
+      - name: Health check
+        run: |
           timeout 30 bash -c 'until curl -f $PLAYWRIGHT_BASE_URL; do echo "Waiting for server..."; sleep 2; done'
 
       - name: Run E2E tests
