@@ -1,5 +1,17 @@
 # @linch-kit/ui
 
+## 2.0.3
+
+### Patch Changes
+
+- [`e67cf5b`](https://github.com/laofahai/linch-kit/commit/e67cf5bb1633fcbe1543e560fa19dd6514e16a3a) Thanks [@laofahai](https://github.com/laofahai)! - feat(starter): 完成Starter应用CRUD功能和业务逻辑优化
+  - 实现用户管理页面完整CRUD功能（列表、搜索、筛选、分页、状态更新）
+  - 新增租户设置页面（基础设置、认证安全、限制配置、通知设置）
+  - 数据库集成：替换模拟数据为真实Prisma查询
+  - 优化用户体验：添加加载状态、错误处理、交互反馈
+  - tRPC服务端优化：实现真实的用户查询和统计功能
+  - UI组件优化：响应式表格、Toast通知、对话框组件
+
 ## 2.0.2
 
 ### Patch Changes
