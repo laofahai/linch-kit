@@ -158,10 +158,17 @@ jobs:
 
       - name: Deploy ${{ matrix.app.name }} to Vercel
         if: ${{ vars.VERCEL_ENABLED == 'true' }}
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets[matrix.app.project-id] }}
-          working-directory: ${{ matrix.app.directory }}
+        working-directory: ${{ matrix.app.directory }}
+        run: |
+          # 安装 Vercel CLI
+          bun add -g vercel@latest
+          
+          # 创建 .vercel 目录和项目文件
+          mkdir -p .vercel
+          echo '{"projectId":"${{ secrets[matrix.app.project-id] }}","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
+          
+          # 部署到 Vercel
+          vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets[matrix.app.project-id] }}
