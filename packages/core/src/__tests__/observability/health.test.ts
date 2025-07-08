@@ -4,7 +4,7 @@
 
 import { Server } from 'http'
 
-import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, mock, type Mock } from 'bun:test'
 
 import {
   LinchKitHealthMonitor,
@@ -26,7 +26,7 @@ describe('LinchKitHealthMonitor', () => {
     mockChecker = {
       name: 'test-checker',
       timeout: 1000,
-      check: vi.fn().mockResolvedValue({
+      check: mock().mockResolvedValue({
         status: 'healthy',
         message: 'Test checker OK',
         timestamp: Date.now(),

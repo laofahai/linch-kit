@@ -149,8 +149,8 @@ describe('PluginRegistry', () => {
 
   describe('Dependency Management', () => {
     beforeEach(() => {
-      registry.register(mockPlugin)
-      registry.register(mockPluginWithDeps)
+      registry.registerSync(mockPlugin)
+      registry.registerSync(mockPluginWithDeps)
     })
 
     it('should start dependencies before dependent plugins', async () => {

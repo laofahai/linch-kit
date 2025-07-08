@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, mock, type Mock } from 'bun:test'
 
 import { DefaultAuditManager } from '../../audit/audit-manager'
 import { DefaultDataMasker } from '../../audit/data-masker'
@@ -17,44 +17,44 @@ import type { Logger, MetricCollector, Counter } from '../../types/observability
 
 // Mock dependencies
 const mockLogger: Logger = {
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-  debug: vi.fn(),
-  trace: vi.fn(),
-  child: vi.fn(() => mockLogger),
+  info: mock(),
+  warn: mock(),
+  error: mock(),
+  debug: mock(),
+  trace: mock(),
+  child: mock(() => mockLogger),
   level: 'info',
-  isLevelEnabled: vi.fn(() => true),
+  isLevelEnabled: mock(() => true),
 }
 
 const mockCounter: Counter = {
-  inc: vi.fn(),
-  get: vi.fn(() => 0),
-  reset: vi.fn(),
+  inc: mock(),
+  get: mock(() => 0),
+  reset: mock(),
   name: 'test_counter',
   type: 'counter',
   help: 'Test counter',
 }
 
 const mockMetrics: MetricCollector = {
-  createCounter: vi.fn(() => mockCounter),
-  createGauge: vi.fn(),
-  createHistogram: vi.fn(),
-  createSummary: vi.fn(),
-  getMetrics: vi.fn(() => ({})),
-  register: vi.fn(),
-  clear: vi.fn(),
+  createCounter: mock(() => mockCounter),
+  createGauge: mock(),
+  createHistogram: mock(),
+  createSummary: mock(),
+  getMetrics: mock(() => ({})),
+  register: mock(),
+  clear: mock(),
 }
 
 const mockStore: AuditStore = {
   name: 'test-store',
-  store: vi.fn(),
-  query: vi.fn(),
-  count: vi.fn(),
-  export: vi.fn(),
-  initialize: vi.fn(),
-  destroy: vi.fn(),
-  healthCheck: vi.fn(() => Promise.resolve(true)),
+  store: mock(),
+  query: mock(),
+  count: mock(),
+  export: mock(),
+  initialize: mock(),
+  destroy: mock(),
+  healthCheck: mock(() => Promise.resolve(true)),
 }
 
 describe('DefaultAuditManager', () => {
@@ -62,7 +62,7 @@ describe('DefaultAuditManager', () => {
   let testEvent: Partial<AuditEvent>
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    // bun:test doesn't have vi.clearAllMocks(), mocks are automatically managed
     auditManager = new DefaultAuditManager(mockLogger, mockMetrics)
     testEvent = {
       eventType: 'USER_LOGIN',
@@ -143,7 +143,7 @@ describe('DefaultAuditManager', () => {
       const failingStore = {
         ...mockStore,
         name: 'failing-store',
-        initialize: vi.fn().mockRejectedValue(new Error('Init failed')),
+        initialize: mock().mockRejectedValue(new Error('Init failed')),
       }
       auditManager.addStore(failingStore)
 
@@ -489,7 +489,7 @@ describe('DefaultAuditManager', () => {
       const failingStore = {
         ...mockStore,
         name: 'failing-store',
-        healthCheck: vi.fn().mockRejectedValue(new Error('Health check failed')),
+        healthCheck: mock().mockRejectedValue(new Error('Health check failed')),
       }
       auditManager.addStore(failingStore)
 
@@ -526,7 +526,7 @@ describe('DefaultAuditManager', () => {
       const failingStore = {
         ...mockStore,
         name: 'failing-store',
-        destroy: vi.fn().mockRejectedValue(new Error('Destroy failed')),
+        destroy: mock().mockRejectedValue(new Error('Destroy failed')),
       }
       auditManager.addStore(failingStore)
 
@@ -553,7 +553,7 @@ describe('DefaultAuditManager', () => {
 
       auditManager.addStore({
         ...mockStore,
-        store: vi.fn().mockImplementation(evs => events.push(...evs)),
+        store: mock().mockImplementation(evs => events.push(...evs)),
       })
 
       await auditManager.log(testEvent)
@@ -571,7 +571,7 @@ describe('DefaultAuditManager', () => {
       const failingStore = {
         ...mockStore,
         name: 'failing-store',
-        store: vi.fn().mockRejectedValue(new Error('Store failed')),
+        store: mock().mockRejectedValue(new Error('Store failed')),
       }
       auditManager.addStore(failingStore)
 
@@ -587,7 +587,7 @@ describe('DefaultAuditManager', () => {
     it('should increment failure counter on store errors', async () => {
       const failingStore = {
         ...mockStore,
-        store: vi.fn().mockRejectedValue(new Error('Store failed')),
+        store: mock().mockRejectedValue(new Error('Store failed')),
       }
       auditManager.addStore(failingStore)
 
