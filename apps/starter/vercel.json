@@ -1,3 +1,9 @@
 {
-  "framework": "nextjs"
+  "installCommand": "bun install",
+  "buildCommand": "bun run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
