@@ -1,8 +1,8 @@
 {
   "version": 2,
   "installCommand": "bun install",
-  "buildCommand": "cd apps/starter && bun run build",
-  "outputDirectory": "apps/starter/.next",
+  "buildCommand": "cd apps/website && bun run build",
+  "outputDirectory": "apps/website/.next",
   "framework": "nextjs",
   "env": {
     "NODE_ENV": "production"
