@@ -6,6 +6,7 @@ import { defineConfig, devices } from '@playwright/test'
  */
 export default defineConfig({
   testDir: './e2e',
+  testMatch: '**/*.e2e.ts',
   /* 最大并行测试数 */
   fullyParallel: true,
   /* CI 环境下禁止重试失败的测试 */

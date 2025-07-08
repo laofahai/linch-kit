@@ -1,0 +1,3 @@
+[test]
+# 排除 e2e 目录，避免与 Playwright 冲突
+exclude = ["e2e/**/*", "playwright-report/**/*", "test-results/**/*"]

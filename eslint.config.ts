@@ -1,13 +1,13 @@
 // eslint.config.ts
-import js from '@eslint/js';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
-import reactPlugin from 'eslint-plugin-react';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
-import importPlugin from 'eslint-plugin-import';
-import nextPlugin from '@next/eslint-plugin-next';
-import prettierConfig from 'eslint-config-prettier';
+import js from '@eslint/js'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
+import reactPlugin from 'eslint-plugin-react'
+import reactHooksPlugin from 'eslint-plugin-react-hooks'
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y'
+import importPlugin from 'eslint-plugin-import'
+import nextPlugin from '@next/eslint-plugin-next'
+import prettierConfig from 'eslint-config-prettier'
 
 export default [
   // 忽略文件配置
@@ -19,8 +19,11 @@ export default [
       '**/*.config.js',
       '**/coverage/**',
       '**/.next/**',
-      '**/build/**'
-    ]
+      '**/build/**',
+      'e2e/**/*.e2e.ts',
+      'playwright-report/**',
+      'test-results/**',
+    ],
   },
 
   // ESLint 推荐规则
@@ -37,11 +40,7 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
-        project: [
-          './tsconfig.json',
-          './apps/*/tsconfig.json',
-          './packages/*/tsconfig.json',
-        ],
+        project: ['./tsconfig.json', './apps/*/tsconfig.json', './packages/*/tsconfig.json'],
         tsconfigRootDir: process.cwd(),
       },
       globals: {
@@ -65,8 +64,8 @@ export default [
         setInterval: 'readonly',
         clearInterval: 'readonly',
         setImmediate: 'readonly',
-        clearImmediate: 'readonly'
-      }
+        clearImmediate: 'readonly',
+      },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
@@ -85,11 +84,7 @@ export default [
           extensions: ['.js', '.jsx', '.ts', '.tsx', '.css'],
         },
         typescript: {
-          project: [
-            './tsconfig.json',
-            './apps/*/tsconfig.json',
-            './packages/*/tsconfig.json',
-          ],
+          project: ['./tsconfig.json', './apps/*/tsconfig.json', './packages/*/tsconfig.json'],
         },
       },
     },
@@ -97,25 +92,24 @@ export default [
       'react/react-in-jsx-scope': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
-      'import/order': ['error', {
-        'newlines-between': 'always',
-        'groups': [
-          'builtin',
-          'external',
-          'internal',
-          'parent',
-          'sibling',
-          'index'
-        ]
-      }],
+      'import/order': [
+        'error',
+        {
+          'newlines-between': 'always',
+          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+        },
+      ],
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { 
-        'argsIgnorePattern': '^_',
-        'varsIgnorePattern': '^_',
-        'ignoreRestSiblings': true
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
       'no-console': 'off',
-      'no-undef': 'off' // TypeScript 处理未定义变量检查
+      'no-undef': 'off', // TypeScript 处理未定义变量检查
     },
   },
 
@@ -141,11 +135,14 @@ export default [
     files: ['packages/auth/**/*.ts', 'packages/auth/**/*.tsx'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        ignoreRestSiblings: true
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
 
@@ -154,11 +151,14 @@ export default [
     files: ['packages/trpc/**/*.ts', 'packages/trpc/**/*.tsx'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn', // 降级为警告
-      '@typescript-eslint/no-unused-vars': ['error', { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_|permissions|logic',
-        ignoreRestSiblings: true
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_|permissions|logic',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
 
@@ -166,11 +166,14 @@ export default [
   {
     files: ['apps/starter-app/**/*.ts', 'apps/starter-app/**/*.tsx'],
     rules: {
-      '@typescript-eslint/no-unused-vars': ['error', { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        ignoreRestSiblings: true
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn', // 演示代码降低为警告
     },
   },
@@ -181,4 +184,4 @@ export default [
       ...prettierConfig.rules,
     },
   },
-];
+]

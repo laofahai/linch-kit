@@ -78,7 +78,7 @@ jobs:
             export PLAYWRIGHT_BASE_URL="${{ inputs.target_url }}"
           fi
           
-          bun playwright test e2e/${{ matrix.app }} --project=${{ matrix.project }}
+          bun playwright test e2e/${{ matrix.app }}/*.e2e.ts --project=${{ matrix.project }}
           
       - name: Stop application
         if: always()

@@ -1,0 +1,178 @@
+<testsuites id="" name="" tests="6" failures="6" skipped="0" errors="0" time="0.998833">
+<testsuite name="starter/smoke.spec.ts" timestamp="2025-07-08T03:28:12.037Z" hostname="chromium" tests="6" failures="6" skipped="0" time="1.404" errors="0">
+<testcase name="Starter App - 冒烟测试 › 应用应该正常加载" classname="starter/smoke.spec.ts" time="0.24">
+<failure message="smoke.spec.ts:4:3 应用应该正常加载" type="FAILURE">
+<![CDATA[  [chromium] › starter/smoke.spec.ts:4:3 › Starter App - 冒烟测试 › 应用应该正常加载 ───────────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/
+    Call log:
+      - navigating to "http://localhost:3000/", waiting until "load"
+
+
+      3 | test.describe('Starter App - 冒烟测试', () => {
+      4 |   test('应用应该正常加载', async ({ page }) => {
+    > 5 |     await page.goto('/')
+        |                ^
+      6 |
+      7 |     // 检查页面标题
+      8 |     await expect(page).toHaveTitle(/LinchKit Starter/)
+        at /home/laofahai/workspace/linch-kit/e2e/starter/smoke.spec.ts:5:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/starter-smoke-Starter-App---冒烟测试-应用应该正常加载-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|starter-smoke-Starter-App---冒烟测试-应用应该正常加载-chromium/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Starter App - 冒烟测试 › 导航菜单应该正常工作" classname="starter/smoke.spec.ts" time="0.244">
+<failure message="smoke.spec.ts:14:3 导航菜单应该正常工作" type="FAILURE">
+<![CDATA[  [chromium] › starter/smoke.spec.ts:14:3 › Starter App - 冒烟测试 › 导航菜单应该正常工作 ────────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/
+    Call log:
+      - navigating to "http://localhost:3000/", waiting until "load"
+
+
+      13 |
+      14 |   test('导航菜单应该正常工作', async ({ page }) => {
+    > 15 |     await page.goto('/')
+         |                ^
+      16 |
+      17 |     // 检查导航链接
+      18 |     const navLinks = page.locator('nav a')
+        at /home/laofahai/workspace/linch-kit/e2e/starter/smoke.spec.ts:15:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/starter-smoke-Starter-App---冒烟测试-导航菜单应该正常工作-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|starter-smoke-Starter-App---冒烟测试-导航菜单应该正常工作-chromium/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Starter App - 冒烟测试 › 主题切换应该正常工作" classname="starter/smoke.spec.ts" time="0.212">
+<failure message="smoke.spec.ts:22:3 主题切换应该正常工作" type="FAILURE">
+<![CDATA[  [chromium] › starter/smoke.spec.ts:22:3 › Starter App - 冒烟测试 › 主题切换应该正常工作 ────────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/
+    Call log:
+      - navigating to "http://localhost:3000/", waiting until "load"
+
+
+      21 |
+      22 |   test('主题切换应该正常工作', async ({ page }) => {
+    > 23 |     await page.goto('/')
+         |                ^
+      24 |
+      25 |     // 查找主题切换按钮
+      26 |     const themeToggle = page.locator('[data-testid="theme-toggle"], button:has-text("Theme")')
+        at /home/laofahai/workspace/linch-kit/e2e/starter/smoke.spec.ts:23:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/starter-smoke-Starter-App---冒烟测试-主题切换应该正常工作-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|starter-smoke-Starter-App---冒烟测试-主题切换应该正常工作-chromium/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Starter App - 冒烟测试 › 响应式设计应该正常工作" classname="starter/smoke.spec.ts" time="0.227">
+<failure message="smoke.spec.ts:45:3 响应式设计应该正常工作" type="FAILURE">
+<![CDATA[  [chromium] › starter/smoke.spec.ts:45:3 › Starter App - 冒烟测试 › 响应式设计应该正常工作 ───────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/
+    Call log:
+      - navigating to "http://localhost:3000/", waiting until "load"
+
+
+      47 |     test.skip(browserName === 'webkit', 'Webkit 有特殊的视口处理')
+      48 |
+    > 49 |     await page.goto('/')
+         |                ^
+      50 |
+      51 |     // 测试桌面视图
+      52 |     await page.setViewportSize({ width: 1920, height: 1080 })
+        at /home/laofahai/workspace/linch-kit/e2e/starter/smoke.spec.ts:49:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/starter-smoke-Starter-App---冒烟测试-响应式设计应该正常工作-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|starter-smoke-Starter-App---冒烟测试-响应式设计应该正常工作-chromium/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Starter App - 性能测试 › 页面加载时间应该在合理范围内" classname="starter/smoke.spec.ts" time="0.243">
+<failure message="smoke.spec.ts:66:3 页面加载时间应该在合理范围内" type="FAILURE">
+<![CDATA[  [chromium] › starter/smoke.spec.ts:66:3 › Starter App - 性能测试 › 页面加载时间应该在合理范围内 ────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/
+    Call log:
+      - navigating to "http://localhost:3000/", waiting until "load"
+
+
+      66 |   test('页面加载时间应该在合理范围内', async ({ page }) => {
+      67 |     const startTime = Date.now()
+    > 68 |     await page.goto('/')
+         |                ^
+      69 |     await page.waitForLoadState('networkidle')
+      70 |     const loadTime = Date.now() - startTime
+      71 |
+        at /home/laofahai/workspace/linch-kit/e2e/starter/smoke.spec.ts:68:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/starter-smoke-Starter-App---性能测试-页面加载时间应该在合理范围内-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|starter-smoke-Starter-App---性能测试-页面加载时间应该在合理范围内-chromium/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Starter App - 性能测试 › 应该没有控制台错误" classname="starter/smoke.spec.ts" time="0.238">
+<failure message="smoke.spec.ts:76:3 应该没有控制台错误" type="FAILURE">
+<![CDATA[  [chromium] › starter/smoke.spec.ts:76:3 › Starter App - 性能测试 › 应该没有控制台错误 ─────────────────────────
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/
+    Call log:
+      - navigating to "http://localhost:3000/", waiting until "load"
+
+
+      83 |     })
+      84 |
+    > 85 |     await page.goto('/')
+         |                ^
+      86 |     await page.waitForLoadState('networkidle')
+      87 |
+      88 |     // 过滤掉一些可接受的警告
+        at /home/laofahai/workspace/linch-kit/e2e/starter/smoke.spec.ts:85:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/starter-smoke-Starter-App---性能测试-应该没有控制台错误-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|starter-smoke-Starter-App---性能测试-应该没有控制台错误-chromium/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>
