@@ -1,7 +1,5 @@
 {
-  "buildCommand": "cd ../.. && bun install && bun run build --filter=website",
-  "devCommand": "bun run dev",
-  "installCommand": "bun install",
   "framework": "nextjs",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "rootDirectory": "apps/website"
 }
