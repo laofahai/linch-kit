@@ -57,6 +57,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "format:all": "prettier --write \"**/*.{ts,tsx,md,json}\" --ignore-unknown",
     "test:e2e": "playwright test",
+    "test:e2e:all": "tsx scripts/test-e2e-all.ts",
     "ai:session": "bun scripts/ai/session-tools.js",
     "docs:cleanup": "bun scripts/cleanup-docs.js",
     "docs:migrate": "bun scripts/migrate-docs.js",

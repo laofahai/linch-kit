@@ -23,6 +23,7 @@ export default [
       'e2e/**/*.e2e.ts',
       'playwright-report/**',
       'test-results/**',
+      'scripts/**/*.ts',
     ],
   },
 
