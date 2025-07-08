@@ -1,7 +1,5 @@
 {
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "rootDirectory": "apps/starter",
   "env": {
     "NODE_ENV": "production"
   }
