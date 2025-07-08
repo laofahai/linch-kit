@@ -68,6 +68,7 @@
     "@changesets/cli": "^2.29.5",
     "@eslint/js": "^9.30.0",
     "@next/eslint-plugin-next": "^15.3.5",
+    "@playwright/test": "^1.53.2",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/parser": "^8.35.0",
     "chokidar": "^4.0.3",
@@ -100,6 +101,8 @@
     "**/*.{md,json}": "prettier --write"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/speed-insights": "^1.2.0",
     "dayjs": "^1.11.13"
   },
   "workspaces": [
