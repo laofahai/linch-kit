@@ -181,6 +181,20 @@ async function main() {
     console.log('')
   }
 
+  // 保存验证结果到文件
+  const reportData = {
+    timestamp: new Date().toISOString(),
+    apps: results.map(r => ({
+      name: r.app,
+      url: r.url,
+      status: r.status,
+      checks: r.checks,
+      performanceMetrics: r.performanceMetrics,
+    })),
+  }
+
+  await Bun.write('validation-results.json', JSON.stringify(reportData, null, 2))
+
   // 生成总结报告
   console.log('\n📈 部署验证总结:')
   const failedApps = results.filter(r => r.status === 'failure')

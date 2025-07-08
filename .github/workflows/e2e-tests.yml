@@ -108,7 +108,8 @@ jobs:
     name: Deployment Validation
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [e2e-tests]
+    # 暂时移除对 e2e-tests 的依赖，因为 e2e-tests 已禁用
+    # needs: [e2e-tests]
     
     steps:
       - name: Checkout
