@@ -37,6 +37,9 @@ jobs:
       - name: Install Playwright
         run: bun playwright install --with-deps ${{ matrix.project }}
 
+      - name: Build packages first
+        run: bun run build:packages
+
       - name: Build and start application
         run: |
           case "${{ matrix.app }}" in
