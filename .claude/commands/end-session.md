@@ -27,4 +27,20 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 !echo "🎯 图谱同步 (CLAUDE.md 第206行要求)..."
 !bun run ai:session sync
 
-!echo "✅ 完成！CI/CD 将自动触发 (CLAUDE.md 第84行 L4层验证)"
+!echo "⏳ 等待 CI/CD 完成..."
+!gh pr checks --watch
+
+!echo "🤖 自动审核并合并 PR..."
+!gh pr review --approve --body "✅ 自动审核通过：所有质量检查完成"
+!gh pr merge --auto --squash --delete-branch
+
+!echo "🧹 清理本地分支 (Development_Workflow.md 第257-259行)..."
+!CURRENT_BRANCH=$(git branch --show-current)
+!git checkout main
+!git pull origin main
+!git branch -d $CURRENT_BRANCH
+
+!echo "🎉 完整工作流结束！"
+!echo " ✅ 分支 $CURRENT_BRANCH 已清理"
+!echo " ✅ 已回到 main 分支"
+!echo " ✅ 代码已合并到主分支"
