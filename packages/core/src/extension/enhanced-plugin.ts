@@ -3,16 +3,10 @@
  * @module extension/enhanced-plugin
  */
 
-import type {
-  Plugin,
-  PluginConfig,
-  PluginMetadata,
-  PluginRegistration,
-} from '../types/plugin'
+import type { Plugin, PluginConfig, PluginRegistration } from '../types/plugin'
 
 import type {
   ExtensionCapabilities,
-  ExtensionConfiguration,
   ExtensionPermission,
   ExtensionMetadata,
   ExtensionConfig,
@@ -24,11 +18,7 @@ import type {
  */
 export function isExtension(plugin: Plugin): plugin is Extension {
   const metadata = plugin.metadata as ExtensionMetadata
-  return !!(
-    metadata.displayName &&
-    metadata.capabilities &&
-    metadata.permissions
-  )
+  return !!(metadata.displayName && metadata.capabilities && metadata.permissions)
 }
 
 /**
@@ -143,18 +133,14 @@ export class EnhancedPluginRegistry {
    * 按能力筛选Extension
    */
   getExtensionsByCapability(capability: keyof ExtensionCapabilities): Extension[] {
-    return this.getAllExtensions().filter(
-      ext => ext.metadata.capabilities[capability] === true
-    )
+    return this.getAllExtensions().filter(ext => ext.metadata.capabilities[capability] === true)
   }
 
   /**
    * 按分类筛选Extension
    */
   getExtensionsByCategory(category: string): Extension[] {
-    return this.getAllExtensions().filter(
-      ext => ext.metadata.category === category
-    )
+    return this.getAllExtensions().filter(ext => ext.metadata.category === category)
   }
 
   /**
