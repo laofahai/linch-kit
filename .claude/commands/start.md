@@ -51,8 +51,8 @@ echo " 使用命令：与Gemini协商 $ARGUMENTS"
 fi
 
 !echo "📋 [$(date '+%H:%M:%S')] 检查包复用情况..."
-!if [[-f "scripts/check-reuse.mjs"]]; then
-bun run scripts/check-reuse.mjs "$ARGUMENTS" || echo "⚠️ 包复用检查失败"
+!if [[-f "tools/dev/check-reuse.mjs"]]; then
+bun run deps:check "$ARGUMENTS" || echo "⚠️ 包复用检查失败"
 else
 echo "⚠️ 包复用检查脚本不存在"
 fi

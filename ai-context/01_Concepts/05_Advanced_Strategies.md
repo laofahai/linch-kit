@@ -42,7 +42,7 @@
   - 例如，策略可以定义“只有 `TenantAdmin` 角色且 `Tenant` 状态为 `active` 的用户才能修改 `Tenant` 的 `domain` 字段”。
 - **API 网关/中间件集成**：
   - 在 API 网关层（如 Next.js API Routes 的中间件）集成 OPA，实现请求级别的授权。
-  - 在 `@linch-kit/trpc` 的 Procedure 中，可以在 `middleware` 中调用 OPA 进行授权检查。
+  - 在 `@linch-kit/platform` 的 tRPC 路由中，可以在 `middleware` 中调用 OPA 进行授权检查。
 
 ## 3. AI 赋能策略管理
 
@@ -107,10 +107,10 @@
 - **`@linch-kit/core`**：
   - 提供统一的缓存 API 接口（`get`, `set`, `delete`, `invalidateGroup`）。
   - 集成 LRU Cache 或 Redis 客户端。
-- **`@linch-kit/crud`**：
+- **`@linch-kit/platform`**：
   - 在 `create`, `update`, `delete` 操作后，自动触发相关缓存的失效逻辑。
   - 利用 Schema 元数据，自动识别需要失效的缓存项。
-- **`@linch-kit/trpc`**：
+- **`@linch-kit/platform`**：
   - 在 tRPC Procedure 中，可以方便地集成缓存读取和写入逻辑。
   - 考虑在 tRPC 层实现响应缓存。
 
@@ -120,8 +120,8 @@
     - 在 `@linch-kit/core` 中引入基础的 LRU Cache 或 Redis 客户端，并提供统一的缓存 API。
     - 手动在关键数据读取路径上添加缓存。
 2.  **阶段二：Schema 驱动的自动失效**：
-    - 扩展 `@linch-kit/schema`，允许定义缓存相关的元数据。
-    - 在 `@linch-kit/crud` 中实现基于 Schema 元数据的自动缓存失效机制。
+    - 扩展 `tools/schema`，允许定义缓存相关的元数据。
+    - 在 `@linch-kit/platform` 中实现基于 Schema 元数据的自动缓存失效机制。
 3.  **阶段三：AI 驱动的缓存分析原型**：
     - 开发一个原型，利用 AI 分析数据访问日志，识别热点数据和访问模式。
     - 尝试让 AI 推荐简单的缓存策略。
@@ -154,7 +154,7 @@
 - **目的**：追踪请求在微服务或模块化架构中流经不同服务和模块的完整路径，识别延迟和错误。
 - **集成方式**：
   - 在 `@linch-kit/core` 中提供 OTel Tracing SDK 的初始化和配置。
-  - 为 LinchKit 内部的各个包（如 `@linch-kit/auth`, `@linch-kit/crud`, `@linch-kit/trpc`）提供自动或手动埋点，确保关键操作（如认证、CRUD 操作、tRPC 调用）生成 Span。
+  - 为 LinchKit 内部的各个包（如 `@linch-kit/auth`, `@linch-kit/platform`, `@linch-kit/platform`）提供自动或手动埋点，确保关键操作（如认证、CRUD 操作、tRPC 调用）生成 Span。
   - 指导应用层（`apps/*`）如何集成 OTel Tracing，并确保请求头在服务间正确传递。
 - **AI 赋能**：AI 可以分析追踪数据，识别性能瓶颈、服务依赖问题和错误传播路径，并提供根因分析报告。
 
@@ -165,8 +165,8 @@
   - 在 `@linch-kit/core` 中提供 OTel Metrics SDK 的初始化和配置，并定义常用的指标类型（Counter, Gauge, Histogram）。
   - 在各个包中定义和暴露业务指标，例如：
     - `@linch-kit/auth`：登录成功/失败次数、认证延迟。
-    - `@linch-kit/crud`：CRUD 操作次数、数据库查询延迟。
-    - `@linch-kit/trpc`：tRPC 调用次数、API 响应时间。
+    - `@linch-kit/platform`：CRUD 操作次数、数据库查询延迟。
+    - `@linch-kit/platform`：tRPC 调用次数、API 响应时间。
   - **Schema 驱动的指标**：将 Schema 验证的成功率、失败率、特定字段的访问频率等作为业务指标进行追踪。
 - **AI 赋能**：AI 可以分析指标数据，进行趋势预测、异常检测、容量规划，并根据性能指标提供自动扩缩容建议。
 
@@ -195,7 +195,7 @@
 ## 5. 实施计划
 
 1.  **阶段一：基础集成**：在 `@linch-kit/core` 中初始化 OTel SDK，并实现基础的日志、指标和追踪埋点。
-2.  **阶段二：核心包埋点**：在 `@linch-kit/auth`, `@linch-kit/crud`, `@linch-kit/trpc` 等核心包中添加更详细的业务埋点。
+2.  **阶段二：核心包埋点**：在 `@linch-kit/auth`, `@linch-kit/platform`, `@linch-kit/platform` 等核心包中添加更详细的业务埋点。
 3.  **阶段三：应用层集成**：指导 `apps/*` 如何集成可观测性，并配置数据导出到后端平台。
 4.  **阶段四：AI 分析集成**：开发 AI 模块，利用收集到的可观测性数据进行智能分析和建议。
 5.  **阶段五：持续优化**：根据实际运行情况，不断优化埋点策略和 AI 分析模型。
@@ -219,7 +219,7 @@
 
 ### 2.1. 敏感数据识别与分类
 
-- **Schema 元数据**：扩展 `@linch-kit/schema`，允许在实体和字段级别添加数据分类和敏感性标签（例如 `PII` - 个人身份信息, `PHI` - 受保护健康信息, `Confidential`）。
+- **Schema 元数据**：扩展 `tools/schema`，允许在实体和字段级别添加数据分类和敏感性标签（例如 `PII` - 个人身份信息, `PHI` - 受保护健康信息, `Confidential`）。
 - **AI 辅助识别**：AI 可以分析数据内容和上下文，辅助识别潜在的敏感数据，并建议相应的分类标签。
 
 ### 2.2. 细粒度访问控制与脱敏
@@ -227,7 +227,7 @@
 - **基于策略的访问控制**：结合“策略即代码”策略（如 OPA），根据用户角色、权限和数据敏感性标签，实现细粒度的数据访问控制。
 - **数据脱敏 (Data Masking)**：
   - 在数据读取时，根据用户权限和数据敏感性，自动对敏感字段进行脱敏处理（如部分隐藏、哈希、替换）。
-  - 在 `@linch-kit/crud` 层集成脱敏逻辑，确保数据在返回给客户端前已处理。
+  - 在 `@linch-kit/platform` 层集成脱敏逻辑，确保数据在返回给客户端前已处理。
 - **数据加密**：指导用户如何对静态数据和传输中的数据进行加密，确保数据安全。
 
 ### 2.3. 审计日志与可追溯性
@@ -243,9 +243,9 @@
 
 ### 2.5. LinchKit 中的集成点
 
-- **`@linch-kit/schema`**：作为数据治理的元数据中心，定义数据分类和敏感性标签。
+- **`tools/schema`**：作为数据治理的元数据中心，定义数据分类和敏感性标签。
 - **`@linch-kit/auth`**：结合权限管理，实现基于数据属性的访问控制。
-- **`@linch-kit/crud`**：在数据读取和写入时，根据 Schema 元数据和权限，自动应用脱敏、加密或访问限制。
+- **`@linch-kit/platform`**：在数据读取和写入时，根据 Schema 元数据和权限，自动应用脱敏、加密或访问限制。
 - **`@linch-kit/core`**：提供增强的审计日志功能，记录所有数据操作。
 - **`modules/console`**：在管理界面中提供数据治理相关的配置和报告。
 
@@ -259,10 +259,10 @@
 ## 4. 实施计划
 
 1.  **阶段一：Schema 元数据定义**：
-    - 扩展 `@linch-kit/schema`，允许在字段级别添加数据分类和敏感性标签。
+    - 扩展 `tools/schema`，允许在字段级别添加数据分类和敏感性标签。
     - 定义一套标准的数据分类体系。
 2.  **阶段二：基础脱敏与访问控制**：
-    - 在 `@linch-kit/crud` 中实现基于 Schema 元数据的基础数据脱敏功能。
+    - 在 `@linch-kit/platform` 中实现基于 Schema 元数据的基础数据脱敏功能。
     - 结合 `@linch-kit/auth`，实现基于数据敏感性标签的访问控制。
 3.  **阶段三：增强审计与可追溯性**：
     - 增强 `@linch-kit/core` 的审计日志功能，确保敏感数据操作的详细记录。

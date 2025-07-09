@@ -132,7 +132,7 @@ Extension配置集成在package.json中，通过`linchkit`字段定义：
   },
   "peerDependencies": {
     "@linch-kit/core": "^1.2.0",
-    "@linch-kit/crud": "^1.2.0"
+    "@linch-kit/platform": "^1.2.0"
   },
   "devDependencies": {
     "@linchkit/schema": "^1.0.0"
@@ -173,7 +173,7 @@ LinchKit提供完整的JSON Schema支持，为开发者提供：
 
 ```typescript
 // src/shared/schemas.ts
-import { defineEntity } from '@linch-kit/schema'
+import { defineEntity } from 'tools/schema'
 
 export const BlogPost = defineEntity('BlogPost', {
   title: z.string().min(1).max(200),
@@ -191,8 +191,8 @@ export const BlogPost = defineEntity('BlogPost', {
 
 ```typescript
 // src/server/router.ts
-import { createRouter } from '@linch-kit/trpc'
-import { createCRUD } from '@linch-kit/crud'
+import { createRouter } from '@linch-kit/platform'
+import { createCRUD } from '@linch-kit/platform'
 import { BlogPost } from '../shared/schemas'
 
 const blogCrud = createCRUD({
@@ -221,7 +221,7 @@ export const blogRouter = createRouter()
 
 ```tsx
 // src/client/pages/BlogList.tsx
-import { useQuery } from '@linch-kit/trpc/client'
+import { useQuery } from '@linch-kit/platform/client'
 import { Card, Button } from '@linch-kit/ui'
 
 export function BlogList() {

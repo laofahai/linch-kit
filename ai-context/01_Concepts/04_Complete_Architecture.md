@@ -161,22 +161,6 @@ modules/console/
 }
 ```
 
-#### **@linch-kit/schema**
-
-```typescript
-// Schema 定义和验证包
-{
-  "功能": [
-    "实体 Schema 定义",
-    "数据验证引擎",
-    "类型生成器",
-    "Schema 转换器"
-  ],
-  "依赖": "仅依赖 @linch-kit/core",
-  "独立使用": "可在任何项目中定义和验证数据结构"
-}
-```
-
 #### **@linch-kit/auth**
 
 ```typescript
@@ -188,40 +172,28 @@ modules/console/
     "会话管理",
     "安全中间件"
   ],
-  "依赖": "@linch-kit/core + @linch-kit/schema",
+  "依赖": "@linch-kit/core",
   "独立使用": "可集成到任何 Node.js/Next.js 项目"
 }
 ```
 
-#### **@linch-kit/crud**
+#### **@linch-kit/platform**
 
 ```typescript
-// 通用 CRUD 操作包
+// 业务开发平台包 - 一体化解决方案
 {
   "功能": [
+    "Schema 定义和验证",
     "基于 Schema 的 CRUD 生成器",
+    "类型安全的 API 路由",
     "查询构建器",
     "批量操作",
-    "关联查询"
+    "关联查询",
+    "数据验证和转换",
+    "事务管理"
   ],
-  "依赖": "@linch-kit/core + @linch-kit/schema + @linch-kit/auth",
-  "独立使用": "可用于任何需要数据操作的项目"
-}
-```
-
-#### **@linch-kit/trpc**
-
-```typescript
-// API 层包
-{
-  "功能": [
-    "类型安全的 API 路由",
-    "中间件集成",
-    "客户端 SDK 生成",
-    "API 文档生成"
-  ],
-  "依赖": "前述所有包",
-  "独立使用": "可为任何项目提供类型安全 API"
+  "依赖": "@linch-kit/core + @linch-kit/auth",
+  "独立使用": "一体化业务开发平台"
 }
 ```
 
@@ -236,7 +208,7 @@ modules/console/
     "表单和表格组件",
     "主题系统"
   ],
-  "依赖": "@linch-kit/core + @linch-kit/schema + @linch-kit/crud",
+  "依赖": "@linch-kit/core + @linch-kit/platform",
   "独立使用": "可用于任何 React 项目"
 }
 ```
@@ -467,11 +439,10 @@ export const LinchKitConsole: React.FC<ConsoleProps> = ({ config }) => {
 }
 
 // Console 内部完全基于 packages 构建
-import { createCRUD } from '@linch-kit/crud'
+import { createPlatformCRUD, defineEntity } from '@linch-kit/platform'
 import { SchemaTable, SchemaForm } from '@linch-kit/ui'
 import { useAuth, createAuthMiddleware } from '@linch-kit/auth'
 import { Logger, PluginManager } from '@linch-kit/core'
-import { defineEntity } from '@linch-kit/schema'
 ```
 
 ### **3. 灵活使用示例**
@@ -502,10 +473,10 @@ export default function DashboardPage() {
 
 // apps/starter/components/inventory/InventoryPage.tsx
 import { SchemaTable } from '@linch-kit/ui'
-import { createCRUD } from '@linch-kit/crud'
+import { createPlatformCRUD } from '@linch-kit/platform'
 import { InventorySchema } from '@/schemas/inventory'
 
-const inventoryCRUD = createCRUD(InventorySchema, {
+const inventoryCRUD = createPlatformCRUD(InventorySchema, {
   permissions: ['inventory:read', 'inventory:write']
 })
 

@@ -100,7 +100,7 @@ export class MockExtensionSandbox {
  */
 export class MockExtensionManager {
   private extensions = new Map<string, Extension>()
-  private instances = new Map<string, any>()
+  private instances = new Map<string, unknown>()
   
   async loadExtension(name: string, extension: Extension): Promise<void> {
     this.extensions.set(name, extension)
@@ -146,7 +146,7 @@ export class MockExtensionManager {
     return this.extensions.get(name)
   }
   
-  getInstance(name: string): any {
+  getInstance(name: string): unknown {
     return this.instances.get(name)
   }
   

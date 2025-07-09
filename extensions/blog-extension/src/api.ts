@@ -12,7 +12,7 @@ import {
   BlogCategory, 
   BlogTag, 
   BlogComment, 
-  BlogPostTag, 
+  // BlogPostTag, 
   BlogPostStats 
 } from './schema'
 
@@ -60,7 +60,7 @@ export const api = router({
         limit: z.number().min(1).max(20).default(10),
         categoryId: z.string().uuid().optional(),
       }))
-      .query(async ({ input }) => {
+      .query(async ({ input: _input }) => {
         // 这里应该调用实际的数据库查询
         return {
           posts: [],
@@ -74,7 +74,7 @@ export const api = router({
       .input(z.object({
         slug: z.string(),
       }))
-      .query(async ({ input }) => {
+      .query(async ({ input: _input }) => {
         // 这里应该调用实际的数据库查询
         return {
           post: null,
@@ -89,7 +89,7 @@ export const api = router({
         id: z.string().uuid(),
         publishedAt: z.date().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input: _input }) => {
         // 这里应该调用实际的数据库更新
         return {
           success: true,
@@ -102,7 +102,7 @@ export const api = router({
       .input(z.object({
         postId: z.string().uuid(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input: _input }) => {
         // 这里应该调用实际的数据库更新
         return {
           success: true,
@@ -115,7 +115,7 @@ export const api = router({
       .input(z.object({
         postId: z.string().uuid(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input: _input }) => {
         // 这里应该调用实际的数据库更新
         return {
           success: true,
@@ -133,7 +133,7 @@ export const api = router({
           to: z.date(),
         }).optional(),
       }))
-      .query(async ({ input }) => {
+      .query(async ({ input: _input }) => {
         // 这里应该调用实际的数据库查询
         return {
           totalViews: 0,
@@ -159,7 +159,7 @@ export const api = router({
       .input(z.object({
         limit: z.number().min(1).max(50).default(20),
       }))
-      .query(async ({ input }) => {
+      .query(async ({ input: _input }) => {
         // 这里应该调用实际的数据库查询
         return {
           tags: [],
@@ -173,7 +173,7 @@ export const api = router({
         limit: z.number().min(1).max(50).default(10),
         offset: z.number().min(0).default(0),
       }))
-      .query(async ({ input }) => {
+      .query(async ({ input: _input }) => {
         // 这里应该调用实际的搜索服务
         return {
           posts: [],
@@ -188,7 +188,7 @@ export const api = router({
         postId: z.string().uuid(),
         limit: z.number().min(1).max(10).default(5),
       }))
-      .query(async ({ input }) => {
+      .query(async ({ input: _input }) => {
         // 这里应该调用实际的推荐算法
         return {
           posts: [],
@@ -202,7 +202,7 @@ export const api = router({
         status: z.enum(['approved', 'rejected', 'spam']),
         reason: z.string().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input: _input }) => {
         // 这里应该调用实际的数据库更新
         return {
           success: true,
@@ -217,7 +217,7 @@ export const api = router({
         .input(z.object({
           postIds: z.array(z.string().uuid()),
         }))
-        .mutation(async ({ input }) => {
+        .mutation(async ({ input: _input }) => {
           // 这里应该调用实际的批量更新
           return {
             success: true,
@@ -230,7 +230,7 @@ export const api = router({
         .input(z.object({
           commentIds: z.array(z.string().uuid()),
         }))
-        .mutation(async ({ input }) => {
+        .mutation(async ({ input: _input }) => {
           // 这里应该调用实际的批量删除
           return {
             success: true,

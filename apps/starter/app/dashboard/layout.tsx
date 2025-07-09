@@ -13,7 +13,7 @@ import {
   SidebarTrigger,
 } from '@linch-kit/ui/client'
 import { Button } from '@linch-kit/ui/server'
-import { Home, Settings, Users, BarChart3 } from 'lucide-react'
+import { Home, Settings, Users, BarChart3, Package } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -81,12 +81,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </Link>
               </Button>
               {isAdmin && (
-                <Button variant="ghost" className="w-full justify-start" asChild>
-                  <Link href="/dashboard/admin">
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    管理中心
-                  </Link>
-                </Button>
+                <>
+                  <Button variant="ghost" className="w-full justify-start" asChild>
+                    <Link href="/dashboard/admin">
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      管理中心
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" className="w-full justify-start" asChild>
+                    <Link href="/dashboard/admin/extensions">
+                      <Package className="mr-2 h-4 w-4" />
+                      Extensions
+                    </Link>
+                  </Button>
+                </>
               )}
               <Button variant="ghost" className="w-full justify-start" asChild>
                 <Link href="/dashboard/settings">

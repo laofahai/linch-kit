@@ -1,11 +1,48 @@
 # LinchKit 开发状态记录
 
-**版本**: v2.1  
+**版本**: v2.2  
 **更新**: 2025-07-09  
 **当前分支**: feature/starter-console-integration-e2e  
-**状态**: Extension系统Phase 2完成，完整的Extension开发生态系统实现
+**状态**: Extension系统集成测试完成，console/admin/starter架构方案协商完成
 
 ## 🏗️ 当前开发进展
+
+### 2025-07-09 - Extension系统集成测试 & 架构方案协商 ✅
+
+#### ✅ 重要成果
+
+- **Extension系统集成测试**: 完整的Extension生命周期集成测试框架
+  - 创建完整的`packages/core/src/extension/__tests__/integration.test.ts`
+  - 测试Extension加载、卸载、热重载全流程
+  - 权限验证、错误处理、状态管理测试
+  - 基于bun:test框架，支持Mock和隔离测试
+- **Starter应用Extension集成**: 将Extension管理集成到starter应用
+  - 创建`apps/starter/app/dashboard/extensions/page.tsx`
+  - 提供完整的Extension管理界面
+  - 支持Extension生命周期操作的可视化管理
+  - 集成到统一的dashboard布局中
+- **Console/Admin/Starter架构方案**: 与Gemini协商确定最终架构
+  - 分析当前架构问题：定位不清晰、权限分散、扩展性差
+  - Gemini推荐方案2：完全分离admin为独立应用
+  - 确定分阶段实施策略：立即创建独立admin应用
+  - Extension管理明确归属admin应用管理功能
+
+#### 🔧 技术实现
+
+- **集成测试框架**:
+  - 完整的Mock Extension和ExtensionManager
+  - 生命周期事件测试、权限验证测试
+  - 错误处理和状态管理测试
+  - 上下文隔离和存储测试
+- **Extension管理界面**:
+  - 实时Extension状态监控
+  - 可视化的加载/卸载/重载操作
+  - 权限和功能展示
+  - 操作结果反馈系统
+- **架构决策记录**:
+  - 详细的五维度评估（用户体验、权限管理、扩展性、开发维护、最佳实践）
+  - 业界标准分析（Salesforce、Google Workspace、Stripe模式）
+  - 分阶段实施计划和技术路线图
 
 ### 2025-07-09 - Extension系统 Phase 2 完成 ✅
 
@@ -200,11 +237,12 @@ packages/ai/ (专注开发阶段)
 
 ### 🔄 进行中任务
 
-#### 优先级 P0: Extension系统 Phase 2 (1-2周)
+#### 优先级 P0: Console/Admin/Starter架构重构 (1-2周)
 
-- [ ] **扩展CLI工具** - 在tools/cli中增加Extension开发支持
-- [ ] **创建Blog Extension** - 作为完整的参考实现
-- [ ] **建立Extension测试框架** - 使用bun:test
+- [ ] **创建独立admin应用** - 在apps/admin创建完全独立的管理应用
+- [ ] **迁移现有admin功能** - 将dashboard/admin功能迁移到独立应用
+- [ ] **建立统一权限系统** - 为admin应用建立全局权限中间件
+- [ ] **完善Extension管理** - 将Extension管理功能完整集成到admin应用
 
 #### 优先级 P1: Extension系统完善 (1-2周)
 

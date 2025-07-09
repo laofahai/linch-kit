@@ -8,7 +8,7 @@ import * as React from 'react'
 /**
  * 博客文章卡片组件
  */
-export function BlogPostCard({ post }: { post: any }) {
+export function BlogPostCard({ post }: { post: unknown }) {
   return React.createElement('div', {
     className: 'card',
     children: [
@@ -22,7 +22,7 @@ export function BlogPostCard({ post }: { post: any }) {
 /**
  * 博客文章列表组件
  */
-export function BlogPostList({ posts }: { posts: any[] }) {
+export function BlogPostList({ posts }: { posts: unknown[] }) {
   return React.createElement('div', {
     className: 'post-list',
     children: posts.map((post, index) => 
@@ -34,7 +34,7 @@ export function BlogPostList({ posts }: { posts: any[] }) {
 /**
  * 博客分类组件
  */
-export function BlogCategoryList({ categories }: { categories: any[] }) {
+export function BlogCategoryList({ categories }: { categories: unknown[] }) {
   return React.createElement('div', {
     className: 'category-list',
     children: categories.map((category, index) => 
@@ -49,7 +49,7 @@ export function BlogCategoryList({ categories }: { categories: any[] }) {
 /**
  * 博客标签云组件
  */
-export function BlogTagCloud({ tags }: { tags: any[] }) {
+export function BlogTagCloud({ tags }: { tags: unknown[] }) {
   return React.createElement('div', {
     className: 'tag-cloud',
     children: tags.map((tag, index) => 
@@ -64,7 +64,7 @@ export function BlogTagCloud({ tags }: { tags: any[] }) {
 /**
  * 博客评论组件
  */
-export function BlogCommentList({ comments }: { comments: any[] }) {
+export function BlogCommentList({ comments }: { comments: unknown[] }) {
   return React.createElement('div', {
     className: 'comment-list',
     children: comments.map((comment, index) => 
@@ -82,7 +82,7 @@ export function BlogCommentList({ comments }: { comments: any[] }) {
 /**
  * 博客统计面板
  */
-export function BlogStatsDashboard({ stats }: { stats: any }) {
+export function BlogStatsDashboard({ stats }: { stats: unknown }) {
   return React.createElement('div', {
     className: 'stats-dashboard',
     children: [

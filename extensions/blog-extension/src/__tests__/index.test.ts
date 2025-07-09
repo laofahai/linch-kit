@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'bun:test'
+
 import extension, { metadata, schema, api, components, hooks } from '../index'
 
 describe('Blog Extension', () => {

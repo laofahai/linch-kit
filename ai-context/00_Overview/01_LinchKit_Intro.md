@@ -20,32 +20,30 @@ LinchKit 是一个**生产就绪的企业级 AI-First 全栈开发框架**，采
 
 LinchKit 已成为生产就绪的企业级 AI-First 开发框架：
 
-1. **稳定架构**: 6+1 清晰架构，不盲目增加复杂度
+1. **稳定架构**: 4+1 清晰架构，不盲目增加复杂度
 2. **现代化技术栈**: TypeScript 严格模式 + Schema 驱动
 3. **企业级特性**: 多租户、角色权限、现代 UI
 4. **扩展能力**: 在现有架构内可扩展所有企业功能
 5. **生产质量**: 无构建错误、完整测试覆盖、性能优化
 6. **AI 集成**: Neo4j 知识图谱 + Graph RAG 查询引擎
 
-## 🏛️ 架构状态 (6+1 稳定架构)
+## 🏛️ 架构状态 (4+1 稳定架构)
 
 ```
 L0: @linch-kit/core      ✅ 基础设施 (100%)
-L1: @linch-kit/schema    ✅ Schema引擎 (100%)
-L2: @linch-kit/auth      ✅ 认证权限 (100%)
-L2: @linch-kit/crud      ✅ CRUD操作 (100%)
-L3: @linch-kit/trpc      ✅ API层 (100%)
+L1: @linch-kit/auth      ✅ 认证权限 (100%)
+L2: @linch-kit/platform  ✅ 业务开发平台 (100%)
 L3: @linch-kit/ui        ✅ UI组件 (100%)
-L4: modules/console      ✅ 管理平台 (100%)
+L4: extensions/console   ✅ 管理平台Extension (100%)
 ```
 
 ## 🛠️ 技术栈
 
 - **前端**: Next.js 15.3.4 + React 19.0.0 + TypeScript 5.8.3
 - **UI**: @linch-kit/ui + shadcn/ui + Tailwind CSS 4.x
-- **API**: @linch-kit/trpc + @linch-kit/crud
+- **API**: @linch-kit/platform (Schema+CRUD+tRPC+验证一体化)
 - **认证**: @linch-kit/auth + NextAuth.js 5.0 + CASL
-- **数据**: @linch-kit/schema + Prisma + PostgreSQL
+- **数据**: tools/schema + Prisma + PostgreSQL
 - **AI**: Neo4j 知识图谱 + Graph RAG 查询引擎
 
 ## 📦 包功能速查

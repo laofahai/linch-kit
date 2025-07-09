@@ -22,41 +22,49 @@ LinchKit 是一个 Schema 驱动的企业级全栈开发框架，提供端到端
 LinchKit 采用分层架构设计，确保高内聚、低耦合：
 
 ```
-L0: @linch-kit/core      基础设施 (日志、配置、插件)
-L1: @linch-kit/schema    Schema 引擎 (代码生成、验证)
-L2: @linch-kit/auth      认证权限 (NextAuth + CASL)
-L2: @linch-kit/crud      CRUD 操作 (类型安全、权限集成)
-L3: @linch-kit/trpc      API 层 (端到端类型安全)
+L0: @linch-kit/core      基础设施 (日志、配置、插件、Extension系统)
+L1: @linch-kit/auth      认证权限 (NextAuth + CASL)
+L2: @linch-kit/platform  业务开发平台 (Schema+CRUD+tRPC+验证)
 L3: @linch-kit/ui        UI 组件库 (shadcn/ui + 企业组件)
-L4: @linch-kit/ai        AI 集成 (Graph RAG、智能查询)
-L4: @linch-kit/console   管理平台 (多租户、权限管理)
+
+Extensions:
+- extensions/console     管理平台Extension (多租户、权限管理)
+- extensions/admin       管理功能Extension (规划中)
+- extensions/blog        博客系统Extension (开发中)
+
+Tools:
+- tools/schema          Schema 引擎工具 (代码生成、验证)
+- tools/cli             LinchKit CLI 工具
+- tools/context         Graph RAG 上下文工具
 ```
 
 ## 📦 包介绍
 
 ### 核心包
 
-| 包                                                                       | 版本                                                   | 描述                                      |
-| ------------------------------------------------------------------------ | ------------------------------------------------------ | ----------------------------------------- |
-| **[@linch-kit/core](https://www.npmjs.com/package/@linch-kit/core)**     | ![npm](https://img.shields.io/npm/v/@linch-kit/core)   | 基础设施包 - 插件系统、配置管理、日志系统 |
-| **[@linch-kit/schema](https://www.npmjs.com/package/@linch-kit/schema)** | ![npm](https://img.shields.io/npm/v/@linch-kit/schema) | Schema 引擎 - 代码生成、验证、转换        |
-| **[@linch-kit/auth](https://www.npmjs.com/package/@linch-kit/auth)**     | ![npm](https://img.shields.io/npm/v/@linch-kit/auth)   | 认证权限 - NextAuth.js + CASL 权限控制    |
-| **[@linch-kit/crud](https://www.npmjs.com/package/@linch-kit/crud)**     | ![npm](https://img.shields.io/npm/v/@linch-kit/crud)   | CRUD 操作 - 类型安全、权限集成、复杂查询  |
-| **[@linch-kit/trpc](https://www.npmjs.com/package/@linch-kit/trpc)**     | ![npm](https://img.shields.io/npm/v/@linch-kit/trpc)   | API 层 - 端到端类型安全的 tRPC 集成       |
-| **[@linch-kit/ui](https://www.npmjs.com/package/@linch-kit/ui)**         | ![npm](https://img.shields.io/npm/v/@linch-kit/ui)     | UI 组件库 - shadcn/ui + 企业级组件        |
-| **[@linch-kit/ai](https://www.npmjs.com/package/@linch-kit/ai)**         | ![npm](https://img.shields.io/npm/v/@linch-kit/ai)     | AI 集成 - Graph RAG、智能查询、代码理解   |
+| 包                                                                           | 版本                                                       | 描述                                                 |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
+| **[@linch-kit/core](https://www.npmjs.com/package/@linch-kit/core)**         | ![npm](https://img.shields.io/npm/v/@linch-kit/core)       | 基础设施包 - 插件系统、配置管理、日志系统、Extension系统 |
+| **[@linch-kit/auth](https://www.npmjs.com/package/@linch-kit/auth)**         | ![npm](https://img.shields.io/npm/v/@linch-kit/auth)       | 认证权限 - NextAuth.js + CASL 权限控制                |
+| **[@linch-kit/platform](https://www.npmjs.com/package/@linch-kit/platform)** | ![npm](https://img.shields.io/npm/v/@linch-kit/platform)   | 业务开发平台 - Schema+CRUD+tRPC+验证一体化              |
+| **[@linch-kit/ui](https://www.npmjs.com/package/@linch-kit/ui)**             | ![npm](https://img.shields.io/npm/v/@linch-kit/ui)         | UI 组件库 - shadcn/ui + 企业级组件                    |
 
-### 企业模块
+### Extensions
 
-| 包                                                                         | 版本                                                    | 描述                                      |
-| -------------------------------------------------------------------------- | ------------------------------------------------------- | ----------------------------------------- |
-| **[@linch-kit/console](https://www.npmjs.com/package/@linch-kit/console)** | ![npm](https://img.shields.io/npm/v/@linch-kit/console) | 管理平台 - 多租户管理、权限控制、系统监控 |
+| Extension                  | 描述                                      |
+| -------------------------- | ----------------------------------------- |
+| **extensions/console**     | 管理平台Extension - 多租户管理、权限控制、系统监控 |
+| **extensions/admin**       | 管理功能Extension (规划中)                  |
+| **extensions/blog**        | 博客系统Extension (开发中)                  |
 
 ### 工具包
 
-| 包                                                                     | 版本                                                  | 描述                                |
-| ---------------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------- |
-| **[create-linch-kit](https://www.npmjs.com/package/create-linch-kit)** | ![npm](https://img.shields.io/npm/v/create-linch-kit) | 项目脚手架 - 一键创建 LinchKit 项目 |
+| 工具                       | 描述                                      |
+| -------------------------- | ----------------------------------------- |
+| **tools/schema**           | Schema 引擎工具 - 代码生成、验证、转换        |
+| **tools/cli**              | LinchKit CLI 工具 - 项目脚手架、Extension管理 |
+| **tools/context**          | Graph RAG 上下文工具 - AI 辅助开发、智能查询   |
+| **create-linch-kit**       | 项目脚手架 - 一键创建 LinchKit 项目         |
 
 ## 🚀 快速开始
 
@@ -82,7 +90,7 @@ bunx create-next-app@latest my-app --typescript --tailwind --eslint --app
 cd my-app
 
 # 安装 LinchKit 核心包
-bun add @linch-kit/core @linch-kit/schema @linch-kit/auth @linch-kit/crud @linch-kit/trpc @linch-kit/ui @linch-kit/ai
+bun add @linch-kit/core @linch-kit/auth @linch-kit/platform @linch-kit/ui
 ```
 
 ### 配置说明

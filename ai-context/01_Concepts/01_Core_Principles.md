@@ -104,13 +104,13 @@ const user: User = {
 ```
 L0: @linch-kit/core      (基础设施)
   ↓
-L1: @linch-kit/schema    (Schema 引擎)
+L1: @linch-kit/auth      (认证权限)
   ↓
-L2: @linch-kit/auth, @linch-kit/crud (业务功能)
+L2: @linch-kit/platform  (业务开发平台)
   ↓
-L3: @linch-kit/trpc, @linch-kit/ui (API 和 UI)
+L3: @linch-kit/ui        (UI 组件)
   ↓
-L4: modules/console (应用模块)
+L4: extensions/console (管理平台Extension)
 ```
 
 #### 包设计原则
@@ -153,9 +153,9 @@ L4: modules/console (应用模块)
 ┌─────────────────────────────────────┐
 │         Presentation Layer          │  ← UI Components (@linch-kit/ui)
 ├─────────────────────────────────────┤
-│         Application Layer           │  ← API Routes (@linch-kit/trpc)
+│         Application Layer           │  ← API Routes (@linch-kit/platform)
 ├─────────────────────────────────────┤
-│           Domain Layer              │  ← Business Logic (@linch-kit/crud)
+│           Domain Layer              │  ← Business Logic (@linch-kit/platform)
 ├─────────────────────────────────────┤
 │        Infrastructure Layer         │  ← Data Access (@linch-kit/core)
 └─────────────────────────────────────┘

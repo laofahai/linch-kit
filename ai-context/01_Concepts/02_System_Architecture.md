@@ -70,14 +70,12 @@ extensions/blog     # 博客系统Extension (开发中)
 - **业务聚合**: 聚合多个包功能实现完整业务流程
 - **可选集成**: 应用可以选择性集成所需模块
 
-### 包层 (Packages - 核心6包)
+### 包层 (Packages - 核心4包)
 
 ```
 @linch-kit/core     # L0: 基础设施包
-@linch-kit/schema   # L1: Schema引擎包
-@linch-kit/auth     # L2: 认证权限包
-@linch-kit/crud     # L2: CRUD操作包
-@linch-kit/trpc     # L3: API层包
+@linch-kit/auth     # L1: 认证权限包
+@linch-kit/platform # L2: 业务开发平台包 (Schema+CRUD+tRPC+验证)
 @linch-kit/ui       # L3: UI组件包
 ```
 

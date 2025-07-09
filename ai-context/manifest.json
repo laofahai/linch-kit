@@ -156,14 +156,13 @@
   "packageArchitecture": {
     "corePackages": [
       "@linch-kit/core",
-      "@linch-kit/schema",
       "@linch-kit/auth",
-      "@linch-kit/crud",
-      "@linch-kit/trpc",
+      "@linch-kit/platform",
       "@linch-kit/ui"
     ],
-    "modules": ["modules/console"],
-    "applications": ["apps/starter", "apps/website"],
+    "extensions": ["extensions/console", "extensions/admin", "extensions/blog-extension"],
+    "applications": ["apps/starter"],
+    "tools": ["tools/schema", "tools/cli", "tools/context"],
     "completionStatus": "100%"
   }
 }

@@ -7,17 +7,18 @@ purpose: "Graph RAG knowledge base - Package architecture and dependencies"
 entities:
 
 - "@linch-kit/core"
-- "@linch-kit/schema"
 - "@linch-kit/auth"
-- "@linch-kit/crud"
-- "@linch-kit/trpc"
+- "@linch-kit/platform"
 - "@linch-kit/ui"
-- "modules/console"
+- "extensions/console"
+- "tools/schema"
+- "tools/cli"
+- "tools/context"
   relationships:
 - type: "dependency_chain"
-  sequence: ["core", "schema", "auth", "crud", "trpc", "ui", "console"]
+  sequence: ["core", "auth", "platform", "ui"]
 - type: "layer_architecture"
-  layers: ["L0", "L1", "L2", "L3", "L4"]
+  layers: ["L0", "L1", "L2", "L3"]
   version: "2.0.2"
   last_verified: "2025-07-07"
   implementation_status: "production_ready"
@@ -36,7 +37,7 @@ entities:
 ### 依赖顺序约束
 
 ```
-core → schema → auth → crud → trpc → ui → console
+core → auth → platform → ui
 ```
 
 **严格禁止**：循环依赖和逆向依赖

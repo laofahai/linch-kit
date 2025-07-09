@@ -6,22 +6,21 @@
 
 ## 📦 包概览
 
-LinchKit 采用模块化架构，包含 6 个核心包，每个包都有明确的职责和 API 接口。
+LinchKit 采用模块化架构，包含 4 个核心包，每个包都有明确的职责和 API 接口。
 
 ### 核心包架构依赖图
 
 ```
-L0: @linch-kit/core      → 基础设施服务
+L0: @linch-kit/core      → 基础设施服务 (日志、配置、插件、Extension系统)
   ↓
-L1: @linch-kit/schema    → Schema 引擎和类型系统
+L1: @linch-kit/auth      → 认证和权限管理 (NextAuth + CASL)
   ↓
-L2: @linch-kit/auth      → 认证和权限管理
-L2: @linch-kit/crud      → 数据操作和验证
+L2: @linch-kit/platform  → 业务开发平台 (Schema+CRUD+tRPC+验证一体化)
   ↓
-L3: @linch-kit/trpc      → API 层和端到端类型安全
-L3: @linch-kit/ui        → UI 组件和设计系统
+L3: @linch-kit/ui        → UI 组件和设计系统 (shadcn/ui + 企业组件)
   ↓
-L4: modules/console      → 企业管理功能模块
+Extensions: extensions/console → 企业管理功能Extension
+Tools: tools/schema → Schema 引擎工具 (代码生成、验证)
 ```
 
 ## 📚 包文档索引
@@ -48,29 +47,7 @@ L4: modules/console      → 企业管理功能模块
 - 事件处理
 - 插件扩展
 
-### L1: Schema 层
-
-#### [@linch-kit/schema](./schema.md)
-
-**职责**: Schema 定义、验证和类型生成
-
-**核心 API**:
-
-- `defineEntity()` - 实体定义
-- `defineRelation()` - 关系定义
-- `createValidator()` - 验证器创建
-- `generateTypes()` - 类型生成
-- `EntityManager` - 实体管理器
-
-**使用场景**:
-
-- 数据模型定义
-- API 接口规范
-- 表单验证
-- 数据库 Schema 生成
-- TypeScript 类型生成
-
-### L2: 业务逻辑层
+### L1: 认证层
 
 #### [@linch-kit/auth](./auth.md)
 
@@ -92,47 +69,31 @@ L4: modules/console      → 企业管理功能模块
 - 多租户支持
 - 角色管理
 
-#### [@linch-kit/crud](./crud.md)
+### L2: 业务开发平台
 
-**职责**: 数据的增删改查操作
+#### [@linch-kit/platform](./platform.md)
+
+**职责**: Schema+CRUD+tRPC+验证一体化业务开发平台
 
 **核心 API**:
 
-- `createCRUD()` - CRUD 操作创建
+- `createPlatformCRUD()` - CRUD 操作创建
+- `createPlatformRouter()` - 路由创建
+- `defineEntity()` - 实体定义
+- `createValidator()` - 验证器创建
 - `QueryBuilder` - 查询构建器
-- `DataValidator` - 数据验证器
-- `RelationManager` - 关系管理器
 - `TransactionManager` - 事务管理
 
 **使用场景**:
 
-- 数据库操作
-- 数据验证
-- 关系查询
-- 批量操作
-- 事务处理
-
-### L3: 接口层
-
-#### [@linch-kit/trpc](./trpc.md)
-
-**职责**: API 路由和端到端类型安全
-
-**核心 API**:
-
-- `createRouter()` - 路由创建
-- `createMiddleware()` - 中间件创建
-- `createClient()` - 客户端创建
-- `ErrorHandler` - 错误处理
-- `TypeSafeAPI` - 类型安全 API
-
-**使用场景**:
-
+- 数据库操作和验证
 - API 路由定义
-- 客户端调用
-- 中间件处理
-- 错误处理
-- 类型安全通信
+- 数据模型定义
+- 关系查询
+- 事务处理
+- 端到端类型安全
+
+### L3: UI 层
 
 #### [@linch-kit/ui](./ui.md)
 
@@ -154,11 +115,11 @@ L4: modules/console      → 企业管理功能模块
 - 主题定制
 - 响应式设计
 
-### L4: 应用模块
+### Extensions: 功能扩展
 
-#### modules/console
+#### extensions/console
 
-**职责**: 企业级管理控制台
+**职责**: 企业级管理控制台Extension
 
 **核心功能**:
 
@@ -176,7 +137,45 @@ L4: modules/console      → 企业管理功能模块
 - 系统监控
 - 运营数据分析
 
-**说明**: Console模块的详细文档请参考 [Console使用指南](../../02_Guides/03_Console_Usage.md)
+### Tools: 开发工具
+
+#### tools/schema
+
+**职责**: Schema 引擎工具 (代码生成、验证)
+
+**核心功能**:
+
+- 实体定义和验证
+- TypeScript 类型生成
+- Prisma Schema 生成
+- 代码生成和转换
+
+**使用场景**:
+
+- 数据模型定义
+- 类型安全开发
+- 代码生成
+- 数据验证
+
+#### tools/cli
+
+**职责**: LinchKit CLI 工具
+
+**核心功能**:
+
+- 项目脚手架
+- Extension 管理
+- 开发工具
+
+#### tools/context
+
+**职责**: Graph RAG 上下文工具
+
+**核心功能**:
+
+- AI 辅助开发
+- 智能查询
+- 上下文理解
 
 ## 🚀 快速 API 使用指南
 
@@ -185,32 +184,30 @@ L4: modules/console      → 企业管理功能模块
 ```typescript
 // 1. 导入核心包
 import { logger, config } from '@linch-kit/core'
-import { defineEntity } from '@linch-kit/schema'
 import { requireAuth, can } from '@linch-kit/auth'
-import { createCRUD } from '@linch-kit/crud'
-import { createRouter } from '@linch-kit/trpc'
+import { createPlatformCRUD, createPlatformRouter, defineEntity } from '@linch-kit/platform'
 import { Button, Form } from '@linch-kit/ui'
 
 // 2. 配置应用
 logger.info('Application starting', { version: config.app.version })
 ```
 
-### Schema 驱动开发
+### 平台驱动开发
 
 ```typescript
-// 1. 定义 Schema
-const UserSchema = defineEntity('User', {
+// 1. 定义实体 (使用 tools/schema 或 @linch-kit/platform)
+const UserEntity = defineEntity('User', {
   id: z.string().uuid(),
   name: z.string().min(1),
   email: z.string().email(),
   role: z.enum(['USER', 'ADMIN'])
 })
 
-// 2. 生成 CRUD 操作
-const userCRUD = createCRUD(UserSchema)
+// 2. 创建平台 CRUD 操作
+const userCRUD = createPlatformCRUD(UserEntity)
 
-// 3. 创建 API 路由
-const userRouter = createRouter()
+// 3. 创建平台 API 路由
+const userRouter = createPlatformRouter()
   .middleware(requireAuth)
   .query('getUser', {
     input: z.string(),
@@ -225,7 +222,7 @@ const userRouter = createRouter()
 // 4. 生成 UI 表单
 const UserForm = () => (
   <Form
-    schema={UserSchema}
+    schema={UserEntity.schema}
     onSubmit={async (data) => {
       await userCRUD.create(data)
     }}
@@ -274,26 +271,26 @@ eventBus.on(UserCreatedEvent, async event => {
 ### 按功能查找
 
 - **日志记录** → [@linch-kit/core](./core.md#logger)
-- **数据验证** → [@linch-kit/schema](./schema.md#validation)
 - **用户认证** → [@linch-kit/auth](./auth.md#authentication)
-- **数据操作** → [@linch-kit/crud](./crud.md#operations)
-- **API 创建** → [@linch-kit/trpc](./trpc.md#router)
+- **数据操作** → [@linch-kit/platform](./platform.md#crud)
+- **API 创建** → [@linch-kit/platform](./platform.md#router)
+- **数据验证** → [@linch-kit/platform](./platform.md#validation)
 - **UI 组件** → [@linch-kit/ui](./ui.md#components)
 
 ### 按使用场景查找
 
-- **创建新实体** → Schema → CRUD → tRPC → UI 链路
+- **创建新实体** → Platform 一体化开发链路
 - **权限控制** → Auth 包权限 API
-- **表单处理** → UI 表单 + Schema 验证
-- **数据查询** → CRUD 查询构建器
-- **API 开发** → tRPC 路由器
+- **表单处理** → UI 表单 + Platform 验证
+- **数据查询** → Platform 查询构建器
+- **API 开发** → Platform 路由器
 
 ### 按包依赖查找
 
 - **基础服务** → @linch-kit/core
-- **上层包都依赖** → @linch-kit/schema
-- **业务功能** → @linch-kit/auth + @linch-kit/crud
-- **接口开发** → @linch-kit/trpc + @linch-kit/ui
+- **认证权限** → @linch-kit/auth
+- **业务开发** → @linch-kit/platform (一体化)
+- **界面开发** → @linch-kit/ui
 
 ## 📖 API 文档约定
 
