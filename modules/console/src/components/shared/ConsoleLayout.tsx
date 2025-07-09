@@ -8,7 +8,7 @@
 
 import React, { ReactNode } from 'react'
 import { useSession } from '@linch-kit/auth'
-import { cn } from '@linch-kit/ui/utils'
+import { cn } from '@linch-kit/ui/shared'
 
 import { ModernSidebar, ModernPage } from '../layout/ModernSidebar'
 

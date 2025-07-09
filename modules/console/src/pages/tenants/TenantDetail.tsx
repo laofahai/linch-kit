@@ -26,7 +26,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@linch-kit/ui'
+} from '@linch-kit/ui/server'
 import {
   Building2,
   Users,

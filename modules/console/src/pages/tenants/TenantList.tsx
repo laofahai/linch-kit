@@ -15,6 +15,8 @@ import {
   Button,
   Input,
   Badge,
+} from '@linch-kit/ui/server'
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -32,7 +34,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@linch-kit/ui'
+} from '@linch-kit/ui/client'
 import {
   Plus,
   Search,

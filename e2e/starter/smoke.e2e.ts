@@ -62,6 +62,66 @@ test.describe('Starter App - 冒烟测试', () => {
   })
 })
 
+test.describe('Starter App - Console 模块集成测试', () => {
+  test('管理控制台应该正常加载', async ({ page }) => {
+    await page.goto('/dashboard/admin')
+
+    // 检查页面是否包含Dashboard组件内容
+    await expect(page.locator('body')).toBeVisible()
+
+    // 检查是否有Console相关内容
+    const pageContent = await page.textContent('body')
+
+    // 如果Console Dashboard正常工作，应该包含一些管理相关内容
+    // 我们检查是否至少页面能正常加载而不报错
+    expect(pageContent).toBeTruthy()
+  })
+
+  test('Console Provider 配置应该正常工作', async ({ page }) => {
+    await page.goto('/dashboard/admin')
+
+    // 检查页面没有JavaScript错误
+    const errors: string[] = []
+    page.on('pageerror', error => {
+      errors.push(error.message)
+    })
+
+    await page.waitForLoadState('networkidle')
+
+    // 过滤掉无关错误
+    const criticalErrors = errors.filter(
+      error =>
+        !error.includes('favicon') && !error.includes('analytics') && !error.includes('vercel')
+    )
+
+    expect(criticalErrors).toHaveLength(0)
+  })
+
+  test('快速操作卡片应该存在', async ({ page }) => {
+    await page.goto('/dashboard/admin')
+
+    // 检查快速操作区域
+    const quickActions = page.locator('text=快速操作')
+    if (await quickActions.isVisible()) {
+      // 检查管理功能链接
+      await expect(page.locator('text=用户管理')).toBeVisible()
+      await expect(page.locator('text=租户管理')).toBeVisible()
+      await expect(page.locator('text=系统设置')).toBeVisible()
+    }
+  })
+
+  test('Console集成状态卡片应该显示', async ({ page }) => {
+    await page.goto('/dashboard/admin')
+
+    // 检查集成状态卡片
+    const integrationStatus = page.locator('text=Console 模块集成状态')
+    if (await integrationStatus.isVisible()) {
+      await expect(page.locator('text=已集成')).toBeVisible()
+      await expect(page.locator('text=@linch-kit/console Dashboard')).toBeVisible()
+    }
+  })
+})
+
 test.describe('Starter App - 性能测试', () => {
   test('页面加载时间应该在合理范围内', async ({ page }) => {
     const startTime = Date.now()

@@ -7,8 +7,8 @@
 'use client'
 
 import React, { ReactNode, useState } from 'react'
-import { cn } from '@linch-kit/ui/utils'
-import { Button, Separator } from '@linch-kit/ui'
+import { cn } from '@linch-kit/ui/shared'
+import { Button, Separator } from '@linch-kit/ui/server'
 import { Menu, X, Home, Settings, Users, BarChart3, FileText, HelpCircle } from 'lucide-react'
 
 export interface SimpleSidebarProps {
