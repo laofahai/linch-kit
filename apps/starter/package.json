@@ -5,7 +5,7 @@
   "description": "LinchKit AI-First 全栈开发框架 - 企业级生产应用",
   "packageManager": "bun@1.2.18",
   "scripts": {
-    "dev": "node dev.js",
+    "dev": "next dev",
     "dev:turbo": "next dev --turbo",
     "build": "prisma generate && next build",
     "start": "next start",

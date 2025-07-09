@@ -62,11 +62,14 @@ jobs:
           
           echo '{"projectId":"'$PROJECT_ID'","orgId":"${{ secrets.VERCEL_ORG_ID }}"}' > .vercel/project.json
           
+          # 复制对应的vercel配置文件
+          cp vercel-${{ matrix.app }}.json vercel.json
+          
           # 部署到 Vercel（从monorepo根目录）
           if [ "${{ github.event.inputs.environment }}" = "production" ]; then
-            vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes --scope=apps/${{ matrix.app }}
+            vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
           else
-            vercel deploy --token=${{ secrets.VERCEL_TOKEN }} --yes --scope=apps/${{ matrix.app }}
+            vercel deploy --token=${{ secrets.VERCEL_TOKEN }} --yes
           fi
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
