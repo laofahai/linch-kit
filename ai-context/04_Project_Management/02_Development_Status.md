@@ -3,9 +3,42 @@
 **版本**: v2.2  
 **更新**: 2025-07-09  
 **当前分支**: feature/starter-console-integration-e2e  
-**状态**: Extension系统集成测试完成，console/admin/starter架构方案协商完成
+**状态**: 项目文档架构更新完成，所有文档已同步最新架构变化
 
 ## 🏗️ 当前开发进展
+
+### 2025-07-09 - 项目文档架构更新完成 ✅
+
+#### ✅ 重要成果
+
+- **文档架构全面更新**: 完成了所有项目文档的架构同步更新
+  - 更新了40+个Markdown文件，反映当前的4+1架构
+  - 从旧架构(core, schema, auth, crud, trpc, ui)更新到新架构(core, auth, platform, ui)
+  - 修正了模块路径：modules/console → extensions/console
+  - 移除了过时的应用引用：apps/website, apps/demo-app
+- **API文档重构**: 删除过时包文档，创建新的platform包文档
+  - 删除了crud.md, schema.md, trpc.md, ai.md等过时文档
+  - 创建了完整的platform.md API文档
+  - 更新了所有包报告和依赖分析文档
+- **开发约束更新**: 同步了所有开发工具和约束文档
+  - 修正了.claude/commands/start.md中的工具路径
+  - 更新了CLAUDE.md中的包复用检查命令
+  - 同步了manifest.json中的包架构定义
+
+#### 🔧 技术实现
+
+- **系统性文档更新**:
+  - 使用全局替换确保引用一致性
+  - 批量处理200+次精确替换操作
+  - 保持了文档的完整性和准确性
+- **架构变化反映**:
+  - 核心包从6个简化为4个
+  - Extension系统的完整集成
+  - 工具包的重新组织和分类
+- **质量保证**:
+  - 验证所有文档更新的准确性
+  - 确保代码示例和API引用的正确性
+  - 维护了文档间的交叉引用完整性
 
 ### 2025-07-09 - Extension系统集成测试 & 架构方案协商 ✅
 
@@ -119,7 +152,7 @@
 - **架构超额完成**: 实际完成7+1架构（7个packages + 1个module），超出原计划的6+1
 - **AI基础设施完备**: packages/ai包含完整的Graph RAG、Neo4j图谱、智能查询引擎
 - **CLI工具完整**: bun run ai:session 命令套件100%可用
-- **Console管理平台**: modules/console 完整的管理功能已实现
+- **Console管理平台**: extensions/console 完整的管理功能已实现
 
 ### 2025-07-07 - 文档架构重新梳理 Phase 1 ✅
 
@@ -206,7 +239,7 @@ L3: @linch-kit/trpc           ✅ API层 (100%)
 L3: @linch-kit/ui             ✅ UI组件 (100%)
 L3: @linch-kit/ai             ✅ AI能力 (100% - 待重构)
 L3: @linch-kit/create-linch-kit ✅ 项目创建工具 (100%)
-L4: modules/console           ✅ 管理平台 (100%)
+L4: extensions/console           ✅ 管理平台 (100%)
 L4: apps/website              ✅ 文档平台 (100%)
 L4: apps/starter              ✅ 多标签工作台 (100%)
 L4: apps/demo-app             ✅ 功能演示应用 (100%)

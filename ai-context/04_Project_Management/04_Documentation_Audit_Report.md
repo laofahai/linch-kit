@@ -34,7 +34,7 @@ LinchKit Project Documentation Audit
 │   ├── tools/schema        ✅ 优秀
 │   ├── @linch-kit/auth          ✅ 良好
 │   ├── @linch-kit/platform          ✅ 良好
-│   ├── @linch-kit/trpc          ✅ 良好
+│   ├── @linch-kit/platform          ✅ 良好
 │   ├── @linch-kit/ui            ✅ 一般
 │   ├── @linch-kit/ai            ✅ 新增完整
 │   └── create-linch-kit         ✅ 良好
@@ -104,7 +104,7 @@ LinchKit Project Documentation Audit
 - 功能完整: Schema 驱动、权限集成、缓存优化
 - 改进点: 缺少设计文档，钩子系统文档不足
 
-**@linch-kit/trpc** - 8.0/10
+**@linch-kit/platform** - 8.0/10
 
 - README: 258 行文档，高级特性覆盖
 - 技术集成: tRPC v11、WebSocket、监控集成

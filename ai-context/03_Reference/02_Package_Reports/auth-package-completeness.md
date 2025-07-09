@@ -171,7 +171,7 @@ src/
 ### 依赖关系
 
 - **@linch-kit/core**: 日志、配置、插件系统
-- **@linch-kit/schema**: Schema 验证和类型定义
+- **tools/schema**: Schema 验证和类型定义
 - **Next.js**: NextAuth.js 需要 Next.js 环境
 - **React**: 组件和 hooks 需要 React 环境
 
@@ -257,4 +257,4 @@ src/
 
 _报告生成时间: 2025-07-04_  
 _验证方式: 代码审查 + 测试运行 + 功能分析_  
-_下一步: 继续验证 @linch-kit/crud 包_
+_下一步: 继续验证 @linch-kit/platform 包_

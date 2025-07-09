@@ -23,7 +23,7 @@ L3: @linch-kit/platform           ✅ API层 (100%)
 L3: @linch-kit/ui             ✅ UI组件 (100%)
 L3: @linch-kit/ai             ✅ AI开发能力 (100%)
 L3: @linch-kit/create-linch-kit ✅ 项目创建工具 (100%)
-L4: modules/console           ✅ 管理平台 (100%)
+L4: extensions/console           ✅ 管理平台 (100%)
 ```
 
 ### ✅ 已完成的应用生态

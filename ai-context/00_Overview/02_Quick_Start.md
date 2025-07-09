@@ -139,7 +139,7 @@ git push -u origin feature/your-task-name
 ### 核心包依赖顺序
 
 ```
-@linch-kit/core → @linch-kit/schema → @linch-kit/auth → @linch-kit/crud → @linch-kit/trpc → @linch-kit/ui → modules/console
+@linch-kit/core → tools/schema → @linch-kit/auth → @linch-kit/platform → @linch-kit/platform → @linch-kit/ui → modules/console
 ```
 
 ### 主要应用

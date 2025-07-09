@@ -28,6 +28,7 @@ L3: extensions/console   → 管理平台Extension (多租户、权限管理)
 ```
 
 **✅ 最终包架构**:
+
 - **核心4包**: core, auth, platform, ui
 - **移除**: packages/crud, packages/trpc (功能已整合到platform)
 - **工具包**: tools/schema (开发时代码生成工具)
@@ -47,6 +48,7 @@ apps/starter        # 生产级基础应用 - Extension运行时环境
 ```
 
 **⚠️ 应用架构简化**:
+
 - **保留**: apps/starter (核心应用)
 - **移除**: apps/demo-app, apps/website (简化架构)
 
@@ -227,7 +229,7 @@ import { Button, Form, DataTable } from '@linch-kit/ui'
 <DataTable data={users} columns={userColumns} />
 ```
 
-### L4: modules/console (管理平台)
+### L4: extensions/console (管理平台)
 
 **职责**: 企业级管理控制台
 

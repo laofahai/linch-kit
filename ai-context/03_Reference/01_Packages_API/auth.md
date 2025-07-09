@@ -2,7 +2,7 @@
 package: '@linch-kit/auth'
 version: '2.0.2'
 layer: 'L2'
-dependencies: ['@linch-kit/core', '@linch-kit/schema']
+dependencies: ['@linch-kit/core', 'tools/schema']
 completeness: 90
 test_coverage: 6
 status: 'production_ready'
@@ -35,9 +35,9 @@ api_exports:
     status: 'stable'
 relationships:
   - type: 'depends_on'
-    targets: ['@linch-kit/core', '@linch-kit/schema']
+    targets: ['@linch-kit/core', 'tools/schema']
   - type: 'provides_auth_for'
-    targets: ['@linch-kit/crud', '@linch-kit/trpc', '@linch-kit/ui']
+    targets: ['@linch-kit/platform', '@linch-kit/platform', '@linch-kit/ui']
   - type: 'integrates_with'
     targets: ['NextAuth.js', 'CASL', 'React']
 last_verified: '2025-07-07'
@@ -48,7 +48,7 @@ last_verified: '2025-07-07'
 **版本**: 2.0.2  
 **创建**: 2025-07-05  
 **状态**: 已审查并修正  
-**依赖**: @linch-kit/core, @linch-kit/schema
+**依赖**: @linch-kit/core, tools/schema
 
 ## 🎯 包概述
 
@@ -74,7 +74,7 @@ bun add @linch-kit/auth
 ```typescript
 // 内部依赖
 @linch-kit/core     // 日志、配置、插件系统
-@linch-kit/schema   // 类型定义和验证
+tools/schema   // 类型定义和验证
 
 // 外部依赖
 next-auth: 5.0.0-beta.25    // 认证核心
@@ -852,8 +852,8 @@ export function UserManagement() {
 - [NextAuth.js 5.0 官方文档](https://authjs.dev/)
 - [CASL 权限库文档](https://casl.js.org/)
 - [@linch-kit/core 缓存系统](./core.md#缓存系统)
-- [@linch-kit/schema 类型定义](./schema.md#类型系统)
-- [@linch-kit/trpc 集成指南](./trpc.md#认证集成)
+- [tools/schema 类型定义](./schema.md#类型系统)
+- [@linch-kit/platform 集成指南](./trpc.md#认证集成)
 
 ### 8. CLI 命令系统
 
@@ -1016,7 +1016,7 @@ function LoginForm() {
 
 ### 架构约束
 
-1. **数据库集成**: Prisma 适配器已移至 `@linch-kit/trpc` 包，避免循环依赖
+1. **数据库集成**: Prisma 适配器已移至 `@linch-kit/platform` 包，避免循环依赖
 2. **缓存管理**: 权限缓存功能使用 `@linch-kit/core` 包的缓存系统
 3. **审计日志**: 审计日志功能使用 `@linch-kit/core` 包的审计系统
 4. **插件系统**: 使用 `@linch-kit/core` 包的插件管理器

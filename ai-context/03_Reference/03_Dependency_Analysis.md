@@ -16,7 +16,7 @@
 
 **状态**: ✅ 符合架构约束
 
-### 2. @linch-kit/schema
+### 2. tools/schema
 
 **位置**: L1
 **依赖**:
@@ -30,30 +30,30 @@
 **位置**: L2
 **依赖**:
 
-- devDependencies: @linch-kit/core, @linch-kit/schema
-- peerDependencies: @linch-kit/core, @linch-kit/schema
+- devDependencies: @linch-kit/core, tools/schema
+- peerDependencies: @linch-kit/core, tools/schema
 
 **状态**: ✅ 符合架构约束 (应该将 devDependencies 改为 dependencies)
 
-### 4. @linch-kit/crud
+### 4. @linch-kit/platform
 
 **位置**: L3
 **依赖**:
 
 - @linch-kit/core (workspace:\*)
-- @linch-kit/schema (workspace:\*)
+- tools/schema (workspace:\*)
 - @linch-kit/auth (workspace:\*)
 
 **状态**: ✅ 符合架构约束
 
-### 5. @linch-kit/trpc
+### 5. @linch-kit/platform
 
 **位置**: L4
 **依赖**:
 
 - @linch-kit/core (workspace:\*)
 - @linch-kit/auth (workspace:\*)
-- ⚠️ **缺少 @linch-kit/schema 依赖**
+- ⚠️ **缺少 tools/schema 依赖**
 
 **状态**: ⚠️ 部分违反架构约束
 
@@ -63,8 +63,8 @@
 **依赖**:
 
 - @linch-kit/core (workspace:\*)
-- @linch-kit/schema (workspace:\*)
-- @linch-kit/crud (workspace:\*)
+- tools/schema (workspace:\*)
+- @linch-kit/platform (workspace:\*)
 - ⚠️ **缺少 @linch-kit/auth 依赖**
 
 **状态**: ⚠️ 部分违反架构约束
@@ -73,7 +73,7 @@
 
 ### 1. 依赖缺失问题
 
-- **@linch-kit/trpc** 缺少 @linch-kit/schema 依赖
+- **@linch-kit/platform** 缺少 tools/schema 依赖
 - **@linch-kit/ui** 缺少 @linch-kit/auth 依赖
 
 ### 2. 依赖配置问题
@@ -82,19 +82,19 @@
 
 ### 3. 架构层级跳跃
 
-- **@linch-kit/ui** 直接依赖 @linch-kit/crud，跳过了 @linch-kit/auth 和 @linch-kit/trpc
+- **@linch-kit/ui** 直接依赖 @linch-kit/platform，跳过了 @linch-kit/auth 和 @linch-kit/platform
 
 ## 修复建议
 
 ### 1. 立即修复
 
 - 将 @linch-kit/auth 的 devDependencies 改为 dependencies
-- 为 @linch-kit/trpc 添加 @linch-kit/schema 依赖
+- 为 @linch-kit/platform 添加 tools/schema 依赖
 - 为 @linch-kit/ui 添加 @linch-kit/auth 依赖
 
 ### 2. 架构优化
 
-- 考虑 @linch-kit/ui 是否真的需要直接依赖 @linch-kit/crud
+- 考虑 @linch-kit/ui 是否真的需要直接依赖 @linch-kit/platform
 - 如果需要，确保依赖链完整：ui → trpc → crud → auth → schema → core
 
 ## 完整的期望依赖关系
@@ -102,13 +102,13 @@
 ```
 @linch-kit/core (L0)
     ↓
-@linch-kit/schema (L1)
+tools/schema (L1)
     ↓
 @linch-kit/auth (L2)
     ↓
-@linch-kit/crud (L3)
+@linch-kit/platform (L3)
     ↓
-@linch-kit/trpc (L4)
+@linch-kit/platform (L4)
     ↓
 @linch-kit/ui (L5)
 ```
@@ -116,6 +116,6 @@
 ## 下一步行动
 
 1. 修复 @linch-kit/auth 的依赖配置
-2. 补充 @linch-kit/trpc 的 schema 依赖
+2. 补充 @linch-kit/platform 的 schema 依赖
 3. 补充 @linch-kit/ui 的 auth 依赖
 4. 验证修复后的构建和测试
