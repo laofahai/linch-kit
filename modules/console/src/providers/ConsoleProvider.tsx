@@ -13,7 +13,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 // import { createTRPCProxyClient, httpBatchLink } from '@linch-kit/trpc'
 import { useState } from 'react'
 
-// import { Toaster } from '@linch-kit/ui' // TODO: Add Toaster component to UI package
+// import { Toaster } from '@linch-kit/ui/server' // TODO: Add Toaster component to UI package
 // import { useConsoleTranslation } from '../i18n'
 import type { ConsoleConfig } from '../routes/types'
 

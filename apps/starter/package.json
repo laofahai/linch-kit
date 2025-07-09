@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@linch-kit/auth": "workspace:*",
+    "@linch-kit/console": "workspace:*",
     "@linch-kit/core": "workspace:*",
     "@linch-kit/crud": "workspace:*",
     "@linch-kit/schema": "workspace:*",

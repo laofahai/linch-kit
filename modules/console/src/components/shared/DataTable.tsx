@@ -7,17 +7,10 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { SchemaTable } from '@linch-kit/ui'
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@linch-kit/ui'
-import { cn } from '@linch-kit/ui/utils'
+import { SchemaTable } from '@linch-kit/ui/client'
+import { Button, Input } from '@linch-kit/ui/server'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@linch-kit/ui/client'
+import { cn } from '@linch-kit/ui/shared'
 import { Search, MoreHorizontal } from 'lucide-react'
 
 import { useConsoleTranslation } from '../../i18n'

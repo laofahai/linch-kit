@@ -7,7 +7,7 @@
 'use client'
 
 import React, { ReactNode, useState, useEffect } from 'react'
-import { cn } from '@linch-kit/ui/utils'
+import { cn } from '@linch-kit/ui/shared'
 import {
   Button,
   Card,
@@ -23,7 +23,7 @@ import {
   SheetContent,
   SheetTrigger,
   Badge,
-} from '@linch-kit/ui'
+} from '@linch-kit/ui/server'
 import {
   Menu,
   Home,

@@ -20,16 +20,18 @@ import {
   Button,
   Input,
   Label,
+  Textarea,
+  Alert,
+  AlertDescription,
+} from '@linch-kit/ui/server'
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Textarea,
   Switch,
-  Alert,
-  AlertDescription,
-} from '@linch-kit/ui'
+} from '@linch-kit/ui/client'
 import { Building2, ArrowLeft, Save, X } from 'lucide-react'
 import Link from 'next/link'
 

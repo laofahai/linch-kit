@@ -7,8 +7,8 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { Card, CardContent } from '@linch-kit/ui'
-import { cn } from '@linch-kit/ui/utils'
+import { Card, CardContent } from '@linch-kit/ui/server'
+import { cn } from '@linch-kit/ui/shared'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 
 export interface StatCardProps {

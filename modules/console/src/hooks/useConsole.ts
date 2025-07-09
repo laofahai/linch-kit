@@ -16,7 +16,7 @@ export * from './useConsole-stubs'
 // import { useCallback, useMemo } from 'react'
 // import { trpc } from '@linch-kit/trpc/client'
 // import { useConsoleTranslation } from '../i18n'
-// import { toast } from '@linch-kit/ui'
+// import { toast } from 'sonner'
 // // 查询键
 // export const consoleKeys = {
 //   dashboard: ['console', 'dashboard'] as const,

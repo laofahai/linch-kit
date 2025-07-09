@@ -8,7 +8,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { trpc } from '@linch-kit/trpc/client'
-import { toast } from '@linch-kit/ui'
+import { toast } from 'sonner'
 
 import { useConsoleTranslation } from '../i18n'
 import type { TenantInput, TenantUpdate, TenantQuotas } from '../entities'
