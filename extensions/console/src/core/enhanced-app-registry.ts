@@ -3,15 +3,11 @@
  * @module core/enhanced-app-registry
  */
 
-import type { 
-  ExtensionInstance, 
-  ExtensionMetadata,
-  ExtensionContext 
-} from '@linch-kit/core'
+import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core'
 import type { NextRouter } from 'next/router'
 
 import { AppRegistry } from './app-registry'
-import type { RouteDefinition, PageRouteDefinition } from './module-registry'
+import type { PageRouteDefinition } from './module-registry'
 
 /**
  * 动态路由配置
@@ -20,7 +16,7 @@ export interface DynamicRouteConfig {
   /** 路由路径 */
   path: string
   /** 路由组件 */
-  component: React.ComponentType<any>
+  component: React.ComponentType<unknown>
   /** 路由元数据 */
   metadata?: {
     title?: string
@@ -30,7 +26,7 @@ export interface DynamicRouteConfig {
   /** 是否需要认证 */
   requireAuth?: boolean
   /** 布局组件 */
-  layout?: React.ComponentType<any>
+  layout?: React.ComponentType<unknown>
 }
 
 /**
@@ -54,7 +50,7 @@ export type RouteUpdateListener = (routes: DynamicRouteConfig[]) => void
 
 /**
  * 增强的应用注册器
- * 
+ *
  * 扩展功能：
  * - Extension动态路由注册
  * - 运行时路由更新
@@ -89,8 +85,8 @@ export class EnhancedAppRegistry extends AppRegistry {
       metadata: {
         ...route.metadata,
         extensionName: name,
-        permissions: [...(route.metadata?.permissions || []), ...(metadata.permissions || [])]
-      }
+        permissions: [...(route.metadata?.permissions || []), ...(metadata.permissions || [])],
+      },
     }))
 
     // 注册每个路由
@@ -100,9 +96,9 @@ export class EnhancedAppRegistry extends AppRegistry {
         path: route.path,
         component: route.component,
         metadata: route.metadata,
-        permissions: route.metadata?.permissions
+        permissions: route.metadata?.permissions,
       }
-      
+
       super.registerPageRoute(pageRoute)
 
       // 注册到菜单（如果有标题）
@@ -114,7 +110,7 @@ export class EnhancedAppRegistry extends AppRegistry {
           parentId: `ext-${name}`,
           permissions: route.metadata.permissions,
           visible: true,
-          type: 'item'
+          type: 'item',
         })
       }
     }
@@ -124,7 +120,7 @@ export class EnhancedAppRegistry extends AppRegistry {
       extensionName: name,
       routes: processedRoutes,
       registeredAt: Date.now(),
-      basePath
+      basePath,
     })
 
     // 通知监听器
@@ -134,7 +130,7 @@ export class EnhancedAppRegistry extends AppRegistry {
     this.emit('extensionRoutesRegistered', {
       extension: name,
       routes: processedRoutes,
-      count: processedRoutes.length
+      count: processedRoutes.length,
     })
   }
 
@@ -150,7 +146,7 @@ export class EnhancedAppRegistry extends AppRegistry {
     // 移除页面路由
     for (const route of registration.routes) {
       this.getPageRoutes().delete(route.path)
-      
+
       // 移除菜单项
       const menuId = `${extensionName}-${route.path}`
       this.getMenus().delete(menuId)
@@ -168,7 +164,7 @@ export class EnhancedAppRegistry extends AppRegistry {
     // 触发事件
     this.emit('extensionRoutesUnregistered', {
       extension: extensionName,
-      count: registration.routes.length
+      count: registration.routes.length,
     })
   }
 
@@ -177,7 +173,7 @@ export class EnhancedAppRegistry extends AppRegistry {
    */
   getAllDynamicRoutes(): DynamicRouteConfig[] {
     const routes: DynamicRouteConfig[] = []
-    
+
     for (const registration of this.extensionRoutes.values()) {
       routes.push(...registration.routes)
     }
@@ -199,22 +195,22 @@ export class EnhancedAppRegistry extends AppRegistry {
   registerExtensionComponent(
     extension: ExtensionInstance,
     componentName: string,
-    component: React.ComponentType<any>
+    component: React.ComponentType<unknown>
   ): void {
     const namespacedName = `${extension.name}/${componentName}`
-    
+
     super.registerComponent({
       name: namespacedName,
       component,
       metadata: {
         extensionName: extension.name,
-        originalName: componentName
-      }
+        originalName: componentName,
+      },
     })
 
     this.emit('extensionComponentRegistered', {
       extension: extension.name,
-      component: namespacedName
+      component: namespacedName,
     })
   }
 
@@ -224,7 +220,7 @@ export class EnhancedAppRegistry extends AppRegistry {
   overrideComponentByExtension(
     extension: ExtensionInstance,
     targetComponent: string,
-    newComponent: React.ComponentType<any>
+    newComponent: React.ComponentType<unknown>
   ): void {
     // 验证权限
     if (!this.validateExtensionPermissions(extension.metadata, 'ui:render')) {
@@ -237,7 +233,7 @@ export class EnhancedAppRegistry extends AppRegistry {
       const backupName = `__original__/${targetComponent}`
       super.registerComponent({
         name: backupName,
-        component: original
+        component: original,
       })
     }
 
@@ -247,7 +243,7 @@ export class EnhancedAppRegistry extends AppRegistry {
     this.emit('componentOverriddenByExtension', {
       extension: extension.name,
       target: targetComponent,
-      hasOriginal: !!original
+      hasOriginal: !!original,
     })
   }
 
@@ -256,7 +252,7 @@ export class EnhancedAppRegistry extends AppRegistry {
    */
   onRouteUpdate(listener: RouteUpdateListener): () => void {
     this.routeListeners.add(listener)
-    
+
     // 立即通知当前路由
     listener(this.getAllDynamicRoutes())
 
@@ -276,10 +272,7 @@ export class EnhancedAppRegistry extends AppRegistry {
   /**
    * 动态导航到Extension路由
    */
-  async navigateToExtension(
-    extensionName: string, 
-    routePath?: string
-  ): Promise<boolean> {
+  async navigateToExtension(extensionName: string, routePath?: string): Promise<boolean> {
     if (!this.nextRouter) {
       console.error('Next.js router not set')
       return false
@@ -291,7 +284,7 @@ export class EnhancedAppRegistry extends AppRegistry {
       return false
     }
 
-    const targetPath = routePath 
+    const targetPath = routePath
       ? this.normalizeRoutePath(registration.basePath, routePath)
       : registration.basePath
 
@@ -312,7 +305,7 @@ export class EnhancedAppRegistry extends AppRegistry {
       type: 'group',
       order: 900, // Extensions在菜单底部
       permissions: metadata.permissions,
-      visible: true
+      visible: true,
     })
   }
 
@@ -330,8 +323,7 @@ export class EnhancedAppRegistry extends AppRegistry {
     metadata: ExtensionMetadata,
     requiredPermission: string
   ): boolean {
-    return metadata.permissions.includes(requiredPermission) ||
-           metadata.permissions.includes('*')
+    return metadata.permissions.includes(requiredPermission) || metadata.permissions.includes('*')
   }
 
   /**
@@ -340,7 +332,7 @@ export class EnhancedAppRegistry extends AppRegistry {
   private normalizeRoutePath(basePath: string, routePath: string): string {
     // 移除开头的斜杠
     const cleanPath = routePath.startsWith('/') ? routePath.slice(1) : routePath
-    
+
     // 如果是空路径，返回基础路径
     if (!cleanPath) {
       return basePath
@@ -355,7 +347,7 @@ export class EnhancedAppRegistry extends AppRegistry {
    */
   private notifyRouteUpdate(): void {
     const allRoutes = this.getAllDynamicRoutes()
-    
+
     for (const listener of this.routeListeners) {
       try {
         listener(allRoutes)

@@ -4,13 +4,14 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-import { 
-  ExtensionManager, 
-  extensionManager,
+import React from 'react'
+import {
+  ExtensionManager,
+  extensionManager as _extensionManager,
   type ExtensionInstance,
   type ExtensionLoadResult,
-  type ExtensionMetadata,
-  type ExtensionRegistration 
+  type ExtensionMetadata as _ExtensionMetadata,
+  type ExtensionRegistration as _ExtensionRegistration,
 } from '@linch-kit/core'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
@@ -52,7 +53,7 @@ export interface ExtensionLoadStatus {
 
 /**
  * Extension 加载器
- * 
+ *
  * 功能：
  * - Extension 的动态加载和卸载
  * - 生命周期管理
@@ -68,9 +69,9 @@ export class ExtensionLoader extends EventEmitter {
       autoLoad: true,
       extensionPath: '/home/laofahai/workspace/linch-kit/extensions',
       hotReload: true,
-      permissionCheck: true
+      permissionCheck: true,
     },
-    private extensionManager: ExtensionManager = extensionManager
+    private extensionManager: ExtensionManager = _extensionManager
   ) {
     super()
     this.setupEventHandlers()
@@ -82,7 +83,7 @@ export class ExtensionLoader extends EventEmitter {
   async loadExtension(extensionName: string): Promise<ExtensionLoadResult> {
     // 更新加载状态
     this.updateLoadStatus(extensionName, 'loading')
-    
+
     try {
       // 检查是否允许加载
       if (!this.isExtensionAllowed(extensionName)) {
@@ -91,7 +92,7 @@ export class ExtensionLoader extends EventEmitter {
 
       // 使用 ExtensionManager 加载
       const result = await this.extensionManager.loadExtension(extensionName)
-      
+
       if (!result.success || !result.instance) {
         throw new Error(result.error?.message || 'Failed to load extension')
       }
@@ -104,7 +105,7 @@ export class ExtensionLoader extends EventEmitter {
 
       // 获取 Extension 的路由配置
       const routes = await this.getExtensionRoutes(instance)
-      
+
       // 注册路由到 AppRegistry
       if (routes.length > 0) {
         await enhancedAppRegistry.registerExtensionRoutes(instance, routes)
@@ -112,7 +113,7 @@ export class ExtensionLoader extends EventEmitter {
 
       // 获取 Extension 的组件
       const components = await this.getExtensionComponents(instance)
-      
+
       // 注册组件到 AppRegistry
       for (const [componentName, component] of components) {
         enhancedAppRegistry.registerExtensionComponent(instance, componentName, component)
@@ -121,7 +122,7 @@ export class ExtensionLoader extends EventEmitter {
       // 更新加载状态
       this.updateLoadStatus(extensionName, 'loaded', {
         routeCount: routes.length,
-        componentCount: components.size
+        componentCount: components.size,
       })
 
       // 触发加载完成事件
@@ -129,20 +130,20 @@ export class ExtensionLoader extends EventEmitter {
         name: extensionName,
         instance,
         routes,
-        components: Array.from(components.keys())
+        components: Array.from(components.keys()),
       })
 
       return result
     } catch (error) {
       const loadError = error instanceof Error ? error : new Error(String(error))
-      
+
       // 更新加载状态
       this.updateLoadStatus(extensionName, 'failed', { error: loadError })
-      
+
       // 触发加载失败事件
       this.emit('extensionLoadFailed', {
         name: extensionName,
-        error: loadError
+        error: loadError,
       })
 
       return {
@@ -150,8 +151,8 @@ export class ExtensionLoader extends EventEmitter {
         error: {
           code: 'LOAD_FAILED',
           message: loadError.message,
-          stack: loadError.stack
-        }
+          stack: loadError.stack,
+        },
       }
     }
   }
@@ -171,28 +172,28 @@ export class ExtensionLoader extends EventEmitter {
 
       // 使用 ExtensionManager 卸载
       const result = await this.extensionManager.unloadExtension(extensionName)
-      
+
       if (result) {
         // 清理本地状态
         this.extensionInstances.delete(extensionName)
         this.updateLoadStatus(extensionName, 'unloaded')
-        
+
         // 触发卸载完成事件
         this.emit('extensionUnloaded', {
           name: extensionName,
-          instance
+          instance,
         })
       }
 
       return result
     } catch (error) {
       const unloadError = error instanceof Error ? error : new Error(String(error))
-      
+
       this.emit('extensionUnloadFailed', {
         name: extensionName,
-        error: unloadError
+        error: unloadError,
       })
-      
+
       return false
     }
   }
@@ -203,7 +204,7 @@ export class ExtensionLoader extends EventEmitter {
   async reloadExtension(extensionName: string): Promise<ExtensionLoadResult> {
     // 先卸载
     await this.unloadExtension(extensionName)
-    
+
     // 再加载
     return this.loadExtension(extensionName)
   }
@@ -246,7 +247,7 @@ export class ExtensionLoader extends EventEmitter {
     }
 
     const allowedExtensions = this.config.allowedExtensions || ['console', 'blog-extension']
-    
+
     for (const extensionName of allowedExtensions) {
       try {
         await this.loadExtension(extensionName)
@@ -261,21 +262,19 @@ export class ExtensionLoader extends EventEmitter {
    */
   private async getExtensionRoutes(instance: ExtensionInstance): Promise<DynamicRouteConfig[]> {
     const routes: DynamicRouteConfig[] = []
-    
+
     // 这里需要根据 Extension 的实际结构来获取路由
     // 暂时返回一个基础路由
     if (instance.metadata.capabilities.hasUI) {
       routes.push({
         path: '',
-        component: () => import('react').then(React => 
-          React.createElement('div', {}, `Extension ${instance.name} UI`)
-        ) as any,
+        component: () => React.createElement('div', {}, `Extension ${instance.name} UI`),
         metadata: {
           title: instance.metadata.displayName || instance.name,
           description: `Main page for ${instance.name}`,
-          permissions: instance.metadata.permissions
+          permissions: instance.metadata.permissions,
         },
-        requireAuth: true
+        requireAuth: true,
       })
     }
 
@@ -285,12 +284,14 @@ export class ExtensionLoader extends EventEmitter {
   /**
    * 获取 Extension 的组件
    */
-  private async getExtensionComponents(instance: ExtensionInstance): Promise<Map<string, React.ComponentType<any>>> {
-    const components = new Map<string, React.ComponentType<any>>()
-    
+  private async getExtensionComponents(
+    _instance: ExtensionInstance
+  ): Promise<Map<string, React.ComponentType<unknown>>> {
+    const components = new Map<string, React.ComponentType<unknown>>()
+
     // 这里需要根据 Extension 的实际结构来获取组件
     // 暂时返回空的 Map
-    
+
     return components
   }
 
@@ -301,7 +302,7 @@ export class ExtensionLoader extends EventEmitter {
     if (!this.config.allowedExtensions) {
       return true
     }
-    
+
     return this.config.allowedExtensions.includes(extensionName)
   }
 
@@ -317,13 +318,13 @@ export class ExtensionLoader extends EventEmitter {
       name: extensionName,
       status: 'loading',
       routeCount: 0,
-      componentCount: 0
+      componentCount: 0,
     }
 
     const newStatus: ExtensionLoadStatus = {
       ...currentStatus,
       status,
-      ...additional
+      ...additional,
     }
 
     if (status === 'loaded') {
@@ -332,11 +333,11 @@ export class ExtensionLoader extends EventEmitter {
     }
 
     this.loadedExtensions.set(extensionName, newStatus)
-    
+
     // 触发状态更新事件
     this.emit('statusUpdated', {
       name: extensionName,
-      status: newStatus
+      status: newStatus,
     })
   }
 
@@ -378,10 +379,15 @@ export class ExtensionLoader extends EventEmitter {
 /**
  * 创建 Extension 加载器实例
  */
-export function createExtensionLoader(
-  config?: Partial<ExtensionLoaderConfig>
-): ExtensionLoader {
-  return new ExtensionLoader(config)
+export function createExtensionLoader(config?: Partial<ExtensionLoaderConfig>): ExtensionLoader {
+  const defaultConfig: ExtensionLoaderConfig = {
+    autoLoad: true,
+    extensionPath: './extensions',
+    hotReload: false,
+    permissionCheck: true,
+    allowedExtensions: [],
+  }
+  return new ExtensionLoader({ ...defaultConfig, ...config })
 }
 
 /**

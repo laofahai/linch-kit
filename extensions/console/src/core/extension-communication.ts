@@ -11,12 +11,7 @@ import { extensionLoader } from './extension-loader'
 /**
  * 通信消息类型
  */
-export type ExtensionMessageType = 
-  | 'request'
-  | 'response'
-  | 'notification'
-  | 'broadcast'
-  | 'error'
+export type ExtensionMessageType = 'request' | 'response' | 'notification' | 'broadcast' | 'error'
 
 /**
  * Extension 消息结构
@@ -33,7 +28,7 @@ export interface ExtensionMessage {
   /** 消息主题 */
   subject: string
   /** 消息内容 */
-  payload: any
+  payload: unknown
   /** 时间戳 */
   timestamp: number
   /** 消息优先级 */
@@ -50,7 +45,7 @@ export interface ExtensionMessage {
 export type ExtensionMessageHandler = (
   message: ExtensionMessage,
   context: ExtensionMessageContext
-) => Promise<any> | any
+) => Promise<unknown> | unknown
 
 /**
  * 消息上下文
@@ -61,7 +56,7 @@ export interface ExtensionMessageContext {
   /** 接收者实例 */
   receiver: ExtensionInstance
   /** 回复消息 */
-  reply: (payload: any) => Promise<void>
+  reply: (payload: unknown) => Promise<void>
   /** 发送错误 */
   error: (error: Error) => Promise<void>
 }
@@ -89,7 +84,7 @@ export interface ExtensionMessageStats {
   /** 按类型统计 */
   byType: Record<ExtensionMessageType, number>
   /** 按Extension统计 */
-  byExtension: Record<string, { sent: number, received: number }>
+  byExtension: Record<string, { sent: number; received: number }>
   /** 错误消息数 */
   errorCount: number
   /** 未送达消息数 */
@@ -98,7 +93,7 @@ export interface ExtensionMessageStats {
 
 /**
  * Extension 通信中心
- * 
+ *
  * 功能：
  * - Extension 间消息传递
  * - 消息路由和分发
@@ -118,11 +113,11 @@ export class ExtensionCommunicationHub extends EventEmitter {
       response: 0,
       notification: 0,
       broadcast: 0,
-      error: 0
+      error: 0,
     },
     byExtension: {},
     errorCount: 0,
-    undeliveredCount: 0
+    undeliveredCount: 0,
   }
 
   constructor() {
@@ -141,7 +136,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
     if (!this.messageHandlers.has(extensionName)) {
       this.messageHandlers.set(extensionName, new Map())
     }
-    
+
     const extensionHandlers = this.messageHandlers.get(extensionName)!
     extensionHandlers.set(subject, handler)
 
@@ -156,7 +151,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
     const extensionHandlers = this.messageHandlers.get(extensionName)
     if (extensionHandlers) {
       extensionHandlers.delete(subject)
-      
+
       if (extensionHandlers.size === 0) {
         this.messageHandlers.delete(extensionName)
       }
@@ -166,16 +161,12 @@ export class ExtensionCommunicationHub extends EventEmitter {
   /**
    * 订阅消息主题
    */
-  subscribe(
-    extensionName: string,
-    subject: string,
-    handler: ExtensionMessageHandler
-  ): () => void {
+  subscribe(extensionName: string, subject: string, handler: ExtensionMessageHandler): () => void {
     const subscription: ExtensionMessageSubscription = {
       extensionName,
       subject,
       handler,
-      subscribedAt: Date.now()
+      subscribedAt: Date.now(),
     }
 
     const extensionSubs = this.subscriptions.get(extensionName) || []
@@ -191,16 +182,12 @@ export class ExtensionCommunicationHub extends EventEmitter {
   /**
    * 取消订阅
    */
-  unsubscribe(
-    extensionName: string,
-    subject: string,
-    handler: ExtensionMessageHandler
-  ): void {
+  unsubscribe(extensionName: string, subject: string, handler: ExtensionMessageHandler): void {
     const extensionSubs = this.subscriptions.get(extensionName) || []
     const filteredSubs = extensionSubs.filter(
       sub => sub.subject !== subject || sub.handler !== handler
     )
-    
+
     if (filteredSubs.length === 0) {
       this.subscriptions.delete(extensionName)
     } else {
@@ -215,7 +202,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
     const fullMessage: ExtensionMessage = {
       ...message,
       id: this.generateMessageId(),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }
 
     // 验证权限
@@ -228,7 +215,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
 
     // 添加到历史记录
     this.messageHistory.push(fullMessage)
-    
+
     // 限制历史记录大小
     if (this.messageHistory.length > 1000) {
       this.messageHistory.shift()
@@ -250,29 +237,29 @@ export class ExtensionCommunicationHub extends EventEmitter {
     from: string,
     to: string,
     subject: string,
-    payload: any,
-    timeout: number = 5000
-  ): Promise<any> {
+    payload: unknown,
+    _timeout: number = 5000
+  ): Promise<unknown> {
     const messageId = await this.sendMessage({
       type: 'request',
       from,
       to,
       subject,
       payload,
-      requiresAck: true
+      requiresAck: true,
     })
 
     // 等待响应
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         this.off(`response:${messageId}`, responseHandler)
-        reject(new Error(`Request timeout after ${timeout}ms`))
-      }, timeout)
+        reject(new Error(`Request timeout after ${_timeout}ms`))
+      }, _timeout)
 
       const responseHandler = (response: ExtensionMessage) => {
         clearTimeout(timeoutId)
         if (response.type === 'error') {
-          reject(new Error(response.payload.message || 'Request failed'))
+          reject(new Error((response.payload as { message?: string }).message || 'Request failed'))
         } else {
           resolve(response.payload)
         }
@@ -287,7 +274,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
    */
   async sendResponse(
     originalMessage: ExtensionMessage,
-    payload: any,
+    payload: unknown,
     isError: boolean = false
   ): Promise<void> {
     await this.sendMessage({
@@ -296,7 +283,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
       to: originalMessage.from,
       subject: originalMessage.subject,
       payload,
-      responseId: originalMessage.id
+      responseId: originalMessage.id,
     })
   }
 
@@ -307,14 +294,14 @@ export class ExtensionCommunicationHub extends EventEmitter {
     from: string,
     to: string | string[],
     subject: string,
-    payload: any
+    payload: unknown
   ): Promise<void> {
     await this.sendMessage({
       type: 'notification',
       from,
       to,
       subject,
-      payload
+      payload,
     })
   }
 
@@ -324,7 +311,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
   async sendBroadcast(
     from: string,
     subject: string,
-    payload: any,
+    payload: unknown,
     exclude?: string[]
   ): Promise<void> {
     const loadedExtensions = extensionLoader.getLoadedExtensions()
@@ -337,7 +324,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
       from,
       to: recipients,
       subject,
-      payload
+      payload,
     })
   }
 
@@ -353,9 +340,10 @@ export class ExtensionCommunicationHub extends EventEmitter {
 
     if (extensionName) {
       filtered = filtered.filter(
-        msg => msg.from === extensionName || 
-               msg.to === extensionName || 
-               (Array.isArray(msg.to) && msg.to.includes(extensionName))
+        msg =>
+          msg.from === extensionName ||
+          msg.to === extensionName ||
+          (Array.isArray(msg.to) && msg.to.includes(extensionName))
       )
     }
 
@@ -387,7 +375,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
     this.messageHandlers.delete(extensionName)
     this.subscriptions.delete(extensionName)
     this.messageQueue.delete(extensionName)
-    
+
     // 清理统计信息
     delete this.stats.byExtension[extensionName]
   }
@@ -404,12 +392,16 @@ export class ExtensionCommunicationHub extends EventEmitter {
       } catch (error) {
         console.error(`Failed to deliver message to ${recipient}:`, error)
         this.stats.undeliveredCount++
-        
+
         // 发送错误响应
         if (message.requiresAck) {
-          await this.sendResponse(message, {
-            message: error instanceof Error ? error.message : 'Delivery failed'
-          }, true)
+          await this.sendResponse(
+            message,
+            {
+              message: error instanceof Error ? error.message : 'Delivery failed',
+            },
+            true
+          )
         }
       }
     }
@@ -435,7 +427,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
       // 检查订阅
       const subscriptions = this.subscriptions.get(recipient) || []
       const subscription = subscriptions.find(sub => sub.subject === message.subject)
-      
+
       if (subscription) {
         await this.invokeHandler(subscription.handler, message, recipient)
       } else {
@@ -458,7 +450,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
     try {
       const senderInstance = extensionLoader.getExtensionInstance(message.from)
       const recipientInstance = extensionLoader.getExtensionInstance(recipient)
-      
+
       if (!senderInstance || !recipientInstance) {
         throw new Error('Extension instance not found')
       }
@@ -466,32 +458,36 @@ export class ExtensionCommunicationHub extends EventEmitter {
       const context: ExtensionMessageContext = {
         sender: senderInstance,
         receiver: recipientInstance,
-        reply: async (payload: any) => {
+        reply: async (payload: unknown) => {
           await this.sendResponse(message, payload)
         },
         error: async (error: Error) => {
           await this.sendResponse(message, { message: error.message }, true)
-        }
+        },
       }
 
-      const result = await handler(message, context)
+      const _result = await handler(message, context)
 
       // 如果是请求消息且需要确认，自动发送响应
-      if (message.type === 'request' && message.requiresAck && result !== undefined) {
-        await this.sendResponse(message, result)
+      if (message.type === 'request' && message.requiresAck && _result !== undefined) {
+        await this.sendResponse(message, _result)
       }
 
       // 触发消息处理事件
-      this.emit('messageHandled', { message, recipient, result })
+      this.emit('messageHandled', { message, recipient, result: _result })
     } catch (error) {
       console.error(`Message handler error for ${recipient}:`, error)
       this.stats.errorCount++
-      
+
       // 发送错误响应
       if (message.requiresAck) {
-        await this.sendResponse(message, {
-          message: error instanceof Error ? error.message : 'Handler error'
-        }, true)
+        await this.sendResponse(
+          message,
+          {
+            message: error instanceof Error ? error.message : 'Handler error',
+          },
+          true
+        )
       }
     }
   }
@@ -511,11 +507,11 @@ export class ExtensionCommunicationHub extends EventEmitter {
   private async processQueuedMessages(extensionName: string, subject: string): Promise<void> {
     const queue = this.messageQueue.get(extensionName) || []
     const relevantMessages = queue.filter(msg => msg.subject === subject)
-    
+
     for (const message of relevantMessages) {
       try {
         await this.deliverMessage(message, extensionName)
-        
+
         // 从队列中移除已处理的消息
         const updatedQueue = queue.filter(msg => msg.id !== message.id)
         this.messageQueue.set(extensionName, updatedQueue)
@@ -556,8 +552,10 @@ export class ExtensionCommunicationHub extends EventEmitter {
     }
 
     // 检查发送者是否有通信权限
-    return senderInstance.metadata.permissions.includes('extension:communicate') ||
-           senderInstance.metadata.permissions.includes('*')
+    return (
+      senderInstance.metadata.permissions.includes('extension:communicate') ||
+      senderInstance.metadata.permissions.includes('*')
+    )
   }
 
   /**
@@ -566,13 +564,13 @@ export class ExtensionCommunicationHub extends EventEmitter {
   private updateStats(message: ExtensionMessage): void {
     this.stats.totalMessages++
     this.stats.byType[message.type]++
-    
+
     // 更新发送者统计
     if (!this.stats.byExtension[message.from]) {
       this.stats.byExtension[message.from] = { sent: 0, received: 0 }
     }
     this.stats.byExtension[message.from].sent++
-    
+
     // 更新接收者统计
     const recipients = Array.isArray(message.to) ? message.to : [message.to]
     for (const recipient of recipients) {
@@ -630,21 +628,21 @@ export class ExtensionCommunicationAPI {
   /**
    * 发送请求
    */
-  async request(to: string, subject: string, payload: any): Promise<any> {
+  async request(to: string, subject: string, payload: unknown): Promise<unknown> {
     return this.hub.sendRequest(this.extensionName, to, subject, payload)
   }
 
   /**
    * 发送通知
    */
-  async notify(to: string | string[], subject: string, payload: any): Promise<void> {
+  async notify(to: string | string[], subject: string, payload: unknown): Promise<void> {
     return this.hub.sendNotification(this.extensionName, to, subject, payload)
   }
 
   /**
    * 发送广播
    */
-  async broadcast(subject: string, payload: any, exclude?: string[]): Promise<void> {
+  async broadcast(subject: string, payload: unknown, exclude?: string[]): Promise<void> {
     return this.hub.sendBroadcast(this.extensionName, subject, payload, exclude)
   }
 
@@ -659,8 +657,6 @@ export class ExtensionCommunicationAPI {
 /**
  * 创建Extension通信API
  */
-export function createExtensionCommunicationAPI(
-  extensionName: string
-): ExtensionCommunicationAPI {
+export function createExtensionCommunicationAPI(extensionName: string): ExtensionCommunicationAPI {
   return new ExtensionCommunicationAPI(extensionName)
 }

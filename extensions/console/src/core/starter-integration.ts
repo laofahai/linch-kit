@@ -4,7 +4,7 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-import type { ExtensionInstance } from '@linch-kit/core'
+import type { ExtensionInstance as _ExtensionInstance } from '@linch-kit/core'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import { extensionLoader } from './extension-loader'
@@ -68,7 +68,7 @@ export interface ExtensionStateSummary {
 
 /**
  * Starter 集成管理器
- * 
+ *
  * 功能：
  * - 统一管理 Console 与 Starter 的集成
  * - 协调各个子系统的工作
@@ -81,7 +81,7 @@ export class StarterIntegrationManager extends EventEmitter {
     loadedExtensions: 0,
     registeredRoutes: 0,
     registeredComponents: 0,
-    lastUpdated: Date.now()
+    lastUpdated: Date.now(),
   }
 
   constructor(
@@ -91,7 +91,7 @@ export class StarterIntegrationManager extends EventEmitter {
       enableCommunication: true,
       defaultExtensions: ['console', 'blog-extension'],
       routePrefix: '/dashboard/ext',
-      enablePermissionCheck: true
+      enablePermissionCheck: true,
     }
   ) {
     super()
@@ -135,14 +135,14 @@ export class StarterIntegrationManager extends EventEmitter {
       this.emit('initialized', {
         config: this.config,
         state: this.state,
-        initializationTime: this.state.initializationTime
+        initializationTime: this.state.initializationTime,
       })
 
       console.log(`[StarterIntegration] Initialized in ${this.state.initializationTime}ms`)
     } catch (error) {
       this.emit('initializationFailed', {
         error,
-        config: this.config
+        config: this.config,
       })
       throw error
     }
@@ -161,17 +161,17 @@ export class StarterIntegrationManager extends EventEmitter {
   getExtensionStateSummary(): ExtensionStateSummary[] {
     const loadedExtensions = extensionLoader.getLoadedExtensions()
     const lifecycleStates = extensionLifecycleManager.getAllLifecycleStates()
-    
+
     return loadedExtensions.map(ext => {
       const lifecycle = lifecycleStates.find(state => state.name === ext.name)
-      
+
       return {
         name: ext.name,
         loadStatus: ext.status,
         lifecyclePhase: lifecycle?.currentPhase || 'unknown',
         routeCount: ext.routeCount,
         componentCount: ext.componentCount,
-        error: ext.error?.message
+        error: ext.error?.message,
       }
     })
   }
@@ -183,15 +183,15 @@ export class StarterIntegrationManager extends EventEmitter {
     try {
       await extensionLoader.loadExtension(extensionName)
       this.updateState()
-      
+
       this.emit('extensionLoaded', {
         name: extensionName,
-        state: this.state
+        state: this.state,
       })
     } catch (error) {
       this.emit('extensionLoadFailed', {
         name: extensionName,
-        error
+        error,
       })
       throw error
     }
@@ -204,15 +204,15 @@ export class StarterIntegrationManager extends EventEmitter {
     try {
       await extensionLoader.unloadExtension(extensionName)
       this.updateState()
-      
+
       this.emit('extensionUnloaded', {
         name: extensionName,
-        state: this.state
+        state: this.state,
       })
     } catch (error) {
       this.emit('extensionUnloadFailed', {
         name: extensionName,
-        error
+        error,
       })
       throw error
     }
@@ -225,15 +225,15 @@ export class StarterIntegrationManager extends EventEmitter {
     try {
       await extensionLoader.reloadExtension(extensionName)
       this.updateState()
-      
+
       this.emit('extensionReloaded', {
         name: extensionName,
-        state: this.state
+        state: this.state,
       })
     } catch (error) {
       this.emit('extensionReloadFailed', {
         name: extensionName,
-        error
+        error,
       })
       throw error
     }
@@ -249,14 +249,14 @@ export class StarterIntegrationManager extends EventEmitter {
   /**
    * 获取菜单树
    */
-  getMenuTree(): any[] {
+  getMenuTree(): unknown[] {
     return enhancedAppRegistry.buildMenuTree()
   }
 
   /**
    * 获取通信统计
    */
-  getCommunicationStats(): any {
+  getCommunicationStats(): unknown {
     return extensionCommunicationHub.getMessageStats()
   }
 
@@ -267,7 +267,7 @@ export class StarterIntegrationManager extends EventEmitter {
     this.config = { ...this.config, ...newConfig }
     this.emit('configUpdated', {
       config: this.config,
-      state: this.state
+      state: this.state,
     })
   }
 
@@ -291,7 +291,7 @@ export class StarterIntegrationManager extends EventEmitter {
       autoLoad: this.config.autoInitialize,
       hotReload: this.config.enableHotReload,
       permissionCheck: this.config.enablePermissionCheck,
-      allowedExtensions: this.config.defaultExtensions
+      allowedExtensions: this.config.defaultExtensions,
     })
 
     console.log('[StarterIntegration] Extension loader initialized')
@@ -313,7 +313,7 @@ export class StarterIntegrationManager extends EventEmitter {
       return
     }
 
-    const promises = this.config.defaultExtensions.map(async (extensionName) => {
+    const promises = this.config.defaultExtensions.map(async extensionName => {
       try {
         await extensionLoader.loadExtension(extensionName)
         console.log(`[StarterIntegration] Loaded extension: ${extensionName}`)
@@ -330,14 +330,14 @@ export class StarterIntegrationManager extends EventEmitter {
    */
   private setupRouteListeners(): void {
     // 监听路由更新
-    enhancedAppRegistry.onRouteUpdate((routes) => {
+    enhancedAppRegistry.onRouteUpdate(routes => {
       this.state.registeredRoutes = routes.length
       this.state.lastUpdated = Date.now()
-      
+
       this.emit('routesUpdated', {
         routes,
         count: routes.length,
-        state: this.state
+        state: this.state,
       })
     })
   }
@@ -360,12 +360,12 @@ export class StarterIntegrationManager extends EventEmitter {
     })
 
     // 监听生命周期事件
-    extensionLifecycleManager.on('lifecycleEvent', (event) => {
+    extensionLifecycleManager.on('lifecycleEvent', event => {
       this.emit('extensionLifecycleEvent', event)
     })
 
     // 监听通信事件
-    extensionCommunicationHub.on('messageSent', (message) => {
+    extensionCommunicationHub.on('messageSent', message => {
       this.emit('extensionMessage', message)
     })
   }
@@ -387,7 +387,7 @@ export class StarterIntegrationManager extends EventEmitter {
       state: this.state,
       extensionCount: loadedExtensions.length,
       routeCount: allRoutes.length,
-      componentCount: allComponents.size
+      componentCount: allComponents.size,
     })
   }
 
@@ -398,15 +398,15 @@ export class StarterIntegrationManager extends EventEmitter {
     integration: StarterIntegrationState
     extensions: ExtensionStateSummary[]
     routes: DynamicRouteConfig[]
-    communication: any
-    menu: any[]
+    communication: unknown
+    menu: unknown[]
   } {
     return {
       integration: this.getState(),
       extensions: this.getExtensionStateSummary(),
       routes: this.getAllRoutes(),
       communication: this.getCommunicationStats(),
-      menu: this.getMenuTree()
+      menu: this.getMenuTree(),
     }
   }
 
@@ -416,7 +416,7 @@ export class StarterIntegrationManager extends EventEmitter {
   destroy(): void {
     this.state.initialized = false
     this.removeAllListeners()
-    
+
     console.log('[StarterIntegration] Integration manager destroyed')
   }
 }
@@ -427,7 +427,15 @@ export class StarterIntegrationManager extends EventEmitter {
 export function createStarterIntegrationManager(
   config?: Partial<StarterIntegrationConfig>
 ): StarterIntegrationManager {
-  return new StarterIntegrationManager(config)
+  const defaultConfig: StarterIntegrationConfig = {
+    autoInitialize: true,
+    routePrefix: '/dashboard/ext',
+    enableHotReload: false,
+    enableCommunication: true,
+    defaultExtensions: [],
+    enablePermissionCheck: true,
+  }
+  return new StarterIntegrationManager({ ...defaultConfig, ...config })
 }
 
 /**

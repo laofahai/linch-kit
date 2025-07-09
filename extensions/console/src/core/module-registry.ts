@@ -83,6 +83,10 @@ export interface ComponentDefinition {
   component: React.ComponentType<unknown>
   props?: Record<string, unknown>
   overrides?: string[] // 覆盖的组件名称
+  metadata?: {
+    extensionName?: string
+    originalName?: string
+  }
 }
 
 /**
@@ -94,6 +98,12 @@ export interface PageRouteDefinition {
   exact?: boolean
   auth?: boolean
   permissions?: string[]
+  metadata?: {
+    title?: string
+    description?: string
+    permissions?: string[]
+    extensionName?: string
+  }
 }
 
 /**

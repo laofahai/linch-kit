@@ -8,12 +8,13 @@
 import { useEffect, useState, useCallback } from 'react'
 
 import { starterIntegrationManager } from '../core/starter-integration'
-import type { 
-  StarterIntegrationState, 
+import type {
+  StarterIntegrationState,
   ExtensionStateSummary,
-  StarterIntegrationConfig
+  StarterIntegrationConfig,
 } from '../core/starter-integration'
 import type { DynamicRouteConfig } from '../core/enhanced-app-registry'
+import type { PageRouteDefinition } from '../core/module-registry'
 import type { ExtensionMessage } from '../core/extension-communication'
 
 /**
@@ -25,9 +26,9 @@ interface UseStarterIntegrationState {
   /** Extension 状态摘要 */
   extensions: ExtensionStateSummary[]
   /** 动态路由 */
-  routes: DynamicRouteConfig[]
+  routes: PageRouteDefinition[]
   /** 菜单树 */
-  menu: any[]
+  menu: unknown[]
   /** 是否正在加载 */
   loading: boolean
   /** 错误信息 */
@@ -51,12 +52,12 @@ interface UseStarterIntegrationActions {
   /** 更新配置 */
   updateConfig: (config: Partial<StarterIntegrationConfig>) => void
   /** 获取状态报告 */
-  getStatusReport: () => any
+  getStatusReport: () => unknown
 }
 
 /**
  * Starter 集成 Hook
- * 
+ *
  * 提供：
  * - 集成状态管理
  * - Extension 操作
@@ -71,7 +72,7 @@ export function useStarterIntegration(): UseStarterIntegrationState & UseStarter
     menu: [],
     loading: true,
     error: null,
-    initialized: false
+    initialized: false,
   })
 
   // 刷新状态
@@ -84,82 +85,94 @@ export function useStarterIntegration(): UseStarterIntegrationState & UseStarter
         routes: starterIntegrationManager.getAllRoutes(),
         menu: starterIntegrationManager.getMenuTree(),
         loading: false,
-        error: null
+        error: null,
       }))
     } catch (error) {
       setState(prevState => ({
         ...prevState,
         loading: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       }))
     }
   }, [])
 
   // 加载 Extension
-  const loadExtension = useCallback(async (name: string) => {
-    try {
-      setState(prevState => ({
-        ...prevState,
-        loading: true,
-        error: null
-      }))
-      
-      await starterIntegrationManager.loadExtension(name)
-      refresh()
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        loading: false,
-        error: error instanceof Error ? error.message : 'Failed to load extension'
-      }))
-    }
-  }, [refresh])
+  const loadExtension = useCallback(
+    async (name: string) => {
+      try {
+        setState(prevState => ({
+          ...prevState,
+          loading: true,
+          error: null,
+        }))
+
+        await starterIntegrationManager.loadExtension(name)
+        refresh()
+      } catch (error) {
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error.message : 'Failed to load extension',
+        }))
+      }
+    },
+    [refresh]
+  )
 
   // 卸载 Extension
-  const unloadExtension = useCallback(async (name: string) => {
-    try {
-      setState(prevState => ({
-        ...prevState,
-        loading: true,
-        error: null
-      }))
-      
-      await starterIntegrationManager.unloadExtension(name)
-      refresh()
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        loading: false,
-        error: error instanceof Error ? error.message : 'Failed to unload extension'
-      }))
-    }
-  }, [refresh])
+  const unloadExtension = useCallback(
+    async (name: string) => {
+      try {
+        setState(prevState => ({
+          ...prevState,
+          loading: true,
+          error: null,
+        }))
+
+        await starterIntegrationManager.unloadExtension(name)
+        refresh()
+      } catch (error) {
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error.message : 'Failed to unload extension',
+        }))
+      }
+    },
+    [refresh]
+  )
 
   // 重载 Extension
-  const reloadExtension = useCallback(async (name: string) => {
-    try {
-      setState(prevState => ({
-        ...prevState,
-        loading: true,
-        error: null
-      }))
-      
-      await starterIntegrationManager.reloadExtension(name)
-      refresh()
-    } catch (error) {
-      setState(prevState => ({
-        ...prevState,
-        loading: false,
-        error: error instanceof Error ? error.message : 'Failed to reload extension'
-      }))
-    }
-  }, [refresh])
+  const reloadExtension = useCallback(
+    async (name: string) => {
+      try {
+        setState(prevState => ({
+          ...prevState,
+          loading: true,
+          error: null,
+        }))
+
+        await starterIntegrationManager.reloadExtension(name)
+        refresh()
+      } catch (error) {
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error.message : 'Failed to reload extension',
+        }))
+      }
+    },
+    [refresh]
+  )
 
   // 更新配置
-  const updateConfig = useCallback((config: Partial<StarterIntegrationConfig>) => {
-    starterIntegrationManager.updateConfig(config)
-    refresh()
-  }, [refresh])
+  const updateConfig = useCallback(
+    (config: Partial<StarterIntegrationConfig>) => {
+      starterIntegrationManager.updateConfig(config)
+      refresh()
+    },
+    [refresh]
+  )
 
   // 获取状态报告
   const getStatusReport = useCallback(() => {
@@ -171,7 +184,7 @@ export function useStarterIntegration(): UseStarterIntegrationState & UseStarter
     const handleInitialized = () => {
       setState(prevState => ({
         ...prevState,
-        initialized: true
+        initialized: true,
       }))
       refresh()
     }
@@ -196,7 +209,7 @@ export function useStarterIntegration(): UseStarterIntegrationState & UseStarter
       setState(prevState => ({
         ...prevState,
         loading: false,
-        error: event.error.message
+        error: event.error.message,
       }))
     }
 
@@ -214,7 +227,7 @@ export function useStarterIntegration(): UseStarterIntegrationState & UseStarter
     if (starterIntegrationManager.getState().initialized) {
       setState(prevState => ({
         ...prevState,
-        initialized: true
+        initialized: true,
       }))
       refresh()
     }
@@ -239,7 +252,7 @@ export function useStarterIntegration(): UseStarterIntegrationState & UseStarter
     reloadExtension,
     refresh,
     updateConfig,
-    getStatusReport
+    getStatusReport,
   }
 }
 
@@ -263,7 +276,7 @@ export function useExtensionMessages(
       if (extensionName && message.from !== extensionName && message.to !== extensionName) {
         return
       }
-      
+
       if (subject && message.subject !== subject) {
         return
       }
@@ -283,7 +296,7 @@ export function useExtensionMessages(
   return {
     messages,
     latestMessage,
-    messageCount: messages.length
+    messageCount: messages.length,
   }
 }
 
@@ -292,29 +305,30 @@ export function useExtensionMessages(
  */
 export function useExtensionLifecycle(extensionName?: string): {
   currentPhase: string | null
-  phaseHistory: any[]
+  phaseHistory: unknown[]
   isLoading: boolean
   hasError: boolean
 } {
   const [lifecycleState, setLifecycleState] = useState({
     currentPhase: null as string | null,
-    phaseHistory: [] as any[],
+    phaseHistory: [] as unknown[],
     isLoading: false,
-    hasError: false
+    hasError: false,
   })
 
   useEffect(() => {
-    const handleLifecycleEvent = (event: any) => {
-      if (extensionName && event.extensionName !== extensionName) {
+    const handleLifecycleEvent = (event: unknown) => {
+      const lifecycleEvent = event as { extensionName?: string; phase: string }
+      if (extensionName && lifecycleEvent.extensionName !== extensionName) {
         return
       }
 
       setLifecycleState(prev => ({
         ...prev,
-        currentPhase: event.phase,
+        currentPhase: lifecycleEvent.phase,
         phaseHistory: [...prev.phaseHistory.slice(-19), event], // 保留最近20个事件
-        isLoading: event.phase === 'loading',
-        hasError: event.phase === 'failed'
+        isLoading: lifecycleEvent.phase === 'loading',
+        hasError: lifecycleEvent.phase === 'failed',
       }))
     }
 
@@ -339,16 +353,17 @@ export function useDynamicRoutes(): {
 } {
   const { routes } = useStarterIntegration()
 
-  const getRoutesByExtension = useCallback((extensionName: string) => {
-    return routes.filter(route => 
-      route.metadata?.extensionName === extensionName
-    )
-  }, [routes])
+  const getRoutesByExtension = useCallback(
+    (extensionName: string) => {
+      return routes.filter(route => route.metadata?.extensionName === extensionName)
+    },
+    [routes]
+  )
 
   return {
     routes,
     routeCount: routes.length,
-    getRoutesByExtension
+    getRoutesByExtension,
   }
 }
 
@@ -371,6 +386,6 @@ export function useExtensionState(extensionName: string): {
     isLoaded: extension?.loadStatus === 'loaded',
     isLoading: extension?.loadStatus === 'loading',
     hasError: extension?.loadStatus === 'failed',
-    error: extension?.error || null
+    error: extension?.error || null,
   }
 }

@@ -7,9 +7,9 @@
 'use client'
 
 import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui/server'
-import { Button } from '@linch-kit/ui/server'
-import { Badge } from '@linch-kit/ui/server'
+import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui'
+import { Button } from '@linch-kit/ui'
+import { Badge } from '@linch-kit/ui'
 import {
   Users,
   Building2,

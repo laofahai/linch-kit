@@ -7,12 +7,12 @@ import { EventEmitter } from 'eventemitter3'
 import type { ExtensionInstance } from '@linch-kit/core'
 
 import { extensionLoader } from './extension-loader'
-import type { ExtensionLoadStatus } from './extension-loader'
+import type { ExtensionLoadStatus as _ExtensionLoadStatus } from './extension-loader'
 
 /**
  * Extension 生命周期阶段
  */
-export type ExtensionLifecyclePhase = 
+export type ExtensionLifecyclePhase =
   | 'loading'
   | 'initializing'
   | 'starting'
@@ -39,7 +39,7 @@ export interface ExtensionLifecycleEvent {
   /** 错误信息 */
   error?: Error
   /** 额外数据 */
-  data?: any
+  data?: unknown
 }
 
 /**
@@ -68,7 +68,7 @@ export interface ExtensionLifecycleState {
 
 /**
  * Extension 生命周期管理器
- * 
+ *
  * 功能：
  * - 跟踪 Extension 生命周期状态
  * - 管理生命周期转换
@@ -77,10 +77,13 @@ export interface ExtensionLifecycleState {
  */
 export class ExtensionLifecycleManager extends EventEmitter {
   private lifecycleStates = new Map<string, ExtensionLifecycleState>()
-  private lifecycleHooks = new Map<string, Array<{
-    phase: ExtensionLifecyclePhase
-    callback: (event: ExtensionLifecycleEvent) => void | Promise<void>
-  }>>()
+  private lifecycleHooks = new Map<
+    string,
+    Array<{
+      phase: ExtensionLifecyclePhase
+      callback: (event: ExtensionLifecycleEvent) => void | Promise<void>
+    }>
+  >()
 
   constructor() {
     super()
@@ -94,32 +97,30 @@ export class ExtensionLifecycleManager extends EventEmitter {
     const state: ExtensionLifecycleState = {
       name: extensionName,
       currentPhase: 'loading',
-      phaseHistory: [{
-        phase: 'loading',
-        startTime: Date.now()
-      }],
+      phaseHistory: [
+        {
+          phase: 'loading',
+          startTime: Date.now(),
+        },
+      ],
       createdAt: Date.now(),
       lastUpdated: Date.now(),
-      instance
+      instance,
     }
 
     this.lifecycleStates.set(extensionName, state)
-    
+
     this.emitLifecycleEvent({
       extensionName,
       phase: 'loading',
-      timestamp: Date.now()
+      timestamp: Date.now(),
     })
   }
 
   /**
    * 更新 Extension 生命周期阶段
    */
-  updatePhase(
-    extensionName: string,
-    newPhase: ExtensionLifecyclePhase,
-    data?: any
-  ): void {
+  updatePhase(extensionName: string, newPhase: ExtensionLifecyclePhase, data?: unknown): void {
     const state = this.lifecycleStates.get(extensionName)
     if (!state) {
       console.warn(`Extension ${extensionName} not registered in lifecycle manager`)
@@ -128,7 +129,7 @@ export class ExtensionLifecycleManager extends EventEmitter {
 
     const previousPhase = state.currentPhase
     const now = Date.now()
-    
+
     // 结束当前阶段
     const currentPhaseHistory = state.phaseHistory[state.phaseHistory.length - 1]
     if (currentPhaseHistory && !currentPhaseHistory.endTime) {
@@ -139,7 +140,7 @@ export class ExtensionLifecycleManager extends EventEmitter {
     // 开始新阶段
     state.phaseHistory.push({
       phase: newPhase,
-      startTime: now
+      startTime: now,
     })
 
     state.currentPhase = newPhase
@@ -152,7 +153,7 @@ export class ExtensionLifecycleManager extends EventEmitter {
       previousPhase,
       timestamp: now,
       duration: currentPhaseHistory?.duration,
-      data
+      data,
     }
 
     this.emitLifecycleEvent(event)
@@ -197,8 +198,7 @@ export class ExtensionLifecycleManager extends EventEmitter {
    * 获取指定阶段的 Extension 列表
    */
   getExtensionsByPhase(phase: ExtensionLifecyclePhase): ExtensionLifecycleState[] {
-    return Array.from(this.lifecycleStates.values())
-      .filter(state => state.currentPhase === phase)
+    return Array.from(this.lifecycleStates.values()).filter(state => state.currentPhase === phase)
   }
 
   /**
@@ -223,35 +223,38 @@ export class ExtensionLifecycleManager extends EventEmitter {
     callback: (event: ExtensionLifecycleEvent) => void | Promise<void>
   ): void {
     const hooks = this.lifecycleHooks.get(extensionName) || []
-    const filteredHooks = hooks.filter(
-      hook => hook.phase !== phase || hook.callback !== callback
-    )
+    const filteredHooks = hooks.filter(hook => hook.phase !== phase || hook.callback !== callback)
     this.lifecycleHooks.set(extensionName, filteredHooks)
   }
 
   /**
    * 获取 Extension 生命周期统计
    */
-  getLifecycleStats(extensionName: string): {
-    totalTime: number
-    phaseStats: Record<ExtensionLifecyclePhase, { count: number, totalTime: number, avgTime: number }>
-  } | undefined {
+  getLifecycleStats(extensionName: string):
+    | {
+        totalTime: number
+        phaseStats: Record<
+          ExtensionLifecyclePhase,
+          { count: number; totalTime: number; avgTime: number }
+        >
+      }
+    | undefined {
     const state = this.lifecycleStates.get(extensionName)
     if (!state) {
       return undefined
     }
 
-    const phaseStats: Record<string, { count: number, totalTime: number, avgTime: number }> = {}
+    const phaseStats: Record<string, { count: number; totalTime: number; avgTime: number }> = {}
     let totalTime = 0
 
     for (const phaseHistory of state.phaseHistory) {
       const phase = phaseHistory.phase
       const duration = phaseHistory.duration || 0
-      
+
       if (!phaseStats[phase]) {
         phaseStats[phase] = { count: 0, totalTime: 0, avgTime: 0 }
       }
-      
+
       phaseStats[phase].count++
       phaseStats[phase].totalTime += duration
       totalTime += duration
@@ -265,7 +268,10 @@ export class ExtensionLifecycleManager extends EventEmitter {
 
     return {
       totalTime,
-      phaseStats: phaseStats as Record<ExtensionLifecyclePhase, { count: number, totalTime: number, avgTime: number }>
+      phaseStats: phaseStats as Record<
+        ExtensionLifecyclePhase,
+        { count: number; totalTime: number; avgTime: number }
+      >,
     }
   }
 
@@ -294,12 +300,12 @@ export class ExtensionLifecycleManager extends EventEmitter {
         await hook.callback(event)
       } catch (error) {
         console.error(`Lifecycle hook error for ${event.extensionName}:`, error)
-        
+
         // 如果钩子执行失败，触发错误事件
         this.emit('hookError', {
           extensionName: event.extensionName,
           phase: event.phase,
-          error: error instanceof Error ? error : new Error(String(error))
+          error: error instanceof Error ? error : new Error(String(error)),
         })
       }
     }
@@ -336,7 +342,7 @@ export class ExtensionLifecycleManager extends EventEmitter {
       if (!this.lifecycleStates.has(name)) {
         this.registerExtension(name)
       }
-      
+
       // 根据加载状态更新生命周期阶段
       switch (status.status) {
         case 'loading':
@@ -379,7 +385,7 @@ export class ExtensionLifecycleManager extends EventEmitter {
       // 统计阶段分布
       const phase = state.currentPhase
       phaseDistribution[phase] = (phaseDistribution[phase] || 0) + 1
-      
+
       // 计算生命周期总时间
       const lifetime = state.lastUpdated - state.createdAt
       totalLifetime += lifetime
@@ -388,7 +394,7 @@ export class ExtensionLifecycleManager extends EventEmitter {
     return {
       totalExtensions: states.length,
       phaseDistribution: phaseDistribution as Record<ExtensionLifecyclePhase, number>,
-      averageLifetime: states.length > 0 ? totalLifetime / states.length : 0
+      averageLifetime: states.length > 0 ? totalLifetime / states.length : 0,
     }
   }
 }

@@ -34,7 +34,7 @@ interface RouteMatch {
 
 /**
  * Extension路由加载器
- * 
+ *
  * 功能：
  * - 动态匹配Extension路由
  * - 懒加载路由组件
@@ -45,9 +45,9 @@ export const ExtensionRouteLoader: React.FC<ExtensionRouteLoaderProps> = ({
   pathname,
   fallback = <div>Loading...</div>,
   notFound: NotFoundComponent = () => <div>404 - Page not found</div>,
-  errorBoundary: ErrorBoundary = DefaultErrorBoundary
+  errorBoundary: ErrorBoundary = DefaultErrorBoundary,
 }) => {
-  const router = useRouter()
+  const _router = useRouter()
   const [routeMatch, setRouteMatch] = useState<RouteMatch | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -100,7 +100,7 @@ export const ExtensionRouteLoader: React.FC<ExtensionRouteLoaderProps> = ({
 
   // 应用布局
   if (route.layout) {
-    const Layout = route.layout
+    const Layout = route.layout as React.ComponentType<{ children: React.ReactNode }>
     return (
       <Layout>
         <Suspense fallback={fallback}>
@@ -120,10 +120,7 @@ export const ExtensionRouteLoader: React.FC<ExtensionRouteLoaderProps> = ({
 /**
  * 查找匹配的路由
  */
-function findRouteMatch(
-  pathname: string,
-  routes: DynamicRouteConfig[]
-): RouteMatch | null {
+function findRouteMatch(pathname: string, routes: DynamicRouteConfig[]): RouteMatch | null {
   for (const route of routes) {
     const params = matchPath(pathname, route.path)
     if (params) {
@@ -136,13 +133,10 @@ function findRouteMatch(
 /**
  * 路径匹配
  */
-function matchPath(
-  pathname: string,
-  pattern: string
-): Record<string, string> | null {
+function matchPath(pathname: string, pattern: string): Record<string, string> | null {
   // 简单的路径匹配实现
   // 支持 :param 和 * 通配符
-  
+
   const patternParts = pattern.split('/')
   const pathParts = pathname.split('/')
 
@@ -224,8 +218,8 @@ export function useExtensionRoute() {
 
   useEffect(() => {
     const path = router.asPath
-    const match = path.match(/\/dashboard\/ext\/([^\/]+)/)
-    
+    const match = path.match(/\/dashboard\/ext\/([^/]+)/)
+
     if (match) {
       setCurrentExtension(match[1])
     } else {
@@ -233,19 +227,16 @@ export function useExtensionRoute() {
     }
   }, [router.asPath])
 
-  const navigateToExtension = async (
-    extensionName: string,
-    routePath?: string
-  ) => {
+  const navigateToExtension = async (extensionName: string, routePath?: string) => {
     return enhancedAppRegistry.navigateToExtension(extensionName, routePath)
   }
 
   return {
     currentExtension,
     navigateToExtension,
-    extensionRoutes: currentExtension 
+    extensionRoutes: currentExtension
       ? enhancedAppRegistry.getExtensionRoutes(currentExtension)
-      : []
+      : [],
   }
 }
 
