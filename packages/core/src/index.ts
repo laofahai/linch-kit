@@ -9,6 +9,9 @@ export * from './types'
 // 插件系统
 export * from './plugin'
 
+// Extension系统（新增）
+export * from './extension'
+
 // 配置管理 (客户端安全)
 export {
   createNextjsClientEnvProvider,
@@ -46,6 +49,7 @@ export * from './react'
 
 // 默认实例导出
 export { PluginSystem } from './plugin'
+export { ExtensionRegistry } from './extension'
 // ConfigManager 已移至 server.ts (需要文件系统访问)
 // export { metrics as Metrics } from './observability/metrics-client-safe'
 export { logger as Logger, createLogger } from './logger-client'
