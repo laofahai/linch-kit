@@ -6,9 +6,17 @@
 'use client'
 
 import { useEffect } from 'react'
-import { api as trpc } from '@/lib/trpc-client'
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@linch-kit/ui/server'
 import { Logger } from '@linch-kit/core'
+
+import { api as trpc } from '@/lib/trpc-client'
 
 export default function TRPCDemoPage() {
   // 使用 tRPC hooks
@@ -31,20 +39,14 @@ export default function TRPCDemoPage() {
     refetch: refetchSystem,
   } = trpc.system.info.useQuery()
   const {
-    data: usersData,
-    isLoading: usersLoading,
-    error: usersError,
-    refetch: refetchUsers,
-  } = trpc.user.list.useQuery({ limit: 5, offset: 0 })
-  const {
     data: statsData,
     isLoading: statsLoading,
     error: statsError,
     refetch: refetchStats,
   } = trpc.stats.dashboard.useQuery()
 
-  const isLoading = pingLoading || statusLoading || systemLoading || usersLoading || statsLoading
-  const hasError = pingError || statusError || systemError || usersError || statsError
+  const isLoading = pingLoading || statusLoading || systemLoading || statsLoading
+  const hasError = pingError || statusError || systemError || statsError
 
   useEffect(() => {
     // 记录数据加载状态
@@ -177,46 +179,6 @@ export default function TRPCDemoPage() {
                   刷新统计数据
                 </Button>
               </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* 用户列表 */}
-        <Card className="md:col-span-2 lg:col-span-3">
-          <CardHeader>
-            <CardTitle>用户列表</CardTitle>
-            <CardDescription>最近注册的用户 (需要管理员权限)</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {usersError ? (
-              <p className="text-red-600 text-sm">
-                无法获取用户列表 (可能需要管理员权限): {usersError.message}
-              </p>
-            ) : usersData && usersData.users.length > 0 ? (
-              <div className="space-y-2">
-                {usersData.users.map(user => (
-                  <div
-                    key={user.id}
-                    className="flex justify-between items-center p-2 border rounded"
-                  >
-                    <div>
-                      <p className="font-medium">{user.name || '未设置'}</p>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm">{user.role}</p>
-                      <p className="text-xs text-muted-foreground">{user.status}</p>
-                    </div>
-                  </div>
-                ))}
-                <div className="pt-4">
-                  <Button onClick={() => refetchUsers()} size="sm" disabled={usersLoading}>
-                    刷新用户列表
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <p className="text-muted-foreground">暂无用户数据</p>
             )}
           </CardContent>
         </Card>

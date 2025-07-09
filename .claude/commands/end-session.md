@@ -98,3 +98,50 @@ $ARGUMENTS
 !echo " ✅ 代码已合并到主分支"
 !echo " 📊 开发进度记录已更新"
 !echo " 📝 相关文档已同步更新"
+
+!echo ""
+!echo "📝 生成下一个 Session 提示..."
+!echo "
+
+## 🚀 下一个 Session 提示
+
+**项目状态：** $ARGUMENTS 开发完成
+
+**当前环境：**
+
+- 分支：main (已清理功能分支)
+- 最新功能：$ARGUMENTS
+- 开发进度：已更新到 Development_Status.md
+
+**建议下一步：**
+
+1. 使用 /start [新任务] 开始新的开发任务
+2. 运行 /status 检查项目当前状态
+3. 查看 ai-context/04_Project_Management/02_Development_Status.md 了解项目进展
+
+**快速启动命令：**
+\`\`\`bash
+/start [新任务描述] # 开始新功能开发
+/graph-query [关键词] # 查询现有实现
+/check-reuse [功能名] # 检查可复用组件
+/new-branch [分支名] # 创建新功能分支
+\`\`\`
+
+**重要提醒：**
+
+- 🔴 必须在功能分支上工作，不能在 main 分支直接开发
+- 🔍 开发前务必执行 Graph RAG 查询了解现有实现
+- 📋 复杂任务建议使用 TodoWrite 跟踪进度
+- 🤝 设计决策建议与 Gemini 协商
+
+**技术债务检查：**
+
+- 运行 \`bun run validate\` 检查代码质量
+- 查看 TODO 注释和 FIXME 标记
+- 检查测试覆盖率是否达标
+
+**上次完成功能的相关文件：**
+
+- 查看最近的 git 提交了解修改的文件
+- 检查相关文档是否需要进一步更新
+  "

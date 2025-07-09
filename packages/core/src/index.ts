@@ -41,6 +41,9 @@ export * from './utils/index-client'
 // 初始化系统
 export * from './init'
 
+// React 组件 (可选导入)
+export * from './react'
+
 // 默认实例导出
 export { PluginSystem } from './plugin'
 // ConfigManager 已移至 server.ts (需要文件系统访问)

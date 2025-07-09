@@ -3,16 +3,8 @@ import { copyFileSync, mkdirSync } from 'fs'
 import { dirname } from 'path'
 
 export default defineConfig({
-  entry: [
-    'src/index.ts',
-    'src/components/index.ts',
-    'src/forms/index.ts',
-    'src/tables/index.ts',
-    'src/utils/index.ts',
-    'src/components/ui/button.tsx',
-    'src/components/ui/card.tsx',
-  ],
-  format: ['cjs', 'esm'],
+  entry: ['src/client.ts', 'src/server.ts', 'src/shared.ts'],
+  format: ['esm'], // Next.js App Router 推荐使用 ESM
   dts: true,
   splitting: true,
   sourcemap: true,
@@ -24,16 +16,11 @@ export default defineConfig({
     '@linch-kit/core',
     '@linch-kit/crud',
     '@linch-kit/schema',
-    'react-hook-form', // 将 react-hook-form 也作为外部依赖
+    'react-hook-form',
   ],
   treeshake: true,
   minify: false,
   target: 'es2020',
-  esbuildOptions(options) {
-    options.banner = {
-      js: '"use client"',
-    }
-  },
   // 确保 ESM 输出格式正确
   outExtension({ format }) {
     return {

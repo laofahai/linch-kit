@@ -1,21 +1,19 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // 实验性功能
-  experimental: {
-    // 启用 Turbopack 为默认开发服务器
-    turbo: {
-      rules: {
-        // 自定义 Turbopack 规则
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+  // Turbopack 配置（稳定版本）
+  turbopack: {
+    rules: {
+      // 自定义 Turbopack 规则
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
-    // 启用 React 19 的并发特性
-    serverComponentsExternalPackages: ['@prisma/client'],
   },
+
+  // 服务器外部包配置
+  serverExternalPackages: ['@prisma/client'],
 
   // 性能优化
   compress: true,
@@ -28,9 +26,6 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
   },
-
-  // 编译优化
-  swcMinify: true,
 
   // 环境变量
   env: {
@@ -98,12 +93,6 @@ const nextConfig: NextConfig = {
 
   // 静态导出优化
   trailingSlash: false,
-
-  // 国际化支持
-  i18n: {
-    locales: ['zh-CN', 'en'],
-    defaultLocale: 'zh-CN',
-  },
 }
 
 export default nextConfig

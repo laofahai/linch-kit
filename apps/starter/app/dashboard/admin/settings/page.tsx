@@ -1,17 +1,11 @@
 'use client'
 
+// 强制动态渲染，避免静态生成问题
+export const dynamic = 'force-dynamic'
+
 import { useState } from 'react'
 import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
   Switch,
-  Textarea,
   Select,
   SelectContent,
   SelectItem,
@@ -21,12 +15,21 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-  useToast,
-} from '@linch-kit/ui'
+} from '@linch-kit/ui/client'
+import {
+  Button,
+  Input,
+  Label,
+  Textarea,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@linch-kit/ui/server'
 import { Save, RefreshCw, Shield, Mail, Database, Cloud, Bell, Globe, Lock } from 'lucide-react'
 
 export default function SystemSettingsPage() {
-  const { toast } = useToast()
   const [loading, setLoading] = useState(false)
 
   const handleSave = async () => {
@@ -34,10 +37,8 @@ export default function SystemSettingsPage() {
     // 模拟保存操作
     await new Promise(resolve => setTimeout(resolve, 1000))
     setLoading(false)
-    toast({
-      title: '设置已保存',
-      description: '系统设置已成功更新',
-    })
+    // TODO: 实现实际的保存逻辑和提示
+    console.log('设置已保存')
   }
 
   return (
