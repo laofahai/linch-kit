@@ -195,7 +195,7 @@ export class HotReloadManager extends EventEmitter {
 
       // 处理队列中的重载请求
       if (this.reloadQueue.size > 0) {
-        const nextExtension = this.reloadQueue.values().next().value
+        const nextExtension = this.reloadQueue.values().next().value as string
         this.reloadQueue.delete(nextExtension)
         // 异步处理，避免阻塞
         setTimeout(() => this.reloadExtension(nextExtension), 100)
@@ -217,10 +217,10 @@ export class HotReloadManager extends EventEmitter {
     })
 
     // 清除动态导入缓存（如果支持）
-    if (typeof globalThis !== 'undefined' && globalThis.importCache) {
-      Object.keys(globalThis.importCache).forEach(key => {
+    if (typeof globalThis !== 'undefined' && (globalThis as Record<string, unknown>).importCache) {
+      Object.keys((globalThis as Record<string, unknown>).importCache as Record<string, unknown>).forEach(key => {
         if (key.startsWith(extensionPath)) {
-          delete globalThis.importCache[key]
+          delete (globalThis as Record<string, unknown>).importCache[key]
         }
       })
     }
@@ -274,5 +274,12 @@ export function createHotReloadManager(
   extensionManager: ExtensionManager,
   config?: Partial<HotReloadConfig>
 ): HotReloadManager {
-  return new HotReloadManager(extensionManager, config)
+  const fullConfig: HotReloadConfig = {
+    enabled: true,
+    watchExtensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    debounceMs: 300,
+    excludePatterns: ['node_modules', '.git', 'dist', 'build'],
+    ...config
+  }
+  return new HotReloadManager(extensionManager, fullConfig)
 }

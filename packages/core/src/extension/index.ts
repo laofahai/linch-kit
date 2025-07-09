@@ -25,8 +25,8 @@ export {
   permissionManager,
 } from './permission-manager'
 
-// 沙箱环境
-export { ExtensionSandbox, createSandbox } from './sandbox'
+// 沙箱环境 (暂时禁用以修复构建问题)
+// export { ExtensionSandbox, createSandbox } from './sandbox'
 
 // 导出类型
 export type { HotReloadConfig, HotReloadEvent } from './hot-reload'
@@ -46,7 +46,7 @@ export type {
   PermissionEvent,
 } from './permission-manager'
 
-export type { SandboxConfig, SandboxedFunction, SandboxExecution } from './sandbox'
+// export type { SandboxConfig, SandboxedFunction, SandboxExecution } from './sandbox'
 
 // 默认实例
 export { enhancedPluginRegistry as ExtensionRegistry } from './enhanced-plugin'

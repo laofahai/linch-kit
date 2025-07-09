@@ -36,6 +36,86 @@ export {
 // 国际化 (纯JavaScript)
 export * from './i18n'
 
+// 核心注册器和加载器
+export { 
+  EnhancedAppRegistry,
+  createEnhancedAppRegistry,
+  enhancedAppRegistry,
+  type DynamicRouteConfig,
+  type ExtensionRouteRegistration,
+  type RouteUpdateListener
+} from './core/enhanced-app-registry'
+
+export {
+  ExtensionRouteLoader,
+  ExtensionRouteContainer,
+  useExtensionRoute,
+  ExtensionRouteRegistry,
+  createExtensionRouteRegistry
+} from './core/extension-route-loader'
+
+// Extension 加载器和生命周期管理
+export { 
+  ExtensionLoader,
+  createExtensionLoader,
+  extensionLoader,
+  type ExtensionLoaderConfig,
+  type ExtensionLoadStatus
+} from './core/extension-loader'
+
+export {
+  ExtensionLifecycleManager,
+  createExtensionLifecycleManager,
+  extensionLifecycleManager,
+  type ExtensionLifecyclePhase,
+  type ExtensionLifecycleEvent,
+  type ExtensionLifecycleState
+} from './core/extension-lifecycle'
+
+// Extension 通信机制
+export {
+  ExtensionCommunicationHub,
+  createExtensionCommunicationHub,
+  extensionCommunicationHub,
+  ExtensionCommunicationAPI,
+  createExtensionCommunicationAPI,
+  type ExtensionMessage,
+  type ExtensionMessageType,
+  type ExtensionMessageHandler,
+  type ExtensionMessageContext,
+  type ExtensionMessageSubscription,
+  type ExtensionMessageStats
+} from './core/extension-communication'
+
+// Starter 集成管理
+export {
+  StarterIntegrationManager,
+  createStarterIntegrationManager,
+  starterIntegrationManager,
+  type StarterIntegrationConfig,
+  type StarterIntegrationState,
+  type ExtensionStateSummary
+} from './core/starter-integration'
+
+// React Hooks
+export {
+  useStarterIntegration,
+  useExtensionMessages,
+  useExtensionLifecycle,
+  useDynamicRoutes,
+  useExtensionState
+} from './hooks/useStarterIntegration'
+
+// Extension 开发模板
+export {
+  createExtensionTemplate,
+  exampleExtension,
+  communicationExtension,
+  ExtensionTemplateFactory,
+  ExtensionDevTools,
+  type ExtensionTemplate
+} from './templates/extension-template'
+
 // 暂时只启用基础功能，逐步完善
 // 1. 首先启用Dashboard页面
 export { Dashboard } from './pages/Dashboard'

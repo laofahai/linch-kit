@@ -531,7 +531,17 @@ export class ExtensionStateManager extends EventEmitter {
  * 创建状态管理器实例
  */
 export function createStateManager(
-  config?: Partial<ExtensionStateManager['config']>
+  config?: Partial<{
+    healthCheckInterval: number
+    metricsInterval: number
+    enableAutoHealthCheck: boolean
+  }>
 ): ExtensionStateManager {
-  return new ExtensionStateManager(config)
+  const fullConfig = {
+    healthCheckInterval: 30000,
+    metricsInterval: 5000,
+    enableAutoHealthCheck: true,
+    ...config
+  }
+  return new ExtensionStateManager(fullConfig)
 }
