@@ -75,9 +75,7 @@
     "@hookform/resolvers": "^5.1.1",
     "@linch-kit/auth": "workspace:*",
     "@linch-kit/core": "workspace:*",
-    "@linch-kit/crud": "workspace:*",
-    "@linch-kit/schema": "workspace:*",
-    "@linch-kit/trpc": "workspace:*",
+    "@linch-kit/platform": "workspace:*",
     "@linch-kit/ui": "workspace:*",
     "react-hook-form": "^7.59.0",
     "zod": "^3.25.67"

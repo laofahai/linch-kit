@@ -2,6 +2,7 @@ import { Command } from 'commander'
 import chalk from 'chalk'
 
 import { createProject } from './create'
+import { extensionCommand } from './extension'
 
 const program = new Command()
 
@@ -21,5 +22,8 @@ program
       process.exit(1)
     }
   })
+
+// 添加Extension子命令
+program.addCommand(extensionCommand)
 
 program.parse()

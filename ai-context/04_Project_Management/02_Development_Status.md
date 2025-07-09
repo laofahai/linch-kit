@@ -1,11 +1,50 @@
 # LinchKit 开发状态记录
 
-**版本**: v2.0  
+**版本**: v2.1  
 **更新**: 2025-07-09  
 **当前分支**: feature/starter-console-integration-e2e  
-**状态**: Extension系统Phase 1完成，生命周期管理和权限验证系统实现
+**状态**: Extension系统Phase 2完成，完整的Extension开发生态系统实现
 
 ## 🏗️ 当前开发进展
+
+### 2025-07-09 - Extension系统 Phase 2 完成 ✅
+
+#### ✅ 重要成果
+
+- **Extension CLI工具**: 完整的Extension开发支持命令
+  - `linch-kit extension create` - 创建新Extension
+  - `linch-kit extension install` - 安装Extension
+  - `linch-kit extension list` - 列出已安装Extension
+  - `linch-kit extension dev` - 开发模式支持
+  - 支持多种Extension模板（basic、fullstack、blog）
+- **Blog Extension参考实现**: 完整功能展示
+  - 完整的博客数据模型（文章、分类、标签、评论、统计）
+  - 全面的博客API接口实现
+  - 丰富的博客界面组件库
+  - 实用的React Hooks和状态管理
+- **Extension测试框架**: 基于bun:test的测试工具
+  - Extension生命周期测试
+  - 权限验证测试
+  - 组件和API测试
+  - 模拟Extension环境
+- **包架构优化**: 统一依赖管理
+  - 修复了所有旧包引用问题
+  - 统一使用@linch-kit/platform包
+  - 解决了循环依赖问题
+
+#### 🔧 技术实现
+
+- **新增CLI工具文件**:
+  - `tools/cli/src/extension.ts` - Extension命令实现
+  - 支持Extension创建、安装、列表、开发模式
+- **Blog Extension实现**:
+  - `extensions/blog-extension/` - 完整的博客Extension
+  - Schema、API、UI、Hooks四大能力完整展示
+- **测试框架**:
+  - `extensions/blog-extension/src/__tests__/` - 测试工具和用例
+- **快捷指令**:
+  - `.claude/commands/end-session.md` - Session结束指令
+  - `.claude/commands/end-branch.md` - 分支结束指令
 
 ### 2025-07-09 - Extension系统 Phase 1 完成 ✅
 

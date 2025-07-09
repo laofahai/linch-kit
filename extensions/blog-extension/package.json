@@ -1,0 +1,58 @@
+{
+  "name": "blog-extension",
+  "version": "0.1.0",
+  "description": "LinchKit Extension - 完整的博客功能实现",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "test": "bun test",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@linch-kit/core": "workspace:*",
+    "@linch-kit/platform": "workspace:*",
+    "@linch-kit/ui": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.0",
+    "eslint": "^9.0.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.8.3"
+  },
+  "linchkit": {
+    "displayName": "Blog Extension",
+    "category": "content",
+    "capabilities": {
+      "hasSchema": true,
+      "hasAPI": true,
+      "hasUI": true,
+      "hasHooks": true
+    },
+    "permissions": [
+      "database:read",
+      "database:write",
+      "api:read",
+      "api:write",
+      "ui:render",
+      "system:hooks"
+    ],
+    "entries": {
+      "schema": "schema.ts",
+      "api": "api.ts",
+      "components": "components.ts",
+      "hooks": "hooks.ts"
+    },
+    "dependencies": [
+      "@linch-kit/core",
+      "@linch-kit/platform",
+      "@linch-kit/ui"
+    ]
+  }
+}
