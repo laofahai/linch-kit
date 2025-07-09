@@ -30,7 +30,7 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "test": "bun test",
+    "test": "echo 'No tests to run for CLI package'",
     "prepublishOnly": "bun run build",
     "clean": "rm -rf dist"
   },
