@@ -27,7 +27,8 @@
     "build:packages": "tsup",
     "dev": "tsup --watch",
     "clean": "rm -rf dist node_modules/.cache",
-    "lint": "eslint src --ext .ts,.tsx --fix",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "test": "bun test",
     "test:coverage": "bun test --coverage",
     "type-check": "tsc --noEmit"

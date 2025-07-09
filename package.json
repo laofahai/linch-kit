@@ -50,7 +50,6 @@
     "ci": "bun install --frozen-lockfile && bun run build && bun run test && bun run lint",
     "prepare": "husky install",
     "setup": "bun scripts/update-all-configs.js && bun install",
-    "test:workflow": "bun scripts/test-workflow.js",
     "validate:light": "bun run format:fix && bun run lint:fix",
     "validate": "bun run format:fix && bun run lint:fix && bun run check-types && bun run build:packages && bun run test",
     "validate:ci": "bun run validate",
@@ -58,11 +57,7 @@
     "format:all": "prettier --write \"**/*.{ts,tsx,md,json}\" --ignore-unknown",
     "test:e2e": "playwright test",
     "test:e2e:all": "tsx scripts/test-e2e-all.ts",
-    "ai:session": "bun scripts/ai/session-tools.js",
-    "docs:cleanup": "bun scripts/cleanup-docs.js",
-    "docs:migrate": "bun scripts/migrate-docs.js",
-    "docs:build": "turbo run build --filter='./apps/docs'",
-    "docs:dev": "turbo run dev --filter='./apps/docs'"
+    "ai:session": "bun scripts/ai/session-tools.js"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.1",
@@ -86,8 +81,7 @@
     "prettier": "^3.6.2",
     "tsup": "^8.5.0",
     "turbo": "^2.5.4",
-    "typescript": "5.8.3",
-    "vitest": "^3.2.4"
+    "typescript": "5.8.3"
   },
   "packageManager": "bun@1.2.18",
   "engines": {

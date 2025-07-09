@@ -214,6 +214,162 @@ git commit -m "feat: implement feature X with comprehensive tests"
 - **禁止直接依赖**已被 LinchKit 封装的库
 - **新依赖需评估**是否应该封装到 LinchKit 包中
 
+## 📦 包架构标准 (Client/Server 分离)
+
+### 🎯 适用范围
+
+- **包含 React 组件的所有 packages**
+- **所有 Next.js 应用** (starter, console, website)
+- **新开发的组件库和模块**
+
+### 📁 标准目录结构
+
+```
+packages/[package-name]/
+├── src/
+│   ├── client/          # 客户端组件 ('use client')
+│   │   ├── interactive/ # 交互组件 (buttons, forms, modals)
+│   │   └── stateful/    # 有状态组件 (providers, contexts)
+│   ├── server/          # 服务端组件 (默认)
+│   │   ├── static/      # 静态展示组件
+│   │   └── layout/      # 布局组件
+│   ├── shared/          # 共享代码 (types, utils, constants)
+│   ├── client.ts        # 客户端导出入口
+│   ├── server.ts        # 服务端导出入口
+│   └── shared.ts        # 共享代码导出入口
+├── package.json         # 多入口点导出配置
+```
+
+### 🔀 组件分类原则
+
+#### 🖥️ 客户端组件 (client/) 条件
+
+- 使用 React hooks: `useState`, `useEffect`, `useContext`
+- 需要事件监听器: `onClick`, `onSubmit`, `onFocus`
+- 使用浏览器 API: `localStorage`, `sessionStorage`, `window`
+- 需要交互状态管理: 表单状态、模态框控制
+- 使用第三方客户端库: `react-query`, `zustand`
+
+#### 🖥️ 服务端组件 (server/) 条件
+
+- 纯展示组件: 静态内容渲染
+- 服务端数据获取: 直接数据库查询
+- SEO 友好组件: 需要服务端渲染的内容
+- 布局组件: 不需要交互的布局结构
+- 可序列化 props: 只接收可序列化的属性
+
+#### 🔄 共享代码 (shared/) 条件
+
+- 类型定义: `interface`, `type`, `enum`
+- 纯函数: 不依赖 DOM 或浏览器 API
+- 常量: 配置常量、枚举值
+- 工具函数: 数据转换、验证等
+
+### 📤 package.json 导出配置
+
+```json
+{
+  "name": "@linch-kit/package-name",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/client.mjs",
+      "types": "./dist/client.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server.mjs",
+      "types": "./dist/server.d.ts"
+    },
+    "./shared": {
+      "import": "./dist/shared.mjs",
+      "types": "./dist/shared.d.ts"
+    }
+  }
+}
+```
+
+### 🔧 tsup 构建配置
+
+```typescript
+// tsup.config.ts
+import { defineConfig } from 'tsup'
+
+export default defineConfig([
+  {
+    entry: ['src/client.ts'],
+    outDir: 'dist',
+    format: ['esm'],
+    dts: true,
+    external: ['react', 'react-dom'],
+    banner: {
+      js: '"use client";',
+    },
+  },
+  {
+    entry: ['src/server.ts'],
+    outDir: 'dist',
+    format: ['esm'],
+    dts: true,
+    external: ['react', 'react-dom'],
+  },
+  {
+    entry: ['src/shared.ts'],
+    outDir: 'dist',
+    format: ['esm'],
+    dts: true,
+  },
+])
+```
+
+### 📝 使用示例
+
+```typescript
+// 应用中的导入方式
+import { Button } from '@linch-kit/ui/server' // 服务端组件
+import { Dialog } from '@linch-kit/ui/client' // 客户端组件
+import { ButtonVariants } from '@linch-kit/ui/shared' // 共享类型
+
+// 组件文件中的标识
+// src/client/interactive/Dialog.tsx
+;('use client')
+import { useState } from 'react'
+
+// src/server/static/Button.tsx
+// 无需 'use client' 指令，默认为服务端组件
+```
+
+### 🚨 强制约束
+
+1. **🔴 必须使用 'use client' 指令**：所有客户端组件文件开头必须有 `'use client'`
+2. **🔴 禁止混合导出**：不能在同一个文件中导出客户端和服务端组件
+3. **🔴 服务端组件默认**：组件应默认为服务端组件，只有必要时才标识为客户端
+4. **🔴 分离构建配置**：必须使用 tsup 或类似工具正确处理客户端指令
+
+### 📋 开发检查清单
+
+开发新包时必须确认：
+
+- [ ] 创建了 `client/`, `server/`, `shared/` 目录
+- [ ] 正确分类所有组件
+- [ ] 配置了多入口点导出
+- [ ] 设置了正确的构建配置
+- [ ] 客户端组件都有 `'use client'` 指令
+- [ ] 验证了构建输出的正确性
+
+### 🎯 最佳实践参考
+
+**@linch-kit/ui 包**是目前项目中 client/server 分离的最佳实践范例：
+
+- ✅ **清晰的目录结构**：client/server 分离明确
+- ✅ **正确的组件分类**：交互组件在 client，静态组件在 server
+- ✅ **完整的构建配置**：tsup 正确处理 'use client' 指令
+- ✅ **多入口点导出**：支持按需导入客户端/服务端组件
+
+新开发的包应该参考 @linch-kit/ui 的架构设计和实现方式。
+
 ## 🌳 Git 工作流程
 
 ### 分支管理

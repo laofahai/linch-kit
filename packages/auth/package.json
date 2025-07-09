@@ -43,7 +43,8 @@
     "test": "bun test",
     "test:watch": "bun test --watch",
     "type-check": "tsc --noEmit",
-    "lint": "eslint . --fix"
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
   },
   "dependencies": {
     "@auth/core": "^0.40.0",
