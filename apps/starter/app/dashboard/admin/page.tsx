@@ -1,8 +1,8 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui'
-import { Badge } from '@linch-kit/ui'
-import { Button } from '@linch-kit/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui/server'
+import { Badge } from '@linch-kit/ui/server'
+import { Button } from '@linch-kit/ui/server'
 import { Users, Building, Settings, Activity, TrendingUp, Shield, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 

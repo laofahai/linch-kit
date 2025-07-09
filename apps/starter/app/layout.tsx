@@ -1,14 +1,10 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+
 import { AuthSessionProvider } from '@/components/auth/session-provider'
 import { TRPCProvider } from '@/components/providers/trpc-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
-import { ErrorBoundary } from '@/components/ErrorBoundary'
-import {
-  PageLoadingProvider,
-  PerformanceMonitor,
-} from '@/components/performance/PageLoadingProvider'
-import { MonitoringProvider } from '@/components/monitoring/MonitoringProvider'
+import { ClientWrapper } from '@/components/client-wrapper'
 import './globals.css'
 
 const geistSans = Geist({
@@ -71,24 +67,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ErrorBoundary>
-          <PageLoadingProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <TRPCProvider>
-                <AuthSessionProvider session={null}>
-                  {children}
-                  <PerformanceMonitor />
-                  <MonitoringProvider />
-                </AuthSessionProvider>
-              </TRPCProvider>
-            </ThemeProvider>
-          </PageLoadingProvider>
-        </ErrorBoundary>
+        <ClientWrapper>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TRPCProvider>
+              <AuthSessionProvider session={null}>{children}</AuthSessionProvider>
+            </TRPCProvider>
+          </ThemeProvider>
+        </ClientWrapper>
       </body>
     </html>
   )

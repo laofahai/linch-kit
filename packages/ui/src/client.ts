@@ -1,12 +1,29 @@
 'use client'
 
 /**
- * Client-side only exports for UI components
- * Use this when importing UI components in server components
+ * @fileoverview 客户端组件导出
+ * @description 包含所有需要在客户端渲染的交互式组件
  */
 
-// Re-export all components that require client-side rendering
-export * from './components'
-export * from './forms'
-export * from './tables'
-export * from './hooks/use-toast'
+// 交互式UI组件
+export * from './client/accordion'
+export * from './client/collapsible'
+export * from './client/dialog'
+export * from './client/dropdown-menu'
+export * from './client/error-boundary'
+export * from './client/loading-overlay'
+export * from './client/scroll-area'
+export * from './client/select'
+export * from './client/sheet'
+export * from './client/sidebar'
+export * from './client/switch'
+export * from './client/tabs'
+export * from './client/theme-toggle'
+export * from './client/toast'
+export * from './client/tooltip'
+
+// Schema驱动的交互组件
+export * from './client/form'
+export * from './client/schema-form'
+export * from './client/schema-field-renderer'
+export * from './client/schema-table'

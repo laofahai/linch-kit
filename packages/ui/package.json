@@ -14,35 +14,17 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+    "./client": {
+      "import": "./dist/client.mjs",
+      "types": "./dist/client.d.ts"
     },
-    "./components": {
-      "types": "./dist/components/index.d.ts",
-      "import": "./dist/components/index.mjs",
-      "require": "./dist/components/index.js"
+    "./server": {
+      "import": "./dist/server.mjs",
+      "types": "./dist/server.d.ts"
     },
-    "./components/ui/*": {
-      "types": "./dist/components/ui/*.d.ts",
-      "import": "./dist/components/ui/*.mjs",
-      "require": "./dist/components/ui/*.js"
-    },
-    "./forms": {
-      "types": "./dist/forms/index.d.ts",
-      "import": "./dist/forms/index.mjs",
-      "require": "./dist/forms/index.js"
-    },
-    "./tables": {
-      "types": "./dist/tables/index.d.ts",
-      "import": "./dist/tables/index.mjs",
-      "require": "./dist/tables/index.js"
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.mjs",
-      "require": "./dist/utils/index.js"
+    "./shared": {
+      "import": "./dist/shared.mjs",
+      "types": "./dist/shared.d.ts"
     },
     "./styles/globals.css": "./dist/styles/globals.css"
   },
@@ -57,6 +39,7 @@
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "test": "bun test",
     "test:coverage": "bun test --coverage"
   },

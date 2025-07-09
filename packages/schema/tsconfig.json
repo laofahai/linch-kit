@@ -3,7 +3,7 @@
     "moduleResolution": "bundler",
     "module": "esnext",
     "target": "es2022",
-    "lib": ["es2022"],
+    "lib": ["es2022", "dom"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
@@ -15,6 +15,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@linch-kit/core": ["../core/src"]

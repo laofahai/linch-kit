@@ -40,7 +40,7 @@
     "test:coverage": "bun test --coverage",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "typecheck": "tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "extract": "bun run dist/cli/index.js"
   },
   "dependencies": {

@@ -1,41 +1,57 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui'
-import { Building } from 'lucide-react'
+/**
+ * 租户管理页面 - 已迁移到 @linch-kit/console
+ */
+
+// 强制动态渲染，避免静态生成问题
+export const dynamic = 'force-dynamic'
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Button,
+} from '@linch-kit/ui/server'
+import { ArrowRight, Building, Shield, Settings } from 'lucide-react'
+import Link from 'next/link'
 
 export default function TenantsPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">租户管理</h1>
-          <p className="text-muted-foreground">管理多租户环境中的所有组织和租户</p>
-        </div>
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">租户管理</h1>
+        <p className="text-muted-foreground mt-2">租户管理功能已迁移到 LinchKit Console 模块</p>
       </div>
 
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Building className="h-5 w-5" />
-            <span>TODO: 租户管理功能</span>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5" />
+            功能迁移通知
           </CardTitle>
+          <CardDescription>
+            租户管理功能现在集成在 Console 模块中，提供更完整的多租户管理体验。
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="text-sm text-muted-foreground">
-              当前状态：等待 @linch-kit/console 包中的 TenantList 组件完善
-            </div>
-            <div className="text-sm text-muted-foreground">计划功能：</div>
-            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-4">
-              <li>租户列表显示和筛选</li>
-              <li>租户状态管理（激活/暂停）</li>
-              <li>租户详情查看和编辑</li>
-              <li>用户配额和权限管理</li>
-              <li>计费计划管理</li>
-            </ul>
-            <div className="text-sm text-muted-foreground">
-              架构设计：基于 @linch-kit/console 包的 TenantEntity 和相关组件
-            </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button asChild>
+              <Link href="/console/tenants" className="flex items-center gap-2">
+                <Building className="h-4 w-4" />
+                前往 Console 租户管理
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+
+            <Button variant="outline" asChild>
+              <Link href="/dashboard" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                返回仪表板
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>

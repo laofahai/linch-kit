@@ -1,16 +1,16 @@
 'use client'
 
-import { LoadingOverlay } from '@/components/loading-overlay'
+import { LoadingOverlay } from '@linch-kit/ui/client'
 import {
   Button,
+  Input,
+  Label,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  Input,
-  Label,
-} from '@linch-kit/ui'
+} from '@linch-kit/ui/server'
 import { Github, Loader2, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
