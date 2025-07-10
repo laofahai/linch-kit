@@ -13,6 +13,8 @@ import type { ExtensionManager } from './manager'
 export interface HotReloadConfig {
   /** 是否启用热重载 */
   enabled: boolean
+  /** Extension根目录路径 */
+  extensionRoot: string
   /** 监听的文件扩展名 */
   watchExtensions: string[]
   /** 防抖延迟时间(ms) */
@@ -40,6 +42,7 @@ export class HotReloadManager extends EventEmitter {
     private extensionManager: ExtensionManager,
     private config: HotReloadConfig = {
       enabled: true,
+      extensionRoot: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
       watchExtensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
       debounceMs: 300,
       excludePatterns: ['node_modules', '.git', 'dist', 'build'],
@@ -84,7 +87,7 @@ export class HotReloadManager extends EventEmitter {
   enableForExtension(extensionName: string): void {
     if (!this.config.enabled) return
 
-    const extensionPath = `/home/laofahai/workspace/linch-kit/extensions/${extensionName}`
+    const extensionPath = `${this.config.extensionRoot}/${extensionName}`
 
     // 创建文件监听器
     const watcher = watch(extensionPath, {
@@ -208,7 +211,7 @@ export class HotReloadManager extends EventEmitter {
    * 清除模块缓存
    */
   private async clearModuleCache(extensionName: string): Promise<void> {
-    const extensionPath = `/home/laofahai/workspace/linch-kit/extensions/${extensionName}`
+    const extensionPath = `${this.config.extensionRoot}/${extensionName}`
 
     // 清除Node.js模块缓存
     Object.keys(require.cache).forEach(key => {
@@ -219,9 +222,13 @@ export class HotReloadManager extends EventEmitter {
 
     // 清除动态导入缓存（如果支持）
     if (typeof globalThis !== 'undefined' && (globalThis as Record<string, unknown>).importCache) {
-      Object.keys((globalThis as Record<string, unknown>).importCache as Record<string, unknown>).forEach(key => {
+      Object.keys(
+        (globalThis as Record<string, unknown>).importCache as Record<string, unknown>
+      ).forEach(key => {
         if (key.startsWith(extensionPath)) {
-          delete ((globalThis as Record<string, unknown>).importCache as Record<string, unknown>)[key]
+          delete ((globalThis as Record<string, unknown>).importCache as Record<string, unknown>)[
+            key
+          ]
         }
       })
     }
@@ -277,10 +284,11 @@ export function createHotReloadManager(
 ): HotReloadManager {
   const fullConfig: HotReloadConfig = {
     enabled: true,
+    extensionRoot: process.cwd() + '/extensions',
     watchExtensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     debounceMs: 300,
     excludePatterns: ['node_modules', '.git', 'dist', 'build'],
-    ...config
+    ...config,
   }
   return new HotReloadManager(extensionManager, fullConfig)
 }

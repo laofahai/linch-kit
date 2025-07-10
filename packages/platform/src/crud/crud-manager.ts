@@ -35,7 +35,7 @@ export interface CrudManagerConfig {
  * CRUD管理器
  * 为Extension提供统一的数据操作接口
  */
-export class CrudManager extends EventEmitter implements CrudOperations {
+export class CrudManager extends EventEmitter {
   private config: CrudManagerConfig
   private entities = new Map<string, unknown>()
 
@@ -55,7 +55,7 @@ export class CrudManager extends EventEmitter implements CrudOperations {
   registerEntity(name: string, schema: unknown): void {
     this.entities.set(name, schema)
     this.emit('entityRegistered', { name, schema })
-    
+
     this.config.extensionContext?.logger.info(`Entity registered: ${name}`)
   }
 
@@ -64,16 +64,16 @@ export class CrudManager extends EventEmitter implements CrudOperations {
    */
   async create<T>(entityName: string, data: Partial<T>): Promise<T> {
     this.config.extensionContext?.logger.info(`CRUD create: ${entityName}`)
-    
+
     // 触发Extension事件
     this.config.extensionContext?.events.emit('crud:before:create', { entityName, data })
-    
+
     // TODO: 实际的数据库操作
     const result = { id: Date.now(), ...data } as T
-    
+
     this.config.extensionContext?.events.emit('crud:after:create', { entityName, data, result })
     this.emit('created', { entityName, result })
-    
+
     return result
   }
 
@@ -82,7 +82,7 @@ export class CrudManager extends EventEmitter implements CrudOperations {
    */
   async findById<T>(entityName: string, id: string | number): Promise<T | null> {
     this.config.extensionContext?.logger.info(`CRUD findById: ${entityName}#${id}`)
-    
+
     // TODO: 实际的数据库查询
     return null
   }
@@ -92,15 +92,15 @@ export class CrudManager extends EventEmitter implements CrudOperations {
    */
   async find<T>(entityName: string, query: Record<string, unknown> = {}): Promise<T[]> {
     this.config.extensionContext?.logger.info(`CRUD find: ${entityName}`, query)
-    
+
     this.config.extensionContext?.events.emit('crud:before:find', { entityName, query })
-    
+
     // TODO: 实际的数据库查询
     const result: T[] = []
-    
+
     this.config.extensionContext?.events.emit('crud:after:find', { entityName, query, result })
     this.emit('found', { entityName, query, result })
-    
+
     return result
   }
 
@@ -109,15 +109,15 @@ export class CrudManager extends EventEmitter implements CrudOperations {
    */
   async update<T>(entityName: string, id: string | number, data: Partial<T>): Promise<T> {
     this.config.extensionContext?.logger.info(`CRUD update: ${entityName}#${id}`)
-    
+
     this.config.extensionContext?.events.emit('crud:before:update', { entityName, id, data })
-    
+
     // TODO: 实际的数据库更新
     const result = { id, ...data } as T
-    
+
     this.config.extensionContext?.events.emit('crud:after:update', { entityName, id, data, result })
     this.emit('updated', { entityName, id, result })
-    
+
     return result
   }
 
@@ -126,15 +126,15 @@ export class CrudManager extends EventEmitter implements CrudOperations {
    */
   async delete(entityName: string, id: string | number): Promise<boolean> {
     this.config.extensionContext?.logger.info(`CRUD delete: ${entityName}#${id}`)
-    
+
     this.config.extensionContext?.events.emit('crud:before:delete', { entityName, id })
-    
+
     // TODO: 实际的数据库删除
     const success = true
-    
+
     this.config.extensionContext?.events.emit('crud:after:delete', { entityName, id, success })
     this.emit('deleted', { entityName, id, success })
-    
+
     return success
   }
 
@@ -157,26 +157,5 @@ export class CrudManager extends EventEmitter implements CrudOperations {
    */
   setExtensionContext(context: ExtensionContext): void {
     this.config.extensionContext = context
-  }
-
-  // 实现接口的方法（简化版本，实际使用需要指定entityName）
-  async create<T>(data: Partial<T>): Promise<T> {
-    throw new Error('Use create(entityName, data) instead')
-  }
-
-  async findById<T>(id: string | number): Promise<T | null> {
-    throw new Error('Use findById(entityName, id) instead')
-  }
-
-  async find<T>(query: Record<string, unknown>): Promise<T[]> {
-    throw new Error('Use find(entityName, query) instead')
-  }
-
-  async update<T>(id: string | number, data: Partial<T>): Promise<T> {
-    throw new Error('Use update(entityName, id, data) instead')
-  }
-
-  async delete(id: string | number): Promise<boolean> {
-    throw new Error('Use delete(entityName, id) instead')
   }
 }

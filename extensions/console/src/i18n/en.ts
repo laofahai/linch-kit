@@ -15,6 +15,7 @@ export const en = {
       users: 'Users',
       permissions: 'Permissions',
       plugins: 'Plugins',
+      extensions: 'Extensions',
       monitoring: 'Monitoring',
       schemas: 'Schemas',
       settings: 'Settings',
@@ -320,6 +321,9 @@ export const en = {
       configure: 'Configure',
       acknowledge: 'Acknowledge',
       resolve: 'Resolve',
+      enable: 'Enable',
+      disable: 'Disable',
+      reload: 'Reload',
     },
 
     // 消息提示
@@ -332,6 +336,11 @@ export const en = {
         activated: 'Tenant activated successfully',
         installed: 'Plugin installed successfully',
         uninstalled: 'Plugin uninstalled successfully',
+        enabled: 'Extension enabled successfully',
+        disabled: 'Extension disabled successfully',
+        loaded: 'Extension loaded successfully',
+        unloaded: 'Extension unloaded successfully',
+        reloaded: 'Extension reloaded successfully',
       },
       error: {
         createFailed: 'Failed to create {{entity}}',
@@ -340,11 +349,20 @@ export const en = {
         notFound: '{{entity}} not found',
         unauthorized: 'You are not authorized to perform this action',
         quotaExceeded: 'Quota exceeded for {{resource}}',
+        loadFailed: 'Failed to load extension',
+        unloadFailed: 'Failed to unload extension',
+        reloadFailed: 'Failed to reload extension',
+        installFailed: 'Failed to install extension',
+        uninstallFailed: 'Failed to uninstall extension',
       },
       confirm: {
         delete: 'Are you sure you want to delete this {{entity}}?',
         suspend: 'Are you sure you want to suspend this tenant?',
         uninstall: 'Are you sure you want to uninstall this plugin?',
+        unloadExtension: 'Are you sure you want to unload this extension?',
+        reloadExtension: 'Are you sure you want to reload this extension?',
+        installExtension: 'Are you sure you want to install this extension?',
+        uninstallExtension: 'Are you sure you want to uninstall this extension?',
       },
     },
 
@@ -432,6 +450,110 @@ export const en = {
       editEntity: 'Edit Entity',
       generateCode: 'Generate Code',
       migrations: 'Migrations',
+    },
+
+    // Extension 管理
+    extension: {
+      manager: {
+        title: 'Extension Manager',
+        description: 'Manage and configure system extensions',
+        refresh: 'Refresh',
+        install: 'Install Extension',
+        settings: 'Extension Settings',
+        search: 'Search extensions...',
+        filter: {
+          all: 'All Extensions',
+          loaded: 'Loaded',
+          failed: 'Failed',
+          unloaded: 'Unloaded',
+        },
+        stats: {
+          total: 'Total Extensions',
+          loaded: 'Loaded Extensions',
+          failed: 'Failed Extensions',
+          unloaded: 'Unloaded Extensions',
+        },
+        list: {
+          title: 'Extension List',
+        },
+        empty: {
+          title: 'No Extensions Found',
+          description: 'No extensions are currently installed or match your search criteria.',
+        },
+        status: {
+          loading: 'Loading',
+          loaded: 'Loaded',
+          failed: 'Failed',
+          unloaded: 'Unloaded',
+        },
+        routes: 'Routes',
+        components: 'Components',
+        loadedAt: 'Loaded at',
+      },
+      details: {
+        overview: 'Overview',
+        resources: 'Resources',
+        logs: 'Logs',
+        basic: 'Basic Information',
+        name: 'Name',
+        status: 'Status',
+        loadedAt: 'Loaded At',
+        error: 'Error Information',
+        logsContent: {
+          empty: 'No logs available for this extension',
+        },
+      },
+      install: {
+        title: 'Install Extension',
+        selectExtension: 'Select Extension',
+        pleaseSelect: 'Please select an extension',
+        install: 'Install',
+      },
+    },
+
+    // 通用词汇
+    common: {
+      cancel: 'Cancel',
+      confirm: 'Confirm',
+      save: 'Save',
+      delete: 'Delete',
+      edit: 'Edit',
+      view: 'View',
+      back: 'Back',
+      next: 'Next',
+      previous: 'Previous',
+      loading: 'Loading...',
+      error: 'Error',
+      success: 'Success',
+      warning: 'Warning',
+      info: 'Information',
+      yes: 'Yes',
+      no: 'No',
+      ok: 'OK',
+      close: 'Close',
+      open: 'Open',
+      enable: 'Enable',
+      disable: 'Disable',
+    },
+
+    // 错误处理
+    error: {
+      permission: {
+        denied: 'Permission Denied',
+        description: 'You do not have permission to access this page.',
+      },
+      network: {
+        title: 'Network Error',
+        description: 'Unable to connect to the server. Please check your network connection.',
+      },
+      server: {
+        title: 'Server Error',
+        description: 'An internal server error occurred. Please try again later.',
+      },
+      notFound: {
+        title: 'Page Not Found',
+        description: 'The page you are looking for does not exist.',
+      },
     },
   },
 }

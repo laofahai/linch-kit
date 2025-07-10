@@ -21,7 +21,7 @@
 
 ```bash
 # 步骤1: 首先阅读本文件，确认所有约束
-/home/laofahai/workspace/linch-kit/CLAUDE.md
+CLAUDE.md
 
 # 步骤2: 读取知识库入口
 ai-context/manifest.json

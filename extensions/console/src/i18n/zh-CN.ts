@@ -15,6 +15,7 @@ export const zhCN = {
       users: '用户管理',
       permissions: '权限管理',
       plugins: '插件市场',
+      extensions: '扩展管理',
       monitoring: '系统监控',
       schemas: 'Schema管理',
       settings: '系统设置',

@@ -250,7 +250,7 @@ function QuickActionsCard({
         {canManagePlugins && (
           <Button variant="outline" className="w-full justify-start" size="sm">
             <Puzzle className="h-4 w-4 mr-2" />
-            {t('dashboard.quickActions.managePlugins')}
+            {t('dashboard.quickActions.manageExtensions')}
           </Button>
         )}
 

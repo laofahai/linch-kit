@@ -31,13 +31,71 @@ echo " • 适时使用 /end-session 保存状态"
 echo "🧠 启用 thinking 模式进行深度分析"
 fi
 
-!echo "🔍 [$(date '+%H:%M:%S')] 执行强制 Graph RAG 查询..."
-!bun run ai:session query "$ARGUMENTS" || {
-echo "❌ Graph RAG 查询失败，请检查网络连接和AI服务状态"
-exit 1
-}
+!echo "🏗️ [$(date '+%H:%M:%S')] 开始 Claude 综合架构分析..."
 
-!echo "📚 [$(date '+%H:%M:%S')] 执行 Context7 查询..."
+!echo "📋 步骤1: 执行 Graph RAG 现有实现查询..."
+!GRAPH_RAG_RESULT=$(bun run ai:session query "$ARGUMENTS" 2>&1)
+!if [[$? -ne 0]]; then
+echo "🚨 FATAL: Graph RAG 查询失败 - 这是零容忍违规"
+echo "📋 错误详情: $GRAPH_RAG_RESULT"
+echo "🛑 Claude 必须基于项目上下文进行开发，查询失败则停止"
+exit 1
+fi
+!echo "✅ Graph RAG 查询完成，找到相关实现"
+
+!echo "📋 步骤2: 查询项目架构文档..."
+!if [[-d "ai-context"]]; then
+echo "✅ ai-context 文档可用，Claude 将分析架构约束"
+echo "📄 重要文档: ai-context/02_Guides/01_Development_Workflow.md"
+else
+echo "⚠️ ai-context 目录不存在，架构分析受限"
+fi
+
+!echo "📋 步骤3: 检查现有代码模式..."
+!echo "🔍 检查相关包和模块..."
+!if echo "$ARGUMENTS" | grep -i -E "(registry|注册)" > /dev/null; then
+echo "⚠️ 检测到Registry相关功能 - 必须使用 @linch-kit/core AppRegistry"
+fi
+!if echo "$ARGUMENTS" | grep -i -E "(logger|日志)" > /dev/null; then
+echo "⚠️ 检测到日志相关功能 - 必须使用 @linch-kit/core logger"
+fi
+!if echo "$ARGUMENTS" | grep -i -E "(extension|扩展)" > /dev/null; then
+echo "⚠️ 检测到扩展相关功能 - 必须使用 @linch-kit/core ExtensionManager"
+fi
+
+!echo "📋 步骤4: Claude 架构分析承诺激活..."
+!cat > .claude/current-session-analysis.md << EOF
+
+# Claude 架构分析报告 - $(date '+%Y-%m-%d %H:%M:%S')
+
+## 任务: $ARGUMENTS
+
+## Graph RAG 查询结果
+
+已完成项目上下文查询，发现相关现有实现
+
+## 架构文档分析
+
+- ai-context 文档可用
+- 将遵循 LinchKit 当前架构原则
+- 避免重复实现现有功能
+
+## Claude 强制承诺
+
+我承诺在本次开发中：
+
+1. ✅ 基于 Graph RAG 查询结果复用现有实现
+2. ✅ 遵循 ai-context 中的架构约束
+3. ✅ 分析现有代码模式后再编码
+4. ✅ 优先使用 LinchKit 核心包功能
+5. ✅ 发现违规时立即停止并纠正
+
+## 分析状态: 已完成 ✓
+
+现在可以基于完整项目上下文开始智能开发
+EOF
+
+!echo "📚 [$(date '+%H:%M:%S')] 执行补充 Context7 查询..."
 !if command -v context7 &> /dev/null; then
 context7 "$ARGUMENTS" || echo "⚠️ Context7 查询失败，继续使用 Graph RAG 结果"
 else

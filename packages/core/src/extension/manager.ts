@@ -110,6 +110,18 @@ class ExtensionInstanceImpl implements ExtensionInstance {
 }
 
 /**
+ * Extension管理器配置
+ */
+export interface ExtensionManagerConfig {
+  /** Extension根目录路径 */
+  extensionRoot: string
+  /** 是否启用沙箱隔离 */
+  enableSandbox: boolean
+  /** 允许的权限列表 */
+  allowedPermissions: ExtensionPermission[]
+}
+
+/**
  * Extension管理器实现
  * 基于现有Plugin系统，扩展支持Extension动态加载、权限验证等
  */
@@ -117,6 +129,24 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
   private extensions = new Map<string, ExtensionRegistration>()
   private permissionManager = new PermissionManager()
   private manifestCache = new Map<string, Extension['metadata']>()
+  private config: ExtensionManagerConfig
+
+  constructor(config?: Partial<ExtensionManagerConfig>) {
+    super()
+    this.config = {
+      extensionRoot: process.cwd() + '/extensions',
+      enableSandbox: true,
+      allowedPermissions: [
+        'api:read',
+        'api:write',
+        'database:read',
+        'database:write',
+        'ui:render',
+        'system:hooks',
+      ] as ExtensionPermission[],
+      ...config,
+    }
+  }
 
   /**
    * 加载Extension
@@ -339,7 +369,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
 
     try {
       // 尝试从extensions目录加载
-      const manifestPath = `/home/laofahai/workspace/linch-kit/extensions/${extensionName}/package.json`
+      const manifestPath = `${this.config.extensionRoot}/${extensionName}/package.json`
       const { readFile } = await import('node:fs/promises')
       const manifestContent = await readFile(manifestPath, 'utf-8')
       const packageJson = JSON.parse(manifestContent)
@@ -430,7 +460,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
   ): Promise<Extension | null> {
     try {
       // 尝试导入Extension主入口
-      const extensionPath = `/home/laofahai/workspace/linch-kit/extensions/${extensionName}/src/index.ts`
+      const extensionPath = `${this.config.extensionRoot}/${extensionName}/src/index.ts`
       const extensionModule = await import(extensionPath)
 
       // 检查是否为有效的Extension
@@ -459,7 +489,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
       // 加载Schema能力
       if (capabilities.hasSchema && manifest.entries?.schema) {
         const schemaModule = await import(
-          `/home/laofahai/workspace/linch-kit/extensions/${extensionName}/src/${manifest.entries.schema}`
+          `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries.schema}`
         )
         if (schemaModule.default) {
           // TODO: 注册Schema到AppRegistry
@@ -470,7 +500,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
       // 加载API能力
       if (capabilities.hasAPI && manifest.entries?.api) {
         const apiModule = await import(
-          `/home/laofahai/workspace/linch-kit/extensions/${extensionName}/src/${manifest.entries.api}`
+          `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries.api}`
         )
         if (apiModule.default) {
           // TODO: 注册API路由到AppRegistry
@@ -483,7 +513,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
         // UI组件延迟加载，创建加载器
         const _componentLoader = () =>
           import(
-            `/home/laofahai/workspace/linch-kit/extensions/${extensionName}/src/${manifest.entries?.components}`
+            `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries?.components}`
           )
 
         // TODO: 注册组件加载器到AppRegistry
@@ -493,7 +523,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
       // 加载钩子能力
       if (capabilities.hasHooks && manifest.entries?.hooks) {
         const hooksModule = await import(
-          `/home/laofahai/workspace/linch-kit/extensions/${extensionName}/src/${manifest.entries.hooks}`
+          `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries.hooks}`
         )
         if (hooksModule.default) {
           // TODO: 注册钩子到事件系统
@@ -636,4 +666,7 @@ class PermissionManager {
 /**
  * 默认Extension管理器实例
  */
-export const extensionManager = new ExtensionManager()
+export const extensionManager = new ExtensionManager({
+  extensionRoot: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
+  enableSandbox: process.env.NODE_ENV === 'production',
+})

@@ -12,11 +12,15 @@ export { default as TenantList } from './tenants/TenantList'
 export { default as TenantDetail } from './tenants/TenantDetail'
 export { default as TenantCreate } from './tenants/TenantCreate'
 
+// Extension管理页面
+export { default as ExtensionManager } from './ExtensionManager'
+
 // 重新导入组件用于默认导出
 import Dashboard from './Dashboard'
 import TenantList from './tenants/TenantList'
 import TenantDetail from './tenants/TenantDetail'
 import TenantCreate from './tenants/TenantCreate'
+import ExtensionManager from './ExtensionManager'
 
 // 默认导出已实现的页面
 export default {
@@ -27,4 +31,7 @@ export default {
   TenantList,
   TenantDetail,
   TenantCreate,
+
+  // Extension管理
+  ExtensionManager,
 }

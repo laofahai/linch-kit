@@ -10,8 +10,9 @@ import {
   extensionManager as _extensionManager,
   type ExtensionInstance,
   type ExtensionLoadResult,
-  type ExtensionMetadata as _ExtensionMetadata,
-  type ExtensionRegistration as _ExtensionRegistration,
+  type ExtensionState,
+  type ExtensionMetrics,
+  type ExtensionHealth,
 } from '@linch-kit/core'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
@@ -27,24 +28,14 @@ export interface ExtensionLoaderConfig {
   extensionPath: string
   /** 是否启用热重载 */
   hotReload: boolean
-  /** 是否启用权限验证 */
-  permissionCheck: boolean
   /** 允许的 Extension 列表 */
   allowedExtensions?: string[]
 }
 
 /**
- * Extension 加载状态
+ * Console Extension 状态 - 扩展Core的ExtensionState，添加UI特定信息
  */
-export interface ExtensionLoadStatus {
-  /** Extension 名称 */
-  name: string
-  /** 加载状态 */
-  status: 'loading' | 'loaded' | 'failed' | 'unloaded'
-  /** 错误信息 */
-  error?: Error
-  /** 加载时间 */
-  loadedAt?: number
+export interface ConsoleExtensionState extends ExtensionState {
   /** 路由数量 */
   routeCount: number
   /** 组件数量 */
@@ -52,24 +43,23 @@ export interface ExtensionLoadStatus {
 }
 
 /**
- * Extension 加载器
+ * Extension 加载器 - Console 专用
  *
  * 功能：
- * - Extension 的动态加载和卸载
- * - 生命周期管理
- * - 与 AppRegistry 集成
- * - 错误处理和恢复
+ * - 基于 Core.ExtensionManager 的 Console 集成
+ * - 路由注册和UI组件集成
+ * - Extension 在 Console 中的状态管理
+ * - Console 特定的错误处理
  */
 export class ExtensionLoader extends EventEmitter {
-  private loadedExtensions = new Map<string, ExtensionLoadStatus>()
+  private extensionStates = new Map<string, ConsoleExtensionState>()
   private extensionInstances = new Map<string, ExtensionInstance>()
 
   constructor(
     private config: ExtensionLoaderConfig = {
       autoLoad: true,
-      extensionPath: '/home/laofahai/workspace/linch-kit/extensions',
+      extensionPath: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
       hotReload: true,
-      permissionCheck: true,
     },
     private extensionManager: ExtensionManager = _extensionManager
   ) {
@@ -82,15 +72,15 @@ export class ExtensionLoader extends EventEmitter {
    */
   async loadExtension(extensionName: string): Promise<ExtensionLoadResult> {
     // 更新加载状态
-    this.updateLoadStatus(extensionName, 'loading')
+    this.updateExtensionState(extensionName, 'loading')
 
     try {
-      // 检查是否允许加载
+      // 检查是否允许加载（仅基础检查，权限验证由Core负责）
       if (!this.isExtensionAllowed(extensionName)) {
         throw new Error(`Extension ${extensionName} is not allowed to load`)
       }
 
-      // 使用 ExtensionManager 加载
+      // 使用 ExtensionManager 加载（权限验证已在Core中处理）
       const result = await this.extensionManager.loadExtension(extensionName)
 
       if (!result.success || !result.instance) {
@@ -120,7 +110,7 @@ export class ExtensionLoader extends EventEmitter {
       }
 
       // 更新加载状态
-      this.updateLoadStatus(extensionName, 'loaded', {
+      this.updateExtensionState(extensionName, 'running', {
         routeCount: routes.length,
         componentCount: components.size,
       })
@@ -138,7 +128,7 @@ export class ExtensionLoader extends EventEmitter {
       const loadError = error instanceof Error ? error : new Error(String(error))
 
       // 更新加载状态
-      this.updateLoadStatus(extensionName, 'failed', { error: loadError })
+      this.updateExtensionState(extensionName, 'error', { error: loadError })
 
       // 触发加载失败事件
       this.emit('extensionLoadFailed', {
@@ -176,7 +166,7 @@ export class ExtensionLoader extends EventEmitter {
       if (result) {
         // 清理本地状态
         this.extensionInstances.delete(extensionName)
-        this.updateLoadStatus(extensionName, 'unloaded')
+        this.updateExtensionState(extensionName, 'stopped')
 
         // 触发卸载完成事件
         this.emit('extensionUnloaded', {
@@ -217,25 +207,39 @@ export class ExtensionLoader extends EventEmitter {
   }
 
   /**
-   * 获取所有已加载的 Extension
+   * 获取所有Extension状态
    */
-  getLoadedExtensions(): ExtensionLoadStatus[] {
-    return Array.from(this.loadedExtensions.values())
+  getAllExtensionStates(): ConsoleExtensionState[] {
+    return Array.from(this.extensionStates.values())
   }
 
   /**
    * 获取 Extension 状态
    */
-  getExtensionStatus(extensionName: string): ExtensionLoadStatus | undefined {
-    return this.loadedExtensions.get(extensionName)
+  getExtensionState(extensionName: string): ConsoleExtensionState | undefined {
+    return this.extensionStates.get(extensionName)
   }
 
   /**
    * 检查 Extension 是否已加载
    */
   isExtensionLoaded(extensionName: string): boolean {
-    const status = this.loadedExtensions.get(extensionName)
-    return status?.status === 'loaded'
+    const state = this.extensionStates.get(extensionName)
+    return state?.status === 'running'
+  }
+
+  /**
+   * @deprecated 使用 getAllExtensionStates() 代替
+   */
+  getLoadedExtensions(): ConsoleExtensionState[] {
+    return this.getAllExtensionStates()
+  }
+
+  /**
+   * @deprecated 使用 getExtensionState() 代替
+   */
+  getExtensionStatus(extensionName: string): ConsoleExtensionState | undefined {
+    return this.getExtensionState(extensionName)
   }
 
   /**
@@ -307,37 +311,57 @@ export class ExtensionLoader extends EventEmitter {
   }
 
   /**
-   * 更新加载状态
+   * 更新Extension状态
    */
-  private updateLoadStatus(
+  private updateExtensionState(
     extensionName: string,
-    status: ExtensionLoadStatus['status'],
-    additional?: Partial<ExtensionLoadStatus>
+    status: ExtensionState['status'],
+    additional?: Partial<ConsoleExtensionState>
   ): void {
-    const currentStatus = this.loadedExtensions.get(extensionName) || {
+    const currentState = this.extensionStates.get(extensionName) || {
       name: extensionName,
       status: 'loading',
+      lastUpdated: Date.now(),
+      metrics: {
+        initializationTime: 0,
+        startupTime: 0,
+        memoryUsage: 0,
+        cpuUsage: 0,
+        activeConnections: 0,
+        requestCount: 0,
+        errorCount: 0,
+        lastActivity: Date.now(),
+      } as ExtensionMetrics,
+      health: {
+        score: 100,
+        status: 'healthy',
+        checks: [],
+        lastCheckTime: Date.now(),
+      } as ExtensionHealth,
       routeCount: 0,
       componentCount: 0,
     }
 
-    const newStatus: ExtensionLoadStatus = {
-      ...currentStatus,
+    const newState: ConsoleExtensionState = {
+      ...currentState,
       status,
+      lastUpdated: Date.now(),
       ...additional,
     }
 
-    if (status === 'loaded') {
-      newStatus.loadedAt = Date.now()
-      newStatus.error = undefined
+    if (status === 'running') {
+      newState.startedAt = Date.now()
+      newState.error = undefined
+    } else if (status === 'stopped') {
+      newState.stoppedAt = Date.now()
     }
 
-    this.loadedExtensions.set(extensionName, newStatus)
+    this.extensionStates.set(extensionName, newState)
 
     // 触发状态更新事件
     this.emit('statusUpdated', {
       name: extensionName,
-      status: newStatus,
+      state: newState,
     })
   }
 
@@ -356,7 +380,7 @@ export class ExtensionLoader extends EventEmitter {
 
     this.extensionManager.on('extensionError', ({ name, error }) => {
       console.error(`[ExtensionLoader] Extension ${name} error:`, error)
-      this.updateLoadStatus(name, 'failed', { error })
+      this.updateExtensionState(name, 'error', { error })
     })
   }
 
@@ -382,9 +406,8 @@ export class ExtensionLoader extends EventEmitter {
 export function createExtensionLoader(config?: Partial<ExtensionLoaderConfig>): ExtensionLoader {
   const defaultConfig: ExtensionLoaderConfig = {
     autoLoad: true,
-    extensionPath: './extensions',
-    hotReload: false,
-    permissionCheck: true,
+    extensionPath: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
+    hotReload: process.env.NODE_ENV === 'development',
     allowedExtensions: [],
   }
   return new ExtensionLoader({ ...defaultConfig, ...config })

@@ -98,6 +98,7 @@ export type ConsoleFeature =
   | 'users'
   | 'permissions'
   | 'plugins'
+  | 'extensions'
   | 'monitoring'
   | 'schemas'
   | 'settings'

@@ -3,8 +3,9 @@
  * @module platform/crud/platform-crud-manager
  */
 
-import { CrudManager } from '../../crud/src/core/crud-manager'
 import type { ExtensionContext } from '@linch-kit/core/extension/types'
+
+import { CrudManager } from './crud-manager'
 
 /**
  * 平台CRUD管理器
@@ -33,14 +34,14 @@ export class PlatformCrudManager extends CrudManager {
   async extensionAwareCreate<T>(entityName: string, data: Partial<T>): Promise<T> {
     // 记录Extension操作日志
     this.extensionContext?.logger.info(`CRUD create operation on ${entityName}`)
-    
+
     // 触发Extension事件
     this.extensionContext?.events.emit('crud:before:create', { entityName, data })
-    
+
     const result = await this.create(entityName, data)
-    
+
     this.extensionContext?.events.emit('crud:after:create', { entityName, data, result })
-    
+
     return result
   }
 
@@ -49,13 +50,13 @@ export class PlatformCrudManager extends CrudManager {
    */
   async extensionAwareFind<T>(entityName: string, query: Record<string, unknown>): Promise<T[]> {
     this.extensionContext?.logger.info(`CRUD find operation on ${entityName}`)
-    
+
     this.extensionContext?.events.emit('crud:before:find', { entityName, query })
-    
+
     const result = await this.find(entityName, query)
-    
+
     this.extensionContext?.events.emit('crud:after:find', { entityName, query, result })
-    
+
     return result
   }
 }

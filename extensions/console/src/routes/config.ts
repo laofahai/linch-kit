@@ -13,6 +13,7 @@ const DashboardPage = lazy(() => import('../pages/Dashboard'))
 const TenantListPage = lazy(() => import('../pages/tenants/TenantList'))
 const TenantDetailPage = lazy(() => import('../pages/tenants/TenantDetail'))
 const TenantCreatePage = lazy(() => import('../pages/tenants/TenantCreate'))
+const ExtensionManagerPage = lazy(() => import('../pages/ExtensionManager'))
 
 /**
  * 默认路由配置 - 只包含已实现的功能
@@ -68,6 +69,21 @@ export const defaultRoutes: Record<ConsoleFeature, ConsoleRoute[]> = {
     },
   ],
 
+  // Extension管理功能
+  extensions: [
+    {
+      path: '/extensions',
+      component: ExtensionManagerPage,
+      meta: {
+        title: 'console.nav.extensions',
+        icon: 'Puzzle',
+        requireAuth: true,
+        permissions: ['console:extension:view'],
+        order: 10,
+      },
+    },
+  ],
+
   // 暂未实现的功能模块 - 空数组
   users: [],
   permissions: [],
@@ -80,7 +96,7 @@ export const defaultRoutes: Record<ConsoleFeature, ConsoleRoute[]> = {
 /**
  * 获取默认启用的功能 - 只包含已实现的
  */
-export const defaultFeatures: ConsoleFeature[] = ['dashboard', 'tenants']
+export const defaultFeatures: ConsoleFeature[] = ['dashboard', 'tenants', 'extensions']
 
 /**
  * 权限映射 - 包含所有功能模块
@@ -92,6 +108,12 @@ export const permissionMap: Record<ConsoleFeature, string[]> = {
     'console:tenant:create',
     'console:tenant:update',
     'console:tenant:delete',
+  ],
+  extensions: [
+    'console:extension:view',
+    'console:extension:manage',
+    'console:extension:install',
+    'console:extension:uninstall',
   ],
   users: [],
   permissions: [],

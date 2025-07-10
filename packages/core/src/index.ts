@@ -12,6 +12,9 @@ export * from './plugin'
 // Extension系统（新增）
 export * from './extension'
 
+// 应用注册器系统
+export * from './registry/app-registry'
+
 // 配置管理 (客户端安全)
 export {
   createNextjsClientEnvProvider,
