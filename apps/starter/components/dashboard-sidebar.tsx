@@ -20,15 +20,14 @@ import {
 } from '@linch-kit/ui/client'
 import { Home, Settings, Users, BarChart3, Package, LogOut, User } from 'lucide-react'
 import Link from 'next/link'
-
-import { signOut } from '@/lib/auth'
+import { signOut } from 'next-auth/react'
 
 interface DashboardSidebarProps {
   children: React.ReactNode
-  user: unknown
+  user: unknown // 使用unknown类型避免复杂的类型匹配
   isAdmin: boolean
   isSuperAdmin: boolean
-  _userPermissions: string[]
+  userPermissions: string[]
 }
 
 export function DashboardSidebar({
@@ -36,11 +35,14 @@ export function DashboardSidebar({
   user,
   isAdmin,
   isSuperAdmin,
-  _userPermissions,
+  userPermissions,
 }: DashboardSidebarProps) {
   const handleSignOut = async () => {
     await signOut()
   }
+
+  // 权限检查函数
+  const hasPermission = (permission: string) => userPermissions.includes(permission)
 
   const getUserInitials = (name?: string) => {
     if (!name) return '?'
@@ -58,11 +60,19 @@ export function DashboardSidebar({
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider
+      defaultOpen={true}
+      style={
+        {
+          '--sidebar-width': '16rem',
+          '--sidebar-width-icon': '3rem',
+          '--sidebar-width-mobile': '18rem',
+        } as React.CSSProperties
+      }
+    >
       <Sidebar>
         <SidebarHeader className="border-b p-4">
           <div className="flex items-center gap-2">
-            <SidebarTrigger />
             <h2 className="font-semibold">LinchKit</h2>
           </div>
         </SidebarHeader>
@@ -88,12 +98,14 @@ export function DashboardSidebar({
                     管理中心
                   </Link>
                 </Button>
-                <Button variant="ghost" className="w-full justify-start" asChild>
-                  <Link href="/dashboard/admin/extensions">
-                    <Package className="mr-2 h-4 w-4" />
-                    Extensions
-                  </Link>
-                </Button>
+                {hasPermission('console:admin') && (
+                  <Button variant="ghost" className="w-full justify-start" asChild>
+                    <Link href="/dashboard/admin/extensions">
+                      <Package className="mr-2 h-4 w-4" />
+                      Extensions
+                    </Link>
+                  </Button>
+                )}
               </>
             )}
             <Button variant="ghost" className="w-full justify-start" asChild>
@@ -110,11 +122,18 @@ export function DashboardSidebar({
               <Button variant="ghost" className="w-full justify-start h-auto p-2">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.image || ''} alt={user?.name || ''} />
-                    <AvatarFallback>{getUserInitials(user?.name)}</AvatarFallback>
+                    <AvatarImage
+                      src={(user as { image?: string })?.image || ''}
+                      alt={(user as { name?: string })?.name || ''}
+                    />
+                    <AvatarFallback>
+                      {getUserInitials((user as { name?: string })?.name || undefined)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start text-sm">
-                    <span className="font-medium">{user?.name || '未知用户'}</span>
+                    <span className="font-medium">
+                      {(user as { name?: string })?.name || '未知用户'}
+                    </span>
                     <span className="text-xs text-muted-foreground">{getRoleDisplay()}</span>
                   </div>
                 </div>
@@ -136,7 +155,12 @@ export function DashboardSidebar({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <main className="p-6">{children}</main>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger className="-ml-1" />
+          <div className="h-4 w-px bg-border" />
+          <span className="text-sm font-medium">Dashboard</span>
+        </header>
+        <main className="flex-1 overflow-auto p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   )
