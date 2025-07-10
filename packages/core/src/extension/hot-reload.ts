@@ -5,6 +5,7 @@
 
 import { EventEmitter } from 'eventemitter3'
 import { watch } from 'chokidar'
+// @ts-ignore - lodash-es types not needed for build
 import { debounce } from 'lodash-es'
 
 import type { ExtensionManager } from './manager'
@@ -220,7 +221,7 @@ export class HotReloadManager extends EventEmitter {
     if (typeof globalThis !== 'undefined' && (globalThis as Record<string, unknown>).importCache) {
       Object.keys((globalThis as Record<string, unknown>).importCache as Record<string, unknown>).forEach(key => {
         if (key.startsWith(extensionPath)) {
-          delete (globalThis as Record<string, unknown>).importCache[key]
+          delete ((globalThis as Record<string, unknown>).importCache as Record<string, unknown>)[key]
         }
       })
     }
