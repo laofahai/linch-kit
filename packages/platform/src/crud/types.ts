@@ -3,7 +3,7 @@
  * @module platform/crud/types
  */
 
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * 基础实体接口
@@ -265,55 +265,8 @@ export interface EntityRelation {
   pivotTable?: string
 }
 
-/**
- * 实体定义
- */
-export interface EntityDefinition {
-  name: string
-  tableName?: string
-  primaryKey?: string
-  fields: Record<string, FieldDefinition>
-  relations?: Record<string, EntityRelation>
-  indexes?: Array<{
-    name: string
-    fields: string[]
-    unique?: boolean
-  }>
-  constraints?: Array<{
-    name: string
-    type: 'unique' | 'check' | 'foreign'
-    fields: string[]
-    reference?: { table: string; fields: string[] }
-  }>
-}
-
-/**
- * 字段定义
- */
-export interface FieldDefinition {
-  type: 'string' | 'number' | 'boolean' | 'date' | 'json' | 'text' | 'email' | 'url'
-  required?: boolean
-  unique?: boolean
-  default?: unknown
-  length?: number
-  precision?: number
-  scale?: number
-  enum?: string[]
-  validation?: Record<string, unknown>
-  index?: boolean
-  description?: string
-}
-
-/**
- * 模式迁移
- */
-export interface SchemaMigration {
-  version: string
-  name: string
-  up: () => Promise<void>
-  down: () => Promise<void>
-  timestamp: Date
-}
+// 注意：EntityDefinition, FieldDefinition, SchemaMigration 已移至 schema 模块
+// 避免重复定义，从 schema 模块导入
 
 /**
  * 数据种子
@@ -324,3 +277,125 @@ export interface DataSeed<T = unknown> {
   dependencies?: string[]
   order?: number
 }
+
+/**
+ * CRUD权限定义
+ */
+export interface CrudPermission {
+  action: CrudOperation
+  resource: string
+  conditions?: Record<string, unknown>
+  roles?: string[]
+  users?: string[]
+}
+
+/**
+ * CRUD上下文
+ */
+export interface CrudContext {
+  user?: {
+    id: string
+    email?: string
+    role: string
+    permissions: string[]
+    metadata?: Record<string, unknown>
+  }
+  metadata: Record<string, unknown>
+  extensionContext?: ExtensionContext
+  req?: {
+    ip?: string
+    userAgent?: string
+    headers?: Record<string, string>
+  }
+  res?: {
+    statusCode?: number
+    headers?: Record<string, string>
+  }
+  session?: {
+    id: string
+    data: Record<string, unknown>
+  }
+}
+
+/**
+ * CRUD事件
+ */
+export interface CrudEvent<T = unknown> {
+  type: `crud:${CrudOperation}:before` | `crud:${CrudOperation}:after` | `crud:${CrudOperation}:error`
+  entityName: string
+  data?: T
+  result?: T
+  error?: Error | string
+  context: CrudContext
+  timestamp: Date
+}
+
+/**
+ * 缓存选项
+ */
+export interface CacheOptions {
+  defaultTTL?: number
+  maxSize?: number
+  strategy?: CacheStrategy
+  keyPrefix?: string
+  tags?: string[]
+}
+
+/**
+ * 缓存条目
+ */
+export interface CacheEntry<T = unknown> {
+  key: string
+  value: T
+  ttl: number
+  createdAt: Date
+  accessedAt: Date
+  tags: string[]
+}
+
+/**
+ * 查询构建器选项 (从query-builder导出)
+ */
+export interface QueryBuilderOptions {
+  limit?: number
+  offset?: number
+  orderBy?: Array<{ field: string; direction: 'asc' | 'desc' }>
+  include?: string[]
+  select?: string[]
+}
+
+/**
+ * CRUD选项 (用于tRPC)
+ */
+export interface CRUDOptions<T = unknown> {
+  entityName: string
+  schema?: any
+  permissions?: {
+    create?: string[]
+    read?: string[]
+    update?: string[]
+    delete?: string[]
+  }
+  cache?: CacheOptions
+  hooks?: CrudHooks<T>
+}
+
+/**
+ * CRUD实体基类型 (用于tRPC)
+ */
+export type CRUDEntity = BaseEntity
+
+/**
+ * 创建输入类型 (用于tRPC)
+ */
+export type CreateInput<T = unknown> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>
+
+/**
+ * 更新输入类型 (用于tRPC)
+ */
+export type UpdateInput<T = unknown> = Partial<Omit<T, 'id' | 'createdAt'>>
+
+/**
+ * CRUD结果类型 (用于tRPC)
+ */
+export type CRUDResult<T = unknown> = CrudResult<T>

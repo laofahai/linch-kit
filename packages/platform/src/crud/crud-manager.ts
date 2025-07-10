@@ -4,7 +4,7 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * CRUD操作接口

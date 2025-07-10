@@ -4,7 +4,7 @@
  */
 
 import type { z } from 'zod'
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * 基础字段类型

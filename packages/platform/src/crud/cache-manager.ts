@@ -3,7 +3,7 @@
  * @module platform/crud/cache-manager
  */
 
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * 缓存项

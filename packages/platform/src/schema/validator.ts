@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod'
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 import type { Entity } from './entity'
 

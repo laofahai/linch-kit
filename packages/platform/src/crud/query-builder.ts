@@ -4,7 +4,7 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * 查询条件接口
@@ -16,9 +16,9 @@ export interface QueryCondition {
 }
 
 /**
- * 查询选项接口
+ * 查询构建器选项接口
  */
-export interface QueryOptions {
+export interface QueryBuilderOptions {
   limit?: number
   offset?: number
   orderBy?: Array<{ field: string; direction: 'asc' | 'desc' }>

@@ -3,7 +3,7 @@
  * @module platform/crud/platform-crud-manager
  */
 
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 import { CrudManager } from './crud-manager'
 

@@ -3,8 +3,8 @@
  * @module platform/trpc
  */
 
-// 核心CRUD tRPC工厂函数
-export * from './crud-router-factory'
+// 核心CRUD tRPC工厂函数 (暂时注释，需要修复类型错误)
+// export * from './crud-router-factory'
 
 // 新增平台特定的tRPC增强
 export * from './platform-router-factory'

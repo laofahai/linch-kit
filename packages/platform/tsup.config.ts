@@ -8,7 +8,7 @@ export default defineConfig([
     dts: true,
     sourcemap: true,
     clean: true,
-    external: ['react', 'react-dom'],
+    external: ['react', 'react-dom', '@linch-kit/core'],
   },
   {
     entry: ['src/crud/index.ts'],
@@ -16,7 +16,7 @@ export default defineConfig([
     outExtension: ({ format }) => ({ js: format === 'esm' ? '.mjs' : '.js' }),
     format: ['esm', 'cjs'],
     dts: true,
-    external: ['react', 'react-dom'],
+    external: ['react', 'react-dom', '@linch-kit/core'],
   },
   {
     entry: ['src/trpc/index.ts'],
@@ -24,7 +24,7 @@ export default defineConfig([
     outExtension: ({ format }) => ({ js: format === 'esm' ? '.mjs' : '.js' }),
     format: ['esm', 'cjs'],
     dts: true,
-    external: ['react', 'react-dom'],
+    external: ['react', 'react-dom', '@linch-kit/core'],
   },
   {
     entry: ['src/validation/index.ts'],
@@ -32,6 +32,6 @@ export default defineConfig([
     outExtension: ({ format }) => ({ js: format === 'esm' ? '.mjs' : '.js' }),
     format: ['esm', 'cjs'],
     dts: true,
-    external: ['react', 'react-dom'],
+    external: ['react', 'react-dom', '@linch-kit/core'],
   },
 ])

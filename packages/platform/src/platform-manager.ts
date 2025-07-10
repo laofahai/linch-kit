@@ -5,7 +5,7 @@
 
 import { PlatformCrudManager } from './crud/platform-crud-manager'
 import { RuntimeValidator } from './validation'
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * 平台管理器配置

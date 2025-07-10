@@ -7,24 +7,24 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./crud": {
+      "types": "./dist/crud.d.ts",
       "import": "./dist/crud.mjs", 
-      "require": "./dist/crud.js",
-      "types": "./dist/crud.d.ts"
+      "require": "./dist/crud.js"
     },
     "./trpc": {
+      "types": "./dist/trpc.d.ts",
       "import": "./dist/trpc.mjs",
-      "require": "./dist/trpc.js", 
-      "types": "./dist/trpc.d.ts"
+      "require": "./dist/trpc.js"
     },
     "./validation": {
+      "types": "./dist/validation.d.ts",
       "import": "./dist/validation.mjs",
-      "require": "./dist/validation.js",
-      "types": "./dist/validation.d.ts"
+      "require": "./dist/validation.js"
     }
   },
   "files": [

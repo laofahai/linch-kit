@@ -3,7 +3,7 @@
  * @module platform/crud/permission-checker
  */
 
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * 权限检查结果

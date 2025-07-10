@@ -3,7 +3,7 @@
  * @module platform/trpc/client-factory
  */
 
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * tRPC客户端配置

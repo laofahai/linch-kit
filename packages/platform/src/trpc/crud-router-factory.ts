@@ -5,9 +5,9 @@
 
 import { initTRPC } from '@trpc/server'
 import { z } from 'zod'
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
-import { CRUDManager } from '../crud/crud-manager'
+import { CrudManager } from '../crud/crud-manager'
 import { QueryBuilder } from '../crud/query-builder'
 import { PermissionChecker } from '../crud/permission-checker'
 import { ValidationManager } from '../crud/validation-manager'
@@ -74,9 +74,7 @@ export function createCRUD<T extends CRUDEntity = CRUDEntity>(options: CRUDRoute
   } = options
 
   // 初始化管理器
-  const crudManager = new CRUDManager<T>({
-    entityName,
-    schema,
+  const crudManager = new CrudManager({
     extensionContext,
     ...crudOptions,
   })

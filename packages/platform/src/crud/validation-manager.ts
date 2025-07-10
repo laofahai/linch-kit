@@ -4,26 +4,9 @@
  */
 
 import { z } from 'zod'
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
-
-/**
- * 验证规则
- */
-export interface ValidationRule {
-  field: string
-  validator: z.ZodSchema | ((value: unknown) => boolean)
-  message?: string
-  required?: boolean
-}
-
-/**
- * 验证结果
- */
-export interface ValidationResult {
-  valid: boolean
-  errors: Array<{ field: string; message: string; value?: unknown }>
-  data?: unknown
-}
+import type { ExtensionContext } from '@linch-kit/core'
+// 导入schema模块中的验证定义，避免重复
+import type { ValidationRule, ValidationResult } from '../schema/validator'
 
 /**
  * 验证选项
@@ -355,24 +338,4 @@ export function createValidationManager(extensionContext?: ExtensionContext): Va
 /**
  * 常用验证规则预设
  */
-export const CommonValidationRules = {
-  /**
-   * 用户实体验证规则
-   */
-  user: [
-    { field: 'email', validator: z.string().email(), required: true },
-    { field: 'name', validator: z.string().min(1).max(100), required: true },
-    { field: 'age', validator: z.number().min(0).max(120), required: false },
-    { field: 'role', validator: z.enum(['USER', 'ADMIN', 'MODERATOR']), required: false },
-  ] as ValidationRule[],
-
-  /**
-   * 文章实体验证规则
-   */
-  post: [
-    { field: 'title', validator: z.string().min(1).max(200), required: true },
-    { field: 'content', validator: z.string().min(1), required: true },
-    { field: 'tags', validator: z.array(z.string()), required: false },
-    { field: 'published', validator: z.boolean(), required: false },
-  ] as ValidationRule[],
-}
+// CommonValidationRules 已移至 schema/validator 模块，避免重复定义

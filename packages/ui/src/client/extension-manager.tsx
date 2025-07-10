@@ -164,14 +164,14 @@ function ExtensionStatusBadge({ status }: { status: ExtensionStatus }) {
   }
 
   const labels: Record<ExtensionStatus, string> = {
-    registered: '已注册',
-    loading: '加载中',
-    loaded: '已加载',
-    starting: '启动中',
-    running: '运行中',
-    stopping: '停止中',
-    stopped: '已停止',
-    error: '错误',
+    registered: 'Registered',
+    loading: 'Loading',
+    loaded: 'Loaded',
+    starting: 'Starting',
+    running: 'Running',
+    stopping: 'Stopping',
+    stopped: 'Stopped',
+    error: 'Error',
   }
 
   return <Badge variant={variants[status]}>{labels[status]}</Badge>
@@ -202,35 +202,35 @@ function ExtensionActionMenu({
         {canStart && (
           <DropdownMenuItem onClick={() => onAction('start', extension.name)}>
             <Play className="mr-2 h-4 w-4" />
-            启动
+            Start
           </DropdownMenuItem>
         )}
         {canStop && (
           <DropdownMenuItem onClick={() => onAction('stop', extension.name)}>
             <Square className="mr-2 h-4 w-4" />
-            停止
+            Stop
           </DropdownMenuItem>
         )}
         {canRestart && (
           <DropdownMenuItem onClick={() => onAction('restart', extension.name)}>
             <RotateCcw className="mr-2 h-4 w-4" />
-            重启
+            Restart
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onClick={() => onAction('reload', extension.name)}>
           <RotateCcw className="mr-2 h-4 w-4" />
-          重新加载
+          Reload
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onAction('configure', extension.name)}>
           <Settings className="mr-2 h-4 w-4" />
-          配置
+          Configure
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => onAction('unload', extension.name)}
           className="text-destructive"
         >
           <XCircle className="mr-2 h-4 w-4" />
-          卸载
+          Unload
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -259,40 +259,40 @@ function ExtensionDetailsDialog({
             <ExtensionStatusIcon status={extension.status} />
             {extension.displayName}
           </DialogTitle>
-          <DialogDescription>{extension.description || '暂无描述'}</DialogDescription>
+          <DialogDescription>{extension.description || 'No description'}</DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="info" className="mt-4">
           <TabsList>
-            <TabsTrigger value="info">基本信息</TabsTrigger>
-            <TabsTrigger value="capabilities">能力</TabsTrigger>
-            <TabsTrigger value="permissions">权限</TabsTrigger>
-            {extension.error && <TabsTrigger value="error">错误信息</TabsTrigger>}
+            <TabsTrigger value="info">Basic Info</TabsTrigger>
+            <TabsTrigger value="capabilities">Capabilities</TabsTrigger>
+            <TabsTrigger value="permissions">Permissions</TabsTrigger>
+            {extension.error && <TabsTrigger value="error">Error Info</TabsTrigger>}
           </TabsList>
 
           <TabsContent value="info" className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <h4 className="font-medium">版本</h4>
+                <h4 className="font-medium">Version</h4>
                 <p className="text-sm text-muted-foreground">{extension.version}</p>
               </div>
               <div>
-                <h4 className="font-medium">作者</h4>
-                <p className="text-sm text-muted-foreground">{extension.author || '未知'}</p>
+                <h4 className="font-medium">Author</h4>
+                <p className="text-sm text-muted-foreground">{extension.author || 'Unknown'}</p>
               </div>
               <div>
-                <h4 className="font-medium">分类</h4>
-                <p className="text-sm text-muted-foreground">{extension.category || '未分类'}</p>
+                <h4 className="font-medium">Category</h4>
+                <p className="text-sm text-muted-foreground">{extension.category || 'Uncategorized'}</p>
               </div>
               <div>
-                <h4 className="font-medium">状态</h4>
+                <h4 className="font-medium">Status</h4>
                 <ExtensionStatusBadge status={extension.status} />
               </div>
             </div>
 
             {extension.tags && extension.tags.length > 0 && (
               <div>
-                <h4 className="font-medium mb-2">标签</h4>
+                <h4 className="font-medium mb-2">Tags</h4>
                 <div className="flex gap-2 flex-wrap">
                   {extension.tags.map(tag => (
                     <Badge key={tag} variant="outline">
@@ -309,7 +309,7 @@ function ExtensionDetailsDialog({
               {Object.entries(extension.capabilities).map(([key, value]) => (
                 <div key={key} className="flex items-center justify-between">
                   <span className="text-sm">{key}</span>
-                  <Badge variant={value ? 'default' : 'outline'}>{value ? '是' : '否'}</Badge>
+                  <Badge variant={value ? 'default' : 'outline'}>{value ? 'Yes' : 'No'}</Badge>
                 </div>
               ))}
             </div>
@@ -329,16 +329,16 @@ function ExtensionDetailsDialog({
             <TabsContent value="error" className="space-y-4">
               <div className="space-y-2">
                 <div>
-                  <h4 className="font-medium">错误代码</h4>
+                  <h4 className="font-medium">Error Code</h4>
                   <p className="text-sm text-muted-foreground">{extension.error.code}</p>
                 </div>
                 <div>
-                  <h4 className="font-medium">错误信息</h4>
+                  <h4 className="font-medium">Error Message</h4>
                   <p className="text-sm text-muted-foreground">{extension.error.message}</p>
                 </div>
                 {extension.error.stack && (
                   <div>
-                    <h4 className="font-medium">堆栈跟踪</h4>
+                    <h4 className="font-medium">Stack Trace</h4>
                     <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto max-h-32">
                       {extension.error.stack}
                     </pre>
@@ -399,7 +399,7 @@ export function ExtensionManager({
       }
 
       if (!result) {
-        throw new Error(`操作失败: ${action}`)
+        throw new Error(`Operation failed: ${action}`)
       }
 
       // 刷新列表
@@ -439,7 +439,7 @@ export function ExtensionManager({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">总扩展数</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Extensions</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -449,7 +449,7 @@ export function ExtensionManager({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">运行中</CardTitle>
+            <CardTitle className="text-sm font-medium">Running</CardTitle>
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
@@ -459,7 +459,7 @@ export function ExtensionManager({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">错误</CardTitle>
+            <CardTitle className="text-sm font-medium">Errors</CardTitle>
             <AlertCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
@@ -473,11 +473,11 @@ export function ExtensionManager({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Extension 列表</CardTitle>
-              <CardDescription>管理系统中的所有扩展</CardDescription>
+              <CardTitle>Extension List</CardTitle>
+              <CardDescription>Manage all extensions in the system</CardDescription>
             </div>
             <Button onClick={onRefresh} disabled={loading}>
-              刷新
+              Refresh
             </Button>
           </div>
         </CardHeader>
@@ -488,12 +488,12 @@ export function ExtensionManager({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>名称</TableHead>
-                  <TableHead>版本</TableHead>
-                  <TableHead>状态</TableHead>
-                  <TableHead>分类</TableHead>
-                  <TableHead>最后更新</TableHead>
-                  <TableHead className="text-right">操作</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Version</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Last Updated</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -522,7 +522,7 @@ export function ExtensionManager({
                             size="sm"
                             onClick={() => handleViewDetails(extension)}
                           >
-                            详情
+                            Details
                           </Button>
                         )}
                         <ExtensionActionMenu extension={extension} onAction={handleAction} />
@@ -534,7 +534,7 @@ export function ExtensionManager({
             </Table>
 
             {extensions.length === 0 && !loading && (
-              <div className="text-center py-8 text-muted-foreground">暂无 Extension</div>
+              <div className="text-center py-8 text-muted-foreground">No Extensions</div>
             )}
           </div>
         </CardContent>
