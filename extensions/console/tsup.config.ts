@@ -3,13 +3,7 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: ['src/index.ts', 'src/client.ts'],
   format: ['esm'],
-  dts: {
-    resolve: true,
-    compilerOptions: {
-      composite: false,
-      incremental: false,
-    },
-  },
+  dts: false,
   clean: true,
   external: [
     'react',
