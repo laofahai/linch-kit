@@ -1,5 +1,3 @@
-'use client'
-
 import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui/server'
 import { Badge } from '@linch-kit/ui/server'
 import { Button } from '@linch-kit/ui/server'

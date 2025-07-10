@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Console 模块主入口
  *
@@ -37,13 +39,13 @@ export {
 export * from './i18n'
 
 // 核心注册器和加载器
-export { 
+export {
   EnhancedAppRegistry,
   createEnhancedAppRegistry,
   enhancedAppRegistry,
   type DynamicRouteConfig,
   type ExtensionRouteRegistration,
-  type RouteUpdateListener
+  type RouteUpdateListener,
 } from './core/enhanced-app-registry'
 
 export {
@@ -51,16 +53,16 @@ export {
   ExtensionRouteContainer,
   useExtensionRoute,
   ExtensionRouteRegistry,
-  createExtensionRouteRegistry
+  createExtensionRouteRegistry,
 } from './core/extension-route-loader'
 
 // Extension 加载器和生命周期管理
-export { 
+export {
   ExtensionLoader,
   createExtensionLoader,
   extensionLoader,
   type ExtensionLoaderConfig,
-  type ExtensionLoadStatus
+  type ExtensionLoadStatus,
 } from './core/extension-loader'
 
 export {
@@ -69,7 +71,7 @@ export {
   extensionLifecycleManager,
   type ExtensionLifecyclePhase,
   type ExtensionLifecycleEvent,
-  type ExtensionLifecycleState
+  type ExtensionLifecycleState,
 } from './core/extension-lifecycle'
 
 // Extension 通信机制
@@ -84,7 +86,7 @@ export {
   type ExtensionMessageHandler,
   type ExtensionMessageContext,
   type ExtensionMessageSubscription,
-  type ExtensionMessageStats
+  type ExtensionMessageStats,
 } from './core/extension-communication'
 
 // Starter 集成管理
@@ -94,7 +96,7 @@ export {
   starterIntegrationManager,
   type StarterIntegrationConfig,
   type StarterIntegrationState,
-  type ExtensionStateSummary
+  type ExtensionStateSummary,
 } from './core/starter-integration'
 
 // React Hooks
@@ -103,7 +105,7 @@ export {
   useExtensionMessages,
   useExtensionLifecycle,
   useDynamicRoutes,
-  useExtensionState
+  useExtensionState,
 } from './hooks/useStarterIntegration'
 
 // Extension 开发模板
@@ -113,7 +115,7 @@ export {
   communicationExtension,
   ExtensionTemplateFactory,
   ExtensionDevTools,
-  type ExtensionTemplate
+  type ExtensionTemplate,
 } from './templates/extension-template'
 
 // 暂时只启用基础功能，逐步完善

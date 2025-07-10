@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState, Suspense } from 'react'
-import { useRouter } from 'next/router'
+import { usePathname } from 'next/navigation'
 import type { ExtensionInstance } from '@linch-kit/core/client'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
@@ -47,7 +47,6 @@ export const ExtensionRouteLoader: React.FC<ExtensionRouteLoaderProps> = ({
   notFound: NotFoundComponent = () => <div>404 - Page not found</div>,
   errorBoundary: ErrorBoundary = DefaultErrorBoundary,
 }) => {
-  const _router = useRouter()
   const [routeMatch, setRouteMatch] = useState<RouteMatch | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -184,8 +183,7 @@ const DefaultErrorBoundary: React.FC<{ error: Error }> = ({ error }) => (
  * 用于Next.js的catch-all路由
  */
 export const ExtensionRouteContainer: React.FC = () => {
-  const router = useRouter()
-  const pathname = router.asPath
+  const pathname = usePathname()
 
   return (
     <ExtensionRouteLoader
@@ -213,19 +211,18 @@ export const ExtensionRouteContainer: React.FC = () => {
  * Hook: 使用Extension路由
  */
 export function useExtensionRoute() {
-  const router = useRouter()
+  const pathname = usePathname()
   const [currentExtension, setCurrentExtension] = useState<string | null>(null)
 
   useEffect(() => {
-    const path = router.asPath
-    const match = path.match(/\/dashboard\/ext\/([^/]+)/)
+    const match = pathname.match(/\/dashboard\/ext\/([^/]+)/)
 
     if (match) {
       setCurrentExtension(match[1])
     } else {
       setCurrentExtension(null)
     }
-  }, [router.asPath])
+  }, [pathname])
 
   const navigateToExtension = async (extensionName: string, routePath?: string) => {
     return enhancedAppRegistry.navigateToExtension(extensionName, routePath)

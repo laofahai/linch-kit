@@ -8,9 +8,10 @@ import {
   type LinchKitUser,
   type LinchKitAuthConfig,
 } from '@linch-kit/auth'
-import { prisma } from './prisma'
 import { Logger } from '@linch-kit/core'
 import bcrypt from 'bcryptjs'
+
+import { prisma } from './prisma'
 
 /**
  * 凭据认证逻辑
@@ -174,7 +175,7 @@ const authConfig: LinchKitAuthConfig = {
       })
     },
   },
-  debug: process.env.NODE_ENV === 'development',
+  debug: process.env.NODE_ENV === 'development', // 开发环境启用debug
 }
 
 /**

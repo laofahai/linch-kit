@@ -15,10 +15,10 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui/server'
 import { Button } from '@linch-kit/ui/server'
 import { Badge } from '@linch-kit/ui/server'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@linch-kit/ui/server'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@linch-kit/ui/server'
 import { Input } from '@linch-kit/ui/server'
 import { Alert, AlertDescription } from '@linch-kit/ui/server'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@linch-kit/ui/client'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@linch-kit/ui/client'
 import {
   Puzzle,
   Plus,

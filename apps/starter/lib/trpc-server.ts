@@ -4,17 +4,62 @@
  * 遵循 LinchKit 架构原则：使用 console 模块提供的功能
  */
 
-import {
-  router,
-  publicProcedure,
-  protectedProcedure,
-  createTRPCContext,
-  healthRouter,
-  systemRouter,
-} from '@linch-kit/platform'
+import { initTRPC } from '@trpc/server'
+// import { createConsoleRouter } from '@linch-kit/console'
 import { z } from 'zod'
+import superjson from 'superjson'
 
 import { db } from './db'
+import { auth } from './auth'
+
+/**
+ * 初始化 tRPC 实例
+ */
+const t = initTRPC.create({
+  transformer: superjson,
+  errorFormatter({ shape }) {
+    return shape
+  },
+})
+
+/**
+ * 基础路由构造器
+ */
+export const router = t.router
+
+/**
+ * 公开过程
+ */
+export const publicProcedure = t.procedure
+
+/**
+ * 受保护过程 - 需要认证
+ */
+export const protectedProcedure = t.procedure.use(async ({ next }) => {
+  const session = await auth()
+
+  if (!session?.user) {
+    throw new Error('UNAUTHORIZED')
+  }
+
+  return next({
+    ctx: {
+      user: session.user,
+    },
+  })
+})
+
+/**
+ * 创建 tRPC 上下文
+ */
+export async function createTRPCContext() {
+  const session = await auth()
+
+  return {
+    user: session?.user || null,
+    db,
+  }
+}
 
 /**
  * 用户基础路由 - 仅保留必要功能
@@ -210,18 +255,67 @@ const statsRouter = router({
 })
 
 /**
+ * Console 路由 - 暂时禁用
+ */
+// const consoleRouterInstance = createConsoleRouter({
+//   router,
+//   protectedProcedure,
+// })
+
+/**
+ * 基础健康检查路由
+ */
+const healthRouter = router({
+  status: publicProcedure
+    .output(
+      z.object({
+        status: z.literal('ok'),
+        timestamp: z.number(),
+        uptime: z.number(),
+      })
+    )
+    .query(async () => ({
+      status: 'ok' as const,
+      timestamp: Date.now(),
+      uptime: process.uptime(),
+    })),
+})
+
+/**
+ * 系统信息路由
+ */
+const systemRouter = router({
+  info: publicProcedure
+    .output(
+      z.object({
+        version: z.string(),
+        environment: z.string(),
+        nodeVersion: z.string(),
+      })
+    )
+    .query(async () => ({
+      version: process.env.npm_package_version || '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      nodeVersion: process.version,
+    })),
+})
+
+/**
  * 主应用路由器 - 简化版本
  * 仅包含 starter 应用必需的路由
  * 用户管理功能已迁移到 @linch-kit/console
  */
 export const appRouter = router({
-  // 来自 @linch-kit/trpc 的基础路由
+  // 基础路由
   health: healthRouter,
   system: systemRouter,
 
   // starter 应用特定路由
   user: userRouter,
   stats: statsRouter,
+
+  // Console 模块路由（暂时禁用）
+  // console: consoleRouterInstance,
 })
 
 /**

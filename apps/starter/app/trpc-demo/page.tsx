@@ -25,7 +25,7 @@ export default function TRPCDemoPage() {
     isLoading: pingLoading,
     error: pingError,
     refetch: refetchPing,
-  } = trpc.health.ping.useQuery()
+  } = trpc.health.status.useQuery()
   const {
     data: statusData,
     isLoading: statusLoading,
@@ -101,7 +101,7 @@ export default function TRPCDemoPage() {
             {pingData && (
               <div>
                 <p className="text-sm font-medium">Ping 响应</p>
-                <p className="text-xs text-muted-foreground">{pingData.message}</p>
+                <p className="text-xs text-muted-foreground">状态: {pingData.status}</p>
                 <p className="text-xs text-muted-foreground">运行时间: {pingData.uptime}s</p>
               </div>
             )}

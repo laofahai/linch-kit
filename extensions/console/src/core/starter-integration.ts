@@ -4,7 +4,16 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-import type { ExtensionInstance as _ExtensionInstance } from '@linch-kit/core/client'
+// import type { ExtensionInstance } from '@linch-kit/core/client'
+
+// 临时类型定义，避免构建错误
+interface _ExtensionInstance {
+  name: string
+  metadata: {
+    displayName?: string
+    permissions?: string[]
+  }
+}
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import { extensionLoader } from './extension-loader'
@@ -289,6 +298,7 @@ export class StarterIntegrationManager extends EventEmitter {
     // 配置Extension加载器
     extensionLoader.updateConfig({
       autoLoad: this.config.autoInitialize,
+      extensionPath: '/extensions',
       hotReload: this.config.enableHotReload,
       permissionCheck: this.config.enablePermissionCheck,
       allowedExtensions: this.config.defaultExtensions,

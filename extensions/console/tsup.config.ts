@@ -26,6 +26,6 @@ export default defineConfig({
   sourcemap: true,
   minify: false,
   banner: {
-    js: `'use client';`,
+    js: "'use client';",
   },
 })

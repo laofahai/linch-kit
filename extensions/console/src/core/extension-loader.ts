@@ -30,6 +30,8 @@ export interface ExtensionLoaderConfig {
   hotReload: boolean
   /** 允许的 Extension 列表 */
   allowedExtensions?: string[]
+  /** 是否启用权限检查 */
+  permissionCheck?: boolean
 }
 
 /**
@@ -47,6 +49,20 @@ export interface ConsoleExtensionState extends ExtensionState {
   componentCount: number
   /** 加载状态 */
   loadStatus: ExtensionLoadStatus
+  /** Extension名称 */
+  name: string
+  /** 当前状态 */
+  status:
+    | 'registered'
+    | 'loading'
+    | 'loaded'
+    | 'starting'
+    | 'running'
+    | 'stopping'
+    | 'stopped'
+    | 'error'
+  /** 错误信息 */
+  error?: Error
 }
 
 /**

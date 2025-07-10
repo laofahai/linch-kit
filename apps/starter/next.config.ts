@@ -73,7 +73,57 @@ const nextConfig: NextConfig = {
   // Webpack 配置
   webpack: (config: any) => {
     // 优化 bundle 大小
-    config.resolve.fallback = { fs: false, path: false }
+    config.resolve.fallback = {
+      fs: false,
+      path: false,
+      // 禁用 Node.js 特定模块以避免在客户端环境中出现错误
+      cluster: false,
+      perf_hooks: false,
+      worker_threads: false,
+      child_process: false,
+      os: false,
+      crypto: false,
+      stream: false,
+      url: false,
+      util: false,
+      querystring: false,
+      zlib: false,
+      http: false,
+      https: false,
+      buffer: false,
+      dns: false,
+      net: false,
+      tls: false,
+      vm: false,
+      process: false,
+      v8: false,
+      assert: false,
+      constants: false,
+      events: false,
+      async_hooks: false,
+      'stream/promises': false,
+    }
+
+    // 排除所有 TypeScript 声明文件和 source maps 被客户端 loader 处理
+    config.module.rules.push({
+      test: /\.(d\.ts|d\.mts|js\.map|mjs\.map)$/,
+      type: 'asset/resource',
+      generator: {
+        emit: false,
+      },
+    })
+
+    // 添加externals配置以排除Node.js专有模块
+    config.externals = config.externals || []
+    config.externals.push({
+      'stream/promises': 'commonjs stream/promises',
+    })
+
+    // 确保 @linch-kit/core 只加载客户端文件
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@linch-kit/core$': '@linch-kit/core/client',
+    }
 
     return config
   },

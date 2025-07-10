@@ -25,4 +25,36 @@ export type {
   FeatureGuardProps,
 } from './providers/ConsoleProvider'
 
-// 暂时不导出其他功能，避免依赖问题
+// Starter 集成 Hooks
+export {
+  useStarterIntegration,
+  useExtensionMessages,
+  useExtensionLifecycle,
+  useDynamicRoutes,
+  useExtensionState,
+} from './hooks/useStarterIntegration'
+
+// Extension 管理页面组件
+export { ExtensionManager as ExtensionManagement } from './pages/ExtensionManager'
+
+// Dashboard 页面
+export { Dashboard } from './pages/Dashboard'
+
+// 核心客户端功能
+export {
+  StarterIntegrationManager,
+  createStarterIntegrationManager,
+  starterIntegrationManager,
+  type StarterIntegrationConfig,
+  type StarterIntegrationState,
+  type ExtensionStateSummary,
+} from './core/starter-integration'
+
+// Extension 系统
+export {
+  ExtensionRouteLoader,
+  ExtensionRouteContainer,
+  useExtensionRoute,
+  ExtensionRouteRegistry,
+  createExtensionRouteRegistry,
+} from './core/extension-route-loader'

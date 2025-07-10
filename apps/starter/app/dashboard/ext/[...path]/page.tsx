@@ -10,8 +10,9 @@ import { auth } from '@/lib/auth'
 import ExtensionRouteClient from './client'
 
 // 生成元数据
-export async function generateMetadata({ params }: { params: { path: string[] } }) {
-  const extensionName = params.path?.[0] || 'unknown'
+export async function generateMetadata({ params }: { params: Promise<{ path: string[] }> }) {
+  const resolvedParams = await params
+  const extensionName = resolvedParams.path?.[0] || 'unknown'
 
   return {
     title: `${extensionName} Extension | LinchKit`,

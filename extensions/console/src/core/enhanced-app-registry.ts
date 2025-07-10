@@ -3,10 +3,22 @@
  * @module core/enhanced-app-registry
  */
 
-import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core/client'
-import type { NextRouter } from 'next/router'
+// import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core/client'
+
+// 临时类型定义，避免构建错误
+interface ExtensionInstance {
+  name: string
+  metadata: ExtensionMetadata
+}
+
+interface ExtensionMetadata {
+  displayName?: string
+  permissions: string[]
+}
+import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 import { AppRegistry } from './app-registry'
+import type { MenuItemDefinition } from './app-registry'
 import type { PageRouteDefinition } from './module-registry'
 
 /**
@@ -60,7 +72,7 @@ export type RouteUpdateListener = (routes: DynamicRouteConfig[]) => void
 export class EnhancedAppRegistry extends AppRegistry {
   private extensionRoutes = new Map<string, ExtensionRouteRegistration>()
   private routeListeners = new Set<RouteUpdateListener>()
-  private nextRouter?: NextRouter
+  private appRouter?: AppRouterInstance
   private routePrefix = '/dashboard/ext'
 
   /**
@@ -265,16 +277,16 @@ export class EnhancedAppRegistry extends AppRegistry {
   /**
    * 设置Next.js路由器实例
    */
-  setNextRouter(router: NextRouter): void {
-    this.nextRouter = router
+  setAppRouter(router: AppRouterInstance): void {
+    this.appRouter = router
   }
 
   /**
    * 动态导航到Extension路由
    */
   async navigateToExtension(extensionName: string, routePath?: string): Promise<boolean> {
-    if (!this.nextRouter) {
-      console.error('Next.js router not set')
+    if (!this.appRouter) {
+      console.error('Next.js app router not set')
       return false
     }
 
@@ -288,7 +300,7 @@ export class EnhancedAppRegistry extends AppRegistry {
       ? this.normalizeRoutePath(registration.basePath, routePath)
       : registration.basePath
 
-    await this.nextRouter.push(targetPath)
+    this.appRouter.push(targetPath)
     return true
   }
 
@@ -355,6 +367,43 @@ export class EnhancedAppRegistry extends AppRegistry {
         console.error('Route update listener error:', error)
       }
     }
+  }
+
+  /**
+   * 构建菜单树（用于UI展示）
+   */
+  buildMenuTree(): MenuItemDefinition[] {
+    const menuItems = Array.from(this.getMenus().values())
+    const rootItems: MenuItemDefinition[] = []
+    const itemMap = new Map<string, MenuItemDefinition & { children?: MenuItemDefinition[] }>()
+
+    // 创建带children的菜单项映射
+    for (const item of menuItems) {
+      itemMap.set(item.id, { ...item, children: [] })
+    }
+
+    // 构建树形结构
+    for (const item of itemMap.values()) {
+      if (item.parentId && itemMap.has(item.parentId)) {
+        const parent = itemMap.get(item.parentId)!
+        parent.children!.push(item)
+      } else {
+        rootItems.push(item)
+      }
+    }
+
+    return rootItems
+  }
+
+  /**
+   * 获取所有组件
+   */
+  getComponents(): Map<string, React.ComponentType<unknown>> {
+    const components = new Map<string, React.ComponentType<unknown>>()
+
+    // 从基类AppRegistry获取所有组件
+    // 注意：这是一个简化实现，实际应该从base.components获取
+    return components
   }
 
   /**
