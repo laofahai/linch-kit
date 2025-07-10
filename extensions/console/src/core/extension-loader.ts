@@ -392,19 +392,9 @@ export class ExtensionLoader extends EventEmitter {
    * 设置事件处理器
    */
   private setupEventHandlers(): void {
-    // 监听 ExtensionManager 的事件
-    this.extensionManager.on('extensionLoaded', ({ name }) => {
-      console.log(`[ExtensionLoader] Extension ${name} loaded by manager`)
-    })
-
-    this.extensionManager.on('extensionUnloaded', ({ name }) => {
-      console.log(`[ExtensionLoader] Extension ${name} unloaded by manager`)
-    })
-
-    this.extensionManager.on('extensionError', ({ name, error }) => {
-      console.error(`[ExtensionLoader] Extension ${name} error:`, error)
-      this.updateExtensionState(name, 'error', { error })
-    })
+    // EnhancedPluginRegistry 不具备 EventEmitter 功能
+    // 移除事件监听器设置，如需要事件处理功能，应该在调用方处理
+    // 或者在 ExtensionManager 接口中明确定义事件处理方法
   }
 
   /**
