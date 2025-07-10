@@ -17,18 +17,21 @@
 ### 依赖层次关系
 
 ```
-L0: @linch-kit/core      → 基础设施 (日志、配置、插件系统)
+L0: @linch-kit/core      → 基础设施 (日志、配置、插件系统、Extension系统)
   ↓
-L1: @linch-kit/schema    → Schema引擎 (验证、类型生成)
+L1: @linch-kit/auth      → 认证权限 (NextAuth + CASL)
   ↓
-L2: @linch-kit/auth      → 认证权限 (NextAuth + CASL)
-L2: @linch-kit/crud      → CRUD操作 (类型安全、权限集成)
+L2: @linch-kit/platform  → 业务开发平台 (Schema+CRUD+tRPC+验证)
+L2: @linch-kit/ui        → UI组件 (shadcn/ui + 企业组件)
   ↓
-L3: @linch-kit/trpc      → API层 (端到端类型安全)
-L3: @linch-kit/ui        → UI组件 (shadcn/ui + 企业组件)
-  ↓
-L4: modules/console      → 管理平台 (多租户、权限管理)
+L3: extensions/console   → 管理平台Extension (多租户、权限管理)
 ```
+
+**✅ 最终包架构**:
+
+- **核心4包**: core, auth, platform, ui
+- **移除**: packages/crud, packages/trpc (功能已整合到platform)
+- **工具包**: tools/schema (开发时代码生成工具)
 
 **核心约束**:
 
@@ -41,10 +44,13 @@ L4: modules/console      → 管理平台 (多租户、权限管理)
 ### 应用层 (Applications)
 
 ```
-apps/starter        # 生产级基础应用 - 多标签工作台
-apps/demo-app       # 功能演示应用 - 展示各包功能
-apps/website        # 文档平台 - Nextra 4 + i18n
+apps/starter        # 生产级基础应用 - Extension运行时环境
 ```
+
+**⚠️ 应用架构简化**:
+
+- **保留**: apps/starter (核心应用)
+- **移除**: apps/demo-app, apps/website (简化架构)
 
 **应用层特点**:
 
@@ -52,28 +58,26 @@ apps/website        # 文档平台 - Nextra 4 + i18n
 - **功能集成**: 集成多个模块和包提供完整功能
 - **用户入口**: 面向最终用户的交互界面
 
-### 模块层 (Modules)
+### Extension层 (Extensions)
 
 ```
-modules/console     # 企业级管理控制台 (已完成)
-modules/crm         # 客户关系管理 (规划中)
-modules/cms         # 内容管理系统 (规划中)
+extensions/console  # 企业级管理控制台Extension (已迁移)
+extensions/admin    # 管理功能Extension (规划中)
+extensions/blog     # 博客系统Extension (开发中)
 ```
 
-**模块层特点**:
+**Extension层特点**:
 
 - **功能库定位**: 通过 npm 包被应用集成使用
 - **业务聚合**: 聚合多个包功能实现完整业务流程
 - **可选集成**: 应用可以选择性集成所需模块
 
-### 包层 (Packages - 核心6包)
+### 包层 (Packages - 核心4包)
 
 ```
 @linch-kit/core     # L0: 基础设施包
-@linch-kit/schema   # L1: Schema引擎包
-@linch-kit/auth     # L2: 认证权限包
-@linch-kit/crud     # L2: CRUD操作包
-@linch-kit/trpc     # L3: API层包
+@linch-kit/auth     # L1: 认证权限包
+@linch-kit/platform # L2: 业务开发平台包 (Schema+CRUD+tRPC+验证)
 @linch-kit/ui       # L3: UI组件包
 ```
 
@@ -225,7 +229,7 @@ import { Button, Form, DataTable } from '@linch-kit/ui'
 <DataTable data={users} columns={userColumns} />
 ```
 
-### L4: modules/console (管理平台)
+### L4: extensions/console (管理平台)
 
 **职责**: 企业级管理控制台
 

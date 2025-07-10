@@ -46,7 +46,7 @@
   "dependencies": {
     "@linch-kit/auth": "workspace:*",
     "@linch-kit/core": "workspace:*",
-    "@linch-kit/crud": "workspace:*",
+    "@linch-kit/platform": "workspace:*",
     "@linch-kit/schema": "workspace:*",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-avatar": "^1.1.10",

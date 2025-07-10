@@ -19,11 +19,11 @@ L0: @linch-kit/core           ✅ 基础设施 (100%)
 L1: @linch-kit/schema         ✅ Schema引擎 (100%)
 L2: @linch-kit/auth           ✅ 认证权限 (100%)
 L2: @linch-kit/crud           ✅ CRUD操作 (100%)
-L3: @linch-kit/trpc           ✅ API层 (100%)
+L3: @linch-kit/platform           ✅ API层 (100%)
 L3: @linch-kit/ui             ✅ UI组件 (100%)
 L3: @linch-kit/ai             ✅ AI开发能力 (100%)
 L3: @linch-kit/create-linch-kit ✅ 项目创建工具 (100%)
-L4: modules/console           ✅ 管理平台 (100%)
+L4: extensions/console           ✅ 管理平台 (100%)
 ```
 
 ### ✅ 已完成的应用生态

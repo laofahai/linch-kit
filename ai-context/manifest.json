@@ -63,6 +63,12 @@
       "priority": "critical"
     },
     {
+      "path": "ai-context/01_Concepts/08_Extension_Architecture.md",
+      "description": "LinchKit Extension系统架构设计文档，包含Extension生命周期、权限管理、性能优化和通信架构",
+      "tags": ["extension", "architecture", "lifecycle", "performance", "security"],
+      "priority": "high"
+    },
+    {
       "path": "ai-context/02_Guides/01_Development_Workflow.md",
       "description": "Single source of truth for development processes, coding standards, Git workflow, and all constraints",
       "tags": ["workflow", "rules", "constraints", "git"],
@@ -156,14 +162,13 @@
   "packageArchitecture": {
     "corePackages": [
       "@linch-kit/core",
-      "@linch-kit/schema",
       "@linch-kit/auth",
-      "@linch-kit/crud",
-      "@linch-kit/trpc",
+      "@linch-kit/platform",
       "@linch-kit/ui"
     ],
-    "modules": ["modules/console"],
-    "applications": ["apps/starter", "apps/website"],
+    "extensions": ["extensions/console", "extensions/admin", "extensions/blog-extension"],
+    "applications": ["apps/starter"],
+    "tools": ["tools/schema", "tools/cli", "tools/context"],
     "completionStatus": "100%"
   }
 }

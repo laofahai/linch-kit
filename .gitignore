@@ -55,6 +55,14 @@ graph_db_connection.json
 
 # AI Graph Data (generated files)
 graph-data/
+
+# Claude AI Session Files (temporary files and logs)
+.claude/temp-assessment-prompt.txt
+.claude/current-session-analysis.md
+.claude/claude-session-monitor.md
+.claude/feedback-logs/
+.claude/prompts/*.temp
+
 # Playwright
 playwright-report/
 test-results/

@@ -1,11 +1,319 @@
 # LinchKit 开发状态记录
 
-**版本**: v2.0  
-**更新**: 2025-07-08  
-**当前分支**: main
-**状态**: 核心架构完成（7+1），专注AI开发阶段功能和插件化架构
+**版本**: v2.4  
+**更新**: 2025-07-10  
+**当前分支**: feature/starter-console-integration-e2e  
+**状态**: Extension系统全面优化完成，包括示例Extension、性能优化、E2E测试和完整文档
 
 ## 🏗️ 当前开发进展
+
+### 2025-07-10 - Starter Console 集成完成 ✅
+
+#### ✅ 重要成果
+
+- **Starter Console 简洁集成**: 完成 starter 应用与 console 管理功能的无缝集成
+  - 分析了 starter 应用现状：完整的 LinchKit 框架基础，已具备 @linch-kit/console 依赖
+  - 设计了简洁集成架构：最小侵入性、分层设计、按需加载原则
+  - 实现了零破坏性集成：保持 starter 原有功能和用户体验不变
+- **Admin 管理控制台**: 完整的企业级管理界面实现
+  - 创建了 `/admin` 路由体系，包含完整的管理员权限检查
+  - 使用 `ConsoleProvider` 提供企业级管理能力和红色主题区分
+  - 实现了系统概览、Extension管理、用户管理等核心管理页面
+- **Console 集成组件**: 实时监控和管理界面
+  - 开发了 `ConsoleIntegrationStatus` 组件显示集成状态
+  - 支持 Extension 实时状态监控和管理操作（加载/卸载/重载）
+  - 提供完整的错误处理和状态反馈机制
+- **动态 Extension 路由**: 支持动态扩展功能
+  - 创建了 `/dashboard/ext/[...path]` 动态路由系统
+  - 实现了服务端组件 + 客户端组件分离架构
+  - 集成了权限检查、错误处理和 fallback 组件
+
+#### 🔧 技术实现
+
+- **集成架构设计**:
+  - 采用最小侵入性原则，仅在必要位置集成 Console 功能
+  - 分层设计保持 Starter 应用的独立性和简洁性
+  - 按需加载机制，仅在管理功能需要时激活 Console 系统
+- **LinchKit Provider 增强**:
+  - 在 `LinchKitProvider` 中集成 `starterIntegrationManager` 自动初始化
+  - 保持原有初始化流程，无缝添加 Console 集成功能
+  - 完整的错误处理和加载状态管理
+- **管理界面优化**:
+  - 简洁的管理页面设计，避免复杂的功能堆叠
+  - 统一的卡片式布局和状态展示
+  - 明确的权限控制和功能边界
+- **路由架构**:
+  - 服务端组件处理权限验证和重定向
+  - 客户端组件负责动态内容渲染
+  - 支持动态元数据生成和 SEO 优化
+
+#### 📦 新增核心文件
+
+- `apps/starter/app/admin/` - 完整的管理控制台路由体系
+  - `layout.tsx` - Admin 布局 + ConsoleProvider 配置
+  - `page.tsx` - 系统概览和集成状态展示
+  - `extensions/page.tsx` - Extension 管理界面
+  - `users/page.tsx` - 用户管理页面（简洁版）
+  - `tenants/page.tsx` - 租户管理页面（简洁版）
+  - `settings/page.tsx` - 系统设置页面（简洁版）
+  - `security/page.tsx` - 安全管理页面（简洁版）
+- `apps/starter/app/dashboard/ext/[...path]/` - 动态 Extension 路由
+  - `page.tsx` - 服务端页面组件
+  - `client.tsx` - 客户端渲染组件
+- `apps/starter/components/console-integration.tsx` - Console 集成状态组件
+- `components/providers/linchkit-provider.tsx` - 增强的 LinchKit Provider
+
+### 2025-07-10 - Extension系统全面优化完成 ✅
+
+#### ✅ 重要成果
+
+- **完整Extension示例**: 创建了`extensions/example-counter/`完整示例
+  - 实现了CounterService业务逻辑服务，包含状态管理和历史记录
+  - 开发了CounterWidget React组件，支持实时更新和用户交互
+  - 完整的Extension元数据配置，包括能力声明和权限管理
+  - 标准化的生命周期钩子实现（start/stop）
+- **构建流程优化**: 解决了@linch-kit/ui依赖问题
+  - 修复了UI包的client/server导入路径问题
+  - 添加了@linch-kit/schema workspace依赖配置
+  - 实现了所有包的成功构建和类型检查
+- **E2E测试框架**: 完整的Extension系统测试
+  - 创建了`tools/testing/e2e/extension-system.test.ts`
+  - 测试ExtensionManager的基本功能和错误处理
+  - 验证Extension加载、状态管理和生命周期
+  - 8个测试用例全部通过，覆盖主要功能场景
+- **性能优化模块**: 实现四大性能优化器
+  - `ExtensionLoadCache`: Extension加载缓存管理，支持TTL和命中统计
+  - `LazyLoadManager`: 基于触发器的延迟加载，减少启动时间
+  - `ExtensionCommunicationOptimizer`: 批量消息处理，优化通信性能
+  - `ExtensionPerformanceMonitor`: 完整的性能监控和报告系统
+- **文档架构重组**: 按LinchKit规范组织文档结构
+  - 创建了`ai-context/01_Concepts/08_Extension_Architecture.md`架构文档
+  - 移动测试文件到`tools/testing/`目录下
+  - 合并重复的Extension开发文档
+  - 更新了ai-context/manifest.json文档索引
+
+#### 🔧 技术实现
+
+- **Extension示例设计**:
+  - 遵循Extension接口规范，基于Plugin架构扩展
+  - 实现完整的元数据配置和能力声明系统
+  - 提供标准化的组件props接口和服务API
+  - 支持配置驱动的功能控制和类型安全
+- **性能优化策略**:
+  - 单例模式的缓存管理器，避免重复实例化
+  - 事件驱动的延迟加载，支持多种触发条件
+  - 基于时间窗口的批量通信，减少系统开销
+  - 实时性能指标收集，支持性能问题诊断
+- **测试覆盖策略**:
+  - ExtensionManager实例化和基本功能验证
+  - 错误处理和边界情况测试
+  - Extension生命周期状态验证
+  - 权限管理和安全性测试
+- **架构文档体系**:
+  - 完整的Extension生命周期状态图
+  - 详细的权限管理模型和检查流程
+  - 性能优化架构和通信协议设计
+  - 测试策略和开发工具生态规划
+
+### 2025-07-09 - Console扩展管理中心架构完成 ✅
+
+#### ✅ 重要成果
+
+- **完整的Extension管理系统**: 实现了Console作为扩展管理中心的完整架构
+  - 创建了`EnhancedAppRegistry`支持动态路由注册和Extension命名空间
+  - 实现了`ExtensionLoader`用于Extension的动态加载、卸载和热重载
+  - 建立了`ExtensionLifecycleManager`管理Extension完整生命周期
+  - 构建了`ExtensionCommunicationHub`提供Extension间通信机制
+  - 开发了`StarterIntegrationManager`统一管理Console与Starter集成
+- **React Hook集成**: 提供完整的React Hook支持
+  - `useStarterIntegration` - 主要的集成管理Hook
+  - `useExtensionMessages` - Extension消息监听Hook
+  - `useExtensionLifecycle` - Extension生命周期监听Hook
+  - `useDynamicRoutes` - 动态路由管理Hook
+  - `useExtensionState` - Extension状态管理Hook
+- **Extension开发模板**: 完整的Extension开发支持
+  - 创建了`ExtensionTemplate`系统和多种模板工厂
+  - 提供了`ExtensionDevTools`用于验证和文档生成
+  - 包含完整的示例Extension和通信Extension
+- **动态路由系统**: 完整的Extension路由管理
+  - `ExtensionRouteLoader`组件支持动态路由加载
+  - `ExtensionRouteContainer`提供catch-all路由支持
+  - 创建了`/dashboard/ext/[...path]/page.tsx`动态路由页面
+  - 支持权限验证、错误处理和fallback组件
+
+#### 🔧 技术实现
+
+- **架构设计**:
+  - 采用了Gemini推荐的"Console作为扩展管理中心"架构
+  - 避免了admin/console/starter三层嵌套的复杂性
+  - 实现了统一的Extension管理和路由分发
+  - 提供了完整的类型安全支持
+- **功能特性**:
+  - Extension动态加载和卸载，支持热重载
+  - Extension间安全通信（请求/响应、通知、广播）
+  - 完整的权限验证和命名空间隔离
+  - 实时状态监控和生命周期管理
+  - 统一的错误处理和恢复机制
+- **开发体验**:
+  - 提供了丰富的模板和工具降低开发门槛
+  - 完整的TypeScript支持和类型安全
+  - React Hook集成提供优秀的开发体验
+  - 自动化的文档生成和验证工具
+- **集成优化**:
+  - 统一的初始化和配置管理
+  - 自动的依赖注入和事件处理
+  - 性能监控和统计分析
+  - 完整的清理和资源管理
+
+#### 📦 新增核心文件
+
+- `extensions/console/src/core/enhanced-app-registry.ts` - 增强的应用注册器
+- `extensions/console/src/core/extension-loader.ts` - Extension加载器
+- `extensions/console/src/core/extension-lifecycle.ts` - 生命周期管理器
+- `extensions/console/src/core/extension-communication.ts` - 通信机制
+- `extensions/console/src/core/starter-integration.ts` - 集成管理器
+- `extensions/console/src/core/extension-route-loader.tsx` - 路由加载组件
+- `extensions/console/src/hooks/useStarterIntegration.ts` - React Hooks
+- `extensions/console/src/templates/extension-template.ts` - 开发模板
+- `apps/starter/app/dashboard/ext/[...path]/page.tsx` - 动态路由页面
+
+### 2025-07-09 - 项目文档架构更新完成 ✅
+
+#### ✅ 重要成果
+
+- **文档架构全面更新**: 完成了所有项目文档的架构同步更新
+  - 更新了40+个Markdown文件，反映当前的4+1架构
+  - 从旧架构(core, schema, auth, crud, trpc, ui)更新到新架构(core, auth, platform, ui)
+  - 修正了模块路径：modules/console → extensions/console
+  - 移除了过时的应用引用：apps/website, apps/demo-app
+- **API文档重构**: 删除过时包文档，创建新的platform包文档
+  - 删除了crud.md, schema.md, trpc.md, ai.md等过时文档
+  - 创建了完整的platform.md API文档
+  - 更新了所有包报告和依赖分析文档
+- **开发约束更新**: 同步了所有开发工具和约束文档
+  - 修正了.claude/commands/start.md中的工具路径
+  - 更新了CLAUDE.md中的包复用检查命令
+  - 同步了manifest.json中的包架构定义
+
+#### 🔧 技术实现
+
+- **系统性文档更新**:
+  - 使用全局替换确保引用一致性
+  - 批量处理200+次精确替换操作
+  - 保持了文档的完整性和准确性
+- **架构变化反映**:
+  - 核心包从6个简化为4个
+  - Extension系统的完整集成
+  - 工具包的重新组织和分类
+- **质量保证**:
+  - 验证所有文档更新的准确性
+  - 确保代码示例和API引用的正确性
+  - 维护了文档间的交叉引用完整性
+
+### 2025-07-09 - Extension系统集成测试 & 架构方案协商 ✅
+
+#### ✅ 重要成果
+
+- **Extension系统集成测试**: 完整的Extension生命周期集成测试框架
+  - 创建完整的`packages/core/src/extension/__tests__/integration.test.ts`
+  - 测试Extension加载、卸载、热重载全流程
+  - 权限验证、错误处理、状态管理测试
+  - 基于bun:test框架，支持Mock和隔离测试
+- **Starter应用Extension集成**: 将Extension管理集成到starter应用
+  - 创建`apps/starter/app/dashboard/extensions/page.tsx`
+  - 提供完整的Extension管理界面
+  - 支持Extension生命周期操作的可视化管理
+  - 集成到统一的dashboard布局中
+- **Console/Admin/Starter架构方案**: 与Gemini协商确定最终架构
+  - 分析当前架构问题：定位不清晰、权限分散、扩展性差
+  - Gemini推荐方案2：完全分离admin为独立应用
+  - 确定分阶段实施策略：立即创建独立admin应用
+  - Extension管理明确归属admin应用管理功能
+
+#### 🔧 技术实现
+
+- **集成测试框架**:
+  - 完整的Mock Extension和ExtensionManager
+  - 生命周期事件测试、权限验证测试
+  - 错误处理和状态管理测试
+  - 上下文隔离和存储测试
+- **Extension管理界面**:
+  - 实时Extension状态监控
+  - 可视化的加载/卸载/重载操作
+  - 权限和功能展示
+  - 操作结果反馈系统
+- **架构决策记录**:
+  - 详细的五维度评估（用户体验、权限管理、扩展性、开发维护、最佳实践）
+  - 业界标准分析（Salesforce、Google Workspace、Stripe模式）
+  - 分阶段实施计划和技术路线图
+
+### 2025-07-09 - Extension系统 Phase 2 完成 ✅
+
+#### ✅ 重要成果
+
+- **Extension CLI工具**: 完整的Extension开发支持命令
+  - `linch-kit extension create` - 创建新Extension
+  - `linch-kit extension install` - 安装Extension
+  - `linch-kit extension list` - 列出已安装Extension
+  - `linch-kit extension dev` - 开发模式支持
+  - 支持多种Extension模板（basic、fullstack、blog）
+- **Blog Extension参考实现**: 完整功能展示
+  - 完整的博客数据模型（文章、分类、标签、评论、统计）
+  - 全面的博客API接口实现
+  - 丰富的博客界面组件库
+  - 实用的React Hooks和状态管理
+- **Extension测试框架**: 基于bun:test的测试工具
+  - Extension生命周期测试
+  - 权限验证测试
+  - 组件和API测试
+  - 模拟Extension环境
+- **包架构优化**: 统一依赖管理
+  - 修复了所有旧包引用问题
+  - 统一使用@linch-kit/platform包
+  - 解决了循环依赖问题
+
+#### 🔧 技术实现
+
+- **新增CLI工具文件**:
+  - `tools/cli/src/extension.ts` - Extension命令实现
+  - 支持Extension创建、安装、列表、开发模式
+- **Blog Extension实现**:
+  - `extensions/blog-extension/` - 完整的博客Extension
+  - Schema、API、UI、Hooks四大能力完整展示
+- **测试框架**:
+  - `extensions/blog-extension/src/__tests__/` - 测试工具和用例
+- **快捷指令**:
+  - `.claude/commands/end-session.md` - Session结束指令
+  - `.claude/commands/end-branch.md` - 分支结束指令
+
+### 2025-07-09 - Extension系统 Phase 1 完成 ✅
+
+#### ✅ 重要成果
+
+- **Extension生命周期管理**: 完整的动态加载、卸载、热重载系统
+  - `ExtensionManager`: Extension管理器核心实现
+  - `HotReloadManager`: 文件监听和自动重载系统
+  - `ExtensionStateManager`: 状态监控和健康检查
+- **Extension权限验证系统**: 细粒度权限管理和沙箱隔离
+  - `ExtensionPermissionManager`: 权限策略、验证、审计
+  - `ExtensionSandbox`: VM2沙箱执行环境（可选）
+  - 运行时权限检查和隔离执行
+- **完整的Extension架构**: 基于Plugin系统扩展
+  - 统一的类型定义和接口
+  - 增强的Plugin注册表
+  - Extension能力声明和验证
+
+#### 🔧 技术实现
+
+- **新增核心文件**:
+  - `packages/core/src/extension/manager.ts` - Extension管理器
+  - `packages/core/src/extension/hot-reload.ts` - 热重载管理
+  - `packages/core/src/extension/state-manager.ts` - 状态管理
+  - `packages/core/src/extension/permission-manager.ts` - 权限管理
+  - `packages/core/src/extension/sandbox.ts` - 沙箱环境
+- **依赖管理**: 添加vm2、lodash-es、chokidar等必要依赖
+- **类型安全**: 完整的TypeScript类型定义和严格模式
+- **代码质量**: 通过ESLint验证，无代码质量问题
 
 ### 2025-07-08 - 架构现状重新评估 ✅
 
@@ -14,7 +322,7 @@
 - **架构超额完成**: 实际完成7+1架构（7个packages + 1个module），超出原计划的6+1
 - **AI基础设施完备**: packages/ai包含完整的Graph RAG、Neo4j图谱、智能查询引擎
 - **CLI工具完整**: bun run ai:session 命令套件100%可用
-- **Console管理平台**: modules/console 完整的管理功能已实现
+- **Console管理平台**: extensions/console 完整的管理功能已实现
 
 ### 2025-07-07 - 文档架构重新梳理 Phase 1 ✅
 
@@ -101,7 +409,7 @@ L3: @linch-kit/trpc           ✅ API层 (100%)
 L3: @linch-kit/ui             ✅ UI组件 (100%)
 L3: @linch-kit/ai             ✅ AI能力 (100% - 待重构)
 L3: @linch-kit/create-linch-kit ✅ 项目创建工具 (100%)
-L4: modules/console           ✅ 管理平台 (100%)
+L4: extensions/console           ✅ 管理平台 (100%)
 L4: apps/website              ✅ 文档平台 (100%)
 L4: apps/starter              ✅ 多标签工作台 (100%)
 L4: apps/demo-app             ✅ 功能演示应用 (100%)
@@ -132,25 +440,26 @@ packages/ai/ (专注开发阶段)
 
 ### 🔄 进行中任务
 
-#### 优先级 P0: 插件化架构实现 (2-3周)
+#### 优先级 P0: Console/Admin/Starter架构重构 (1-2周)
 
-- [ ] **实现ModuleRegistry** - 基于现有console模块扩展
-- [ ] **实现AppRegistry** - 动态应用注册能力
-- [ ] **实现ComponentRegistry** - UI组件覆盖机制
-- [ ] **验证插件动态加载** - 插件化架构验证
+- [ ] **创建独立admin应用** - 在apps/admin创建完全独立的管理应用
+- [ ] **迁移现有admin功能** - 将dashboard/admin功能迁移到独立应用
+- [ ] **建立统一权限系统** - 为admin应用建立全局权限中间件
+- [ ] **完善Extension管理** - 将Extension管理功能完整集成到admin应用
 
-#### 优先级 P1: AI开发功能增强 (1-2周)
+#### 优先级 P1: Extension系统完善 (1-2周)
+
+- [ ] **Extension市场集成** - 与extensions目录集成
+- [ ] **依赖管理系统** - Extension间依赖处理
+- [ ] **版本管理和更新** - Extension版本控制
+- [ ] **性能优化** - Extension加载和执行优化
+
+#### 优先级 P2: AI开发功能增强 (1-2周)
 
 - [ ] **增强查询准确性** (70% → 90%)
 - [ ] **优化Graph RAG性能** (响应时间 <1秒)
 - [ ] **实现实时图谱更新**
 - [ ] **完善代码使用关系提取**
-
-#### 优先级 P2: 开发体验工具 (1周)
-
-- [ ] **创建包复用检查脚本** `scripts/check-reuse.mjs`
-- [ ] **完成文档重构Phase 2**
-- [ ] **配置自动化检查工具**
 
 ## 🔄 开发约束检查清单
 

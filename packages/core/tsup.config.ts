@@ -1,16 +1,38 @@
 import { defineConfig } from 'tsup'
 
-export default defineConfig({
-  entry: ['src/index.ts', 'src/cli.ts', 'src/server.ts'],
-  format: ['cjs', 'esm'],
-  dts: true,
-  clean: true,
-  splitting: false,
-  sourcemap: true,
-  treeshake: true,
-  minify: false,
-  target: 'node18',
-  outDir: 'dist',
+export default defineConfig([
+  // 客户端安全入口
+  {
+    entry: ['src/client.ts'],
+    format: ['cjs', 'esm'],
+    dts: true,
+    clean: false,
+    splitting: false,
+    sourcemap: true,
+    treeshake: true,
+    minify: false,
+    target: 'esnext',
+    outDir: 'dist',
+    platform: 'browser',
+    external: [
+      'react',
+      'react-dom',
+      'next',
+    ],
+  },
+  // 服务端入口
+  {
+    entry: ['src/index.ts', 'src/cli.ts', 'src/server.ts'],
+    format: ['cjs', 'esm'],
+    dts: true,
+    clean: true,
+    splitting: false,
+    sourcemap: true,
+    treeshake: true,
+    minify: false,
+    target: 'node18',
+    outDir: 'dist',
+    platform: 'node',
   external: [
     // Node.js built-in modules
     'fs',
@@ -28,6 +50,8 @@ export default defineConfig({
     'util',
     'events',
     'child_process',
+    'cluster',
+    'v8',
     // File system watching dependencies
     'chokidar',
     'fsevents',
@@ -56,5 +80,16 @@ export default defineConfig({
     'node:stream/promises',
     'node:events',
     'node:child_process',
+    'node:cluster',
+    'node:v8',
+    // Next.js and React SSR dependencies
+    'next',
+    'next/dist/server',
+    'next/dist/server/app-render',
+    'next/dist/server/app-render/async-local-storage',
+    'next/dist/server/app-render/action-async-storage-instance',
+    // VM2 - sandbox dependency
+    'vm2',
   ],
-})
+  },
+])

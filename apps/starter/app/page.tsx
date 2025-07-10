@@ -1,10 +1,10 @@
 'use client'
 
-import { PluginSystem, Logger } from '@linch-kit/core'
+import { Logger } from '@linch-kit/core/client'
 import { useEffect, useState } from 'react'
 
 export default function Home() {
-  const [pluginCount, setPluginCount] = useState(0)
+  const [extensionCount, setExtensionCount] = useState(0)
   const [isInitialized, setIsInitialized] = useState(false)
 
   useEffect(() => {
@@ -12,12 +12,11 @@ export default function Home() {
       try {
         Logger.info('LinchKit Starter 应用启动', { timestamp: new Date().toISOString() })
 
-        // 获取已启动的插件数量
-        const plugins = PluginSystem.getStartedPlugins()
-        setPluginCount(plugins.length)
+        // 模拟extension系统状态 - 实际状态应该通过API获取
+        setExtensionCount(2) // console, core 等基础extension
         setIsInitialized(true)
 
-        Logger.info('LinchKit 核心功能初始化完成', { pluginCount: plugins.length })
+        Logger.info('LinchKit 客户端初始化完成', { extensionCount: 2 })
       } catch (error) {
         Logger.error(
           'LinchKit 初始化失败',
@@ -56,8 +55,8 @@ export default function Home() {
             <p className="text-gray-600 dark:text-gray-300 mb-4">基于 @linch-kit/core 的基础设施</p>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>插件系统:</span>
-                <span className="font-medium">{pluginCount} 个插件</span>
+                <span>Extension系统:</span>
+                <span className="font-medium">{extensionCount} 个Extension</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>日志系统:</span>

@@ -1,0 +1,121 @@
+{
+  "name": "@linch-kit/console",
+  "version": "2.0.3",
+  "description": "LinchKit 企业级管理控制台功能库 - 多租户管理、权限控制、插件市场、系统监控",
+  "keywords": [
+    "linch-kit",
+    "console",
+    "admin",
+    "multi-tenant",
+    "enterprise",
+    "management",
+    "dashboard"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    },
+    "./entities": {
+      "types": "./dist/entities/index.d.ts",
+      "import": "./dist/entities/index.js"
+    },
+    "./services": {
+      "types": "./dist/services/index.d.ts",
+      "import": "./dist/services/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.js"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "import": "./dist/api/index.js"
+    },
+    "./routes": {
+      "types": "./dist/routes/index.d.ts",
+      "import": "./dist/routes/index.js"
+    },
+    "./routes/tenant.router": {
+      "types": "./dist/routes/tenant.router.d.ts",
+      "import": "./dist/routes/tenant.router.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "DESIGN.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf dist .turbo node_modules"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
+    "@linch-kit/auth": "workspace:*",
+    "@linch-kit/core": "workspace:*",
+    "@linch-kit/platform": "workspace:*",
+    "@linch-kit/ui": "workspace:*",
+    "react-hook-form": "^7.59.0",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.81.5",
+    "@tanstack/react-query-devtools": "^5.81.5",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@trpc/client": "^11.4.3",
+    "@trpc/react-query": "^11.4.3",
+    "@trpc/server": "^11.4.3",
+    "@types/node": "^24.0.7",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "date-fns": "^4.1.0",
+    "eslint": "^9.30.0",
+    "lucide-react": "^0.525.0",
+    "prisma": "^6.10.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "@prisma/client": "^6.0.0",
+    "@tanstack/react-query": "^5.66.1",
+    "@tanstack/react-query-devtools": "^5.66.1",
+    "@trpc/client": "^11.0.0",
+    "@trpc/react-query": "^11.0.0",
+    "@trpc/server": "^11.0.0",
+    "date-fns": "^4.0.0",
+    "lucide-react": "^0.460.0",
+    "next": "^15.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  }
+}

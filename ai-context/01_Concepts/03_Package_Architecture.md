@@ -7,17 +7,18 @@ purpose: "Graph RAG knowledge base - Package architecture and dependencies"
 entities:
 
 - "@linch-kit/core"
-- "@linch-kit/schema"
 - "@linch-kit/auth"
-- "@linch-kit/crud"
-- "@linch-kit/trpc"
+- "@linch-kit/platform"
 - "@linch-kit/ui"
-- "modules/console"
+- "extensions/console"
+- "tools/schema"
+- "tools/cli"
+- "tools/context"
   relationships:
 - type: "dependency_chain"
-  sequence: ["core", "schema", "auth", "crud", "trpc", "ui", "console"]
+  sequence: ["core", "auth", "platform", "ui"]
 - type: "layer_architecture"
-  layers: ["L0", "L1", "L2", "L3", "L4"]
+  layers: ["L0", "L1", "L2", "L3"]
   version: "2.0.2"
   last_verified: "2025-07-07"
   implementation_status: "production_ready"
@@ -36,7 +37,7 @@ entities:
 ### 依赖顺序约束
 
 ```
-core → schema → auth → crud → trpc → ui → console
+core → auth → platform → ui
 ```
 
 **严格禁止**：循环依赖和逆向依赖
@@ -186,7 +187,7 @@ export function VerticalLayout({ sidebar, header, children }) {
 }
 ```
 
-### L4: modules/console
+### L4: extensions/console
 
 **职责**: 企业级管理控制台平台（集成器）
 
@@ -251,7 +252,7 @@ const hybridConfig: LinchKitConfig = {
 - 现有能力: 已集成 CASL (RBAC/ABAC支持)、NextAuth.js 5.0
 - 扩展方向: 增强权限检查器、字段级权限控制、角色继承
 
-**modules/console 扩展潜力**:
+**extensions/console 扩展潜力**:
 
 - 现有能力: 多租户管理、权限控制、完整组件架构
 - 扩展方向: 权限管理UI、系统监控界面、插件市场
@@ -267,7 +268,7 @@ const hybridConfig: LinchKitConfig = {
 
 - **@linch-kit/core**: > 90%
 - **其他核心包**: > 80%
-- **modules/console**: > 80%
+- **extensions/console**: > 80%
 
 ### 性能指标
 

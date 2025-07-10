@@ -11,7 +11,7 @@ import {
   createTRPCContext,
   healthRouter,
   systemRouter,
-} from '@linch-kit/trpc/server'
+} from '@linch-kit/platform'
 import { z } from 'zod'
 
 import { db } from './db'

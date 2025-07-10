@@ -2,7 +2,7 @@
 package: '@linch-kit/ui'
 version: '2.0.2'
 layer: 'L5'
-dependencies: ['@linch-kit/core', '@linch-kit/schema', '@linch-kit/auth', '@linch-kit/crud']
+dependencies: ['@linch-kit/core', 'tools/schema', '@linch-kit/auth', '@linch-kit/platform']
 completeness: 85
 test_coverage: 80
 status: 'production_ready'
@@ -44,7 +44,7 @@ api_exports:
     status: 'stable'
 relationships:
   - type: 'depends_on'
-    targets: ['@linch-kit/core', '@linch-kit/schema', '@linch-kit/auth', '@linch-kit/crud']
+    targets: ['@linch-kit/core', 'tools/schema', '@linch-kit/auth', '@linch-kit/platform']
   - type: 'integrates_with'
     targets: ['React', 'Radix UI', 'Tailwind CSS', 'shadcn/ui']
 last_verified: '2025-07-07'
@@ -63,7 +63,7 @@ last_verified: '2025-07-07'
 
 ### 核心设计原则
 
-1. **Schema驱动**: 基于 `@linch-kit/schema` 的实体定义自动生成UI组件
+1. **Schema驱动**: 基于 `tools/schema` 的实体定义自动生成UI组件
 2. **shadcn/ui集成**: 基于 shadcn/ui + Radix UI 构建的现代化组件库
 3. **主题系统**: 支持 Tailwind CSS v4 + CSS变量的完整主题系统
 4. **类型安全**: 100% TypeScript，完整的类型定义和推断
@@ -94,9 +94,9 @@ packages/ui/
 ### 核心依赖
 
 - `@linch-kit/core` - 基础设施 (日志、配置、国际化、插件)
-- `@linch-kit/schema` - Schema定义和验证
+- `tools/schema` - Schema定义和验证
 - `@linch-kit/auth` - 认证和权限控制
-- `@linch-kit/crud` - CRUD操作集成
+- `@linch-kit/platform` - CRUD操作集成
 
 ### 外部依赖
 
@@ -464,7 +464,7 @@ const uiPlugin: Plugin = {
     name: 'LinchKit UI Components',
     version: '1.0.0',
     description: 'LinchKit UI组件库 - Schema驱动的企业级React组件',
-    dependencies: ['@linch-kit/core', '@linch-kit/schema'],
+    dependencies: ['@linch-kit/core', 'tools/schema'],
   },
   // 生命周期方法
   async init() {
@@ -645,8 +645,8 @@ export default defineConfig({
     'react-dom',
     '@hookform/resolvers',
     '@linch-kit/core',
-    '@linch-kit/crud',
-    '@linch-kit/schema',
+    '@linch-kit/platform',
+    'tools/schema',
     'react-hook-form',
   ],
   treeshake: true,

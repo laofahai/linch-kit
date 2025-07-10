@@ -31,7 +31,7 @@ api_exports:
   status: "complete"
   relationships:
 - type: "provides_infrastructure"
-  targets: ["@linch-kit/schema", "@linch-kit/auth", "@linch-kit/crud", "@linch-kit/trpc", "@linch-kit/ui"]
+  targets: ["tools/schema", "@linch-kit/auth", "@linch-kit/platform", "@linch-kit/platform", "@linch-kit/ui"]
   last_verified: "2025-07-07"
 
 ---

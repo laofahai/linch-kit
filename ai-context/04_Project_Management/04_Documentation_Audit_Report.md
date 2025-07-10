@@ -31,10 +31,10 @@ LinchKit Project Documentation Audit
 ├── 根目录 README.md              ✅ 审计完成
 ├── packages/ (8个包)             ✅ 审计完成
 │   ├── @linch-kit/core          ✅ 优秀
-│   ├── @linch-kit/schema        ✅ 优秀
+│   ├── tools/schema        ✅ 优秀
 │   ├── @linch-kit/auth          ✅ 良好
-│   ├── @linch-kit/crud          ✅ 良好
-│   ├── @linch-kit/trpc          ✅ 良好
+│   ├── @linch-kit/platform          ✅ 良好
+│   ├── @linch-kit/platform          ✅ 良好
 │   ├── @linch-kit/ui            ✅ 一般
 │   ├── @linch-kit/ai            ✅ 新增完整
 │   └── create-linch-kit         ✅ 良好
@@ -84,7 +84,7 @@ LinchKit Project Documentation Audit
 - 功能覆盖: 插件系统、配置管理、可观测性完整
 - 架构设计: 严格的模块分离，服务端/客户端分离
 
-**@linch-kit/schema** - 9.0/10
+**tools/schema** - 9.0/10
 
 - README: 520+ 行完整文档，双重 API 支持
 - 功能特性: 函数式 + 装饰器模式，代码生成完整
@@ -98,13 +98,13 @@ LinchKit Project Documentation Audit
 - 集成度: NextAuth.js v5 + CASL 权限引擎
 - 改进点: 需要更详细的使用示例和配置指南
 
-**@linch-kit/crud** - 8.0/10
+**@linch-kit/platform** - 8.0/10
 
 - README: 240 行文档，实用代码示例
 - 功能完整: Schema 驱动、权限集成、缓存优化
 - 改进点: 缺少设计文档，钩子系统文档不足
 
-**@linch-kit/trpc** - 8.0/10
+**@linch-kit/platform** - 8.0/10
 
 - README: 258 行文档，高级特性覆盖
 - 技术集成: tRPC v11、WebSocket、监控集成

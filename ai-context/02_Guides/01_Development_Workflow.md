@@ -203,9 +203,9 @@ git commit -m "feat: implement feature X with comprehensive tests"
 
 - **日志系统**: `@linch-kit/core` logger - 不要用 console.log 或其他日志库
 - **配置管理**: `@linch-kit/core` ConfigManager - 不要自己读取配置文件
-- **Schema定义**: `@linch-kit/schema` defineEntity - 不要直接用 Zod
+- **Schema定义**: `tools/schema` defineEntity - 不要直接用 Zod
 - **权限检查**: `@linch-kit/auth` PermissionChecker - 不要自己实现权限逻辑
-- **CRUD操作**: `@linch-kit/crud` createCRUD - 不要手写增删改查
+- **CRUD操作**: `@linch-kit/platform` createCRUD - 不要手写增删改查
 - **UI组件**: `@linch-kit/ui` 组件库 - 不要重复创建基础组件
 
 ### 第三方库使用规范
