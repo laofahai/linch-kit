@@ -1,42 +1,64 @@
-import { Logger } from '@linch-kit/core'
-import { prisma } from '../prisma'
-import type { User, Post } from '../schemas'
-import bcrypt from 'bcryptjs'
+/**
+ * 数据服务层 - 使用 @linch-kit/platform CRUD
+ * 重构为使用 LinchKit 平台工厂模式
+ */
 
-// 数据服务类（真实数据库模式）
+import { Logger } from '@linch-kit/core'
+import { createCRUD } from '@linch-kit/platform/crud'
+import { UserSchema } from '@linch-kit/auth'
+
+import { PostEntity } from '../schemas'
+import type { User, Post } from '../schemas'
+
+/**
+ * User Entity Schema for CRUD operations
+ */
+const UserEntity = {
+  name: 'User',
+  schema: UserSchema,
+  config: {
+    tableName: 'users',
+    primaryKey: 'id',
+    timestamps: true,
+  },
+}
+
+/**
+ * 创建 CRUD 管理器
+ */
+const userCRUD = createCRUD(UserEntity)
+const postCRUD = createCRUD(PostEntity)
+
+/**
+ * 数据服务类 - 基于 LinchKit Platform CRUD
+ */
 export class DataService {
-  // 用户相关操作
+  /**
+   * 获取用户列表
+   */
   static async getUsers(): Promise<User[]> {
     try {
       Logger.info('DataService: 开始获取用户列表')
 
-      const users = await prisma.user.findMany({
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          avatar: true,
-          role: true,
-          status: true,
-          emailVerified: true,
-          lastLoginAt: true,
-          createdAt: true,
-          updatedAt: true,
-          // 不返回密码字段
-        },
+      const result = await userCRUD.findMany({
+        orderBy: [{ field: 'createdAt', direction: 'desc' }],
+        select: ['id', 'email', 'name', 'image', 'status', 'lastLoginAt', 'createdAt', 'updatedAt'],
       })
 
+      if (!result.success || !result.data) {
+        throw new Error('Failed to fetch users')
+      }
+
       // 转换为应用层格式
-      const appUsers: User[] = users.map(user => ({
+      const appUsers: User[] = result.data.map(user => ({
         id: user.id,
         email: user.email,
-        name: user.name,
-        avatar: user.avatar || `https://avatar.vercel.sh/${user.name}`,
-        role: user.role === 'SUPER_ADMIN' || user.role === 'TENANT_ADMIN' ? 'ADMIN' : 'USER',
-        status: user.status as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED',
-        createdAt: user.createdAt.toISOString(),
-        updatedAt: user.updatedAt.toISOString(),
+        name: user.name || '',
+        avatar: user.image || `https://avatar.vercel.sh/${user.name}`,
+        role: (user.metadata?.role as 'USER' | 'ADMIN' | 'MODERATOR') || 'USER',
+        status: (user.status?.toUpperCase() as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED') || 'ACTIVE',
+        createdAt: user.createdAt?.toISOString() || new Date().toISOString(),
+        updatedAt: user.updatedAt?.toISOString() || new Date().toISOString(),
         lastLoginAt: user.lastLoginAt?.toISOString() || null,
       }))
 
@@ -51,52 +73,57 @@ export class DataService {
     }
   }
 
+  /**
+   * 创建用户
+   */
   static async createUser(data: {
     email: string
     name: string
     avatar?: string
     role?: 'USER' | 'ADMIN' | 'MODERATOR'
     password?: string
-  }) {
+  }): Promise<User> {
     try {
       Logger.info('DataService: 开始创建用户', { email: data.email })
 
       // 检查邮箱是否已存在
-      const existingUser = await prisma.user.findUnique({
+      const existingResult = await userCRUD.findFirst({
         where: { email: data.email },
       })
 
-      if (existingUser) {
+      if (existingResult.success && existingResult.data) {
         throw new Error(`邮箱 ${data.email} 已被使用`)
       }
 
-      // 生成默认密码或使用提供的密码
-      const password = data.password || Math.random().toString(36).slice(-8)
-      const hashedPassword = await bcrypt.hash(password, 12)
-
-      const dbUser = await prisma.user.create({
-        data: {
-          email: data.email,
-          name: data.name,
-          password: hashedPassword,
-          avatar: data.avatar || `https://avatar.vercel.sh/${encodeURIComponent(data.name)}`,
-          role: data.role === 'ADMIN' ? 'TENANT_ADMIN' : 'USER',
-          status: 'ACTIVE',
-          emailVerified: new Date(),
+      // 创建用户数据
+      const userData = {
+        email: data.email,
+        name: data.name,
+        image: data.avatar || `https://avatar.vercel.sh/${encodeURIComponent(data.name)}`,
+        status: 'active' as const,
+        metadata: {
+          role: data.role || 'USER',
         },
-      })
+      }
+
+      const result = await userCRUD.create(userData)
+
+      if (!result.success || !result.data) {
+        throw new Error('Failed to create user')
+      }
 
       // 转换为应用层格式
       const user: User = {
-        id: dbUser.id,
-        email: dbUser.email,
-        name: dbUser.name,
-        avatar: dbUser.avatar || `https://avatar.vercel.sh/${dbUser.name}`,
-        role: dbUser.role as 'USER' | 'ADMIN' | 'MODERATOR',
-        status: dbUser.status as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED',
-        createdAt: dbUser.createdAt.toISOString(),
-        updatedAt: dbUser.updatedAt.toISOString(),
-        lastLoginAt: dbUser.lastLoginAt?.toISOString() || null,
+        id: result.data.id,
+        email: result.data.email,
+        name: result.data.name || '',
+        avatar: result.data.image || `https://avatar.vercel.sh/${result.data.name}`,
+        role: (result.data.metadata?.role as 'USER' | 'ADMIN' | 'MODERATOR') || 'USER',
+        status:
+          (result.data.status?.toUpperCase() as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED') || 'ACTIVE',
+        createdAt: result.data.createdAt?.toISOString() || new Date().toISOString(),
+        updatedAt: result.data.updatedAt?.toISOString() || new Date().toISOString(),
+        lastLoginAt: result.data.lastLoginAt?.toISOString() || null,
       }
 
       Logger.info('DataService: 用户创建成功', { id: user.id })
@@ -110,26 +137,24 @@ export class DataService {
     }
   }
 
-  // 文章相关操作
+  /**
+   * 获取文章列表
+   */
   static async getPosts(): Promise<Post[]> {
     try {
       Logger.info('DataService: 开始获取文章列表')
 
-      const posts = await prisma.post.findMany({
-        orderBy: { createdAt: 'desc' },
-        include: {
-          author: {
-            select: {
-              id: true,
-              name: true,
-              avatar: true,
-            },
-          },
-        },
+      const result = await postCRUD.findMany({
+        orderBy: [{ field: 'createdAt', direction: 'desc' }],
+        include: ['author'],
       })
 
+      if (!result.success || !result.data) {
+        throw new Error('Failed to fetch posts')
+      }
+
       // 转换为应用层格式
-      const appPosts: Post[] = posts.map(post => ({
+      const appPosts: Post[] = result.data.map(post => ({
         id: post.id,
         title: post.title,
         content: post.content,
@@ -139,9 +164,9 @@ export class DataService {
         status: post.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
         viewCount: post.viewCount || 0,
         likeCount: post.likeCount || 0,
-        publishedAt: post.publishedAt?.toISOString() || null,
-        createdAt: post.createdAt.toISOString(),
-        updatedAt: post.updatedAt.toISOString(),
+        publishedAt: post.publishedAt || null,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
       }))
 
       Logger.info('DataService: 文章列表获取成功', { count: appPosts.length })
@@ -155,6 +180,9 @@ export class DataService {
     }
   }
 
+  /**
+   * 创建文章
+   */
   static async createPost(data: {
     title: string
     content: string
@@ -162,47 +190,49 @@ export class DataService {
     authorId: string
     tags?: string[]
     status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
-  }) {
+  }): Promise<Post> {
     try {
       Logger.info('DataService: 开始创建文章', { title: data.title })
 
       // 验证作者是否存在
-      const author = await prisma.user.findUnique({
-        where: { id: data.authorId },
-      })
+      const authorResult = await userCRUD.findById(data.authorId)
 
-      if (!author) {
+      if (!authorResult.success || !authorResult.data) {
         throw new Error(`作者不存在: ${data.authorId}`)
       }
 
-      const dbPost = await prisma.post.create({
-        data: {
-          title: data.title,
-          content: data.content,
-          excerpt: data.excerpt || data.content.substring(0, 100) + '...',
-          authorId: data.authorId,
-          tags: data.tags || [],
-          status: data.status || 'DRAFT',
-          viewCount: 0,
-          likeCount: 0,
-          publishedAt: data.status === 'PUBLISHED' ? new Date() : null,
-        },
-      })
+      const postData = {
+        title: data.title,
+        content: data.content,
+        excerpt: data.excerpt || data.content.substring(0, 100) + '...',
+        authorId: data.authorId,
+        tags: data.tags || [],
+        status: data.status || 'DRAFT',
+        viewCount: 0,
+        likeCount: 0,
+        publishedAt: data.status === 'PUBLISHED' ? new Date().toISOString() : null,
+      }
+
+      const result = await postCRUD.create(postData)
+
+      if (!result.success || !result.data) {
+        throw new Error('Failed to create post')
+      }
 
       // 转换为应用层格式
       const post: Post = {
-        id: dbPost.id,
-        title: dbPost.title,
-        content: dbPost.content,
-        excerpt: dbPost.excerpt || dbPost.content.substring(0, 100) + '...',
-        authorId: dbPost.authorId,
-        tags: dbPost.tags || [],
-        status: dbPost.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
-        viewCount: dbPost.viewCount || 0,
-        likeCount: dbPost.likeCount || 0,
-        publishedAt: dbPost.publishedAt?.toISOString() || null,
-        createdAt: dbPost.createdAt.toISOString(),
-        updatedAt: dbPost.updatedAt.toISOString(),
+        id: result.data.id,
+        title: result.data.title,
+        content: result.data.content,
+        excerpt: result.data.excerpt || result.data.content.substring(0, 100) + '...',
+        authorId: result.data.authorId,
+        tags: result.data.tags || [],
+        status: result.data.status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED',
+        viewCount: result.data.viewCount || 0,
+        likeCount: result.data.likeCount || 0,
+        publishedAt: result.data.publishedAt || null,
+        createdAt: result.data.createdAt,
+        updatedAt: result.data.updatedAt,
       }
 
       Logger.info('DataService: 文章创建成功', { id: post.id })
@@ -216,23 +246,26 @@ export class DataService {
     }
   }
 
-  // 统计数据
+  /**
+   * 获取统计数据
+   */
   static async getStats() {
     try {
       Logger.info('DataService: 开始获取统计数据')
 
-      const [totalUsers, totalPosts, publishedPosts, draftPosts] = await Promise.all([
-        prisma.user.count(),
-        prisma.post.count(),
-        prisma.post.count({ where: { status: 'PUBLISHED' } }),
-        prisma.post.count({ where: { status: 'DRAFT' } }),
-      ])
+      const [userCountResult, postCountResult, publishedPostsResult, draftPostsResult] =
+        await Promise.all([
+          userCRUD.count(),
+          postCRUD.count(),
+          postCRUD.count({ where: { status: 'PUBLISHED' } }),
+          postCRUD.count({ where: { status: 'DRAFT' } }),
+        ])
 
       const stats = {
-        totalUsers,
-        totalPosts,
-        publishedPosts,
-        draftPosts,
+        totalUsers: userCountResult.success ? userCountResult.data || 0 : 0,
+        totalPosts: postCountResult.success ? postCountResult.data || 0 : 0,
+        publishedPosts: publishedPostsResult.success ? publishedPostsResult.data || 0 : 0,
+        draftPosts: draftPostsResult.success ? draftPostsResult.data || 0 : 0,
         lastUpdated: new Date().toISOString(),
       }
 
@@ -247,27 +280,32 @@ export class DataService {
     }
   }
 
-  // 示例数据初始化
+  /**
+   * 示例数据初始化
+   */
   static async initializeSampleData() {
     try {
       Logger.info('DataService: 开始初始化示例数据')
 
       // 检查是否已有数据
-      const userCount = await prisma.user.count()
-      if (userCount > 1) {
-        // 如果除了管理员外还有其他用户，跳过初始化
+      const userCountResult = await userCRUD.count()
+      const totalUsers = userCountResult.success ? userCountResult.data || 0 : 0
+
+      if (totalUsers > 1) {
         Logger.info('DataService: 已存在用户数据，跳过示例数据初始化')
         return { success: true, skipped: true }
       }
 
       // 获取现有管理员用户
-      const adminUser = await prisma.user.findFirst({
-        where: { role: 'SUPER_ADMIN' },
+      const adminResult = await userCRUD.findFirst({
+        where: { metadata: { role: 'ADMIN' } },
       })
 
-      if (!adminUser) {
+      if (!adminResult.success || !adminResult.data) {
         throw new Error('请先创建管理员账号')
       }
+
+      const adminUser = adminResult.data
 
       // 创建示例用户
       const sampleUser = await this.createUser({
@@ -323,3 +361,6 @@ export class DataService {
     }
   }
 }
+
+// 导出 CRUD 管理器供其他模块使用
+export { userCRUD, postCRUD }
