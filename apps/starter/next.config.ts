@@ -72,7 +72,7 @@ const nextConfig: NextConfig = {
 
   // Webpack 配置
   webpack: (config: any) => {
-    // 优化 bundle 大小
+    // 优化 bundle 大小 - 合并两个版本的配置
     config.resolve.fallback = {
       fs: false,
       path: false,
@@ -102,6 +102,18 @@ const nextConfig: NextConfig = {
       events: false,
       async_hooks: false,
       'stream/promises': false,
+      // 排除所有 node: 协议的内置模块
+      'node:child_process': false,
+      'node:events': false,
+      'node:fs': false,
+      'node:path': false,
+      'node:stream': false,
+      'node:util': false,
+      'node:crypto': false,
+      'node:os': false,
+      'node:url': false,
+      'node:buffer': false,
+      'node:process': false,
     }
 
     // 排除所有 TypeScript 声明文件和 source maps 被客户端 loader 处理

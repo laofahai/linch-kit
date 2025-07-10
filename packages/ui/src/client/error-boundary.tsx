@@ -1,7 +1,14 @@
 'use client'
 
 import { Component, ErrorInfo, ReactNode } from 'react'
-import { Logger } from '@linch-kit/core'
+// 客户端轻量级日志实现，避免导入服务端代码
+const clientLogger = {
+  error: (message: string, error?: Error, context?: Record<string, unknown>) => {
+    if (typeof window !== 'undefined' && console?.error) {
+      console.error(message, error, context)
+    }
+  },
+}
 
 interface ErrorBoundaryState {
   hasError: boolean
@@ -25,8 +32,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // 记录错误到 LinchKit 日志系统
-    Logger.error('React Error Boundary 捕获错误', error, {
+    // 记录错误到客户端日志
+    clientLogger.error('React Error Boundary 捕获错误', error, {
       errorInfo,
       timestamp: new Date().toISOString(),
       userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : 'unknown',

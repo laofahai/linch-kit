@@ -14,6 +14,10 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
     "./client": {
       "import": "./dist/client.mjs",
       "types": "./dist/client.d.ts"

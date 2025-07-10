@@ -1,8 +1,8 @@
+'use client'
+
 /**
  * @fileoverview Schema驱动的CRUD表格组件 - 基于@tanstack/react-table
  */
-
-'use client'
 
 import React from 'react'
 import {
