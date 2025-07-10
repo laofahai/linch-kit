@@ -33,11 +33,12 @@ class ExtensionInstanceImpl implements ExtensionInstance {
     public name: string,
     public metadata: Extension['metadata'],
     public context: ExtensionContext,
-    private extension: Extension
+    private extension: Extension,
+    private managerConfig: ExtensionManagerConfig
   ) {
     // 创建沙箱环境
     this.sandbox = createSandbox(context, permissionManager, {
-      enabled: true,
+      enabled: managerConfig.enableSandbox,
       allowNetworkAccess: metadata.permissions.includes('api:read'),
       allowFileSystemAccess: metadata.permissions.includes('database:read'),
     })
@@ -127,7 +128,6 @@ export interface ExtensionManagerConfig {
  */
 export class ExtensionManager extends EventEmitter implements IExtensionManager {
   private extensions = new Map<string, ExtensionRegistration>()
-  private permissionManager = new PermissionManager()
   private manifestCache = new Map<string, Extension['metadata']>()
   private config: ExtensionManagerConfig
 
@@ -212,7 +212,13 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
       }
 
       // 创建Extension实例
-      const instance = new ExtensionInstanceImpl(extensionName, manifest, context, extensionModule)
+      const instance = new ExtensionInstanceImpl(
+        extensionName,
+        manifest,
+        context,
+        extensionModule,
+        this.config
+      )
 
       // 注册到Plugin系统
       const pluginResult = await pluginRegistry.register(extensionModule, context.config)
@@ -359,6 +365,21 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
   }
 
   /**
+   * 文件读取器（可用于测试mock）
+   */
+  private fileReader = async (path: string): Promise<string> => {
+    const { readFile } = await import('node:fs/promises')
+    return readFile(path, 'utf-8')
+  }
+
+  /**
+   * 设置文件读取器（用于测试）
+   */
+  public setFileReader(reader: (path: string) => Promise<string>): void {
+    this.fileReader = reader
+  }
+
+  /**
    * 加载Extension manifest
    */
   private async loadManifest(extensionName: string): Promise<Extension['metadata'] | null> {
@@ -370,8 +391,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     try {
       // 尝试从extensions目录加载
       const manifestPath = `${this.config.extensionRoot}/${extensionName}/package.json`
-      const { readFile } = await import('node:fs/promises')
-      const manifestContent = await readFile(manifestPath, 'utf-8')
+      const manifestContent = await this.fileReader(manifestPath)
       const packageJson = JSON.parse(manifestContent)
 
       if (!packageJson.linchkit) {
@@ -408,7 +428,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
   private async validateExtension(manifest: Extension['metadata']): Promise<ExtensionLoadResult> {
     // 检查权限
     for (const permission of manifest.permissions) {
-      if (!this.permissionManager.hasPermission(permission)) {
+      if (!permissionManager.hasPermission(permission)) {
         return {
           success: false,
           error: {
@@ -422,7 +442,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     // 检查依赖版本
     if (manifest.dependencies) {
       for (const dep of manifest.dependencies) {
-        if (!this.permissionManager.isDependencyAvailable(dep)) {
+        if (!permissionManager.isDependencyAvailable(dep)) {
           return {
             success: false,
             error: {
@@ -472,6 +492,22 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     } catch (error) {
       console.warn(`Failed to import extension ${extensionName}:`, error)
       return null
+    }
+  }
+
+  /**
+   * 设置模块导入器（用于测试）
+   */
+  public setModuleImporter(importer: (path: string) => Promise<{ default: Extension }>): void {
+    this.importExtension = async (extensionName: string) => {
+      try {
+        const extensionPath = `${this.config.extensionRoot}/${extensionName}/src/index.ts`
+        const extensionModule = await importer(extensionPath)
+        return extensionModule.default
+      } catch (error) {
+        console.warn(`Failed to import extension ${extensionName}:`, error)
+        return null
+      }
     }
   }
 
@@ -635,31 +671,6 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
         keys.forEach(key => localStorage.removeItem(key))
       },
     }
-  }
-}
-
-/**
- * 简化的权限管理器（已迁移到独立的permission-manager模块）
- * @deprecated 使用 permissionManager 代替
- */
-class PermissionManager {
-  private availablePermissions = new Set<ExtensionPermission>([
-    'database:read',
-    'database:write',
-    'api:read',
-    'api:write',
-    'ui:render',
-    'system:hooks',
-  ])
-
-  hasPermission(permission: ExtensionPermission): boolean {
-    // 基础权限检查，实际应用中可能需要更复杂的逻辑
-    return this.availablePermissions.has(permission)
-  }
-
-  isDependencyAvailable(_dependency: string): boolean {
-    // 检查依赖是否可用，实际应用中需要检查版本兼容性
-    return true // 简化实现
   }
 }
 

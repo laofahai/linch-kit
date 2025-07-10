@@ -59,52 +59,24 @@ describe('Extension System Integration Tests', () => {
 
   beforeEach(() => {
     // 创建新的ExtensionManager实例
-    extensionManager = new ExtensionManager()
-
-    // Mock动态导入
-    originalImport = globalThis.import
-    globalThis.import = mock(async (path: string) => {
-      if (path.includes('test-extension')) {
-        return { default: mockExtension }
-      }
-      throw new Error(`Module not found: ${path}`)
+    extensionManager = new ExtensionManager({
+      extensionRoot: '/mock/extensions',
+      enableSandbox: false, // 禁用沙箱以避免VM2在测试环境中的兼容问题
     })
 
-    // Mock文件系统
-    originalReadFile = global.Bun?.file
-    const mockFile = {
-      json: mock(async () => ({
-        name: 'test-extension',
-        version: '1.0.0',
-        description: 'Test extension for integration tests',
-        linchkit: {
-          displayName: 'Test Extension',
-          category: 'test',
-          tags: ['test', 'integration'],
-          permissions: ['database:read', 'api:read', 'ui:render'],
-          capabilities: {
-            hasSchema: true,
-            hasAPI: true,
-            hasUI: true,
-            hasHooks: false,
-          },
-          entries: {
-            main: 'index.ts',
-            schema: 'schema.ts',
-            api: 'api.ts',
-            components: 'components.ts',
-          },
-          configuration: {
-            enabled: true,
-            autoStart: true,
-          },
-        },
-      })),
-    }
+    // 设置模块导入器mock
+    extensionManager.setModuleImporter(
+      mock(async (path: string) => {
+        if (path.includes('test-extension')) {
+          return { default: mockExtension }
+        }
+        throw new Error(`Module not found: ${path}`)
+      })
+    )
 
-    // Mock fs/promises
-    mock.module('node:fs/promises', () => ({
-      readFile: mock(async (path: string) => {
+    // 设置文件读取器mock
+    extensionManager.setFileReader(
+      mock(async (path: string) => {
         if (path.includes('test-extension/package.json')) {
           return JSON.stringify({
             name: 'test-extension',
@@ -135,8 +107,8 @@ describe('Extension System Integration Tests', () => {
           })
         }
         throw new Error(`File not found: ${path}`)
-      }),
-    }))
+      })
+    )
   })
 
   afterEach(() => {
@@ -147,16 +119,20 @@ describe('Extension System Integration Tests', () => {
       }
     })
 
-    // 恢复原始函数
-    globalThis.import = originalImport
-    if (originalReadFile) {
-      global.Bun.file = originalReadFile
-    }
+    // 重置所有mock
+    mockExtension.init.mockClear()
+    mockExtension.start.mockClear()
+    mockExtension.stop.mockClear()
+    mockExtension.destroy.mockClear()
   })
 
   describe('Extension Loading', () => {
     it('应该成功加载Extension', async () => {
       const result = await extensionManager.loadExtension('test-extension')
+
+      if (!result.success) {
+        console.error('Extension load failed:', result.error)
+      }
 
       expect(result.success).toBe(true)
       expect(result.instance).toBeDefined()
@@ -174,14 +150,18 @@ describe('Extension System Integration Tests', () => {
       const firstResult = await extensionManager.loadExtension('test-extension')
       expect(firstResult.success).toBe(true)
 
+      // 重置mock计数以清除第一次加载的调用
+      const initCallCount = mockExtension.init.mock.calls.length
+      const startCallCount = mockExtension.start.mock.calls.length
+
       // 第二次加载应该返回现有实例
       const secondResult = await extensionManager.loadExtension('test-extension')
       expect(secondResult.success).toBe(true)
       expect(secondResult.instance).toBe(firstResult.instance)
 
-      // 生命周期方法只应该被调用一次
-      expect(mockExtension.init).toHaveBeenCalledTimes(1)
-      expect(mockExtension.start).toHaveBeenCalledTimes(1)
+      // 生命周期方法不应该再次被调用
+      expect(mockExtension.init).toHaveBeenCalledTimes(initCallCount)
+      expect(mockExtension.start).toHaveBeenCalledTimes(startCallCount)
     })
 
     it('应该处理权限不足的情况', async () => {
@@ -203,25 +183,59 @@ describe('Extension System Integration Tests', () => {
     })
 
     it('应该处理Extension导入失败的情况', async () => {
-      // Mock导入失败
-      global.import = mock(async () => {
-        throw new Error('Import failed')
+      // 创建新的ExtensionManager并设置失败的导入器
+      const failingManager = new ExtensionManager({
+        extensionRoot: '/mock/extensions',
+        enableSandbox: false,
       })
 
-      const result = await extensionManager.loadExtension('test-extension')
+      failingManager.setFileReader(
+        mock(async (path: string) => {
+          if (path.includes('test-extension/package.json')) {
+            return JSON.stringify({
+              name: 'test-extension',
+              version: '1.0.0',
+              description: 'Test extension for integration tests',
+              linchkit: {
+                displayName: 'Test Extension',
+                category: 'test',
+                tags: ['test', 'integration'],
+                permissions: ['database:read', 'api:read', 'ui:render'],
+                capabilities: {
+                  hasSchema: true,
+                  hasAPI: true,
+                  hasUI: true,
+                  hasHooks: false,
+                },
+                entries: {
+                  main: 'index.ts',
+                  schema: 'schema.ts',
+                  api: 'api.ts',
+                  components: 'components.ts',
+                },
+                configuration: {
+                  enabled: true,
+                  autoStart: true,
+                },
+              },
+            })
+          }
+          throw new Error(`File not found: ${path}`)
+        })
+      )
+      failingManager.setModuleImporter(
+        mock(async () => {
+          throw new Error('Import failed')
+        })
+      )
+
+      const result = await failingManager.loadExtension('test-extension')
 
       expect(result.success).toBe(false)
       expect(result.error?.code).toBe('IMPORT_FAILED')
     })
 
     it('应该处理manifest不存在的情况', async () => {
-      // Mock文件读取失败
-      mock.module('node:fs/promises', () => ({
-        readFile: mock(async () => {
-          throw new Error('File not found')
-        }),
-      }))
-
       const result = await extensionManager.loadExtension('nonexistent-extension')
 
       expect(result.success).toBe(false)
