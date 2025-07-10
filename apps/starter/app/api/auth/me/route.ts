@@ -1,106 +1,92 @@
-import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
-import { prisma } from '@/lib/prisma'
+import { NextResponse } from 'next/server'
 import { Logger } from '@linch-kit/core'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'linchkit-dev-secret-key-change-in-production'
+import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
+/**
+ * 获取当前用户信息 - 使用NextAuth会话管理
+ * 移除自定义JWT逻辑，使用@linch-kit/auth标准方法
+ */
+export async function GET() {
   try {
     Logger.info('API: 开始处理用户信息请求')
 
-    // 获取 token
-    const token = request.cookies.get('auth-token')?.value
+    // 使用NextAuth获取会话信息
+    const session = await auth()
 
-    if (!token) {
+    if (!session?.user) {
       return NextResponse.json(
         {
           success: false,
-          error: 'NO_TOKEN',
+          error: 'NO_SESSION',
           message: '未登录',
         },
         { status: 401 }
       )
     }
 
-    try {
-      // 验证 token
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
+    // 从数据库获取最新用户信息
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatar: true,
+        role: true,
+        status: true,
+        emailVerified: true,
+        lastLoginAt: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
 
-      // 从数据库获取最新用户信息
-      const user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          avatar: true,
-          role: true,
-          status: true,
-          emailVerified: true,
-          lastLoginAt: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      })
-
-      if (!user) {
-        Logger.warn('API: 用户不存在', { userId: decoded.userId })
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'USER_NOT_FOUND',
-            message: '用户不存在',
-          },
-          { status: 404 }
-        )
-      }
-
-      if (user.status !== 'ACTIVE') {
-        Logger.warn('API: 用户账户被禁用', { userId: user.id, status: user.status })
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'ACCOUNT_DISABLED',
-            message: '账户已被禁用',
-          },
-          { status: 403 }
-        )
-      }
-
-      // 准备用户数据
-      const userData = {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        avatar: user.avatar || `https://avatar.vercel.sh/${encodeURIComponent(user.name)}`,
-        role: user.role,
-        status: user.status,
-        emailVerified: !!user.emailVerified,
-        lastLoginAt: user.lastLoginAt?.toISOString() || null,
-        createdAt: user.createdAt.toISOString(),
-        updatedAt: user.updatedAt.toISOString(),
-      }
-
-      Logger.info('API: 用户信息获取成功', { userId: user.id })
-
-      return NextResponse.json({
-        success: true,
-        user: userData,
-      })
-    } catch (jwtError) {
-      Logger.warn('API: Token 验证失败', {
-        error: jwtError instanceof Error ? jwtError.message : String(jwtError),
-      })
+    if (!user) {
+      Logger.warn('API: 用户不存在', { userId: session.user.id })
       return NextResponse.json(
         {
           success: false,
-          error: 'INVALID_TOKEN',
-          message: 'Token 无效或已过期',
+          error: 'USER_NOT_FOUND',
+          message: '用户不存在',
         },
-        { status: 401 }
+        { status: 404 }
       )
     }
+
+    if (user.status !== 'ACTIVE') {
+      Logger.warn('API: 用户账户被禁用', { userId: user.id, status: user.status })
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'ACCOUNT_DISABLED',
+          message: '账户已被禁用',
+        },
+        { status: 403 }
+      )
+    }
+
+    // 使用标准转换函数准备用户数据
+    const userData = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      avatar: user.avatar || `https://avatar.vercel.sh/${encodeURIComponent(user.name)}`,
+      role: user.role,
+      status: user.status,
+      emailVerified: !!user.emailVerified,
+      lastLoginAt: user.lastLoginAt?.toISOString() || null,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    }
+
+    Logger.info('API: 用户信息获取成功', { userId: user.id })
+
+    return NextResponse.json({
+      success: true,
+      user: userData,
+    })
   } catch (error) {
     Logger.error('API: 用户信息获取失败', error instanceof Error ? error : new Error(String(error)))
 
