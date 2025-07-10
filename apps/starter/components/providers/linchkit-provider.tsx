@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { initializeLinchKit } from '@/lib/linchkit'
 import { Logger } from '@linch-kit/core'
+import { starterIntegrationManager } from '@linch-kit/console'
+
+import { initializeLinchKit } from '@/lib/linchkit'
 
 interface LinchKitProviderProps {
   children: React.ReactNode
@@ -15,7 +17,13 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
   useEffect(() => {
     const init = async () => {
       try {
+        // 1. 初始化 LinchKit 核心
         await initializeLinchKit()
+
+        // 2. 初始化 Console 集成
+        await starterIntegrationManager.initialize()
+        Logger.info('Console integration initialized successfully')
+
         setIsInitialized(true)
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Failed to initialize LinchKit')
@@ -44,7 +52,7 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
-          <p className="text-gray-600">正在初始化 LinchKit...</p>
+          <p className="text-gray-600">正在初始化 LinchKit 和 Console 集成...</p>
         </div>
       </div>
     )

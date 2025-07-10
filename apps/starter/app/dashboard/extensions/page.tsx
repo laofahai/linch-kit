@@ -8,6 +8,8 @@ import { Alert, AlertDescription } from '@linch-kit/ui/server'
 import { extensionManager } from '@linch-kit/core'
 import type { ExtensionInstance } from '@linch-kit/core'
 
+import { ConsoleIntegrationStatus } from '@/components/console-integration'
+
 interface ExtensionInfo {
   name: string
   instance: ExtensionInstance
@@ -19,7 +21,9 @@ export default function ExtensionsPage() {
   const [extensions, setExtensions] = useState<ExtensionInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [operationLoading, setOperationLoading] = useState<Record<string, boolean>>({})
-  const [operationResults, setOperationResults] = useState<Record<string, { success: boolean; message: string }>>({})
+  const [operationResults, setOperationResults] = useState<
+    Record<string, { success: boolean; message: string }>
+  >({})
 
   const refreshExtensions = async () => {
     setLoading(true)
@@ -50,8 +54,10 @@ export default function ExtensionsPage() {
         ...prev,
         [extensionName]: {
           success: result.success,
-          message: result.success ? 'Extension loaded successfully' : result.error?.message || 'Failed to load extension'
-        }
+          message: result.success
+            ? 'Extension loaded successfully'
+            : result.error?.message || 'Failed to load extension',
+        },
       }))
       if (result.success) {
         await refreshExtensions()
@@ -61,8 +67,8 @@ export default function ExtensionsPage() {
         ...prev,
         [extensionName]: {
           success: false,
-          message: error instanceof Error ? error.message : 'Unknown error'
-        }
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
       }))
     } finally {
       setOperationLoading(prev => ({ ...prev, [extensionName]: false }))
@@ -77,8 +83,8 @@ export default function ExtensionsPage() {
         ...prev,
         [extensionName]: {
           success: result,
-          message: result ? 'Extension unloaded successfully' : 'Failed to unload extension'
-        }
+          message: result ? 'Extension unloaded successfully' : 'Failed to unload extension',
+        },
       }))
       if (result) {
         await refreshExtensions()
@@ -88,8 +94,8 @@ export default function ExtensionsPage() {
         ...prev,
         [extensionName]: {
           success: false,
-          message: error instanceof Error ? error.message : 'Unknown error'
-        }
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
       }))
     } finally {
       setOperationLoading(prev => ({ ...prev, [extensionName]: false }))
@@ -104,8 +110,10 @@ export default function ExtensionsPage() {
         ...prev,
         [extensionName]: {
           success: result.success,
-          message: result.success ? 'Extension reloaded successfully' : result.error?.message || 'Failed to reload extension'
-        }
+          message: result.success
+            ? 'Extension reloaded successfully'
+            : result.error?.message || 'Failed to reload extension',
+        },
       }))
       if (result.success) {
         await refreshExtensions()
@@ -115,8 +123,8 @@ export default function ExtensionsPage() {
         ...prev,
         [extensionName]: {
           success: false,
-          message: error instanceof Error ? error.message : 'Unknown error'
-        }
+          message: error instanceof Error ? error.message : 'Unknown error',
+        },
       }))
     } finally {
       setOperationLoading(prev => ({ ...prev, [extensionName]: false }))
@@ -141,22 +149,21 @@ export default function ExtensionsPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Extension Management</h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-2">
-            管理和监控LinchKit Extension系统
-          </p>
+          <p className="text-gray-600 dark:text-gray-300 mt-2">管理和监控LinchKit Extension系统</p>
         </div>
         <Button onClick={refreshExtensions} disabled={loading}>
           {loading ? 'Loading...' : 'Refresh'}
         </Button>
       </div>
 
+      {/* Console 集成状态 */}
+      <ConsoleIntegrationStatus />
+
       {/* 测试区域 */}
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Extension测试</CardTitle>
-          <CardDescription>
-            测试Extension系统的基本功能
-          </CardDescription>
+          <CardDescription>测试Extension系统的基本功能</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -182,13 +189,15 @@ export default function ExtensionsPage() {
                 {operationLoading['blog-extension'] ? 'Loading...' : 'Reload Blog Extension'}
               </Button>
             </div>
-            
+
             {/* 操作结果显示 */}
             {operationResults['blog-extension'] && (
-              <Alert className={operationResults['blog-extension'].success ? 'border-green-500' : 'border-red-500'}>
-                <AlertDescription>
-                  {operationResults['blog-extension'].message}
-                </AlertDescription>
+              <Alert
+                className={
+                  operationResults['blog-extension'].success ? 'border-green-500' : 'border-red-500'
+                }
+              >
+                <AlertDescription>{operationResults['blog-extension'].message}</AlertDescription>
               </Alert>
             )}
           </div>
@@ -212,7 +221,7 @@ export default function ExtensionsPage() {
             </CardContent>
           </Card>
         ) : (
-          extensions.map((extensionInfo) => (
+          extensions.map(extensionInfo => (
             <Card key={extensionInfo.name}>
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -223,9 +232,7 @@ export default function ExtensionsPage() {
                         {extensionInfo.status}
                       </Badge>
                     </CardTitle>
-                    <CardDescription>
-                      {extensionInfo.instance.metadata.description}
-                    </CardDescription>
+                    <CardDescription>{extensionInfo.instance.metadata.description}</CardDescription>
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -292,7 +299,7 @@ export default function ExtensionsPage() {
                     <div className="mt-2">
                       <h5 className="font-medium text-sm mb-1">Permissions:</h5>
                       <div className="flex flex-wrap gap-1">
-                        {extensionInfo.instance.metadata.permissions.map((permission) => (
+                        {extensionInfo.instance.metadata.permissions.map(permission => (
                           <Badge key={permission} variant="secondary" className="text-xs">
                             {permission}
                           </Badge>
@@ -301,10 +308,12 @@ export default function ExtensionsPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* 操作结果显示 */}
                 {operationResults[extensionInfo.name] && (
-                  <Alert className={`mt-4 ${operationResults[extensionInfo.name].success ? 'border-green-500' : 'border-red-500'}`}>
+                  <Alert
+                    className={`mt-4 ${operationResults[extensionInfo.name].success ? 'border-green-500' : 'border-red-500'}`}
+                  >
                     <AlertDescription>
                       {operationResults[extensionInfo.name].message}
                     </AlertDescription>
