@@ -134,6 +134,42 @@ bun run ai:session symbol "[SymbolName]"
 bun run ai:session pattern "[pattern]" "[entity]"
 ```
 
+#### 🤖 Claude Graph RAG 查询智能优化
+
+当用户使用自然语言查询时，Claude应该智能转换查询词，而不是直接传递原始查询。以下是处理指南：
+
+**1. 查询意图识别**
+- 理解用户真正想查找什么（组件、API、配置、文档等）
+- 识别查询的上下文和领域
+
+**2. 智能查询扩展**
+```
+用户输入: "console 组件"
+Claude处理: 
+  - 主查询: "console"
+  - 扩展查询: "ConsoleLayout", "ConsoleComponent", "ConsoleProvider"
+  
+用户输入: "用户认证接口"  
+Claude处理:
+  - 主查询: "auth"
+  - 扩展查询: "AuthService", "authentication", "useAuth"
+  
+用户输入: "dashboard页面"
+Claude处理:
+  - 主查询: "dashboard"
+  - 考虑相关: "DashboardPage", "DashboardLayout", "admin"
+```
+
+**3. 多轮查询策略**
+- 先用核心词查询（如"console"）
+- 如果结果不够，再用扩展词查询
+- 根据第一轮结果智能调整第二轮查询
+
+**4. 查询结果解释**
+- 向用户解释为什么选择了某些查询词
+- 说明找到的结果与原始查询的关系
+- 提供进一步查询的建议
+
 ## 🎪 AI 协作模式集成
 
 ### Gemini 协商触发词
@@ -239,6 +275,45 @@ ai-context/manifest.json
 
 **核心原则**: 遵循约束，查询优先，质量至上。
 **工作模式**: AI 负责理解和执行，工具负责提供准确信息。
+
+## 🧠 Graph RAG 查询智能处理规则
+
+### Claude必须遵循的查询处理流程
+
+**当用户要求查询项目信息时，Claude必须：**
+
+1. **永远不要直接传递用户的原始查询词**
+2. **先分析查询意图，然后智能转换为技术查询词**
+3. **执行多轮查询以获得最佳结果**
+
+### 智能查询转换示例
+
+```
+用户: "查找console的组件"
+❌ 错误: bun run ai:session query "console的组件"
+✅ 正确: 
+   步骤1: bun run ai:session query "console"
+   步骤2: 基于结果，查询 "ConsoleLayout" "ConsoleProvider"
+
+用户: "dashboard页面在哪"  
+❌ 错误: bun run ai:session query "dashboard页面在哪"
+✅ 正确:
+   步骤1: bun run ai:session query "dashboard"
+   步骤2: 如需要，查询 "DashboardPage" 或查看发现的文件
+
+用户: "用户认证的API"
+❌ 错误: bun run ai:session query "用户认证的API"  
+✅ 正确:
+   步骤1: bun run ai:session query "auth"
+   步骤2: bun run ai:session symbol "AuthService"
+```
+
+### 查询处理决策树
+
+1. **提取核心概念** - 从自然语言中提取技术关键词
+2. **选择查询类型** - entity/symbol/pattern
+3. **迭代优化** - 根据结果调整查询策略
+4. **解释结果** - 告诉用户找到了什么及其关系
 
 ## 🚨 最高优先级强制约束
 

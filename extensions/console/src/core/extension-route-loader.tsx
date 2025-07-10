@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react'
 import { useRouter } from 'next/router'
-import type { ExtensionInstance } from '@linch-kit/core'
+import type { ExtensionInstance } from '@linch-kit/core/client'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import type { DynamicRouteConfig } from './enhanced-app-registry'

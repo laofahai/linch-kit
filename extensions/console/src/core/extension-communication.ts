@@ -4,7 +4,7 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-import type { ExtensionInstance } from '@linch-kit/core'
+import type { ExtensionInstance } from '@linch-kit/core/client'
 
 import { extensionLoader } from './extension-loader'
 

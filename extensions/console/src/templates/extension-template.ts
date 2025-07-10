@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core'
+import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core/client'
 
 import { createExtensionRouteRegistry } from '../core/extension-route-loader'
 import { createExtensionCommunicationAPI } from '../core/extension-communication'

@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* eslint-env node */
 /**
  * LinchKit 图谱数据提取器
  * 使用AI CLI工具提取项目数据到Neo4j图数据库
@@ -57,7 +58,7 @@ function checkEnvironment() {
     log.warn('LinchKit CLI工具不存在，尝试构建...');
     try {
       runCommand('bun run build', '构建LinchKit CLI工具');
-    } catch (error) {
+    } catch {
       log.error('构建失败，请手动运行 bun run build');
       process.exit(1);
     }
@@ -92,7 +93,7 @@ function extractToNeo4j() {
   
   try {
     // 直接使用Node.js调用AI CLI模块
-    const extractCmd = `bun packages/ai/dist/cli/main.js ai:extract --extractors all --output neo4j --clear`;
+    const extractCmd = `bun tools/context/dist/cli/main.js ai:extract --extractors all --output neo4j --clear`;
     
     runCommand(extractCmd, '提取项目数据到Neo4j数据库');
     
@@ -108,12 +109,12 @@ function extractToJson() {
   
   try {
     // 直接使用Node.js调用AI CLI模块
-    const extractCmd = `bun packages/ai/dist/cli/main.js ai:extract --extractors all --output json`;
+    const extractCmd = `bun tools/context/dist/cli/main.js ai:extract --extractors all --output json`;
     
     runCommand(extractCmd, '提取项目数据到JSON文件');
     
     log.success('JSON数据提取完成');
-  } catch (error) {
+  } catch {
     log.warn('JSON数据提取失败，但不影响主流程');
   }
 }
@@ -123,7 +124,7 @@ function validateExtraction() {
   
   try {
     // 检查graph-data目录是否存在
-    const graphDataPath = resolve('packages/ai/graph-data');
+    const graphDataPath = resolve('tools/context/graph-data');
     if (existsSync(graphDataPath)) {
       log.success('JSON数据文件已生成');
     } else {
@@ -137,7 +138,7 @@ function validateExtraction() {
       try {
         runCommand(`bun ${contextCliPath} --find-entity "Package" --limit 1`, '测试Neo4j查询');
         log.success('Neo4j数据验证通过');
-      } catch (error) {
+      } catch {
         log.warn('Neo4j查询测试失败，但数据可能已成功提取');
       }
     }

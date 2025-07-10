@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* eslint-env node */
 
 /**
  * 快速版AI上下文查询CLI工具
@@ -32,7 +33,7 @@ async function main() {
   let forEntity = '';
   let includeRelated = false;
   let format = 'json';
-  let fastMode = true; // 强制启用快速模式
+  let debug = false;
   
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -61,6 +62,9 @@ async function main() {
       case '--format':
         format = next;
         i++;
+        break;
+      case '--debug':
+        debug = true;
         break;
       case '--help':
         console.log(`
@@ -119,28 +123,90 @@ LinchKit AI上下文查询工具 - 快速版
     const config = await loadNeo4jConfig();
     const neo4jService = new Neo4jService(config);
     
-    // 设置5秒超时
+    // 简化的Cypher查询 - 移到外层避免作用域问题
+    let cypherQuery = '';
+    const params = {};
+    
+    // 设置10秒超时（调试模式需要更多时间）
     const timeout = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('查询超时')), 5000)
+      setTimeout(() => reject(new Error('查询超时')), debug ? 10000 : 5000)
     );
     
     const queryPromise = (async () => {
       await neo4jService.connect();
       
-      // 简化的Cypher查询
-      let cypherQuery = '';
-      const params = {};
-      
       if (queryType === 'find_entity') {
-        cypherQuery = `
-          MATCH (n)
-          WHERE toLower(n.name) CONTAINS toLower($target)
-             OR toLower(n.type) CONTAINS toLower($target)
-          RETURN n
-          ORDER BY n.name
-          LIMIT 10
-        `;
-        params.target = queryTarget;
+        // 智能查询预处理
+        const queryTerms = queryTarget.toLowerCase().split(/\s+/).filter(term => term.length > 2);
+        const primaryTerm = queryTerms[0] || queryTarget.toLowerCase();
+        
+        if (debug) {
+          // 调试模式：查询实体及其直接关系（增强版）
+          if (queryTerms.length > 1) {
+            // 多词查询：使用更智能的匹配
+            cypherQuery = `
+              MATCH (n)
+              WHERE ANY(term IN $terms WHERE toLower(n.name) CONTAINS term)
+                 OR ANY(term IN $terms WHERE toLower(n.type) CONTAINS term)
+                 OR ANY(term IN $terms WHERE toLower(n.prop_description) CONTAINS term)
+                 OR ANY(term IN $terms WHERE toLower(n.prop_file_path) CONTAINS term)
+              OPTIONAL MATCH (n)-[r]-(related)
+              RETURN n, r, related
+              ORDER BY 
+                CASE 
+                  WHEN toLower(n.name) CONTAINS $primaryTerm THEN 0
+                  ELSE 1
+                END,
+                n.name
+              LIMIT 20
+            `;
+            params.terms = queryTerms;
+            params.primaryTerm = primaryTerm;
+          } else {
+            // 单词查询：原有逻辑
+            cypherQuery = `
+              MATCH (n)
+              WHERE toLower(n.name) CONTAINS toLower($target)
+                 OR toLower(n.type) CONTAINS toLower($target)
+              OPTIONAL MATCH (n)-[r]-(related)
+              RETURN n, r, related
+              ORDER BY n.name
+              LIMIT 15
+            `;
+            params.target = queryTarget;
+          }
+        } else {
+          // 普通模式
+          if (queryTerms.length > 1) {
+            // 多词查询
+            cypherQuery = `
+              MATCH (n)
+              WHERE ANY(term IN $terms WHERE toLower(n.name) CONTAINS term)
+                 OR ANY(term IN $terms WHERE toLower(n.type) CONTAINS term)
+              RETURN n
+              ORDER BY 
+                CASE 
+                  WHEN toLower(n.name) CONTAINS $primaryTerm THEN 0
+                  ELSE 1
+                END,
+                n.name
+              LIMIT 10
+            `;
+            params.terms = queryTerms;
+            params.primaryTerm = primaryTerm;
+          } else {
+            // 单词查询
+            cypherQuery = `
+              MATCH (n)
+              WHERE toLower(n.name) CONTAINS toLower($target)
+                 OR toLower(n.type) CONTAINS toLower($target)
+              RETURN n
+              ORDER BY n.name
+              LIMIT 10
+            `;
+            params.target = queryTarget;
+          }
+        }
       } else if (queryType === 'find_symbol') {
         cypherQuery = `
           MATCH (n)
@@ -184,7 +250,7 @@ LinchKit AI上下文查询工具 - 快速版
         for_entity: forEntity || null,
         include_related: includeRelated
       },
-      results: await processResultsFast(queryType, graphResult, includeRelated, forEntity, queryTarget),
+      results: await processResultsFast(queryType, graphResult, includeRelated, forEntity, queryTarget, debug),
       metadata: {
         execution_time_ms: executionTime,
         confidence: 0.8, // 固定高置信度
@@ -192,6 +258,18 @@ LinchKit AI上下文查询工具 - 快速版
         fast_mode: true
       }
     };
+    
+    // 在调试模式下添加额外的调试信息
+    if (debug) {
+      result._debug_info = {
+        query_type: queryType,
+        query_target: queryTarget,
+        cypher_query: cypherQuery,
+        params: params,
+        raw_graph_result: graphResult,
+        debug_mode: true
+      };
+    }
     
     if (format === 'json') {
       console.log(JSON.stringify(result, null, 2));
@@ -219,9 +297,11 @@ LinchKit AI上下文查询工具 - 快速版
 /**
  * 快速处理查询结果
  */
-async function processResultsFast(queryType, graphResult, includeRelated, forEntity, queryTarget) {
+async function processResultsFast(queryType, graphResult, includeRelated, forEntity, queryTarget, debug = false) {
   const results = {
     primary_target: null,
+    related_entities: [],
+    relationships: [],
     related_files: [],
     suggestions: {},
     patterns: []
@@ -235,6 +315,8 @@ async function processResultsFast(queryType, graphResult, includeRelated, forEnt
   
   // 转换Neo4j记录为简化实体格式
   const entities = [];
+  const relationships = [];
+  const relatedEntities = [];
   
   // 处理nodes格式的结果
   if (graphResult.nodes && graphResult.nodes.length > 0) {
@@ -247,22 +329,75 @@ async function processResultsFast(queryType, graphResult, includeRelated, forEnt
     })));
   }
   
-  // 处理原始records格式的结果
+  // 处理原始records格式的结果 - 完整版本支持关系提取
   if (graphResult.records && graphResult.records.length > 0) {
+    const entityMap = new Map(); // 去重用
+    
     graphResult.records.forEach(record => {
-      // record是一个对象，查找其中的节点数据
+      let mainEntity = null;
+      let relatedEntity = null;
+      let relationship = null;
+      
+      // 第一轮：提取所有节点和关系
       for (const [key, value] of Object.entries(record)) {
         if (value && typeof value === 'object' && value.properties) {
-          entities.push({
+          const entity = {
             name: value.properties.name || 'Unknown',
             type: value.properties.type || 'Unknown',
-            path: value.properties.prop_file_path || value.properties.file_path || value.properties.path || '',
+            file_path: value.properties.prop_file_path || value.properties.file_path || value.properties.path || '',
             description: value.properties.prop_description || value.properties.description || '',
             package: value.properties.metadata_package || value.properties.prop_package || value.properties.package || 'unknown'
-          });
+          };
+          
+          if (key === 'n') {
+            mainEntity = entity;
+            entityMap.set(entity.name, entity);
+          } else if (key === 'related') {
+            relatedEntity = entity;
+            entityMap.set(entity.name, entity);
+          }
+        } else if (value && typeof value === 'object' && value.type) {
+          // 关系信息
+          if (key === 'r') {
+            relationship = {
+              type: value.type,
+              properties: value.properties || {}
+            };
+          }
         }
       }
+      
+      // 第二轮：建立完整的关系映射
+      if (debug && mainEntity && relatedEntity && relationship) {
+        relationships.push({
+          type: relationship.type,
+          from: mainEntity.name,
+          to: relatedEntity.name,
+          from_type: mainEntity.type,
+          to_type: relatedEntity.type,
+          properties: relationship.properties
+        });
+      }
     });
+    
+    // 将去重后的实体添加到结果中
+    entities.push(...Array.from(entityMap.values()));
+    
+    // 分离主实体和相关实体
+    const mainTargetEntities = Array.from(entityMap.values()).filter(entity => 
+      entity.name.toLowerCase().includes(queryTarget.toLowerCase()) ||
+      entity.type.toLowerCase().includes(queryTarget.toLowerCase())
+    );
+    
+    relatedEntities.push(...Array.from(entityMap.values()).filter(entity => 
+      !mainTargetEntities.some(main => main.name === entity.name)
+    ));
+  }
+  
+  // 在debug模式下添加额外的相关实体和关系信息
+  if (debug) {
+    results.related_entities = relatedEntities;
+    results.relationships = relationships;
   }
   
   if (queryType === 'find_entity') {

@@ -4,7 +4,7 @@
  * @deprecated 大部分功能已迁移至 @linch-kit/core/registry/app-registry
  */
 
-import { AppRegistry as CoreAppRegistry } from '@linch-kit/core'
+import { AppRegistry as CoreAppRegistry } from '@linch-kit/core/client'
 
 // 重新导出Core包中的类型以保持兼容性
 export type {
@@ -14,7 +14,7 @@ export type {
   PageRouteRegistration,
   MenuItemDefinition,
   MenuRegistration,
-} from '@linch-kit/core'
+} from '@linch-kit/core/client'
 
 /**
  * Console专用应用注册器

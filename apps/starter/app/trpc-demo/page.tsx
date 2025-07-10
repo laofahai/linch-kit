@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@linch-kit/ui/server'
-import { Logger } from '@linch-kit/core'
+import { Logger } from '@linch-kit/core/client'
 
 import { api as trpc } from '@/lib/trpc-client'
 

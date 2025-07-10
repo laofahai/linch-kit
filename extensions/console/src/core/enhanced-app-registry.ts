@@ -3,7 +3,7 @@
  * @module core/enhanced-app-registry
  */
 
-import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core'
+import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core/client'
 import type { NextRouter } from 'next/router'
 
 import { AppRegistry } from './app-registry'

@@ -13,7 +13,7 @@ import {
   type ExtensionState,
   type ExtensionMetrics,
   type ExtensionHealth,
-} from '@linch-kit/core'
+} from '@linch-kit/core/client'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import type { DynamicRouteConfig } from './enhanced-app-registry'
@@ -33,6 +33,11 @@ export interface ExtensionLoaderConfig {
 }
 
 /**
+ * Extension 加载状态
+ */
+export type ExtensionLoadStatus = 'unloaded' | 'loading' | 'loaded' | 'failed' | 'unloading'
+
+/**
  * Console Extension 状态 - 扩展Core的ExtensionState，添加UI特定信息
  */
 export interface ConsoleExtensionState extends ExtensionState {
@@ -40,6 +45,8 @@ export interface ConsoleExtensionState extends ExtensionState {
   routeCount: number
   /** 组件数量 */
   componentCount: number
+  /** 加载状态 */
+  loadStatus: ExtensionLoadStatus
 }
 
 /**

@@ -1,7 +1,7 @@
 'use client'
 
 import { ExtensionManagement } from '@linch-kit/console/client'
-import { extensionManager } from '@linch-kit/core'
+import { extensionManager } from '@linch-kit/core/client'
 
 export default function AdminExtensionsPage() {
   return (

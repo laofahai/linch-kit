@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+/* eslint-env node */
 /**
  * LinchKit AI助手session工具集
  * 自动化执行CLAUDE.md中的繁琐步骤
@@ -6,8 +7,6 @@
 
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
-import { resolve } from 'path';
-import { readFileSync } from 'fs';
 
 // 颜色输出
 const colors = {
@@ -74,13 +73,18 @@ function checkTodos() {
   log.info('建议在开发前检查是否有未完成的任务');
 }
 
-function queryContext(entity, includeRelated = true) {
+function queryContext(entity, includeRelated = true, debug = false) {
   log.header('🎯 查询项目上下文');
   
   try {
-    const cmd = includeRelated 
+    let cmd = includeRelated 
       ? `bun tools/context/scripts/context-cli.js --find-entity "${entity}" --include-related`
       : `bun tools/context/scripts/context-cli.js --find-entity "${entity}"`;
+    
+    // 添加调试模式参数
+    if (debug) {
+      cmd += ' --debug';
+    }
     
     const result = runCommand(cmd, `查询实体: ${entity}`);
     
@@ -89,13 +93,44 @@ function queryContext(entity, includeRelated = true) {
       try {
         const jsonResult = JSON.parse(result);
         if (jsonResult.success && jsonResult.results) {
+          if (debug) {
+            // 调试模式：显示完整的JSON结果
+            console.log('\n🔍 【调试模式】完整查询结果:');
+            console.log(JSON.stringify(jsonResult, null, 2));
+            return result;
+          }
+          
+          // 普通模式：显示精简结果
           console.log('\n📋 查询结果:');
           if (jsonResult.results.primary_target) {
             const target = jsonResult.results.primary_target;
-            console.log(`  实体: ${target.name} (${target.type})`);
-            console.log(`  文件: ${target.file_path || 'N/A'}`);
-            console.log(`  包: ${target.package || 'N/A'}`);
+            console.log(`  🎯 主要实体: ${target.name} (${target.type})`);
+            console.log(`  📁 文件: ${target.file_path || 'N/A'}`);
+            console.log(`  📦 包: ${target.package || 'N/A'}`);
+            if (target.description) {
+              console.log(`  📝 描述: ${target.description}`);
+            }
+            if (target.current_fields && target.current_fields.length > 0) {
+              console.log(`  🏷️  字段: ${target.current_fields.join(', ')}`);
+            }
           }
+          
+          // 显示相关实体
+          if (jsonResult.results.related_entities && jsonResult.results.related_entities.length > 0) {
+            console.log('\n🔗 相关实体:');
+            jsonResult.results.related_entities.forEach((entity, i) => {
+              console.log(`  ${i + 1}. ${entity.name} (${entity.type}) - ${entity.file_path}`);
+            });
+          }
+          
+          // 显示关系
+          if (jsonResult.results.relationships && jsonResult.results.relationships.length > 0) {
+            console.log('\n🔄 实体关系:');
+            jsonResult.results.relationships.forEach((rel, i) => {
+              console.log(`  ${i + 1}. ${rel.from} --[${rel.type}]--> ${rel.to}`);
+            });
+          }
+          
           if (jsonResult.results.related_files && Object.keys(jsonResult.results.related_files).length > 0) {
             console.log('\n📂 相关文件:');
             Object.entries(jsonResult.results.related_files).forEach(([type, files]) => {
@@ -104,15 +139,110 @@ function queryContext(entity, includeRelated = true) {
               }
             });
           }
+          
+          // 显示建议
+          if (jsonResult.results.suggestions && Object.keys(jsonResult.results.suggestions).length > 0) {
+            console.log('\n💡 智能建议:');
+            Object.entries(jsonResult.results.suggestions).forEach(([, suggestion]) => {
+              if (suggestion.description) {
+                console.log(`  📋 ${suggestion.description}`);
+                if (suggestion.steps) {
+                  suggestion.steps.forEach(step => {
+                    console.log(`    • ${step}`);
+                  });
+                }
+              }
+            });
+          }
+          
+          // 显示统计信息
+          if (jsonResult.metadata) {
+            console.log('\n📊 查询统计:');
+            console.log(`  ⏱️  执行时间: ${jsonResult.metadata.execution_time_ms}ms`);
+            console.log(`  🎯 置信度: ${(jsonResult.metadata.confidence * 100).toFixed(1)}%`);
+            console.log(`  📈 找到结果: ${jsonResult.metadata.total_found}`);
+          }
         }
-      } catch (e) {
+      } catch {
         console.log('\n查询结果:', result);
       }
     }
     
     return result;
-  } catch (error) {
+  } catch {
     log.error('上下文查询失败，请检查Neo4j连接');
+    return null;
+  }
+}
+
+function queryRelations(entity) {
+  log.header('🔗 查询实体关系');
+  
+  try {
+    let cmd = `bun tools/context/scripts/context-cli.js --find-entity "${entity}" --include-related --debug`;
+    
+    // 使用静默模式执行命令，避免显示"查询结果:"
+    log.info(`查询实体关系: ${entity}`);
+    const result = execSync(cmd + ' 2>/dev/null', { encoding: 'utf8', stdio: 'pipe' });
+    log.success(`查询实体关系: ${entity} - 完成`);
+    
+    if (result && result.trim()) {
+      try {
+        // 过滤掉日志行，只保留实际的JSON结果
+        const lines = result.split('\n');
+        const cleanLines = lines.filter(line => {
+          // 排除结构化日志行
+          if (line.includes('"level"') && line.includes('"time"') && line.includes('"pid"')) {
+            return false;
+          }
+          return true;
+        });
+        
+        // 重新组合清理后的内容
+        const cleanResult = cleanLines.join('\n');
+        
+        // 解析JSON结果
+        const jsonResult = JSON.parse(cleanResult);
+        if (jsonResult.success && jsonResult.results) {
+          console.log('\n🎯 主要实体:');
+          if (jsonResult.results.primary_target) {
+            const target = jsonResult.results.primary_target;
+            console.log(`  ${target.name} (${target.type}) - ${target.file_path}`);
+          }
+          
+          console.log('\n🔗 调用关系:');
+          if (jsonResult.results.relationships && jsonResult.results.relationships.length > 0) {
+            jsonResult.results.relationships.forEach((rel, i) => {
+              console.log(`  ${i + 1}. ${rel.type}: ${rel.from} → ${rel.to}`);
+            });
+          } else {
+            console.log('  (无直接调用关系)');
+          }
+          
+          console.log('\n📦 相关实体:');
+          if (jsonResult.results.related_entities && jsonResult.results.related_entities.length > 0) {
+            const limited = jsonResult.results.related_entities.slice(0, 5); // 只显示前5个
+            limited.forEach((entity, i) => {
+              if (entity.name !== 'Unknown') {
+                console.log(`  ${i + 1}. ${entity.name} (${entity.type}) - ${entity.file_path}`);
+              }
+            });
+            if (jsonResult.results.related_entities.length > 5) {
+              console.log(`  ... 还有 ${jsonResult.results.related_entities.length - 5} 个相关实体`);
+            }
+          } else {
+            console.log('  (无相关实体)');
+          }
+        }
+      } catch (e) {
+        log.error('解析查询结果失败');
+      }
+    }
+    
+    // 关系模式下不返回JSON结果，避免被外层打印
+    return null;
+  } catch {
+    log.error('关系查询失败，请检查Neo4j连接');
     return null;
   }
 }
@@ -137,13 +267,13 @@ function querySymbol(symbol) {
             console.log(`  包: ${target.package || 'N/A'}`);
           }
         }
-      } catch (e) {
+      } catch {
         console.log('\n查询结果:', result);
       }
     }
     
     return result;
-  } catch (error) {
+  } catch {
     log.error('符号查询失败');
     return null;
   }
@@ -174,13 +304,13 @@ function queryPattern(pattern, forEntity = '') {
             console.log('  未找到相关模式');
           }
         }
-      } catch (e) {
+      } catch {
         console.log('\n查询结果:', result);
       }
     }
     
     return result;
-  } catch (error) {
+  } catch {
     log.error('模式查询失败');
     return null;
   }
@@ -239,7 +369,7 @@ function runFullValidation() {
     // 测试（可能失败但不阻断）
     try {
       runCommand('bun run test', '运行测试套件');
-    } catch (error) {
+    } catch {
       log.warn('测试未通过，但不阻断验证流程');
     }
     
@@ -268,7 +398,7 @@ function validateEnvironment() {
     }
     
     log.success('环境验证通过');
-  } catch (error) {
+  } catch {
     log.error('环境验证失败');
     process.exit(1);
   }
@@ -343,7 +473,20 @@ function handleCommand(command, args) {
         log.error('请提供要查询的实体名称');
         process.exit(1);
       }
-      queryContext(args[0], true);
+      {
+        // 检查是否有 --debug 或 --relations 参数
+        const debugMode = args.includes('--debug');
+        const relationsOnly = args.includes('--relations');
+        const entity = args.filter(arg => !arg.startsWith('--'))[0];
+      
+      if (relationsOnly) {
+        // 专门的关系查询模式 - 不输出JSON结果
+        queryRelations(entity);
+        return; // 直接返回，避免继续执行
+      } else {
+        queryContext(entity, true, debugMode);
+      }
+      }
       break;
       
     case 'symbol':
@@ -361,9 +504,11 @@ function handleCommand(command, args) {
         log.error('请提供要查询的模式');
         process.exit(1);
       }
-      const pattern = args[0];
-      const forEntity = args[1] || '';
-      queryPattern(pattern, forEntity);
+      {
+        const pattern = args[0];
+        const forEntity = args[1] || '';
+        queryPattern(pattern, forEntity);
+      }
       break;
       
     case 'sync':
@@ -425,6 +570,7 @@ ${colors.bold}LinchKit AI Session 工具${colors.reset}
       `);
   }
 }
+
 
 // 主程序
 const [,, command, ...args] = process.argv;

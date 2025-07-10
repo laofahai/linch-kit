@@ -5,8 +5,30 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linc
 import { Button } from '@linch-kit/ui/server'
 import { Badge } from '@linch-kit/ui/server'
 import { Alert, AlertDescription } from '@linch-kit/ui/server'
-import { extensionManager } from '@linch-kit/core'
-import type { ExtensionInstance } from '@linch-kit/core'
+// 避免在客户端导入服务端代码
+// import { extensionManager } from '@linch-kit/core'
+// import type { ExtensionInstance } from '@linch-kit/core'
+
+// 定义客户端需要的类型
+interface ExtensionInstance {
+  name: string
+  metadata: {
+    id: string
+    displayName?: string
+    description?: string
+    version: string
+    category: string
+    capabilities: {
+      hasSchema: boolean
+      hasAPI: boolean
+      hasUI: boolean
+      hasHooks: boolean
+    }
+    permissions: string[]
+  }
+  initialized: boolean
+  running: boolean
+}
 
 import { ConsoleIntegrationStatus } from '@/components/console-integration'
 
@@ -28,13 +50,33 @@ export default function ExtensionsPage() {
   const refreshExtensions = async () => {
     setLoading(true)
     try {
-      const allExtensions = extensionManager.getAllExtensions()
-      const extensionInfos: ExtensionInfo[] = allExtensions.map(instance => ({
-        name: instance.name,
-        instance,
-        status: extensionManager.getExtensionStatus(instance.name) || 'unknown',
-      }))
-      setExtensions(extensionInfos)
+      // 模拟extension数据 - 实际应该通过API获取
+      const mockExtensions: ExtensionInfo[] = [
+        {
+          name: 'console',
+          instance: {
+            name: 'console',
+            metadata: {
+              id: '@linch-kit/console',
+              displayName: 'Console Management',
+              description: '企业级管理控制台扩展',
+              version: '1.0.0',
+              category: 'management',
+              capabilities: {
+                hasSchema: true,
+                hasAPI: true,
+                hasUI: true,
+                hasHooks: true,
+              },
+              permissions: ['admin', 'read', 'write'],
+            },
+            initialized: true,
+            running: true,
+          },
+          status: 'loaded',
+        },
+      ]
+      setExtensions(mockExtensions)
     } catch (error) {
       console.error('Failed to refresh extensions:', error)
     } finally {

@@ -22,42 +22,9 @@ echo "💡 建议：运行 /new-branch [功能名] 创建功能分支"
 exit 1
 fi
 
-!echo "🧠 [$(date '+%H:%M:%S')] 任务复杂度和设计需求分析..."
-
-!TASK_LEVEL="T1"
-!if [[$ARGUMENTS =~ (实现新|添加新|创建新|集成.*API|修改架构|新功能|新模块|新页面)]]; then
-TASK_LEVEL="T3"
-echo "🎯 检测到 T3 强制级任务 - 需要完整方案设计"
-elif [[$ARGUMENTS =~ (增强|重构|优化|修复.*逻辑|改进)]]; then
-TASK_LEVEL="T2"  
- echo "⚡ 检测到 T2 轻量级任务 - 需要简化设计"
-elif [[$ARGUMENTS =~ (修复拼写|调整样式|增加注释|微调|小修)]]; then
-TASK_LEVEL="T1"
-echo "🔧 检测到 T1 豁免级任务 - 跳过设计直接编码"
-else
-
-# 基于任务描述长度和关键词的智能判断
-
-if [[${#ARGUMENTS} -gt 150]] || [[$ARGUMENTS =~ (架构|重构|性能|复杂|设计|算法)]]; then
-TASK_LEVEL="T3"
-echo "🎯 智能判断为 T3 强制级任务 - 需要完整方案设计"
-elif [[${#ARGUMENTS} -gt 50]] || [[$ARGUMENTS =~ (功能|组件|模块|逻辑)]]; then
-TASK_LEVEL="T2"
-echo "⚡ 智能判断为 T2 轻量级任务 - 需要简化设计"  
- else
-TASK_LEVEL="T1"
-echo "🔧 智能判断为 T1 豁免级任务 - 跳过设计直接编码"
-fi
-fi
-
-!echo "📋 任务级别: $TASK_LEVEL"
-!if [["$TASK_LEVEL" == "T3"]] || [["$TASK_LEVEL" == "T2"]]; then
-echo "🚨 复杂任务建议："
-echo " • 使用 TodoWrite 拆分任务"
-echo " • 每30分钟检查一次进度"
-echo " • 适时使用 /end-session 保存状态"
-echo "🧠 启用 thinking 模式进行深度分析"
-fi
+!echo "🧠 [$(date '+%H:%M:%S')] 开始 Claude 智能任务复杂度评估..."
+!echo "📋 将基于 Graph RAG 查询结果和任务语义进行智能分析"
+!echo "🎯 评估将在 Graph RAG 查询完成后进行"
 
 !echo "🏗️ [$(date '+%H:%M:%S')] 开始 Claude 综合架构分析..."
 
@@ -70,6 +37,69 @@ echo "🛑 Claude 必须基于项目上下文进行开发，查询失败则停�
 exit 1
 fi
 !echo "✅ Graph RAG 查询完成，找到相关实现"
+
+!echo "🧠 [$(date '+%H:%M:%S')] 执行 Claude 智能任务复杂度评估..."
+
+!cat > .claude/temp-assessment-prompt.txt << EOF
+# LinchKit 任务复杂度智能评估 Prompt
+
+## 角色定义
+你是一个资深的 LinchKit 软件架构师，专门负责评估开发任务的复杂度。你的判断将直接影响后续的设计流程选择和开发策略。
+
+## 任务级别标准
+
+### T1 级别：豁免级 (Exempt Level)
+- **影响范围**：1-3 个文件
+- **预计时间**：< 2 小时  
+- **架构影响**：无架构变更
+- **设计需求**：无需设计，有清晰的实现路径
+- **典型示例**：修复拼写、调整样式、增加注释、简单bug修复
+
+### T2 级别：轻量级 (Lite Level)  
+- **影响范围**：单个包内多个文件，或跨包少量文件
+- **预计时间**：2-8 小时
+- **架构影响**：局部架构调整，不涉及核心设计变更  
+- **设计需求**：需要简要设计规划
+- **典型示例**：功能增强、局部重构、复杂bug修复、性能优化
+
+### T3 级别：强制级 (Full Level)
+- **影响范围**：跨多个核心包，或引入新依赖/模块
+- **预计时间**：> 1 天（8+ 小时）
+- **架构影响**：涉及核心架构变更、新模块设计或重大重构
+- **设计需求**：必须进行完整方案设计  
+- **典型示例**：新功能模块、新页面、API集成、架构重构
+
+## 评估任务
+
+**用户任务描述**：$ARGUMENTS
+
+**Graph RAG 查询结果**：
+$GRAPH_RAG_RESULT
+
+**请基于上述信息进行智能评估，并严格按照以下JSON格式输出结果：**
+
+{
+  "taskLevel": "T1|T2|T3",
+  "confidence": "high|medium|low", 
+  "reasoning": "详细的判断理由，包括考虑的关键因素和决策逻辑",
+  "estimatedFilesToChange": 数字,
+  "estimatedTimeHours": 数字,
+  "potentialRisks": [
+    "具体风险描述1",
+    "具体风险描述2"
+  ],
+  "recommendedActions": [
+    "建议的具体行动1", 
+    "建议的具体行动2"
+  ],
+  "graphRagFindings": "基于Graph RAG查询的关键发现总结",
+  "architectureImpact": "对LinchKit架构的具体影响分析"
+}
+EOF
+
+!echo "🚨 正在进行 Claude 智能评估，请等待..."
+!echo "📝 Claude 正在分析任务语义和 Graph RAG 结果..."
+!echo "⏱️  预计需要 10-15 秒完成评估"
 
 !echo "📋 步骤2: 查询项目架构文档..."
 !if [[-d "ai-context"]]; then
@@ -173,25 +203,19 @@ fi
 
 EOF
 
-!echo "🎨 [$(date '+%H:%M:%S')] 根据任务级别启动相应设计流程..."
+!echo "🎨 [$(date '+%H:%M:%S')] Claude 智能评估完成，准备启动相应设计流程..."
 
-!if [["$TASK_LEVEL" == "T3"]]; then
-echo "🚨 T3 强制级任务 - 启动完整方案设计流程"
-echo "📋 Claude 将生成详细设计方案，需要您的审批后才能开始编码"
-echo "📄 设计方案将包括：目标确认、影响范围、核心设计、待更新文档、测试策略"
-echo "⏸️ 请等待 Claude 生成方案..."
+!echo "📋 提示：Claude 将基于智能评估结果自动选择最适合的设计流程"
+!echo "🧠 Claude 现在拥有完整的项目上下文和任务复杂度分析"
+!echo "🚀 请 Claude 继续基于评估结果进行后续开发流程"
 
-elif [["$TASK_LEVEL" == "T2"]]; then
-echo "⚡ T2 轻量级任务 - 启动简化设计流程"
-echo "📋 Claude 将生成简要计划，需要您的快速确认"
-echo "📝 简要计划将包括：变更点、影响范围、实现要点"
-echo "⏸️ 请等待 Claude 生成计划..."
+!echo "📊 可选：Claude 可以现在就展示评估结果和建议的设计流程"
 
-else
-echo "🔧 T1 豁免级任务 - 跳过设计，直接进入智能编码"
-echo "🚀 基于 Graph RAG 查询和架构分析结果直接开始编码"
-fi
+!echo "💾 [$(date '+%H:%M:%S')] 准备记录用户反馈和评估结果..."
+!mkdir -p .claude/feedback-logs
+!echo "🗂️ 反馈日志目录已准备：.claude/feedback-logs/"
 
 !echo ""
 !echo "✅ [$(date '+%H:%M:%S')] Claude 综合分析完成，设计流程已启动！"
 !echo "🚨 提醒: Claude 已承诺遵循所有架构约束，基于完整项目上下文进行开发"
+!echo "📋 下一步：Claude 将展示智能评估结果并等待您的确认"
