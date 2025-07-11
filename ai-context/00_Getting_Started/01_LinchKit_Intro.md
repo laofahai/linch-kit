@@ -132,8 +132,8 @@ L4: extensions/console   ✅ 管理平台Extension (100%)
 
 - **开发指南**: [开发工作流程](../02_Guides/01_Development_Workflow.md)
 - **AI 工具**: [AI 工具使用指南](../02_Guides/02_AI_Tools_Usage.md)
-- **架构设计**: [系统架构](../01_Concepts/02_System_Architecture.md)
-- **项目管理**: [开发路线图](../04_Project_Management/01_Roadmap.md)
+- **架构设计**: [系统架构](../01_Architecture/02_System_Architecture.md)
+- **项目管理**: [开发路线图](../98_Project_Management/01_Roadmap.md)
 
 ---
 

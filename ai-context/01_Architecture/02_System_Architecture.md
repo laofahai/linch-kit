@@ -6,38 +6,15 @@
 
 ## 🏗️ 核心架构原则
 
-### 设计哲学
-
-- **稳定优先**: 基于现有 6+1 架构扩展，保持架构稳定性
-- **职责明确**: 每个包的扩展都在其职责范围内
-- **向后兼容**: 现有功能不受影响，平滑演进
-- **配置驱动**: 通过配置控制新功能启用
-- **AI 友好**: 架构设计便于 AI 理解和操作
+> 详细的设计哲学和原则请参考 [核心设计原则](./01_Core_Principles.md) 和 [完整架构设计](./04_Complete_Architecture.md)
 
 ### 依赖层次关系
 
+> 详细的包依赖关系和约束请参考 [包架构设计](./03_Package_Architecture.md)
+
 ```
-L0: @linch-kit/core      → 基础设施 (日志、配置、插件系统、Extension系统)
-  ↓
-L1: @linch-kit/auth      → 认证权限 (NextAuth + CASL)
-  ↓
-L2: @linch-kit/platform  → 业务开发平台 (Schema+CRUD+tRPC+验证)
-L2: @linch-kit/ui        → UI组件 (shadcn/ui + 企业组件)
-  ↓
-L3: extensions/console   → 管理平台Extension (多租户、权限管理)
+L0: @linch-kit/core → L1: @linch-kit/auth → L2: @linch-kit/platform → L3: @linch-kit/ui
 ```
-
-**✅ 最终包架构**:
-
-- **核心4包**: core, auth, platform, ui
-- **移除**: packages/crud, packages/trpc (功能已整合到platform)
-- **工具包**: tools/schema (开发时代码生成工具)
-
-**核心约束**:
-
-- **严格单向依赖**: 上层可以依赖下层，下层不能依赖上层
-- **禁止循环依赖**: 任何包之间不允许循环依赖
-- **最小依赖原则**: 每个包只依赖必要的下层包
 
 ## 🎯 四层架构设计
 
@@ -60,17 +37,13 @@ apps/starter        # 生产级基础应用 - Extension运行时环境
 
 ### Extension层 (Extensions)
 
-```
-extensions/console  # 企业级管理控制台Extension (已迁移)
-extensions/admin    # 管理功能Extension (规划中)
-extensions/blog     # 博客系统Extension (开发中)
-```
+> 详细的Extension系统设计和架构请参考 [Extension系统](./Extension_System.md)
 
-**Extension层特点**:
-
-- **功能库定位**: 通过 npm 包被应用集成使用
-- **业务聚合**: 聚合多个包功能实现完整业务流程
-- **可选集成**: 应用可以选择性集成所需模块
+```
+extensions/console  # 企业级管理控制台Extension
+extensions/admin    # 管理功能Extension
+extensions/blog     # 博客系统Extension
+```
 
 ### 包层 (Packages - 核心4包)
 

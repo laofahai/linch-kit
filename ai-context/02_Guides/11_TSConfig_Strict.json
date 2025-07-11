@@ -1,0 +1,74 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "composite": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "allowJs": false,
+
+    // 🔴 超严格类型检查
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "exactOptionalPropertyTypes": true,
+
+    // 🔴 严格的未使用变量检查
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+
+    // 🔴 AI代码生成安全检查
+    "useUnknownInCatchVariables": true,
+    "noImplicitAnyTuple": true,
+    "noImplicitAnyFunction": true,
+
+    // 路径映射
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@linch-kit/*": ["./packages/*/src"],
+      "@linch-kit/core": ["./packages/core/src"],
+      "@linch-kit/schema": ["./packages/schema/src"],
+      "@linch-kit/auth": ["./packages/auth/src"],
+      "@linch-kit/crud": ["./packages/crud/src"],
+      "@linch-kit/trpc": ["./packages/trpc/src"],
+      "@linch-kit/ui": ["./packages/ui/src"],
+      "@linch-kit/console": ["./packages/console/src"]
+    }
+  },
+  "include": ["src/**/*", "packages/*/src/**/*", "apps/*/src/**/*", "**/*.ts", "**/*.tsx"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
+}

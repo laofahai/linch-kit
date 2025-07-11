@@ -323,10 +323,10 @@ eventBus.on(UserCreatedEvent, async event => {
 
 ## 🔗 相关文档
 
-- **[快速启动指南](../../00_Overview/02_Quick_Start.md)** - 开始使用 LinchKit
+- **[快速启动指南](../../00_Getting_Started/02_Quick_Start.md)** - 开始使用 LinchKit
 - **[开发工作流程](../../02_Guides/01_Development_Workflow.md)** - 开发约束和规范
-- **[核心设计原则](../../01_Concepts/01_Core_Principles.md)** - 架构设计原则
-- **[系统架构](../../01_Concepts/02_System_Architecture.md)** - 完整架构文档
+- **[核心设计原则](../../01_Architecture/01_Core_Principles.md)** - 架构设计原则
+- **[系统架构](../../01_Architecture/02_System_Architecture.md)** - 完整架构文档
 
 ---
 

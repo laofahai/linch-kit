@@ -885,11 +885,11 @@ function UserManagement() {
 ## 📖 相关文档
 
 - [LinchKit Core API](./core.md) - 基础设施和插件系统
-- [LinchKit Schema API](./schema.md) - Schema定义和验证
+- [LinchKit Platform API](./platform.md) - 业务开发平台和Schema支持
 - [LinchKit Auth API](./auth.md) - 认证和权限控制
-- [LinchKit CRUD API](./crud.md) - CRUD操作
+- [LinchKit Platform API](./platform.md) - 业务开发平台和CRUD操作
 - [LinchKit架构设计](../architecture/) - 整体架构设计
-- [开发约束和规范](../core/workflow_and_constraints.md) - 开发规范
+- [开发约束和规范](../../02_Guides/01_Development_Workflow.md) - 开发规范
 
 **版本**: 2.0.2  
 **更新**: 2025-01-xx  

@@ -104,54 +104,130 @@ bun add @linch-kit/core @linch-kit/auth @linch-kit/platform @linch-kit/ui
 - ✅ **管理界面** - 多租户管理平台
 - ✅ **开发工具** - ESLint、TypeScript、测试配置
 
-### 快速体验
+### 手动配置（仅手动安装需要）
 
-```bash
-# 一键创建项目
-bunx create-linch-kit my-app
+```typescript
+// lib/linch-kit.ts
+import { createConfig, createLogger } from '@linch-kit/core'
+import { createSchemaEngine } from '@linch-kit/schema'
+import { setupAuth } from '@linch-kit/auth'
+import { createCRUD } from '@linch-kit/crud'
 
-# 启动开发
-cd my-app
-bun dev
+// 配置 LinchKit
+export const config = createConfig({
+  app: {
+    name: 'My App',
+    env: process.env.NODE_ENV,
+  },
+})
+
+export const logger = createLogger({ name: 'my-app' })
+export const schemaEngine = createSchemaEngine()
+export const crud = createCRUD()
 ```
 
-项目将自动配置：
+### Schema 定义
 
-- ✅ 认证系统 (NextAuth.js 5.0)
-- ✅ 数据库 (Prisma + PostgreSQL)
-- ✅ API 层 (tRPC)
-- ✅ UI 组件 (shadcn/ui)
-- ✅ 管理界面 (多租户)
-- ✅ 开发工具 (ESLint, TypeScript, 测试)
+```typescript
+// schemas/user.ts
+import { z } from 'zod'
+import { defineSchema } from '@linch-kit/schema'
+
+export const UserSchema = defineSchema('User', {
+  id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string().min(1),
+  role: z.enum(['USER', 'ADMIN']),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
+
+// 自动生成类型和验证器
+export type User = z.infer<typeof UserSchema>
+```
+
+### 使用 UI 组件
+
+```tsx
+// components/UserForm.tsx
+import { Form, Button, Input } from '@linch-kit/ui'
+import { UserSchema } from '@/schemas/user'
+
+export function UserForm() {
+  return (
+    <Form schema={UserSchema}>
+      <Input name="email" label="邮箱" />
+      <Input name="name" label="姓名" />
+      <Button type="submit">保存</Button>
+    </Form>
+  )
+}
+```
 
 ## 📚 文档
 
-- **[贡献指南](./CONTRIBUTING.md)** - 如何参与开发
-- **[完整文档](./ai-context/README.md)** - 架构设计、API 参考、开发指南
-- **[快速开始](./ai-context/00_Getting_Started/02_Quick_Start.md)** - 详细上手指南
+- [快速开始指南](./docs/getting-started.md)
+- [架构设计](./ai-context/01_System/01_Architecture_Overview.md)
+- [API 参考](./ai-context/03_Reference/01_Packages_API/)
+- [开发指南](./ai-context/02_Guides/01_Development_Workflow.md)
+- [AI 功能指南](./packages/ai/README.md)
 
 ## 🏢 企业功能
 
-- **多租户架构** - 租户数据隔离、角色权限管理
-- **认证与权限** - NextAuth.js 5.0 + CASL 权限控制
-- **管理平台** - 统一管理控制台、系统监控
+### 多租户架构
+
+- 租户数据隔离
+- 角色权限管理 (RBAC + ABAC)
+- 租户配置管理
+
+### 认证与权限
+
+- NextAuth.js 5.0 集成
+- CASL 权限控制
+- 字段级权限过滤
+- 行级权限控制
+
+### 管理平台
+
+- 统一管理控制台
+- 用户和权限管理
+- 系统监控和审计
+- 插件管理
 
 ## 🛠️ 开发
 
-想要参与开发？请查看我们的 **[贡献指南](./CONTRIBUTING.md)**。
+### 环境要求
 
-### 快速开始
+- Node.js >= 18
+- bun >= 1.0 (主要包管理器)
+- TypeScript >= 5.0
+
+### 开发规范
+
+- 📖 [Git 工作流规范](./ai-context/02_Guides/02_Git_Workflow.md) - 分支管理、提交规范、PR 流程
+- 🔒 [开发约束文档](./ai-context/02_Guides/01_Development_Workflow.md) - 技术约束、代码规范
+- 🏗️ [架构设计文档](./ai-context/01_System/01_Architecture_Overview.md) - 系统架构、模块设计
+
+### 开发命令
 
 ```bash
-# 克隆仓库
-git clone https://github.com/laofahai/linch-kit.git
-cd linch-kit
-
 # 安装依赖
 bun install
 
-# 启动开发
+# 开发模式
 bun dev
+
+# 构建所有包
+bun build:packages
+
+# 运行测试
+bun test
+
+# 类型检查
+bun type-check
+
+# 代码检查
+bun lint
 ```
 
 ## 📄 许可证
