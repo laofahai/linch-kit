@@ -1,171 +1,321 @@
 {
-  "version": "1.0",
-  "description": "LinchKit Knowledge Base Manifest - Primary entry point for AI understanding of project structure and documentation",
-  "lastUpdated": "2025-07-07",
+  "version": "8.0",
+  "description": "LinchKit Knowledge Base Manifest - v8.0 重构版本，清晰的分层文档结构",
+  "lastUpdated": "2025-07-11",
   "project": {
     "name": "LinchKit",
-    "version": "v7.2",
+    "version": "v8.0",
     "description": "AI-First full-stack development framework with Schema-driven architecture"
   },
   "structure": [
     {
-      "path": "ai-context/00_Overview/01_LinchKit_Intro.md",
-      "description": "Introduction to LinchKit project, vision, and core value proposition",
+      "path": "ai-context/README.md",
+      "description": "知识库导航文档，解释整个重构后的目录结构",
+      "tags": ["navigation", "overview", "restructure"],
+      "priority": "critical"
+    },
+    {
+      "path": "ai-context/00_Getting_Started/03_Essential_Rules.md",
+      "description": "【核心】LinchKit核心开发约束 - 3-4KB精简版本，包含所有不可违背的约束",
+      "tags": ["core", "constraints", "essential", "compact"],
+      "priority": "critical"
+    },
+    {
+      "path": "ai-context/00_Getting_Started/01_LinchKit_Intro.md",
+      "description": "LinchKit项目介绍和愿景",
       "tags": ["overview", "introduction", "vision"],
       "priority": "high"
     },
     {
-      "path": "ai-context/00_Overview/02_Quick_Start.md",
-      "description": "Quick start guide for developers and AI assistants",
+      "path": "ai-context/00_Getting_Started/02_Quick_Start.md",
+      "description": "快速上手指南",
       "tags": ["guide", "quickstart"],
       "priority": "high"
     },
     {
-      "path": "ai-context/01_Concepts/01_Core_Principles.md",
-      "description": "Core design principles including AI-First, Schema-driven architecture",
-      "tags": ["principles", "design", "architecture"],
+      "path": "ai-context/TASK_LEVEL_DEFINITIONS.md",
+      "description": "任务级别定义和评估标准",
+      "tags": ["task", "level", "evaluation"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/01_Architecture/01_Core_Principles.md",
+      "description": "核心设计原则",
+      "tags": ["principles", "core", "design"],
       "priority": "high"
     },
     {
-      "path": "ai-context/01_Concepts/02_System_Architecture.md",
-      "description": "Complete (6+1) system architecture overview and package dependencies",
+      "path": "ai-context/01_Architecture/04_Complete_Architecture.md",
+      "description": "完整架构设计",
+      "tags": ["architecture", "complete", "design"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/01_Architecture/05_Advanced_Strategies.md",
+      "description": "高级策略",
+      "tags": ["strategy", "advanced"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/01_Architecture/06_Frontend_Architecture.md",
+      "description": "前端架构",
+      "tags": ["frontend", "architecture"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/01_Architecture/09_Disaster_Recovery.md",
+      "description": "灾难恢复和应急响应计划，包含LinchKit特有场景",
+      "tags": ["disaster", "recovery", "backup", "linchkit", "emergency"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/02_Guides/04_Module_Development.md",
+      "description": "模块开发指南",
+      "tags": ["module", "development", "guide"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/03_Reference/02_Configuration.md",
+      "description": "配置参考",
+      "tags": ["configuration", "reference"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/04_Extension_Schema.md",
+      "description": "Extension模式",
+      "tags": ["extension", "schema"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/98_Project_Management/04_Documentation_Audit_Report.md",
+      "description": "文档审计报告",
+      "tags": ["documentation", "audit", "report"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/02_Guides/01_Development_Workflow.md",
+      "description": "【权威】开发工作流程与所有约束 - v8.0整合版本，包含所有核心约束",
+      "tags": ["workflow", "rules", "constraints", "git", "v8", "authoritative"],
+      "priority": "critical"
+    },
+    {
+      "path": "ai-context/01_Architecture/02_System_Architecture.md",
+      "description": "系统架构概述和包依赖关系",
       "tags": ["architecture", "packages", "dependencies"],
       "priority": "high"
     },
     {
-      "path": "ai-context/01_Concepts/03_Package_Architecture.md",
-      "description": "Detailed package design principles, dependencies, and Graph RAG optimized metadata",
+      "path": "ai-context/01_Architecture/03_Package_Architecture.md",
+      "description": "详细包设计原则和Graph RAG优化元数据",
       "tags": ["packages", "design", "dependencies", "graph-rag"],
       "priority": "critical"
     },
     {
-      "path": "ai-context/01_Concepts/04_Complete_Architecture.md",
-      "description": "Complete architecture design with usage patterns and integration strategies",
-      "tags": ["architecture", "patterns", "integration"],
+      "path": "ai-context/01_Architecture/10_Extension_System.md",
+      "description": "【整合】Extension系统统一架构文档",
+      "tags": ["extension", "architecture", "lifecycle", "performance", "security", "unified"],
       "priority": "high"
     },
     {
-      "path": "ai-context/01_Concepts/05_Advanced_Strategies.md",
-      "description": "Comprehensive collection of advanced technical strategies including Policy as Code, caching, observability, data governance, and code generation",
-      "tags": ["strategy", "policy", "caching", "observability", "governance", "codegen"],
-      "priority": "high"
-    },
-    {
-      "path": "ai-context/01_Concepts/06_Frontend_Architecture.md",
-      "description": "Frontend applications architecture and design patterns",
-      "tags": ["frontend", "architecture", "ui"],
-      "priority": "medium"
-    },
-    {
-      "path": "ai-context/01_Concepts/07_Strategic_Architecture_Evolution.md",
-      "description": "LinchKit战略架构演进规划：从纯技术框架向插件化生态平台的演进路径，包含3PL解决方案架构设计和第三方生态建设",
+      "path": "ai-context/01_Architecture/07_Strategic_Architecture_Evolution.md",
+      "description": "LinchKit战略架构演进规划",
       "tags": ["strategy", "evolution", "ecosystem", "plugins", "3pl", "roadmap"],
       "priority": "critical"
     },
     {
-      "path": "ai-context/01_Concepts/08_Extension_Architecture.md",
-      "description": "LinchKit Extension系统架构设计文档，包含Extension生命周期、权限管理、性能优化和通信架构",
-      "tags": ["extension", "architecture", "lifecycle", "performance", "security"],
+      "path": "ai-context/01_Architecture/08_AI_First_Strategic_Integration.md",
+      "description": "AI优先战略整合方案",
+      "tags": ["ai", "strategy", "integration", "development-ai"],
       "priority": "high"
     },
     {
-      "path": "ai-context/02_Guides/01_Development_Workflow.md",
-      "description": "Single source of truth for development processes, coding standards, Git workflow, and all constraints",
-      "tags": ["workflow", "rules", "constraints", "git"],
-      "priority": "critical"
-    },
-    {
       "path": "ai-context/02_Guides/02_AI_Tools_Usage.md",
-      "description": "Comprehensive guide for AI Session tools, Neo4j queries, and Graph RAG usage",
+      "description": "AI Session工具和Graph RAG使用指南",
       "tags": ["ai", "tools", "neo4j", "rag"],
       "priority": "high"
     },
     {
       "path": "ai-context/02_Guides/03_AI_Collaboration.md",
-      "description": "Comprehensive AI collaboration framework and behavioral guidelines for AI assistants",
+      "description": "AI协作框架和行为准则",
       "tags": ["ai", "collaboration", "guidelines", "behavior"],
       "priority": "critical"
     },
     {
-      "path": "ai-context/02_Guides/03_Console_Usage.md",
-      "description": "Management platform usage guide",
-      "tags": ["console", "management", "ui"],
+      "path": "ai-context/02_Guides/05_AI_Code_Quality.md",
+      "description": "AI代码质量标准",
+      "tags": ["quality", "ai", "standards", "code"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/02_Guides/06_Quick_Checklist.md",
+      "description": "快速检查清单",
+      "tags": ["checklist", "workflow", "quality"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/02_Guides/07_Smart_Loading_Guide.md",
+      "description": "智能加载指南",
+      "tags": ["loading", "performance", "optimization"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/02_Guides/08_Testing_Standards.md",
+      "description": "测试标准和覆盖率要求",
+      "tags": ["testing", "standards", "coverage"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/02_Guides/09_AI_Quality_Config.ts",
+      "description": "AI质量配置文件",
+      "tags": ["config", "quality", "ai"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/02_Guides/10_ESLint_Config_Strict.js",
+      "description": "ESLint严格配置",
+      "tags": ["config", "eslint", "strict"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/02_Guides/11_TSConfig_Strict.json",
+      "description": "TypeScript严格配置",
+      "tags": ["config", "typescript", "strict"],
       "priority": "medium"
     },
     {
       "path": "ai-context/03_Reference/01_Packages_API/",
-      "description": "Detailed API documentation for all @linch-kit packages",
+      "description": "包API文档",
       "tags": ["api", "reference", "packages"],
       "priority": "medium"
     },
     {
       "path": "ai-context/03_Reference/02_Package_Reports/",
-      "description": "Package completeness reports and implementation status analysis",
+      "description": "包完整性报告",
       "tags": ["reports", "status", "completeness"],
       "priority": "medium"
     },
     {
-      "path": "ai-context/03_Reference/02_Configuration.md",
-      "description": "Environment variables and configuration reference",
-      "tags": ["config", "environment", "setup"],
-      "priority": "medium"
-    },
-    {
       "path": "ai-context/03_Reference/03_Dependency_Analysis.md",
-      "description": "Comprehensive package dependency analysis and relationship mapping",
+      "description": "依赖分析和关系映射",
       "tags": ["dependencies", "analysis", "relationships"],
       "priority": "high"
     },
     {
-      "path": "ai-context/04_Project_Management/01_Roadmap.md",
-      "description": "Unified roadmap synchronized with actual development progress",
+      "path": "ai-context/98_Project_Management/01_Roadmap.md",
+      "description": "项目路线图",
       "tags": ["roadmap", "planning", "status"],
       "priority": "medium"
     },
     {
-      "path": "ai-context/04_Project_Management/02_Development_Status.md",
-      "description": "Current development status and completed milestones",
+      "path": "ai-context/98_Project_Management/02_Development_Status.md",
+      "description": "开发状态和里程碑",
       "tags": ["status", "progress", "milestones"],
       "priority": "medium"
     },
     {
-      "path": "ai-context/04_Project_Management/03_Contribution_Guide.md",
-      "description": "Guide for contributing to the LinchKit project",
-      "tags": ["contribution", "guide", "community"],
+      "path": "ai-context/99_Archive/",
+      "description": "归档文档，包括v8升级计划和历史文档",
+      "tags": ["archive", "history", "v8-upgrade"],
       "priority": "low"
     },
     {
-      "path": "ai-context/99_Archive/",
-      "description": "Historical documents including framework maturity evaluation, AI optimization reports, and architecture assessments",
-      "tags": ["archive", "history", "evaluation"],
+      "path": "ai-context/03_Reference/01_Packages_API/README.md",
+      "description": "包API文档索引",
+      "tags": ["api", "reference", "index"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/01_Packages_API/auth.md",
+      "description": "@linch-kit/auth包API参考",
+      "tags": ["api", "auth", "reference"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/01_Packages_API/core.md",
+      "description": "@linch-kit/core包API参考",
+      "tags": ["api", "core", "reference"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/01_Packages_API/platform.md",
+      "description": "@linch-kit/platform包API参考",
+      "tags": ["api", "platform", "reference"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/01_Packages_API/ui.md",
+      "description": "@linch-kit/ui包API参考",
+      "tags": ["api", "ui", "reference"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/02_Package_Reports/auth-package-completeness.md",
+      "description": "@linch-kit/auth包完整性评估报告",
+      "tags": ["report", "auth", "completeness", "status"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/02_Package_Reports/core-package-completeness.md",
+      "description": "@linch-kit/core包完整性评估报告",
+      "tags": ["report", "core", "completeness", "status"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/02_Package_Reports/platform-package-completeness.md",
+      "description": "@linch-kit/platform包完整性评估报告",
+      "tags": ["report", "platform", "completeness", "status"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/cleanup-verification-report.md",
+      "description": "ai-context目录清理验证报告",
+      "tags": ["cleanup", "verification", "maintenance"],
       "priority": "low"
     }
   ],
   "aiInstructions": {
     "primaryEntry": "Always start by reading this manifest.json to understand the knowledge base structure",
     "criticalDocuments": [
+      "ai-context/00_Getting_Started/03_Essential_Rules.md",
+      "ai-context/02_Guides/06_Quick_Checklist.md",
       "ai-context/02_Guides/01_Development_Workflow.md",
-      "ai-context/01_Concepts/03_Package_Architecture.md",
-      "ai-context/01_Concepts/07_Strategic_Architecture_Evolution.md",
-      "ai-context/02_Guides/03_AI_Collaboration.md"
+      "ai-context/01_Architecture/03_Package_Architecture.md",
+      "ai-context/01_Architecture/07_Strategic_Architecture_Evolution.md",
+      "ai-context/02_Guides/03_AI_Collaboration.md",
+      "ai-context/README.md"
     ],
     "workflowRequirements": [
       "Must create feature branch before any development work",
       "Must use TodoWrite for complex tasks (3+ steps)",
       "Must use bun package manager only",
       "Must check package reuse before implementing new features",
-      "Must run bun validate before committing"
+      "Must run bun validate before committing",
+      "Must execute Graph RAG queries before any code-related tasks"
     ],
+    "restructureNotes": {
+      "version": "v8.0",
+      "changes": [
+        "Unified core constraints in 02_Guides/01_Development_Workflow.md",
+        "Merged Extension documents into 01_Architecture/Extension_System.md",
+        "Moved v8-upgrade-plan to 99_Archive/",
+        "Created clear directory structure by usage scenario",
+        "Maintained backward compatibility for all important paths"
+      ],
+      "migration": {
+        "00_Getting_Started/03_Essential_Rules.md": "Created as compact version of core constraints",
+        "02_Guides/06_Quick_Checklist.md": "Created as fast validation checklist",
+        "02_Guides/05_AI_Code_Quality.md": "Created for AI-specific quality standards",
+        "01_Architecture/09_Disaster_Recovery.md": "Created for emergency response",
+        "01_Concepts/08_Extension_Architecture.md": "Merged into 01_Architecture/10_Extension_System.md",
+        "01_Concepts/09_Extension_System.md": "Merged into 01_Architecture/10_Extension_System.md",
+        "v8-upgrade-plan/": "Moved to 99_Archive/v8-upgrade-plan/"
+      }
+    },
     "searchStrategy": "Use tags to quickly locate relevant documentation for specific tasks",
-    "maintenanceNote": "This manifest is automatically updated by scripts/sync-docs-manifest.mjs"
+    "maintenanceNote": "This manifest reflects the v8.0 restructure completed on 2025-07-11"
   },
   "packageArchitecture": {
-    "corePackages": [
-      "@linch-kit/core",
-      "@linch-kit/auth",
-      "@linch-kit/platform",
-      "@linch-kit/ui"
-    ],
+    "corePackages": ["@linch-kit/core", "@linch-kit/auth", "@linch-kit/platform", "@linch-kit/ui"],
     "extensions": ["extensions/console", "extensions/admin", "extensions/blog-extension"],
     "applications": ["apps/starter"],
     "tools": ["tools/schema", "tools/cli", "tools/context"],

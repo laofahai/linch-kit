@@ -35,8 +35,8 @@
 ### 🔴 每个Session开始时 (Session Start)
 
 - [ ] 阅读本主指南
-- [ ] 检查 [项目约束](../01_strategy_and_architecture/workflow_and_constraints.md)
-- [ ] 了解 [当前状态](../03_planning/roadmap.md)
+- [ ] 检查 [项目约束](../02_Guides/01_Development_Workflow.md)
+- [ ] 了解 [当前状态](../98_Project_Management/01_Roadmap.md)
 - [ ] 确认任务范围和目标
 
 ### 🟡 任务执行前 (Pre-Task)
