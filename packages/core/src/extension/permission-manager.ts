@@ -394,6 +394,22 @@ export class ExtensionPermissionManager extends EventEmitter {
   }
 
   /**
+   * 简单权限检查（兼容旧接口）
+   */
+  hasPermission(permission: ExtensionPermission): boolean {
+    // 简化的权限检查，适用于静态权限验证
+    return this.policies.has(permission)
+  }
+
+  /**
+   * 检查依赖是否可用（兼容旧接口）
+   */
+  isDependencyAvailable(_dependency: string): boolean {
+    // 简化实现，总是返回true
+    return true
+  }
+
+  /**
    * 创建权限沙箱
    */
   createPermissionSandbox(extensionName: string): {

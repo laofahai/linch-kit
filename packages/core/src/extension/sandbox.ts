@@ -75,11 +75,17 @@ export class ExtensionSandbox extends EventEmitter {
   private vm?: VM
   private executions = new Map<string, SandboxExecution>()
   private activeExecutions = new Set<string>()
+  private config: SandboxConfig
 
   constructor(
     private context: ExtensionContext,
     private permissionManager: ExtensionPermissionManager,
-    private config: SandboxConfig = {
+    config?: Partial<SandboxConfig>
+  ) {
+    super()
+
+    // 合并默认配置
+    this.config = {
       enabled: true,
       timeout: 30000, // 30秒
       memoryLimit: 100 * 1024 * 1024, // 100MB
@@ -87,9 +93,9 @@ export class ExtensionSandbox extends EventEmitter {
       blockedGlobals: ['process', 'require', 'global', '__dirname', '__filename'],
       allowNetworkAccess: false,
       allowFileSystemAccess: false,
+      ...config,
     }
-  ) {
-    super()
+
     if (this.config.enabled) {
       this.initializeVM()
     }

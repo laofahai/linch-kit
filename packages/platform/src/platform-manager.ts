@@ -3,9 +3,10 @@
  * @module platform/platform-manager
  */
 
-import { PlatformCrudManager } from './crud/platform-crud-manager'
+import type { ExtensionContext } from '@linch-kit/core'
+
+import { CRUDExtension } from './extensions/crud-extension'
 import { RuntimeValidator } from './validation'
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
 
 /**
  * 平台管理器配置
@@ -26,7 +27,7 @@ export interface PlatformConfig {
  * 为Extension提供统一的业务开发能力入口
  */
 export class PlatformManager {
-  private crudManager?: PlatformCrudManager
+  private crudExtension?: CRUDExtension
   private validator?: RuntimeValidator
   private config: PlatformConfig
 
@@ -43,12 +44,13 @@ export class PlatformManager {
    * 初始化平台能力
    */
   async initialize(extensionContext?: ExtensionContext): Promise<void> {
-    // 初始化CRUD
+    if (!extensionContext) {
+      throw new Error('ExtensionContext is required for Platform Manager')
+    }
+
+    // 初始化CRUD Extension
     if (this.config.enableCrud) {
-      this.crudManager = new PlatformCrudManager()
-      if (extensionContext) {
-        this.crudManager.setExtensionContext(extensionContext)
-      }
+      this.crudExtension = new CRUDExtension({ extensionContext })
     }
 
     // 初始化验证器
@@ -57,7 +59,7 @@ export class PlatformManager {
     }
 
     // 记录初始化日志
-    extensionContext?.logger.info('Platform manager initialized', {
+    extensionContext.logger.info('Platform manager initialized', {
       crud: this.config.enableCrud,
       trpc: this.config.enableTrpc,
       validation: this.config.enableValidation,
@@ -65,13 +67,13 @@ export class PlatformManager {
   }
 
   /**
-   * 获取CRUD管理器
+   * 获取CRUD Extension
    */
-  getCrudManager(): PlatformCrudManager {
-    if (!this.crudManager) {
-      throw new Error('CRUD manager not initialized or disabled')
+  getCrudExtension(): CRUDExtension {
+    if (!this.crudExtension) {
+      throw new Error('CRUD extension not initialized or disabled')
     }
-    return this.crudManager
+    return this.crudExtension
   }
 
   /**
@@ -88,10 +90,12 @@ export class PlatformManager {
    * 更新Extension上下文
    */
   updateExtensionContext(context: ExtensionContext): void {
-    if (this.crudManager) {
-      this.crudManager.setExtensionContext(context)
+    // 重新初始化CRUD Extension
+    if (this.crudExtension) {
+      this.crudExtension = new CRUDExtension({ extensionContext: context })
     }
 
+    // 重新初始化验证器
     if (this.validator) {
       this.validator = new RuntimeValidator(context)
     }
@@ -102,7 +106,7 @@ export class PlatformManager {
    */
   async destroy(): Promise<void> {
     // 清理资源
-    this.crudManager = undefined
+    this.crudExtension = undefined
     this.validator = undefined
   }
 
@@ -111,9 +115,9 @@ export class PlatformManager {
    */
   getStatus() {
     return {
-      initialized: !!(this.crudManager || this.validator),
+      initialized: !!(this.crudExtension || this.validator),
       capabilities: {
-        crud: !!this.crudManager,
+        crud: !!this.crudExtension,
         validation: !!this.validator,
       },
       config: this.config,

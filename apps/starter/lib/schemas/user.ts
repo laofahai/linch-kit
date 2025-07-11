@@ -1,29 +1,27 @@
-// 演示模式：使用简化的TypeScript类型定义
-// 在真实环境中，这里会使用 @linch-kit/schema 的完整功能
+/**
+ * 用户实体定义 - 优化重复问题，统一使用 LinchKit 标准
+ */
 
-export interface User {
-  id: string
-  email: string
-  name: string
-  avatar?: string
-  role: 'USER' | 'ADMIN' | 'MODERATOR'
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
-  createdAt: string
-  updatedAt: string
-  lastLoginAt?: string | null
-  lastActiveAt?: string | null
+// 直接使用 LinchKit 认证系统的用户类型
+export { type LinchKitUser as User, type LinchKitUser, UserSchema } from '@linch-kit/auth'
+
+// 简化类型定义，基于 LinchKitUser
+import type { LinchKitUser } from '@linch-kit/auth'
+
+export type UserCreate = Omit<LinchKitUser, 'id' | 'createdAt' | 'updatedAt'>
+export type UserUpdate = Partial<Omit<LinchKitUser, 'id' | 'createdAt' | 'updatedAt'>>
+
+/**
+ * 应用特定的用户工具函数
+ */
+export function getUserDisplayName(user: LinchKitUser): string {
+  return user.name || user.email.split('@')[0]
 }
 
-// 简化的创建和更新类型
-export type UserCreate = Omit<User, 'id' | 'createdAt' | 'updatedAt'>
-export type UserUpdate = Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>
-
-// 为了保持一致性的导出
-export const UserEntity = {
-  type: {} as User,
-  createSchema: {} as UserCreate,
-  updateSchema: {} as UserUpdate,
+export function isAdminUser(user: LinchKitUser): boolean {
+  return user.metadata?.role === 'admin'
 }
 
-export const UserCreateSchema = UserEntity.createSchema
-export const UserUpdateSchema = UserEntity.updateSchema
+export function isActiveUser(user: LinchKitUser): boolean {
+  return user.status === 'active'
+}

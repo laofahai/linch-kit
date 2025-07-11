@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod'
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * 字段类型定义
@@ -47,7 +47,7 @@ export class Entity<T = Record<string, unknown>> {
   public readonly fields: Record<keyof T, FieldDefinition>
   public readonly options: EntityOptions
   public readonly zodSchema: z.ZodObject<Record<string, z.ZodSchema>>
-  
+
   private extensionContext?: ExtensionContext
 
   constructor(name: string, definition: EntityDefinition<Record<keyof T, FieldDefinition>>) {
@@ -58,7 +58,7 @@ export class Entity<T = Record<string, unknown>> {
       softDelete: false,
       ...definition.options,
     }
-    
+
     this.zodSchema = this.buildZodSchema()
   }
 
@@ -67,28 +67,29 @@ export class Entity<T = Record<string, unknown>> {
    */
   private buildZodSchema(): z.ZodObject<Record<string, z.ZodSchema>> {
     const schemaFields: Record<string, z.ZodSchema> = {}
-    
+
     for (const [fieldName, fieldDef] of Object.entries(this.fields)) {
-      let fieldSchema = this.fieldTypeToZod(fieldDef.type)
-      
+      const field = fieldDef as FieldDefinition
+      let fieldSchema = this.fieldTypeToZod(field.type)
+
       // 应用自定义验证
-      if (fieldDef.validation) {
-        fieldSchema = fieldDef.validation
+      if (field.validation) {
+        fieldSchema = field.validation
       }
-      
+
       // 处理可选字段
-      if (!fieldDef.required) {
+      if (!field.required) {
         fieldSchema = fieldSchema.optional()
       }
-      
+
       // 处理默认值
-      if (fieldDef.default !== undefined) {
-        fieldSchema = fieldSchema.default(fieldDef.default)
+      if (field.default !== undefined) {
+        fieldSchema = fieldSchema.default(field.default)
       }
-      
+
       schemaFields[fieldName] = fieldSchema
     }
-    
+
     return z.object(schemaFields)
   }
 
@@ -123,7 +124,7 @@ export class Entity<T = Record<string, unknown>> {
    */
   validate(data: unknown): { success: boolean; data?: T; error?: z.ZodError } {
     const result = this.zodSchema.safeParse(data)
-    
+
     if (result.success) {
       return { success: true, data: result.data as T }
     } else {
@@ -158,7 +159,7 @@ export class Entity<T = Record<string, unknown>> {
    */
   getRequiredFields(): string[] {
     return Object.entries(this.fields)
-      .filter(([, field]) => field.required)
+      .filter(([, field]) => (field as FieldDefinition).required)
       .map(([name]) => name)
   }
 

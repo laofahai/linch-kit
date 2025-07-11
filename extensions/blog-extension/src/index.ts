@@ -40,31 +40,31 @@ export const metadata = {
     components: 'components.ts',
     hooks: 'hooks.ts',
   },
-  dependencies: [
-    '@linch-kit/core',
-    '@linch-kit/platform',
-    '@linch-kit/ui',
-  ],
+  dependencies: ['@linch-kit/core', '@linch-kit/platform', '@linch-kit/ui'],
 } as const
 
 /**
  * Extension实现
  */
 const extension: Extension = {
-  metadata,
-  
+  metadata: {
+    ...metadata,
+    permissions: [...metadata.permissions] as string[],
+    dependencies: [...metadata.dependencies] as string[],
+  },
+
   async init(config) {
     console.log(`${metadata.name} Extension initialized`, config)
   },
-  
+
   async start(config) {
     console.log(`${metadata.name} Extension started`, config)
   },
-  
+
   async stop(config) {
     console.log(`${metadata.name} Extension stopped`, config)
   },
-  
+
   async destroy(config) {
     console.log(`${metadata.name} Extension destroyed`, config)
   },

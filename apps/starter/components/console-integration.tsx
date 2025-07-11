@@ -1,46 +1,21 @@
 'use client'
 
-import { useStarterIntegration } from '@linch-kit/console/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui/server'
 import { Badge } from '@linch-kit/ui/server'
 import { Button } from '@linch-kit/ui/server'
-import { Package, AlertCircle, Loader2 } from 'lucide-react'
+import { Package, AlertCircle, CheckCircle } from 'lucide-react'
 
 /**
- * Console 集成状态组件
- * 显示 Extension 加载状态和管理功能
+ * Console 集成状态组件 - 简化版本
+ * 移除对@linch-kit/console的依赖，使用静态展示
  */
 export function ConsoleIntegrationStatus() {
-  const { integrationState, loading, error, initialized, refresh } = useStarterIntegration()
-
-  if (!initialized && !error) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center p-6">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">初始化 Console 集成中...</p>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (error) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center p-6">
-          <div className="text-center">
-            <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
-            <p className="text-sm font-medium">Console 集成初始化失败</p>
-            <p className="text-xs text-muted-foreground mt-1">{error}</p>
-            <Button onClick={refresh} variant="outline" size="sm" className="mt-3">
-              重新尝试
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    )
+  // 模拟集成状态数据
+  const mockIntegrationState = {
+    loadedExtensions: 0,
+    registeredRoutes: 0,
+    registeredComponents: 0,
+    initialized: false,
   }
 
   return (
@@ -51,52 +26,70 @@ export function ConsoleIntegrationStatus() {
             <Package className="h-5 w-5" />
             Console 集成状态
           </CardTitle>
-          <CardDescription>Extension 系统运行状态和管理</CardDescription>
+          <CardDescription>Extension 系统运行状态和管理（开发中）</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {integrationState.loadedExtensions}
+              <div className="text-2xl font-bold text-gray-400">
+                {mockIntegrationState.loadedExtensions}
               </div>
               <div className="text-sm text-muted-foreground">已加载 Extension</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {integrationState.registeredRoutes}
+              <div className="text-2xl font-bold text-gray-400">
+                {mockIntegrationState.registeredRoutes}
               </div>
               <div className="text-sm text-muted-foreground">动态路由</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {integrationState.registeredComponents}
+              <div className="text-2xl font-bold text-gray-400">
+                {mockIntegrationState.registeredComponents}
               </div>
               <div className="text-sm text-muted-foreground">注册组件</div>
             </div>
             <div className="text-center">
-              <Badge variant={integrationState.initialized ? 'default' : 'secondary'}>
-                {integrationState.initialized ? '已初始化' : '未初始化'}
-              </Badge>
+              <Badge variant="secondary">开发中</Badge>
             </div>
           </div>
 
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+            <AlertCircle className="h-4 w-4" />
+            Extension 系统正在开发中，将在后续版本中提供完整功能
+          </div>
+
           <div className="flex gap-2">
-            <Button onClick={refresh} variant="outline" size="sm" disabled={loading}>
-              {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              刷新状态
+            <Button variant="outline" size="sm" disabled>
+              Extension 系统开发中
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Extension列表功能暂时禁用，等待类型问题修复 */}
       <Card>
         <CardHeader>
           <CardTitle>Extension 列表</CardTitle>
           <CardDescription>Extension 状态和管理（开发中）</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Extension 列表功能正在开发中，敬请期待...</p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span>Extension 系统架构设计已完成</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span>基础Extension加载器已实现</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Package className="h-4 w-4" />
+              <span>动态路由注册功能开发中...</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Package className="h-4 w-4" />
+              <span>Extension管理界面开发中...</span>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

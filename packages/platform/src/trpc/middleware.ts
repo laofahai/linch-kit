@@ -3,7 +3,7 @@
  * @module platform/trpc/middleware
  */
 
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * tRPC中间件上下文

@@ -3,7 +3,7 @@
  * @module platform/trpc/types
  */
 
-import type { ExtensionContext } from '@linch-kit/core/extension/types'
+import type { ExtensionContext } from '@linch-kit/core'
 
 /**
  * tRPC操作类型

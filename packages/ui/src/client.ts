@@ -27,3 +27,9 @@ export * from './client/form'
 export * from './client/schema-form'
 export * from './client/schema-field-renderer'
 export * from './client/schema-table'
+
+// 布局组件
+export * from './client/dashboard-layout'
+
+// Extension 管理组件
+export * from './client/extension-manager'

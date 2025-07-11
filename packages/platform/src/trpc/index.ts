@@ -3,9 +3,22 @@
  * @module platform/trpc
  */
 
-// 重新导出认证包中的tRPC功能 (简化版本，避免导入错误)
-export const authRouter = null // 占位符，实际使用时需要正确配置
-export const createAuthRouterFactory = null // 占位符，实际使用时需要正确配置
+// Extension-based tRPC工厂函数 (新的推荐方式)
+export {
+  createExtensionRouter,
+  createBasicExtensionRouter,
+  createSecuredExtensionRouter,
+  type ExtensionRouterOptions,
+} from './extension-router-factory'
+
+// 兼容层：传统CRUD工厂函数 (已弃用)
+export {
+  createCRUD,
+  createBasicCRUD,
+  createSecuredCRUD,
+  createCachedCRUD,
+  type CRUDRouterOptions,
+} from './crud-router-factory'
 
 // 新增平台特定的tRPC增强
 export * from './platform-router-factory'
@@ -15,6 +28,9 @@ export * from './client-factory'
 
 // tRPC中间件
 export * from './middleware'
+
+// 简化的认证导出(避免循环依赖)
+export { createAuthRouterFactory } from './auth-router-factory'
 
 // tRPC类型定义 (重命名以避免冲突)
 export type {
