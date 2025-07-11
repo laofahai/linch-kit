@@ -14,7 +14,7 @@ import type { User, Post } from '../schemas'
  * 创建 CRUD 管理器
  * 注意：需要Extension上下文，这里使用简化的配置
  */
-const logger = new Logger('DataService')
+const logger = Logger
 
 // 简化的Extension上下文
 const extensionContext = {
