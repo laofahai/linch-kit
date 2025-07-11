@@ -21,7 +21,7 @@ const extensionContext = {
   logger,
   events: {
     emit: async (event: string, data: unknown) => {
-      logger.info(`Event: ${event}`, data)
+      logger.info(`Event: ${event}`, data as Record<string, unknown>)
     },
     on: () => {
       // 简化实现
