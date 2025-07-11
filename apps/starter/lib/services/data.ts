@@ -18,6 +18,7 @@ const logger = Logger
 
 // 简化的Extension上下文
 const extensionContext = {
+  name: 'DataService',
   logger,
   events: {
     emit: async (event: string, data: unknown) => {
@@ -26,6 +27,13 @@ const extensionContext = {
     on: () => {
       // 简化实现
     },
+  },
+  permissions: ['read', 'write'],
+  config: {},
+  storage: {
+    get: async () => undefined,
+    set: async () => {},
+    delete: async () => {},
   },
 }
 
