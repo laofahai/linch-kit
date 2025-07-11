@@ -6,8 +6,8 @@
 import { EventEmitter } from 'eventemitter3'
 
 import { pluginRegistry } from '../plugin/registry'
+import type { Plugin } from '../types/plugin'
 
-// import { appRegistry } from '../../console/src/core/app-registry' // TODO: 修复导入路径
 import { permissionManager } from './permission-manager'
 import { createSandbox } from './sandbox'
 import type {
@@ -20,6 +20,7 @@ import type {
   ExtensionPermission,
 } from './types'
 import type { ExtensionSandbox } from './sandbox'
+// import { appRegistry } from '../../console/src/core/app-registry' // TODO: 修复导入路径
 
 /**
  * Extension实例实现
@@ -220,8 +221,30 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
         this.config
       )
 
+      // 创建适配器以确保Extension符合Plugin接口
+      const pluginAdapter: Plugin = {
+        metadata: {
+          id: extensionModule.metadata.id,
+          name: extensionModule.metadata.name,
+          version: extensionModule.metadata.version,
+          description: extensionModule.metadata.description,
+          dependencies: extensionModule.metadata.dependencies,
+        },
+        // 确保必须的生命周期方法存在
+        init: extensionModule.init || (async () => {}),
+        setup: extensionModule.setup,
+        start: extensionModule.start,
+        ready: extensionModule.ready,
+        stop: extensionModule.stop,
+        // 避免重复执行destroy逻辑 - Plugin系统的destroy将被Extension管理器处理
+        destroy: async () => {
+          // 不执行任何操作，因为Extension的destroy已经在ExtensionManager中处理
+        },
+        defaultConfig: extensionModule.defaultConfig,
+      }
+
       // 注册到Plugin系统
-      const pluginResult = await pluginRegistry.register(extensionModule, context.config)
+      const pluginResult = await pluginRegistry.register(pluginAdapter, context.config)
       if (!pluginResult.success) {
         return {
           success: false,
@@ -281,32 +304,56 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
    * 卸载Extension
    */
   async unloadExtension(extensionName: string): Promise<boolean> {
-    try {
-      const registration = this.extensions.get(extensionName)
-      if (!registration) {
-        return false
-      }
-
-      // 停止Extension实例
-      if (registration.instance && registration.instance.running) {
-        await registration.instance.destroy()
-      }
-
-      // 从Plugin系统卸载
-      await pluginRegistry.unregister(extensionName)
-
-      // 清理AppRegistry中的资源
-      await this.cleanupExtensionResources(extensionName, registration)
-
-      // 移除注册信息
-      this.extensions.delete(extensionName)
-
-      this.emit('extensionUnloaded', { name: extensionName })
-      return true
-    } catch (error) {
-      this.emit('extensionError', { name: extensionName, error })
+    const registration = this.extensions.get(extensionName)
+    if (!registration) {
       return false
     }
+
+    let hasError = false
+
+    // 停止Extension实例（允许失败）
+    if (registration.instance) {
+      try {
+        await registration.instance.destroy()
+      } catch (error) {
+        console.error(`Error destroying extension ${extensionName}:`, error)
+        hasError = true
+      }
+    }
+
+    // 从Plugin系统卸载（即使Extension销毁失败也要继续）
+    try {
+      const unregisterResult = await pluginRegistry.unregister(extensionName)
+      if (!unregisterResult.success) {
+        console.error(`Failed to unregister plugin ${extensionName}:`, unregisterResult.error)
+        hasError = true
+      }
+    } catch (error) {
+      console.error(`Error unregistering plugin ${extensionName}:`, error)
+      hasError = true
+    }
+
+    // 清理AppRegistry中的资源
+    try {
+      await this.cleanupExtensionResources(extensionName, registration)
+    } catch (error) {
+      console.error(`Error cleaning up resources for ${extensionName}:`, error)
+      hasError = true
+    }
+
+    // 移除注册信息（无论如何都要清理）
+    this.extensions.delete(extensionName)
+
+    if (hasError) {
+      this.emit('extensionError', {
+        name: extensionName,
+        error: new Error('Extension unload completed with errors'),
+      })
+    } else {
+      this.emit('extensionUnloaded', { name: extensionName })
+    }
+
+    return !hasError
   }
 
   /**
@@ -524,46 +571,62 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     try {
       // 加载Schema能力
       if (capabilities.hasSchema && manifest.entries?.schema) {
-        const schemaModule = await import(
-          `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries.schema}`
-        )
-        if (schemaModule.default) {
-          // TODO: 注册Schema到AppRegistry
-          console.info(`Schema loaded for extension ${extensionName}`)
+        try {
+          const schemaModule = await import(
+            `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries.schema}`
+          )
+          if (schemaModule.default) {
+            // TODO: 注册Schema到AppRegistry
+            console.info(`Schema loaded for extension ${extensionName}`)
+          }
+        } catch (error) {
+          console.warn(`Failed to load schema for ${extensionName}:`, error)
         }
       }
 
       // 加载API能力
       if (capabilities.hasAPI && manifest.entries?.api) {
-        const apiModule = await import(
-          `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries.api}`
-        )
-        if (apiModule.default) {
-          // TODO: 注册API路由到AppRegistry
-          console.info(`API routes loaded for extension ${extensionName}`)
+        try {
+          const apiModule = await import(
+            `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries.api}`
+          )
+          if (apiModule.default) {
+            // TODO: 注册API路由到AppRegistry
+            console.info(`API routes loaded for extension ${extensionName}`)
+          }
+        } catch (error) {
+          console.warn(`Failed to load API for ${extensionName}:`, error)
         }
       }
 
       // 加载UI组件能力
       if (capabilities.hasUI && manifest.entries?.components) {
-        // UI组件延迟加载，创建加载器
-        const _componentLoader = () =>
-          import(
-            `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries?.components}`
-          )
+        try {
+          // UI组件延迟加载，创建加载器
+          const _componentLoader = () =>
+            import(
+              `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries?.components}`
+            )
 
-        // TODO: 注册组件加载器到AppRegistry
-        console.info(`UI components loaded for extension ${extensionName}`)
+          // TODO: 注册组件加载器到AppRegistry
+          console.info(`UI components loaded for extension ${extensionName}`)
+        } catch (error) {
+          console.warn(`Failed to load UI components for ${extensionName}:`, error)
+        }
       }
 
       // 加载钩子能力
       if (capabilities.hasHooks && manifest.entries?.hooks) {
-        const hooksModule = await import(
-          `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries.hooks}`
-        )
-        if (hooksModule.default) {
-          // TODO: 注册钩子到事件系统
-          console.info(`Hooks loaded for extension ${extensionName}`)
+        try {
+          const hooksModule = await import(
+            `${this.config.extensionRoot}/${extensionName}/src/${manifest.entries.hooks}`
+          )
+          if (hooksModule.default) {
+            // TODO: 注册钩子到事件系统
+            console.info(`Hooks loaded for extension ${extensionName}`)
+          }
+        } catch (error) {
+          console.warn(`Failed to load hooks for ${extensionName}:`, error)
         }
       }
     } catch (error) {
