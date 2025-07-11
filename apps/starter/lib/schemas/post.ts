@@ -8,9 +8,8 @@ import { z } from 'zod'
 /**
  * Post 实体定义
  */
-export const PostEntity = defineEntity(
-  'Post',
-  {
+export const PostEntity = defineEntity('Post', {
+  fields: {
     id: {
       type: 'string',
       primaryKey: true,
@@ -67,12 +66,12 @@ export const PostEntity = defineEntity(
       description: '发布时间',
     },
   },
-  {
+  options: {
     timestamps: true,
     softDelete: false,
     tableName: 'posts',
-  }
-)
+  },
+})
 
 // 导出类型定义
 export type Post = z.infer<typeof PostEntity.zodSchema>

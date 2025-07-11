@@ -11,23 +11,35 @@ import { PostEntity } from '../schemas'
 import type { User, Post } from '../schemas'
 
 /**
- * User Entity Schema for CRUD operations
+ * 创建 CRUD 管理器
+ * 注意：需要Extension上下文，这里使用简化的配置
  */
-const UserEntity = {
-  name: 'User',
-  schema: UserSchema,
-  config: {
-    tableName: 'users',
-    primaryKey: 'id',
-    timestamps: true,
+const logger = new Logger('DataService')
+
+// 简化的Extension上下文
+const extensionContext = {
+  logger,
+  events: {
+    emit: async (event: string, data: unknown) => {
+      logger.info(`Event: ${event}`, data)
+    },
+    on: (_event: string, _handler: (data: unknown) => void) => {
+      // 简化实现
+    },
   },
 }
 
-/**
- * 创建 CRUD 管理器
- */
-const userCRUD = createCRUD(UserEntity)
-const postCRUD = createCRUD(PostEntity)
+const userCRUD = createCRUD({
+  entityName: 'User',
+  schema: UserSchema,
+  extensionContext,
+})
+
+const postCRUD = createCRUD({
+  entityName: 'Post',
+  schema: PostEntity.zodSchema,
+  extensionContext,
+})
 
 /**
  * 数据服务类 - 基于 LinchKit Platform CRUD
@@ -253,19 +265,19 @@ export class DataService {
     try {
       Logger.info('DataService: 开始获取统计数据')
 
-      const [userCountResult, postCountResult, publishedPostsResult, draftPostsResult] =
+      const [userCountResult, postCountResult, publishedPostsResult, activeUsersResult] =
         await Promise.all([
           userCRUD.count(),
           postCRUD.count(),
           postCRUD.count({ where: { status: 'PUBLISHED' } }),
-          postCRUD.count({ where: { status: 'DRAFT' } }),
+          userCRUD.count({ where: { status: 'active' } }),
         ])
 
       const stats = {
         totalUsers: userCountResult.success ? userCountResult.data || 0 : 0,
+        activeUsers: activeUsersResult.success ? activeUsersResult.data || 0 : 0,
         totalPosts: postCountResult.success ? postCountResult.data || 0 : 0,
         publishedPosts: publishedPostsResult.success ? publishedPostsResult.data || 0 : 0,
-        draftPosts: draftPostsResult.success ? draftPostsResult.data || 0 : 0,
         lastUpdated: new Date().toISOString(),
       }
 
