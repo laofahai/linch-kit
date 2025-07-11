@@ -65,6 +65,7 @@ export { MFAManager } from './extensions/mfa'
  * LinchKit 认证类型定义
  */
 export type * from './types'
+export { LinchKitUser, UserSchema } from './types'
 
 // ==================== React组件导出 ====================
 /**

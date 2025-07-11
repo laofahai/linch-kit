@@ -172,8 +172,8 @@ export default function TRPCDemoPage() {
                   <p className="text-2xl font-bold">{statsData.activeUsers}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">总收入</p>
-                  <p className="text-2xl font-bold">¥{statsData.revenue.toLocaleString()}</p>
+                  <p className="text-sm font-medium">发布文章</p>
+                  <p className="text-2xl font-bold">{statsData.publishedPosts}</p>
                 </div>
                 <Button onClick={() => refetchStats()} size="sm" disabled={statsLoading}>
                   刷新统计数据

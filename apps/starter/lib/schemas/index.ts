@@ -5,8 +5,9 @@ export {
   type UserUpdate,
   type LinchKitUser,
   UserSchema,
-  toAppUser,
-  toLinchKitUser,
+  getUserDisplayName,
+  isAdminUser,
+  isActiveUser,
 } from './user'
 
 // 文章相关Schema
