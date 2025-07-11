@@ -3,8 +3,22 @@
  * @module platform/trpc
  */
 
-// 核心CRUD tRPC工厂函数 (暂时注释，需要修复类型错误)
-// export * from './crud-router-factory'
+// Extension-based tRPC工厂函数 (新的推荐方式)
+export {
+  createExtensionRouter,
+  createBasicExtensionRouter,
+  createSecuredExtensionRouter,
+  type ExtensionRouterOptions,
+} from './extension-router-factory'
+
+// 兼容层：传统CRUD工厂函数 (已弃用)
+export {
+  createCRUD,
+  createBasicCRUD,
+  createSecuredCRUD,
+  createCachedCRUD,
+  type CRUDRouterOptions,
+} from './crud-router-factory'
 
 // 新增平台特定的tRPC增强
 export * from './platform-router-factory'

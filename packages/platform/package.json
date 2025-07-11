@@ -11,11 +11,6 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./crud": {
-      "types": "./dist/crud.d.ts",
-      "import": "./dist/crud.mjs", 
-      "require": "./dist/crud.js"
-    },
     "./trpc": {
       "types": "./dist/trpc.d.ts",
       "import": "./dist/trpc.mjs",
@@ -44,7 +39,7 @@
   "keywords": [
     "linchkit",
     "platform",
-    "crud", 
+    "crud",
     "trpc",
     "validation",
     "business-logic"

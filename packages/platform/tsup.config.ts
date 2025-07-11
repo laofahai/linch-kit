@@ -11,14 +11,6 @@ export default defineConfig([
     external: ['react', 'react-dom', '@linch-kit/core'],
   },
   {
-    entry: ['src/crud/index.ts'],
-    outDir: 'dist',
-    outExtension: ({ format }) => ({ js: format === 'esm' ? '.mjs' : '.js' }),
-    format: ['esm', 'cjs'],
-    dts: true,
-    external: ['react', 'react-dom', '@linch-kit/core'],
-  },
-  {
     entry: ['src/trpc/index.ts'],
     outDir: 'dist',
     outExtension: ({ format }) => ({ js: format === 'esm' ? '.mjs' : '.js' }),
