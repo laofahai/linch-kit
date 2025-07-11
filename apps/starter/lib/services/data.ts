@@ -70,22 +70,20 @@ export class DataService {
           id: 'user1',
           email: 'admin@linchkit.dev',
           name: '管理员',
-          avatar: 'https://avatar.vercel.sh/admin',
-          role: 'ADMIN',
-          status: 'ACTIVE',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          lastLoginAt: new Date().toISOString(),
+          image: 'https://avatar.vercel.sh/admin',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastLoginAt: new Date(),
         },
         {
           id: 'user2',
           email: 'user@linchkit.dev',
           name: '普通用户',
-          avatar: 'https://avatar.vercel.sh/user',
-          role: 'USER',
-          status: 'ACTIVE',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          image: 'https://avatar.vercel.sh/user',
+          status: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
           lastLoginAt: null,
         },
       ]
@@ -107,7 +105,7 @@ export class DataService {
   static async createUser(data: {
     email: string
     name: string
-    avatar?: string
+    image?: string
     role?: 'USER' | 'ADMIN' | 'MODERATOR'
     password?: string
   }): Promise<User> {
@@ -119,11 +117,10 @@ export class DataService {
         id: `user_${Date.now()}`,
         email: data.email,
         name: data.name,
-        avatar: data.avatar || `https://avatar.vercel.sh/${encodeURIComponent(data.name)}`,
-        role: data.role || 'USER',
-        status: 'ACTIVE',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        image: data.image || `https://avatar.vercel.sh/${encodeURIComponent(data.name)}`,
+        status: 'active',
+        createdAt: new Date(),
+        updatedAt: new Date(),
         lastLoginAt: null,
       }
 
@@ -229,8 +226,8 @@ export class DataService {
         viewCount: 0,
         likeCount: 0,
         publishedAt: data.status === 'PUBLISHED' ? new Date().toISOString() : null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
 
       Logger.info('DataService: 文章创建成功', { id: post.id })

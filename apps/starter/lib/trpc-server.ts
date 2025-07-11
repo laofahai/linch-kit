@@ -79,18 +79,13 @@ const profileRouter = router({
         throw new Error('用户未登录')
       }
 
-      const result = await userCRUD.findById(session.user.id)
-
-      if (!result.success || !result.data) {
-        throw new Error('用户不存在')
-      }
-
+      // 简化实现：直接返回会话用户信息
       return {
-        id: result.data.id,
-        name: result.data.name,
-        email: result.data.email,
-        role: result.data.metadata?.role || 'USER',
-        createdAt: result.data.createdAt || new Date(),
+        id: session.user.id,
+        name: session.user.name || null,
+        email: session.user.email || null,
+        role: 'USER',
+        createdAt: new Date(),
       }
     }),
 
