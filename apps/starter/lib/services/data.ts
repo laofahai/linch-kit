@@ -3,7 +3,7 @@
  * 重构为使用 LinchKit 平台工厂模式
  */
 
-import { Logger } from '@linch-kit/core'
+import { Logger, type ExtensionContext } from '@linch-kit/core'
 import { createCRUD } from '@linch-kit/platform'
 import { UserSchema } from '@linch-kit/auth'
 
@@ -40,13 +40,13 @@ const extensionContext = {
 const userCRUD = createCRUD({
   entityName: 'User',
   schema: UserSchema,
-  extensionContext,
+  extensionContext: extensionContext as ExtensionContext,
 })
 
 const postCRUD = createCRUD({
   entityName: 'Post',
   schema: PostEntity.zodSchema,
-  extensionContext,
+  extensionContext: extensionContext as ExtensionContext,
 })
 
 /**
