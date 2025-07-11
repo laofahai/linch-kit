@@ -37,7 +37,7 @@ apps/starter        # 生产级基础应用 - Extension运行时环境
 
 ### Extension层 (Extensions)
 
-> 详细的Extension系统设计和架构请参考 [Extension系统](./Extension_System.md)
+> 详细的Extension系统设计和架构请参考 [Extension系统](./10_Extension_System.md)
 
 ```
 extensions/console  # 企业级管理控制台Extension

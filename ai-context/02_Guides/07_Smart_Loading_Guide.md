@@ -11,20 +11,20 @@
 #### 🔴 第1层: 基础层 (≤4KB - 每次必须加载)
 
 - **核心约束**: [02_Guides/01_Development_Workflow.md](../02_Guides/01_Development_Workflow.md)
-- **快速检查**: [quick-checklist.md](./quick-checklist.md)
+- **快速检查**: [quick-checklist.md](./06_Quick_Checklist.md)
 - **加载时间**: < 500ms
 - **使用场景**: 所有任务
 
 #### 🟡 第2层: 任务特定层 (8-20KB - 按需加载)
 
-- **AI质量保证**: [ai-code-quality.md](./ai-code-quality.md)
-- **测试标准**: [testing-standards.md](./testing-standards.md)
+- **AI质量保证**: [ai-code-quality.md](./05_AI_Code_Quality.md)
+- **测试标准**: [testing-standards.md](./08_Testing_Standards.md)
 - **加载时间**: < 1秒
 - **使用场景**: 特定任务类型
 
 #### 🟢 第3层: 高级功能层 (10-30KB - 专项加载)
 
-- **灾难恢复**: [disaster-recovery.md](../01_Architecture/disaster-recovery.md)
+- **灾难恢复**: [disaster-recovery.md](../01_Architecture/09_Disaster_Recovery.md)
 - **配置管理**: [02_Standards_and_Guides/](../02_Standards_and_Guides/)
 - **加载时间**: < 2秒
 - **使用场景**: 复杂任务
@@ -45,7 +45,7 @@
 ```bash
 # 自动加载
 - 00_Core/essential-rules.md
-- 00_Core/quick-checklist.md
+- 00_Cor./06_Quick_Checklist.md
 ```
 
 **适用场景**:
@@ -62,7 +62,7 @@
 ```bash
 # 自动加载
 - 基础层 (4KB)
-- 01_Quality/ai-code-quality.md (~8KB)
+- 01_Qualit./05_AI_Code_Quality.md (~8KB)
 ```
 
 **适用场景**:
@@ -79,7 +79,7 @@
 ```bash
 # 自动加载
 - 基础层 (4KB)
-- 01_Quality/testing-standards.md (~6KB)
+- 01_Qualit./08_Testing_Standards.md (~6KB)
 ```
 
 **适用场景**:
@@ -96,8 +96,8 @@
 ```bash
 # 自动加载
 - 基础层 (4KB)
-- 01_Quality/ai-code-quality.md (~8KB)
-- 01_Quality/testing-standards.md (~6KB)
+- 01_Qualit./05_AI_Code_Quality.md (~8KB)
+- 01_Qualit./08_Testing_Standards.md (~6KB)
 - 相关架构文档 (~2KB)
 ```
 
@@ -240,7 +240,7 @@ class SmartDocumentLoader {
 
 加载文档:
 - 00_Core/essential-rules.md
-- 00_Core/quick-checklist.md
+- 00_Cor./06_Quick_Checklist.md
 
 预计时间: < 1小时
 风险等级: 低
@@ -255,8 +255,8 @@ class SmartDocumentLoader {
 
 加载文档:
 - 00_Core/essential-rules.md
-- 00_Core/quick-checklist.md
-- 01_Quality/ai-code-quality.md
+- 00_Cor./06_Quick_Checklist.md
+- 01_Qualit./05_AI_Code_Quality.md
 
 预计时间: 2-4小时
 风险等级: 中

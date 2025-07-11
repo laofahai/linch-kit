@@ -105,13 +105,13 @@ core → schema → auth → crud → trpc → ui → console
 
 ### 📚 知识库
 
-- **[packages_api.md](../02_knowledge_base/packages_api.md)** - 包API索引
+- **[packages_api.md](../03_Reference/01_Packages_API/README.md)** - 包API索引
 - **[library_api/](../02_knowledge_base/library_api/)** - 详细API文档
 
 ### 📈 项目规划
 
-- **[roadmap.md](../03_planning/roadmap.md)** - 功能路线图
-- **[development-status.md](../03_planning/development-status.md)** - 开发状态
+- **[roadmap.md](../98_Project_Management/01_Roadmap.md)** - 功能路线图
+- **[development-status.md](../98_Project_Management/02_Development_Status.md)** - 开发状态
 
 ---
 

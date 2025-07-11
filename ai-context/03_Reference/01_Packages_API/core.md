@@ -637,7 +637,7 @@ async function deleteUser(userId: string, actor: User) {
 
 ## 📚 相关资源
 
-- [LinchKit 核心包设计文档](../../01_strategy_and_architecture/core_packages.md)
+- [LinchKit 核心包设计文档](../../01_Architecture/03_Package_Architecture.md)
 - [包 API 快速参考](../packages_api.md)
 - [GitHub 仓库](https://github.com/linch-kit/linch-kit)
 - [问题反馈](https://github.com/linch-kit/linch-kit/issues)
