@@ -56,54 +56,13 @@
 - **🔴 导入方式**: `import { describe, it, expect, mock } from 'bun:test'`
 - **🔴 测试同步**: 功能代码与测试代码必须同步开发
 
-## 🔄 每次Session启动检查清单
-
-### 🔴 必须100%执行的步骤（按顺序）
-
-```bash
-# 步骤1: 环境检查
-git branch --show-current  # 必须在功能分支
-git status                 # 检查工作目录
-
-# 步骤2: Graph RAG强制查询
-bun run ai:session query "[功能关键词]"     # 🔴 绝对必须
-bun run ai:session symbol "[类名/函数名]"   # 🔴 绝对必须
-bun run ai:session pattern "[设计模式]" "[实体]"  # 🔴 绝对必须
-
-# 步骤3: 包复用检查
-bun run deps:check [关键词]    # 🔴 绝对必须
-
-# 步骤4: 任务管理
-TodoWrite                  # 跟踪复杂任务
-```
-
-### 📋 快速检查清单
+## 📋 快速检查清单
 
 - [ ] **分支检查**: 当前分支不是受保护分支
 - [ ] **AI上下文**: 已验证清洁 (`bun run ai:context-verify`)
 - [ ] **现有功能**: 复用检查已完成 (`bun run deps:check`)
 - [ ] **测试策略**: 测试用例已同步编写
 - [ ] **质量门禁**: 所有检查已通过
-
-## 🔒 ESLint违规处理策略
-
-### 零容忍原则
-
-- **🔴 禁用整个文件**: `/* eslint-disable */`
-- **🔴 批量禁用规则**: `/* eslint-disable multiple-rules */`
-- **🔴 无说明的禁用**: 没有说明原因的禁用注释
-
-### 允许的例外（仅限特殊情况）
-
-```typescript
-// 第三方库兼容性问题
-// eslint-disable-next-line @next/next/no-img-element -- 用户头像来自第三方API
-<img src={user.avatar} alt="avatar" />
-
-// 性能优化的必要违规
-// eslint-disable-next-line react-hooks/exhaustive-deps -- 仅在组件挂载时执行
-useEffect(() => initializeApp(), [])
-```
 
 ## 🔄 Graph RAG 强制查询流程
 
@@ -130,38 +89,6 @@ bun run deps:check "[关键词]"
 - ❌ **违反分支管理**: 在保护分支直接工作
 - ❌ **包管理违规**: 使用npm/yarn而非bun
 - ❌ **类型安全违规**: 使用any、as、@ts-ignore
-
-## 📝 任务管理强制要求
-
-### 强制使用TodoWrite的场景
-
-- **3步以上任务**: 涉及多个文件或步骤的任务
-- **多文件修改**: 需要修改超过2个文件的任务
-- **新功能开发**: 任何新功能的实现
-- **重大重构**: 架构或设计的重大调整
-
-### 任务状态管理
-
-- **pending**: 待开始的任务
-- **in_progress**: 当前正在进行（限制：同时只能有1个）
-- **completed**: 已完成的任务
-
-### 实时更新要求
-
-- **开始任务**: 立即标记为 `in_progress`
-- **完成任务**: 立即标记为 `completed`
-- **阻塞情况**: 创建新任务描述需要解决的问题
-
-## 🛠️ 包功能复用约束
-
-### 强制使用LinchKit内部功能
-
-- **日志系统**: `@linch-kit/core` logger - 🔴 禁止console.log
-- **配置管理**: `@linch-kit/core` ConfigManager - 🔴 禁止直接读取配置
-- **Schema定义**: `tools/schema` defineEntity - 🔴 禁止直接用Zod
-- **权限检查**: `@linch-kit/auth` PermissionChecker - 🔴 禁止自实现权限
-- **CRUD操作**: `@linch-kit/platform` createCRUD - 🔴 禁止手写增删改查
-- **UI组件**: `@linch-kit/ui` 组件库 - 🔴 禁止重复创建基础组件
 
 ## 📊 AI代码生成零错误约束
 

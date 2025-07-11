@@ -96,8 +96,8 @@ API文档和配置参考：
 
 ### 开发者日常使用
 
-1. **快速开始** → `00_Core/essential-rules.md` 【3-4KB核心约束】
-2. **检查清单** → `00_Core/quick-checklist.md` 【1KB快速验证】
+1. **快速开始** → `00_Getting_Started/03_Essential_Rules.md` 【3-4KB核心约束】
+2. **检查清单** → `02_Guides/06_Quick_Checklist.md` 【1KB快速验证】
 3. **新手入门** → `00_Getting_Started/02_Quick_Start.md`
 4. **完整约束** → `02_Guides/01_Development_Workflow.md` 【权威文档】
 5. **AI工具使用** → `02_Guides/02_AI_Tools_Usage.md`
@@ -106,17 +106,17 @@ API文档和配置参考：
 ### AI助手（Claude）使用
 
 1. **启动必读** → `manifest.json`
-2. **核心约束** → `00_Core/essential-rules.md` 【优先加载】
-3. **快速验证** → `00_Core/quick-checklist.md` 【必须检查】
-4. **AI质量标准** → `01_Quality/ai-code-quality.md`
+2. **核心约束** → `00_Getting_Started/03_Essential_Rules.md` 【优先加载】
+3. **快速验证** → `02_Guides/06_Quick_Checklist.md` 【必须检查】
+4. **AI质量标准** → `02_Guides/05_AI_Code_Quality.md`
 5. **完整约束** → `02_Guides/01_Development_Workflow.md`
 6. **AI协作** → `02_Guides/03_AI_Collaboration.md`
-7. **智能加载** → `02_Standards_and_Guides/smart-loading-guide.md`
+7. **智能加载** → `02_Guides/07_Smart_Loading_Guide.md`
 
 ### 架构设计参考
 
 1. **系统架构** → `01_Architecture/02_System_Architecture.md`
-2. **Extension系统** → `01_Architecture/Extension_System.md`
+2. **Extension系统** → `01_Architecture/10_Extension_System.md`
 3. **战略演进** → `01_Architecture/07_Strategic_Architecture_Evolution.md`
 4. **AI集成** → `01_Architecture/08_AI_First_Strategic_Integration.md`
 
@@ -137,32 +137,32 @@ API文档和配置参考：
 
 ### 文档迁移对照表
 
-| 旧路径                                     | 新路径                                | 说明                    |
-| ------------------------------------------ | ------------------------------------- | ----------------------- |
-| ❌ **新增**                                | `00_Core/essential-rules.md`          | 【新增】3-4KB核心约束   |
-| ❌ **新增**                                | `00_Core/quick-checklist.md`          | 【新增】1KB快速检查清单 |
-| ❌ **新增**                                | `01_Quality/ai-code-quality.md`       | 【新增】AI代码质量标准  |
-| ❌ **新增**                                | `02_Advanced/disaster-recovery.md`    | 【新增】灾难恢复计划    |
-| `01_Concepts/08_Extension_Architecture.md` | `01_Architecture/Extension_System.md` | 整合Extension文档       |
-| `01_Concepts/09_Extension_System.md`       | `01_Architecture/Extension_System.md` | 整合Extension文档       |
-| `v8-upgrade-plan/`                         | `99_Archive/v8-upgrade-plan/`         | 移动到归档              |
+| 旧路径                                     | 新路径                                     | 说明                    |
+| ------------------------------------------ | ------------------------------------------ | ----------------------- |
+| ❌ **新增**                                | `00_Getting_Started/03_Essential_Rules.md` | 【新增】3-4KB核心约束   |
+| ❌ **新增**                                | `02_Guides/06_Quick_Checklist.md`          | 【新增】1KB快速检查清单 |
+| ❌ **新增**                                | `02_Guides/05_AI_Code_Quality.md`          | 【新增】AI代码质量标准  |
+| ❌ **新增**                                | `01_Architecture/09_Disaster_Recovery.md`  | 【新增】灾难恢复计划    |
+| `01_Concepts/08_Extension_Architecture.md` | `01_Architecture/10_Extension_System.md`   | 整合Extension文档       |
+| `01_Concepts/09_Extension_System.md`       | `01_Architecture/10_Extension_System.md`   | 整合Extension文档       |
+| `v8-upgrade-plan/`                         | `99_Archive/v8-upgrade-plan/`              | 移动到归档              |
 
 ## 🔍 使用建议
 
 ### 对开发者
 
-1. **⚡ 快速开始** - 优先阅读 `00_Core/essential-rules.md` (3-4KB)
-2. **📋 每日检查** - 使用 `00_Core/quick-checklist.md` (1KB)
+1. **⚡ 快速开始** - 优先阅读 `00_Getting_Started/03_Essential_Rules.md` (3-4KB)
+2. **📋 每日检查** - 使用 `02_Guides/06_Quick_Checklist.md` (1KB)
 3. **📖 日常开发** - 参考 `02_Guides/01_Development_Workflow.md`
 4. **🏗️ 架构设计** - 参考 `01_Architecture/` 目录下的文档
-5. **📊 专项标准** - 查看 `02_Standards_and_Guides/` 目录
+5. **📊 专项标准** - 查看 `02_Guides/` 目录
 
 ### 对Claude AI
 
-1. **📋 Session启动** - 必读 `manifest.json` 和 `00_Core/essential-rules.md`
-2. **⚡ 快速验证** - 使用 `00_Core/quick-checklist.md` 检查
-3. **🧠 AI质量** - 遵循 `01_Quality/ai-code-quality.md` 标准
-4. **🚨 应急处理** - 参考 `02_Advanced/disaster-recovery.md`
+1. **📋 Session启动** - 必读 `manifest.json` 和 `00_Getting_Started/03_Essential_Rules.md`
+2. **⚡ 快速验证** - 使用 `02_Guides/06_Quick_Checklist.md` 检查
+3. **🧠 AI质量** - 遵循 `02_Guides/05_AI_Code_Quality.md` 标准
+4. **🚨 应急处理** - 参考 `01_Architecture/09_Disaster_Recovery.md`
 5. **📊 智能加载** - 根据任务类型选择合适的文档
 6. **🔍 上下文理解** - 使用Graph RAG查询相关文档
 

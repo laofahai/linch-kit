@@ -292,6 +292,24 @@
       "Must run bun validate before committing",
       "Must execute Graph RAG queries before any code-related tasks"
     ],
+    "documentRestructure": {
+      "version": "8.1",
+      "date": "2025-07-11",
+      "changes": [
+        "Integrated duplicate constraints into Essential_Rules.md as single source of truth",
+        "Simplified CLAUDE.md to focus on AI instructions only",
+        "Optimized Development_Workflow.md to reference Essential_Rules.md",
+        "Created CONTRIBUTING.md for developer onboarding",
+        "Streamlined README.md to focus on project overview"
+      ],
+      "newStructure": {
+        "README.md": "Project overview and introduction",
+        "CONTRIBUTING.md": "Developer contribution guide",
+        "CLAUDE.md": "AI assistant instructions (references Essential_Rules.md)",
+        "Essential_Rules.md": "Single source of truth for all development constraints",
+        "Development_Workflow.md": "Detailed workflow processes and best practices"
+      }
+    },
     "restructureNotes": {
       "version": "v8.0",
       "changes": [
