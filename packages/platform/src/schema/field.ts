@@ -338,31 +338,37 @@ export class FieldBuilder {
       const validation = options.validation
 
       if (schema instanceof z.ZodString) {
+        let stringSchema = schema as z.ZodString
         if (validation.min !== undefined) {
-          schema = schema.min(validation.min)
+          stringSchema = stringSchema.min(validation.min)
         }
         if (validation.max !== undefined) {
-          schema = schema.max(validation.max)
+          stringSchema = stringSchema.max(validation.max)
         }
         if (validation.length !== undefined) {
-          schema = schema.length(validation.length)
+          stringSchema = stringSchema.length(validation.length)
         }
         if (validation.pattern) {
           const regex =
             typeof validation.pattern === 'string'
               ? new RegExp(validation.pattern)
               : validation.pattern
-          schema = schema.regex(regex)
+          stringSchema = stringSchema.regex(regex)
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        schema = stringSchema as z.ZodType<any>
       }
 
       if (schema instanceof z.ZodNumber) {
+        let numberSchema = schema as z.ZodNumber
         if (validation.min !== undefined) {
-          schema = schema.min(validation.min)
+          numberSchema = numberSchema.min(validation.min)
         }
         if (validation.max !== undefined) {
-          schema = schema.max(validation.max)
+          numberSchema = numberSchema.max(validation.max)
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        schema = numberSchema as z.ZodType<any>
       }
 
       // 自定义验证

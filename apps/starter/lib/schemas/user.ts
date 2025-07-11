@@ -1,72 +1,27 @@
 /**
- * 用户类型定义 - 使用 LinchKit 标准类型
- * 移除重复实现，直接使用 @linch-kit/auth 的类型定义
+ * 用户实体定义 - 优化重复问题，统一使用 LinchKit 标准
  */
 
-import { type LinchKitUser, UserSchema } from '@linch-kit/auth'
+// 直接使用 LinchKit 认证系统的用户类型
+export { type LinchKitUser as User, type LinchKitUser, UserSchema } from '@linch-kit/auth'
+
+// 简化类型定义，基于 LinchKitUser
+import type { LinchKitUser } from '@linch-kit/auth'
+
+export type UserCreate = Omit<LinchKitUser, 'id' | 'createdAt' | 'updatedAt'>
+export type UserUpdate = Partial<Omit<LinchKitUser, 'id' | 'createdAt' | 'updatedAt'>>
 
 /**
- * 应用层用户类型 - 兼容现有代码
- * 使用 LinchKitUser 作为基础，添加应用特定的字段
+ * 应用特定的用户工具函数
  */
-export interface User {
-  id: string
-  email: string
-  name: string
-  avatar?: string
-  role: 'USER' | 'ADMIN' | 'MODERATOR'
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
-  createdAt: string
-  updatedAt: string
-  lastLoginAt?: string | null
-  lastActiveAt?: string | null
+export function getUserDisplayName(user: LinchKitUser): string {
+  return user.name || user.email.split('@')[0]
 }
 
-/**
- * 转换 LinchKitUser 到应用层 User 格式
- */
-export function toAppUser(linchKitUser: LinchKitUser): User {
-  return {
-    id: linchKitUser.id,
-    email: linchKitUser.email,
-    name: linchKitUser.name || '',
-    avatar: linchKitUser.image || undefined,
-    role:
-      ((linchKitUser.metadata?.role as string)?.toUpperCase() as 'USER' | 'ADMIN' | 'MODERATOR') ||
-      'USER',
-    status: (linchKitUser.status?.toUpperCase() as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED') || 'ACTIVE',
-    createdAt: linchKitUser.createdAt?.toISOString() || new Date().toISOString(),
-    updatedAt: linchKitUser.updatedAt?.toISOString() || new Date().toISOString(),
-    lastLoginAt: linchKitUser.lastLoginAt?.toISOString() || null,
-    lastActiveAt: null, // 应用特定字段
-  }
+export function isAdminUser(user: LinchKitUser): boolean {
+  return user.metadata?.role === 'admin'
 }
 
-/**
- * 转换应用层 User 到 LinchKitUser 格式
- */
-export function toLinchKitUser(appUser: User): LinchKitUser {
-  return {
-    id: appUser.id,
-    email: appUser.email,
-    name: appUser.name,
-    image: appUser.avatar,
-    status: appUser.status.toLowerCase() as 'active' | 'inactive' | 'disabled' | 'pending',
-    createdAt: new Date(appUser.createdAt),
-    updatedAt: new Date(appUser.updatedAt),
-    lastLoginAt: appUser.lastLoginAt ? new Date(appUser.lastLoginAt) : null,
-    metadata: {
-      role: appUser.role,
-    },
-  }
+export function isActiveUser(user: LinchKitUser): boolean {
+  return user.status === 'active'
 }
-
-// 简化的创建和更新类型
-export type UserCreate = Omit<User, 'id' | 'createdAt' | 'updatedAt'>
-export type UserUpdate = Partial<Omit<User, 'id' | 'createdAt' | 'updatedAt'>>
-
-// 兼容性导出
-export { type LinchKitUser, UserSchema }
-
-// 重导出 LinchKitUser 作为标准用户类型
-export { type LinchKitUser as StandardUser }

@@ -4,7 +4,7 @@
  */
 
 import { Logger } from '@linch-kit/core'
-import { createCRUD } from '@linch-kit/platform/crud'
+import { createCRUD } from '@linch-kit/platform'
 import { UserSchema } from '@linch-kit/auth'
 
 import { PostEntity } from '../schemas'

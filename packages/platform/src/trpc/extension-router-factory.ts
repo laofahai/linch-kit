@@ -72,8 +72,13 @@ export function createExtensionRouter<T = unknown>(options: ExtensionRouterOptio
      */
     create: t.procedure
       .use(checkPermission('create'))
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 复杂的Zod类型处理
-      .input((schema as z.ZodObject<any>).omit({ id: true, createdAt: true, updatedAt: true }))
+      .input(
+        (schema as unknown as z.ZodObject<Record<string, unknown>>).omit({
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+        })
+      )
       .mutation(async ({ input }) => {
         try {
           const result = await operations.create(input as Partial<T>)
@@ -138,15 +143,14 @@ export function createExtensionRouter<T = unknown>(options: ExtensionRouterOptio
       .input(
         z.object({
           id: z.union([z.string(), z.number()]),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 复杂的Zod类型处理
-          data: (schema as z.ZodObject<any>)
+          data: (schema as unknown as z.ZodObject<Record<string, unknown>>)
             .partial()
             .omit({ id: true, createdAt: true, updatedAt: true }),
         })
       )
       .mutation(async ({ input }) => {
         try {
-          const result = await operations.update(String(input.id), input.data)
+          const result = await operations.update(String(input.id), input.data as Partial<T>)
           return { success: true, data: result }
         } catch (error) {
           extensionContext.logger.error(`Failed to update ${entityName}`, { error })

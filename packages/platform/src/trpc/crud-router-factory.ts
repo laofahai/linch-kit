@@ -37,11 +37,11 @@ export interface CRUDRouterOptions<T = unknown> extends ExtensionRouterOptions<T
  * 创建CRUD Router的向后兼容函数
  */
 export function createCRUD<T = unknown>(options: CRUDRouterOptions<T>) {
-  console.warn(
+  const { entityName, schema, extensionContext, permissions } = options
+
+  extensionContext?.logger.warn(
     'createCRUD is deprecated. Please use createExtensionRouter from extension-router-factory.ts'
   )
-
-  const { entityName, schema, extensionContext, permissions } = options
 
   if (!extensionContext) {
     throw new Error('extensionContext is required for createCRUD')

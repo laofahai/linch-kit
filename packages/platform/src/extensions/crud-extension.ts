@@ -126,8 +126,9 @@ export class CRUDExtension {
 
       update: async (id: string | number, data: Partial<T>): Promise<T> => {
         // 验证更新数据
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 复杂的Zod类型处理
-        const validated = (schema as z.ZodObject<any>).partial().parse(data)
+        const validated = (schema as unknown as z.ZodObject<Record<string, unknown>>)
+          .partial()
+          .parse(data)
 
         // 触发更新事件
         if (this.config.enableEvents) {
@@ -218,8 +219,9 @@ export class CRUDExtension {
       extensionContext.events.on('crud:before:delete', handlers.beforeDelete)
     }
     if (handlers.afterDelete) {
-      extensionContext.events.on('crud:after:delete', (data: { success?: boolean }) => {
-        handlers.afterDelete!(data.success || false)
+      extensionContext.events.on('crud:after:delete', (data: unknown) => {
+        const deleteData = data as { success?: boolean }
+        handlers.afterDelete!(deleteData.success || false)
       })
     }
   }

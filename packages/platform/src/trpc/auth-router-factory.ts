@@ -1,6 +1,7 @@
 /**
- * Auth Router Factory - 简化版本避免循环依赖
+ * Auth Router Factory - 已废弃，请使用 @linch-kit/auth 包
  * @module platform/trpc/auth-router-factory
+ * @deprecated 此文件已废弃，认证功能已移至 @linch-kit/auth 包
  */
 
 import { initTRPC } from '@trpc/server'
@@ -11,6 +12,7 @@ import type { TRPCContext } from './types'
 
 /**
  * 认证路由工厂配置
+ * @deprecated 请使用 @linch-kit/auth 包中的认证功能
  */
 export interface AuthRouterFactoryOptions {
   /** Extension 上下文 */
@@ -26,9 +28,7 @@ export interface AuthRouterFactoryOptions {
 
 /**
  * 创建认证路由器工厂
- *
- * 注意：这是简化实现，避免与 @linch-kit/auth 循环依赖
- * 完整的认证功能应使用 @linch-kit/auth 包
+ * @deprecated 此函数已废弃，请使用 @linch-kit/auth 包中的认证路由器
  */
 export function createAuthRouterFactory(options: AuthRouterFactoryOptions = {}) {
   const { extensionContext, session = { ttl: 3600, refreshThreshold: 300 } } = options
