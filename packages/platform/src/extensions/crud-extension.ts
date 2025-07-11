@@ -126,7 +126,7 @@ export class CRUDExtension {
 
       update: async (id: string | number, data: Partial<T>): Promise<T> => {
         // 验证更新数据
-        const validated = (schema as unknown as z.ZodObject<Record<string, unknown>>)
+        const validated = (schema as unknown as z.ZodObject<Record<string, z.ZodTypeAny>>)
           .partial()
           .parse(data)
 

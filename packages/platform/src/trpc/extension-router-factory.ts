@@ -73,7 +73,7 @@ export function createExtensionRouter<T = unknown>(options: ExtensionRouterOptio
     create: t.procedure
       .use(checkPermission('create'))
       .input(
-        (schema as unknown as z.ZodObject<Record<string, unknown>>).omit({
+        (schema as unknown as z.ZodObject<Record<string, z.ZodTypeAny>>).omit({
           id: true,
           createdAt: true,
           updatedAt: true,
@@ -143,7 +143,7 @@ export function createExtensionRouter<T = unknown>(options: ExtensionRouterOptio
       .input(
         z.object({
           id: z.union([z.string(), z.number()]),
-          data: (schema as unknown as z.ZodObject<Record<string, unknown>>)
+          data: (schema as unknown as z.ZodObject<Record<string, z.ZodTypeAny>>)
             .partial()
             .omit({ id: true, createdAt: true, updatedAt: true }),
         })
