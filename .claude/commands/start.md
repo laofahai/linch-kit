@@ -30,8 +30,8 @@ fi
 !ASSESSMENT_ERROR=""
 
 !echo "🎯 执行智能任务评估..."
-!if command -v bun &> /dev/null && [[ -f "tools/ai/task-assessor.ts" ]]; then
-  !TASK_ASSESSMENT_RESULT=$(bun run tools/ai/task-assessor.ts "$ARGUMENTS" 2>&1)
+!if command -v bun &> /dev/null && [[ -f "tools/smart-loader/src/task-assessor.ts" ]]; then
+  !TASK_ASSESSMENT_RESULT=$(bun run tools/smart-loader/src/task-assessor.ts "$ARGUMENTS" 2>&1)
   !if [[ $? -eq 0 ]]; then
     !TASK_LEVEL=$(echo "$TASK_ASSESSMENT_RESULT" | grep "📤 评估结果:" | sed 's/📤 评估结果: //')
     !echo "✅ AI评估完成: 任务级别 $TASK_LEVEL"
@@ -64,8 +64,8 @@ fi
 !CONTEXT_ERROR=""
 
 !echo "📚 执行智能文档选择和加载..."
-!if command -v bun &> /dev/null && [[ -f "tools/ai/document-loader.ts" ]]; then
-  !DOCUMENT_RESULT=$(bun run tools/ai/document-loader.ts --level="$TASK_LEVEL" "$ARGUMENTS" 2>&1)
+!if command -v bun &> /dev/null && [[ -f "tools/smart-loader/src/document-loader.ts" ]]; then
+  !DOCUMENT_RESULT=$(bun run tools/smart-loader/src/document-loader.ts --level="$TASK_LEVEL" "$ARGUMENTS" 2>&1)
   !if [[ $? -eq 0 ]]; then
     !echo "✅ 智能文档加载完成"
     !LOADED_DOCS="$DOCUMENT_RESULT"
@@ -110,9 +110,9 @@ fi
 !echo "✅ Graph RAG 查询完成，找到相关实现"
 
 !echo "🎯 [$(date '+%H:%M:%S')] 执行 AI 上下文智能优化..."
-!if command -v bun &> /dev/null && [[ -f "tools/ai/smart-context.ts" ]] && [[ -n "$LOADED_DOCS" ]]; then
+!if command -v bun &> /dev/null && [[ -f "tools/smart-loader/src/smart-context.ts" ]] && [[ -n "$LOADED_DOCS" ]]; then
   !echo "🧠 使用 AI 优化上下文内容..."
-  !CONTEXT_OPTIMIZATION_RESULT=$(bun run tools/ai/smart-context.ts "$LOADED_DOCS" "$ARGUMENTS" "$GRAPH_RAG_RESULT" 2>&1)
+  !CONTEXT_OPTIMIZATION_RESULT=$(bun run tools/smart-loader/src/smart-context.ts "$LOADED_DOCS" "$ARGUMENTS" "$GRAPH_RAG_RESULT" 2>&1)
   !if [[ $? -eq 0 ]]; then
     !OPTIMIZED_CONTEXT=$(echo "$CONTEXT_OPTIMIZATION_RESULT" | sed -n '/OPTIMIZED_CONTENT_START/,/OPTIMIZED_CONTENT_END/p' | sed '1d;$d')
     !echo "✅ AI上下文优化完成"
