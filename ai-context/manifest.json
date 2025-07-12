@@ -165,9 +165,9 @@
       "priority": "high"
     },
     {
-      "path": "ai-context/02_Guides/09_AI_Quality_Config.ts",
-      "description": "AI质量配置文件",
-      "tags": ["config", "quality", "ai"],
+      "path": "ai-context/02_Guides/09_AI_Smart_Loading_Best_Practices.md",
+      "description": "AI智能加载系统最佳实践指南",
+      "tags": ["ai", "loading", "best-practices", "guide"],
       "priority": "medium"
     },
     {
@@ -199,6 +199,12 @@
       "description": "依赖分析和关系映射",
       "tags": ["dependencies", "analysis", "relationships"],
       "priority": "high"
+    },
+    {
+      "path": "ai-context/98_Project_Management/README.md",
+      "description": "项目管理文档导航和索引",
+      "tags": ["navigation", "management", "index"],
+      "priority": "medium"
     },
     {
       "path": "ai-context/98_Project_Management/01_Roadmap.md",
@@ -259,6 +265,12 @@
       "description": "@linch-kit/platform包完整性评估报告",
       "tags": ["report", "platform", "completeness", "status"],
       "priority": "medium"
+    },
+    {
+      "path": "ai-context/03_Reference/02_Package_Reports/ui-package-completeness.md",
+      "description": "@linch-kit/ui包完整性评估报告",
+      "tags": ["report", "ui", "completeness", "status"],
+      "priority": "medium"
     }
   ],
   "aiInstructions": {
@@ -302,7 +314,7 @@
       "version": "v8.0",
       "changes": [
         "Unified core constraints in 02_Guides/01_Development_Workflow.md",
-        "Merged Extension documents into 01_Architecture/Extension_System.md",
+        "Merged Extension documents into 01_Architecture/10_Extension_System.md",
         "Moved v8-upgrade-plan to 99_Archive/",
         "Created clear directory structure by usage scenario",
         "Maintained backward compatibility for all important paths"
