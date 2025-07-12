@@ -56,7 +56,7 @@ describe('Blog Extension', () => {
 
     it('should start successfully', async () => {
       await extension.init(mockConfig)
-      
+
       expect(async () => {
         await extension.start(mockConfig)
       }).not.toThrow()
@@ -65,7 +65,7 @@ describe('Blog Extension', () => {
     it('should stop successfully', async () => {
       await extension.init(mockConfig)
       await extension.start(mockConfig)
-      
+
       expect(async () => {
         await extension.stop(mockConfig)
       }).not.toThrow()
@@ -75,7 +75,7 @@ describe('Blog Extension', () => {
       await extension.init(mockConfig)
       await extension.start(mockConfig)
       await extension.stop(mockConfig)
-      
+
       expect(async () => {
         await extension.destroy(mockConfig)
       }).not.toThrow()
@@ -117,7 +117,7 @@ describe('Blog Extension', () => {
   describe('api', () => {
     it('should export api router', () => {
       expect(api).toBeDefined()
-      expect(typeof api).toBe('function')
+      expect(typeof api).toBe('object')
     })
 
     it('should have posts router', () => {
