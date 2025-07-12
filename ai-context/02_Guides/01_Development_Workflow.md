@@ -416,7 +416,7 @@ bun run ai:session init
 bun run ai:session branch [task-description]
 
 # 上下文查询
-bun run ai:session query "[实体名]"
+bun run ai:session query "[实体名]" --debug
 
 # 图谱数据同步
 bun run ai:session sync

@@ -12,7 +12,7 @@
  * 4. 添加超时控制
  */
 
-import { Neo4jService, loadNeo4jConfig } from '../dist/src/index.js';
+import { Neo4jService, loadNeo4jConfig } from '../dist/index.js';
 import dotenv from 'dotenv';
 
 // 加载环境变量 - 自适应加载

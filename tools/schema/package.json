@@ -43,7 +43,7 @@
     "@types/deep-diff": "^1.0.5",
     "reflect-metadata": "^0.2.2",
     "tsup": "^8.5.0",
-    "typescript": "5.8.3",
+    "typescript": "^5.8.3",
     "@types/bun": "^1.2.18",
     "@faker-js/faker": "^9.8.0"
   },

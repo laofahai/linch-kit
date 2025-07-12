@@ -2,8 +2,18 @@
   "extends": "../../configs/tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "incremental": false,
+    "tsBuildInfoFile": null,
+    "declaration": true,
+    "declarationMap": true,
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
-  "include": ["src/**/*", "*.ts"],
-  "exclude": ["dist", "node_modules", "scripts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js"
+  ],
+  "exclude": ["dist", "node_modules", "scripts", "__tests__"]
 }

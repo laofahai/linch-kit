@@ -113,8 +113,8 @@ useEffect(() => initializeApp(), [])
 ### 任何代码相关任务前必须执行：
 
 ```bash
-# 1. 查询现有实现
-bun run ai:session query "[核心概念]"
+# 1. 查询现有实现（使用debug模式获取详细信息）
+bun run ai:session query "[核心概念]" --debug
 
 # 2. 查找函数/类定义
 bun run ai:session symbol "[符号名]"
