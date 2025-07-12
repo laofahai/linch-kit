@@ -4,7 +4,7 @@
 
 !echo "🚀 [$(date '+%H:%M:%S')] 启动 LinchKit 开发环境..."
 !echo "🔍 检查依赖状态..."
-!if [[! -f "package.json"]]; then
+!if [[ ! -f "package.json" ]]; then
 echo "❌ 错误：未找到 package.json 文件"
 exit 1
 fi

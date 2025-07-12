@@ -2,7 +2,7 @@
 
 !echo "🧪 [$(date '+%H:%M:%S')] 开始运行测试..."
 !echo "🔍 检查测试环境..."
-!if [[! -f "package.json"]]; then
+!if [[ ! -f "package.json" ]]; then
 echo "❌ 错误：未找到 package.json 文件"
 exit 1
 fi

@@ -1,0 +1,45 @@
+{
+  "defaultProvider": "claude",
+  "providers": {
+    "claude": {
+      "name": "claude",
+      "command": "claude",
+      "timeout": 30000,
+      "options": {
+        "outputFormat": "text"
+      }
+    },
+    "gemini": {
+      "name": "gemini", 
+      "command": "gemini",
+      "model": "gemini-2.5-pro",
+      "timeout": 30000,
+      "options": {
+        "debug": false
+      }
+    }
+  },
+  "fallbackChain": ["claude", "gemini"],
+  "smartSelection": {
+    "enabled": true,
+    "criteria": {
+      "speed": "claude",
+      "accuracy": "gemini", 
+      "reliability": "claude"
+    }
+  },
+  "optimization": {
+    "targetReduction": {
+      "T1": 0.2,
+      "T2": 0.3,
+      "T3": 0.1
+    },
+    "preserveCriticalSections": [
+      "核心约束",
+      "强制要求", 
+      "零容忍",
+      "必须",
+      "禁止"
+    ]
+  }
+}

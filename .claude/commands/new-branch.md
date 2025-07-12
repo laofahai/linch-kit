@@ -1,7 +1,7 @@
 🌿 创建新功能分支 - 遵循分支管理规范
 
 !echo "🌿 [$(date '+%H:%M:%S')] 创建新功能分支..."
-!if [[-z "$ARGUMENTS"]]; then
+!if [[ -z "$ARGUMENTS" ]]; then
 echo "❌ 错误：请提供分支名称"
 echo "💡 用法：/new-branch [功能名称]"
 exit 1

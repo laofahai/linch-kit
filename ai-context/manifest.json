@@ -213,12 +213,6 @@
       "priority": "medium"
     },
     {
-      "path": "ai-context/99_Archive/",
-      "description": "归档文档，包括v8升级计划和历史文档",
-      "tags": ["archive", "history", "v8-upgrade"],
-      "priority": "low"
-    },
-    {
       "path": "ai-context/03_Reference/01_Packages_API/README.md",
       "description": "包API文档索引",
       "tags": ["api", "reference", "index"],
@@ -265,12 +259,6 @@
       "description": "@linch-kit/platform包完整性评估报告",
       "tags": ["report", "platform", "completeness", "status"],
       "priority": "medium"
-    },
-    {
-      "path": "ai-context/cleanup-verification-report.md",
-      "description": "ai-context目录清理验证报告",
-      "tags": ["cleanup", "verification", "maintenance"],
-      "priority": "low"
     }
   ],
   "aiInstructions": {

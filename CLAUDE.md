@@ -27,7 +27,7 @@ CLAUDE.md
 ai-context/manifest.json
 
 # 步骤3: 立即声明遵守约束
-Claude必须明确声明："我已阅读CLAUDE.md，将严格遵守所有零容忍约束，特别是Graph RAG强制查询要求"
+Claude必须明确声明："我已阅读CLAUDE.md，将严格遵守所有约束和流程"
 ```
 
 **🚨 如果Claude未主动声明遵守约束，用户应立即拒绝任何请求。**

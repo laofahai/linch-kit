@@ -35,7 +35,7 @@ Extensions:
 Tools:
 - tools/schema          Schema 引擎工具 (代码生成、验证)
 - tools/cli             LinchKit CLI 工具
-- tools/context         Graph RAG 上下文工具
+- tools/ai-platform     LinchKit AI平台 - Graph RAG知识图谱
 ```
 
 ## 📦 包介绍
@@ -63,7 +63,7 @@ Tools:
 | -------------------- | --------------------------------------------- |
 | **tools/schema**     | Schema 引擎工具 - 代码生成、验证、转换        |
 | **tools/cli**        | LinchKit CLI 工具 - 项目脚手架、Extension管理 |
-| **tools/context**    | Graph RAG 上下文工具 - AI 辅助开发、智能查询  |
+| **tools/ai-platform** | LinchKit AI平台 - Graph RAG知识图谱、AI辅助开发 |
 | **create-linch-kit** | 项目脚手架 - 一键创建 LinchKit 项目           |
 
 ## 🚀 快速开始

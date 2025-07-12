@@ -57,7 +57,7 @@
     "format:all": "prettier --write \"**/*.{ts,tsx,md,json}\" --ignore-unknown",
     "test:e2e": "playwright test",
     "test:e2e:all": "bun tools/testing/test-e2e-all.ts",
-    "ai:session": "bun tools/context/scripts/session-tools.js",
+    "ai:session": "bun tools/ai-platform/scripts/session-tools.js",
     "ai:pre-check": "echo 'AI预检查工具 - 需要实现' && exit 1",
     "ai:quality-gate": "echo 'AI质量门禁 - 需要实现' && exit 1",
     "ai:context-verify": "echo 'AI上下文验证 - 需要实现' && exit 1",

@@ -38,12 +38,23 @@ const mockExtension: Extension = {
       enabled: true,
       autoStart: true,
     },
+    dependencies: [],
+  },
+  defaultConfig: {
+    enabled: true,
+    priority: 1,
   },
   init: mock(async config => {
     console.log('Extension initialized with config:', config)
   }),
+  setup: mock(async config => {
+    console.log('Extension setup with config:', config)
+  }),
   start: mock(async config => {
     console.log('Extension started with config:', config)
+  }),
+  ready: mock(async config => {
+    console.log('Extension ready with config:', config)
   }),
   stop: mock(async config => {
     console.log('Extension stopped with config:', config)
@@ -129,8 +140,10 @@ describe('Extension System Integration Tests', () => {
 
     // 重置所有mock
     mockExtension.init.mockClear()
-    mockExtension.start.mockClear()
-    mockExtension.stop.mockClear()
+    mockExtension.setup?.mockClear()
+    mockExtension.start?.mockClear()
+    mockExtension.ready?.mockClear()
+    mockExtension.stop?.mockClear()
     mockExtension.destroy.mockClear()
 
     // 清理事件监听器
