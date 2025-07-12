@@ -2,7 +2,7 @@
 
 !echo "📦 [$(date '+%H:%M:%S')] 开始构建项目..."
 !echo "🔍 检查构建环境..."
-!if [[! -f "package.json"]]; then
+!if [[ ! -f "package.json" ]]; then
 echo "❌ 错误：未找到 package.json 文件"
 exit 1
 fi

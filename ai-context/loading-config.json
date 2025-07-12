@@ -1,0 +1,44 @@
+{
+  "maxSizeKB": {
+    "T1": 5,
+    "T2": 15,
+    "T3": 25
+  },
+  "baseDocs": {
+    "T1": [
+      "ai-context/00_Getting_Started/03_Essential_Rules.md"
+    ],
+    "T2": [
+      "ai-context/00_Getting_Started/03_Essential_Rules.md",
+      "ai-context/02_Guides/05_AI_Code_Quality.md",
+      "ai-context/02_Guides/06_Quick_Checklist.md"
+    ],
+    "T3": [
+      "ai-context/00_Getting_Started/03_Essential_Rules.md",
+      "ai-context/02_Guides/01_Development_Workflow.md",
+      "ai-context/01_Architecture/03_Package_Architecture.md",
+      "ai-context/01_Architecture/07_Strategic_Architecture_Evolution.md"
+    ]
+  },
+  "categories": {
+    "T1": ["core"],
+    "T2": ["core", "guide"],
+    "T3": ["core", "guide", "architecture", "reference"]
+  },
+  "priorities": {
+    "critical": ["Essential_Rules", "Quick_Checklist"],
+    "high": ["Development_Workflow", "Core_Principles", "AI_Code_Quality"],
+    "medium": ["Package_Architecture", "Testing_Standards"],
+    "low": ["Project_Management", "Documentation"]
+  },
+  "taskKeywords": {
+    "T1": ["修复", "fix", "调整", "更新", "配置", "bug", "typo", "简单"],
+    "T2": ["功能", "组件", "API", "重构", "优化", "增强", "测试"],
+    "T3": ["架构", "设计", "系统", "集成", "数据库", "安全", "新模块"]
+  },
+  "exclusions": {
+    "T1": ["架构设计", "复杂重构", "新功能模块"],
+    "T2": ["大规模架构变更", "核心系统重写"],
+    "T3": []
+  }
+}

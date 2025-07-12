@@ -120,7 +120,7 @@ export interface ExtensionManagerConfig {
   /** 是否启用沙箱隔离 */
   enableSandbox: boolean
   /** 允许的权限列表 */
-  allowedPermissions: ExtensionPermission[]
+  allowedPermissions?: ExtensionPermission[]
 }
 
 /**
@@ -293,6 +293,16 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
         registration.status = 'error'
         registration.error = error instanceof Error ? error : new Error(String(error))
         registration.lastUpdated = Date.now()
+      } else {
+        // 如果注册信息不存在，创建一个错误状态的注册信息
+        this.extensions.set(extensionName, {
+          extension: {} as Extension,
+          config: {},
+          status: 'error',
+          registeredAt: Date.now(),
+          lastUpdated: Date.now(),
+          error: error instanceof Error ? error : new Error(String(error)),
+        })
       }
 
       this.emit('extensionError', { name: extensionName, error })
@@ -323,9 +333,11 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
 
     // 从Plugin系统卸载（即使Extension销毁失败也要继续）
     try {
-      const unregisterResult = await pluginRegistry.unregister(extensionName)
+      // 使用Extension的metadata.id而不是extensionName来卸载plugin
+      const extensionId = registration.extension.metadata.id
+      const unregisterResult = await pluginRegistry.unregister(extensionId)
       if (!unregisterResult.success) {
-        console.error(`Failed to unregister plugin ${extensionName}:`, unregisterResult.error)
+        console.error(`Failed to unregister plugin ${extensionId}:`, unregisterResult.error)
         hasError = true
       }
     } catch (error) {

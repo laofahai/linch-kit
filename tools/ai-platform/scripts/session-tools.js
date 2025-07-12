@@ -78,8 +78,8 @@ function queryContext(entity, includeRelated = true, debug = false) {
   
   try {
     let cmd = includeRelated 
-      ? `bun tools/context/scripts/context-cli.js --find-entity "${entity}" --include-related`
-      : `bun tools/context/scripts/context-cli.js --find-entity "${entity}"`;
+      ? `bun tools/ai-platform/scripts/context-cli.js --find-entity "${entity}" --include-related`
+      : `bun tools/ai-platform/scripts/context-cli.js --find-entity "${entity}"`;
     
     // 添加调试模式参数
     if (debug) {

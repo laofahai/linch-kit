@@ -32,7 +32,7 @@
 - **06_Frontend_Architecture.md** - 前端架构
 - **07_Strategic_Architecture_Evolution.md** - 战略架构演进
 - **08_AI_First_Strategic_Integration.md** - AI优先战略整合
-- **Extension_System.md** - 【整合】Extension系统统一架构
+- **10_Extension_System.md** - 【整合】Extension系统统一架构
 
 ### 01_Quality - 质量保证
 

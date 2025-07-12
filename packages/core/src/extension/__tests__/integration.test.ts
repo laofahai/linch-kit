@@ -38,12 +38,23 @@ const mockExtension: Extension = {
       enabled: true,
       autoStart: true,
     },
+    dependencies: [],
+  },
+  defaultConfig: {
+    enabled: true,
+    priority: 1,
   },
   init: mock(async config => {
     console.log('Extension initialized with config:', config)
   }),
+  setup: mock(async config => {
+    console.log('Extension setup with config:', config)
+  }),
   start: mock(async config => {
     console.log('Extension started with config:', config)
+  }),
+  ready: mock(async config => {
+    console.log('Extension ready with config:', config)
   }),
   stop: mock(async config => {
     console.log('Extension stopped with config:', config)
@@ -127,11 +138,25 @@ describe('Extension System Integration Tests', () => {
       await pluginRegistry.unregister(plugin.plugin.metadata.id)
     }
 
-    // 重置所有mock
-    mockExtension.init.mockClear()
-    mockExtension.start.mockClear()
-    mockExtension.stop.mockClear()
-    mockExtension.destroy.mockClear()
+    // 重置所有mock到原始状态
+    mockExtension.init = mock(async config => {
+      console.log('Extension initialized with config:', config)
+    })
+    mockExtension.setup = mock(async config => {
+      console.log('Extension setup with config:', config)
+    })
+    mockExtension.start = mock(async config => {
+      console.log('Extension started with config:', config)
+    })
+    mockExtension.ready = mock(async config => {
+      console.log('Extension ready with config:', config)
+    })
+    mockExtension.stop = mock(async config => {
+      console.log('Extension stopped with config:', config)
+    })
+    mockExtension.destroy = mock(async config => {
+      console.log('Extension destroyed with config:', config)
+    })
 
     // 清理事件监听器
     extensionManager.removeAllListeners()

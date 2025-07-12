@@ -12,7 +12,7 @@
 - **🔴 禁止 `as` 类型断言**，使用类型守卫
 - **🔴 禁止 `@ts-ignore`**，必须修复类型错误
 - **🔴 强制 `unknown` 类型**用于外部数据
-- **超严格配置** (详见: [01_Quality/typescript-config.md](../02_Guides/11_TSConfig_Strict.json))
+- **超严格配置** (详见: [TSConfig严格配置](../02_Guides/11_TSConfig_Strict.json))
 
 ### 2. 质量门禁 (每次必须通过)
 
@@ -47,6 +47,9 @@
 ### 6. 包管理 (强制 bun)
 
 - **🔴 唯一工具**: 只使用 `bun`，禁止 `npm`/`yarn`
+- **🔴 强制参数**: 必须使用 `--no-cache` 参数（避免缓存问题）
+  - `bun add [包名] --no-cache`
+  - `bun install --no-cache`
 - **🔴 环境路径**: `export PATH="/home/laofahai/.nvm/versions/node/v20.19.2/bin:$PATH"`
 - **🔴 验证命令**: `bun run validate:light` (快速), `bun run validate` (完整)
 
@@ -110,8 +113,8 @@ useEffect(() => initializeApp(), [])
 ### 任何代码相关任务前必须执行：
 
 ```bash
-# 1. 查询现有实现
-bun run ai:session query "[核心概念]"
+# 1. 查询现有实现（使用debug模式获取详细信息）
+bun run ai:session query "[核心概念]" --debug
 
 # 2. 查找函数/类定义
 bun run ai:session symbol "[符号名]"

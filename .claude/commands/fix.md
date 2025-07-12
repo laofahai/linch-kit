@@ -4,7 +4,7 @@
 
 !echo "🔧 [$(date '+%H:%M:%S')] 强制执行快速修复..."
 !echo "🔍 检查项目状态..."
-!if [[! -f "package.json"]]; then
+!if [[ ! -f "package.json" ]]; then
 echo "❌ 错误：未找到 package.json 文件"
 exit 1
 fi

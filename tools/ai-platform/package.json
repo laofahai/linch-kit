@@ -1,0 +1,22 @@
+{
+  "name": "@linch-kit/ai-platform",
+  "version": "1.0.0",
+  "description": "LinchKit AI Platform - Graph RAG知识图谱和智能开发支持",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "query": "bun run scripts/session-tools.js",
+    "extract": "bun run scripts/graph-data-extractor.js",
+    "context": "bun run scripts/context-cli.js"
+  },
+  "dependencies": {
+    "@linch-kit/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  }
+}

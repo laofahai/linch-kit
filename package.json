@@ -57,7 +57,10 @@
     "format:all": "prettier --write \"**/*.{ts,tsx,md,json}\" --ignore-unknown",
     "test:e2e": "playwright test",
     "test:e2e:all": "bun tools/testing/test-e2e-all.ts",
-    "ai:session": "bun tools/context/scripts/session-tools.js",
+    "ai:session": "bun tools/ai-platform/scripts/session-tools.js",
+    "ai:smart-load": "bun tools/smart-loader/document-loader.ts",
+    "ai:task-assess": "bun tools/smart-loader/task-assessor.ts",
+    "ai:smart-context": "bun tools/smart-loader/smart-context.ts",
     "ai:pre-check": "echo 'AI预检查工具 - 需要实现' && exit 1",
     "ai:quality-gate": "echo 'AI质量门禁 - 需要实现' && exit 1",
     "ai:context-verify": "echo 'AI上下文验证 - 需要实现' && exit 1",
@@ -140,7 +143,7 @@
     "prettier": "^3.6.2",
     "tsup": "^8.5.0",
     "turbo": "^2.5.4",
-    "typescript": "5.8.3"
+    "typescript": "^5.8.3"
   },
   "packageManager": "bun@1.2.18",
   "engines": {

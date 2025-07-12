@@ -1,6 +1,6 @@
 # LinchKit 开发工作流程与约束
 
-**版本**: v7.2  
+**版本**: v8.0  
 **更新**: 2025-07-07  
 **状态**: 单一信息源 - 所有开发约束的统一文档
 
@@ -416,7 +416,7 @@ bun run ai:session init
 bun run ai:session branch [task-description]
 
 # 上下文查询
-bun run ai:session query "[实体名]"
+bun run ai:session query "[实体名]" --debug
 
 # 图谱数据同步
 bun run ai:session sync
