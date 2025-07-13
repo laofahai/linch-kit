@@ -12,7 +12,7 @@ interface LinchKitContextType {
   reinitialize: () => Promise<void>
 }
 
-const LinchKitContext = createContext<LinchKitContextType | null>(null)
+const LinchKitReactContext = createContext<LinchKitContextType | null>(null)
 
 interface LinchKitProviderProps {
   children: ReactNode
@@ -99,9 +99,9 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
   }
 
   return (
-    <LinchKitContext.Provider value={value}>
+    <LinchKitReactContext.Provider value={value}>
       {children}
-    </LinchKitContext.Provider>
+    </LinchKitReactContext.Provider>
   )
 }
 
@@ -109,7 +109,7 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
  * Hook for accessing LinchKit context
  */
 export function useLinchKit(): LinchKitContextType {
-  const context = useContext(LinchKitContext)
+  const context = useContext(LinchKitReactContext)
   
   if (!context) {
     throw new Error('useLinchKit must be used within a LinchKitProvider')
