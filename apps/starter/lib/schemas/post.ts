@@ -1,84 +1,52 @@
 /**
- * Post 实体定义 - 使用 LinchKit Schema 标准
+ * Post 实体定义 - 简化版本以避免类型递归问题
  */
 
-import { defineEntity } from '@linch-kit/schema'
 import { z } from 'zod'
 
 /**
- * Post 实体定义
+ * 文章 Schema 定义
  */
-export const PostEntity = defineEntity('Post', {
-  fields: {
-    id: {
-      type: 'string',
-      primaryKey: true,
-      generated: 'cuid',
-      description: '文章唯一标识符',
-    },
-    title: {
-      type: 'string',
-      required: true,
-      minLength: 1,
-      maxLength: 200,
-      description: '文章标题',
-    },
-    content: {
-      type: 'text',
-      required: true,
-      description: '文章内容',
-    },
-    excerpt: {
-      type: 'string',
-      optional: true,
-      maxLength: 500,
-      description: '文章摘要',
-    },
-    authorId: {
-      type: 'string',
-      required: true,
-      description: '作者ID',
-    },
-    status: {
-      type: 'enum',
-      values: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
-      default: 'DRAFT',
-      description: '文章状态',
-    },
-    tags: {
-      type: 'json',
-      default: [],
-      description: '文章标签',
-    },
-    viewCount: {
-      type: 'int',
-      default: 0,
-      description: '浏览次数',
-    },
-    likeCount: {
-      type: 'int',
-      default: 0,
-      description: '点赞次数',
-    },
-    publishedAt: {
-      type: 'datetime',
-      optional: true,
-      description: '发布时间',
-    },
-  },
-  options: {
-    timestamps: true,
-    softDelete: false,
-    tableName: 'posts',
-  },
+const PostSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1).max(200),
+  content: z.string().min(1),
+  excerpt: z.string().optional(),
+  authorId: z.string(),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
+  tags: z.array(z.string()).default([]),
+  viewCount: z.number().int().min(0).default(0),
+  likeCount: z.number().int().min(0).default(0),
+  publishedAt: z.string().nullable(),
+  createdAt: z.union([z.string(), z.date()]).transform(val => 
+    typeof val === 'string' ? val : val.toISOString()
+  ),
+  updatedAt: z.union([z.string(), z.date()]).transform(val => 
+    typeof val === 'string' ? val : val.toISOString()
+  ),
 })
 
+const PostCreateSchema = PostSchema.omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true,
+  viewCount: true,
+  likeCount: true 
+})
+
+const PostUpdateSchema = PostCreateSchema.partial()
+
+// 简化的实体对象
+export const PostEntity = {
+  zodSchema: PostSchema,
+  createSchema: PostCreateSchema,
+  updateSchema: PostUpdateSchema,
+}
+
 // 导出类型定义
-export type Post = z.infer<typeof PostEntity.zodSchema>
-export type PostCreate = z.infer<typeof PostEntity.createSchema>
-export type PostUpdate = z.infer<typeof PostEntity.updateSchema>
+export type Post = z.infer<typeof PostSchema>
+export type PostCreate = z.infer<typeof PostCreateSchema>
+export type PostUpdate = z.infer<typeof PostUpdateSchema>
 
 // 导出 Schema 用于验证
-export const PostSchema = PostEntity.zodSchema
-export const PostCreateSchema = PostEntity.createSchema
-export const PostUpdateSchema = PostEntity.updateSchema
+export { PostSchema, PostCreateSchema, PostUpdateSchema }

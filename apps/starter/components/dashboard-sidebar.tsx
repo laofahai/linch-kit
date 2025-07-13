@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { DashboardLayout, type DashboardUser } from '@linch-kit/ui/client'
+import { DashboardLayout, type DashboardUser } from '@linch-kit/platform'
 import { signOut } from 'next-auth/react'
 
 interface DashboardSidebarProps {

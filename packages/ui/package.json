@@ -15,20 +15,24 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
     },
     "./client": {
-      "import": "./dist/client.mjs",
-      "types": "./dist/client.d.ts"
+      "types": "./dist/client.d.ts",
+      "require": "./dist/client.js", 
+      "import": "./dist/client.mjs"
     },
     "./server": {
-      "import": "./dist/server.mjs",
-      "types": "./dist/server.d.ts"
+      "types": "./dist/server.d.ts",
+      "require": "./dist/server.js",
+      "import": "./dist/server.mjs"
     },
     "./shared": {
-      "import": "./dist/shared.mjs",
-      "types": "./dist/shared.d.ts"
+      "types": "./dist/shared.d.ts",
+      "require": "./dist/shared.js",
+      "import": "./dist/shared.mjs"
     },
     "./styles/globals.css": "./dist/styles/globals.css"
   },
@@ -98,8 +102,6 @@
     "@vitejs/plugin-react": "^4.6.0",
     "eslint": "^9.30.0",
     "jsdom": "^26.1.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
     "react-hook-form": "^7.59.0",
     "tailwindcss": "^4.1.11",
     "tsup": "^8.5.0",

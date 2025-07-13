@@ -131,11 +131,7 @@ const nextConfig: NextConfig = {
       'stream/promises': 'commonjs stream/promises',
     })
 
-    // 确保 @linch-kit/core 只加载客户端文件
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@linch-kit/core$': '@linch-kit/core/client',
-    }
+    // 移除错误的别名配置 - initLinchKit在主入口中
 
     return config
   },

@@ -13,6 +13,7 @@ import {
   User,
   Clock,
 } from 'lucide-react'
+import { SystemStatus } from '@/components/system-status'
 
 export default function DashboardPage() {
   return (
@@ -186,6 +187,9 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* System Status Integration */}
+      <SystemStatus />
     </div>
   )
 }

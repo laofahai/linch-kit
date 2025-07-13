@@ -4,65 +4,57 @@
  * 集中管理 LinchKit 框架的初始化和配置
  */
 
-import { initLinchKit, type LinchKitContext } from '@linch-kit/core'
-import { Logger } from '@linch-kit/core'
+import { Logger } from '@linch-kit/core/client'
+
+// 客户端专用的LinchKit上下文类型
+export interface LinchKitContext {
+  app: {
+    name: string
+    version: string
+    environment: string
+  }
+  config: Record<string, unknown>
+  logger: typeof Logger
+}
+
 
 let linchKitContext: LinchKitContext | null = null
 
 /**
- * 初始化 LinchKit
+ * 客户端专用的 LinchKit 初始化
  */
-export async function initializeLinchKit() {
+export async function initializeLinchKit(): Promise<LinchKitContext> {
   if (linchKitContext) {
     return linchKitContext
   }
 
   try {
-    linchKitContext = await initLinchKit({
-      appName: 'LinchKit Starter',
-      version: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
-      environment: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
-      debug: process.env.NODE_ENV === 'development',
+    // 客户端简化初始化，避免服务端模块
+    const environment = (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development'
+    const version = process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0'
 
+    // 配置日志
+    if (environment === 'development') {
+      Logger.setLevel('debug')
+    }
+
+    Logger.info(`Initializing LinchKit Starter v${version} in ${environment} mode`)
+
+    // 创建客户端上下文
+    linchKitContext = {
+      app: {
+        name: 'LinchKit Starter',
+        version,
+        environment,
+      },
       config: {
-        // 数据库配置
-        database: {
-          url: process.env.DATABASE_URL,
-          provider: 'postgresql',
-        },
-
-        // 认证配置
-        auth: {
-          secret: process.env.NEXTAUTH_SECRET,
-          url: process.env.NEXTAUTH_URL,
-          providers: {
-            credentials: true,
-            github: {
-              enabled: !!process.env.GITHUB_CLIENT_ID,
-              clientId: process.env.GITHUB_CLIENT_ID,
-              clientSecret: process.env.GITHUB_CLIENT_SECRET,
-            },
-            google: {
-              enabled: !!process.env.GOOGLE_CLIENT_ID,
-              clientId: process.env.GOOGLE_CLIENT_ID,
-              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            },
-          },
-        },
-
-        // API 配置
+        // API 配置（客户端安全）
         api: {
           baseUrl: process.env.NEXT_PUBLIC_API_URL || '/api',
           timeout: parseInt(process.env.API_TIMEOUT || '30000', 10),
         },
 
-        // 多租户配置
-        multiTenant: {
-          enabled: process.env.ENABLE_MULTI_TENANT === 'true',
-          defaultTenant: process.env.DEFAULT_TENANT_ID,
-        },
-
-        // 功能开关
+        // 功能开关（客户端安全）
         features: {
           registration: process.env.ENABLE_REGISTRATION !== 'false',
           socialLogin: process.env.ENABLE_SOCIAL_LOGIN !== 'false',
@@ -70,28 +62,15 @@ export async function initializeLinchKit() {
           audit: process.env.ENABLE_AUDIT !== 'false',
         },
       },
+      logger: Logger,
+    }
 
-      onInit: async () => {
-        Logger.info('LinchKit initialization complete')
-
-        // 验证必需的环境变量
-        const requiredEnvVars = ['DATABASE_URL', 'NEXTAUTH_SECRET', 'NEXTAUTH_URL']
-
-        const missing = requiredEnvVars.filter(key => !process.env[key])
-        if (missing.length > 0) {
-          throw new Error(`Missing required environment variables: ${missing.join(', ')}`)
-        }
-      },
-
-      onError: error => {
-        Logger.error('LinchKit initialization failed:', error as Error)
-      },
-    })
-
+    Logger.info(`LinchKit Starter initialized successfully`)
     return linchKitContext
   } catch (error) {
-    Logger.error('Failed to initialize LinchKit:', error as Error)
-    throw error
+    const err = error instanceof Error ? error : new Error(String(error))
+    Logger.error(`Failed to initialize LinchKit: ${err.message}`)
+    throw err
   }
 }
 
@@ -133,9 +112,14 @@ export function getEnvVar(key: string, defaultValue = ''): string {
 }
 
 /**
- * 验证环境配置
+ * 验证环境配置 - 仅在服务端执行
  */
 export function validateEnvironment(): { valid: boolean; errors: string[] } {
+  // 客户端跳过验证，避免敏感信息泄露
+  if (typeof window !== 'undefined') {
+    return { valid: true, errors: [] }
+  }
+
   const errors: string[] = []
 
   // 检查必需的环境变量

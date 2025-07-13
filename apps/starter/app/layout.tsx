@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { AuthSessionProvider } from '@/components/auth/session-provider'
 import { TRPCProvider } from '@/components/providers/trpc-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { LinchKitProvider } from '@/components/providers/linchkit-provider'
 import { ClientWrapper } from '@/components/client-wrapper'
 import './globals.css'
 
@@ -68,16 +69,18 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ClientWrapper>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <TRPCProvider>
-              <AuthSessionProvider session={null}>{children}</AuthSessionProvider>
-            </TRPCProvider>
-          </ThemeProvider>
+          <LinchKitProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <TRPCProvider>
+                <AuthSessionProvider session={null}>{children}</AuthSessionProvider>
+              </TRPCProvider>
+            </ThemeProvider>
+          </LinchKitProvider>
         </ClientWrapper>
       </body>
     </html>

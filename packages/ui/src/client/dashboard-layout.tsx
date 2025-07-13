@@ -1,8 +1,7 @@
 'use client'
 
-import React from 'react'
+import React, { ComponentType } from 'react'
 import { Home, Settings, Users, BarChart3, Package, LogOut, User, LucideIcon } from 'lucide-react'
-import Link from 'next/link'
 
 import { Button } from '../server/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../server/avatar'
@@ -62,9 +61,9 @@ export interface DashboardUser {
 }
 
 /**
- * DashboardLayout 组件属性
+ * DashboardLayoutShell 组件属性（框架无关的纯UI组件）
  */
-export interface DashboardLayoutProps {
+export interface DashboardLayoutShellProps {
   /** 子组件 */
   children: React.ReactNode
   /** 当前用户信息 */
@@ -75,6 +74,8 @@ export interface DashboardLayoutProps {
   isSuperAdmin: boolean
   /** 自定义导航菜单 */
   navigationItems?: NavigationItem[]
+  /** Link 组件 (如 Next.js Link) */
+  LinkComponent?: ComponentType<{ href: string; children: React.ReactNode; className?: string }>
   /** 登出回调函数 */
   onSignOut?: () => void | Promise<void>
   /** 侧边栏默认是否展开 */
@@ -129,23 +130,27 @@ const defaultNavigationItems: NavigationItem[] = [
 ]
 
 /**
- * Dashboard 布局组件
+ * Dashboard 布局Shell组件（框架无关）
  *
- * 提供完整的后台管理界面布局，包括侧边栏导航、用户信息显示和权限控制
+ * 提供完整的后台管理界面布局结构，包括侧边栏导航、用户信息显示和权限控制
+ * 通过依赖注入模式接收 LinkComponent，保持框架无关性
  */
-export function DashboardLayout({
+export function DashboardLayoutShell({
   children,
   user,
   isAdmin,
   isSuperAdmin,
   navigationItems = defaultNavigationItems,
+  LinkComponent = ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => (
+    <a href={href} className={className}>{children}</a>
+  ),
   onSignOut,
   defaultOpen = true,
   appTitle = 'LinchKit',
   pageTitle = 'Dashboard',
   sidebarWidth = '16rem',
   className = '',
-}: DashboardLayoutProps) {
+}: DashboardLayoutShellProps) {
   const handleSignOut = async () => {
     if (onSignOut) {
       await onSignOut()
@@ -197,10 +202,10 @@ export function DashboardLayout({
 
     return (
       <Button key={item.key} variant="ghost" className="w-full justify-start" asChild>
-        <Link href={item.href}>
+        <LinkComponent href={item.href}>
           <IconComponent className="mr-2 h-4 w-4" />
           {item.label}
-        </Link>
+        </LinkComponent>
       </Button>
     )
   }
@@ -246,10 +251,10 @@ export function DashboardLayout({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/profile">
+                  <LinkComponent href="/dashboard/profile">
                     <User className="mr-2 h-4 w-4" />
                     个人资料
-                  </Link>
+                  </LinkComponent>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
@@ -291,7 +296,7 @@ export function SimpleDashboardLayout({
   pageTitle?: string
 }) {
   return (
-    <DashboardLayout
+    <DashboardLayoutShell
       user={{
         id: 'simple-user',
         name: user.name,
@@ -319,6 +324,6 @@ export function SimpleDashboardLayout({
       pageTitle={pageTitle}
     >
       {children}
-    </DashboardLayout>
+    </DashboardLayoutShell>
   )
 }

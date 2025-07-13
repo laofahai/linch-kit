@@ -20,3 +20,6 @@ export { RuntimeValidator } from './validation'
 
 // 平台工具
 export * from './platform-manager'
+
+// 智能组件（Next.js 适配）
+export * from './components'

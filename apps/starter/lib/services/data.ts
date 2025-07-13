@@ -3,55 +3,22 @@
  * 重构为使用 LinchKit 平台工厂模式
  */
 
-import { Logger, type ExtensionContext } from '@linch-kit/core'
-import { createCRUD } from '@linch-kit/platform'
-import { UserSchema } from '@linch-kit/auth'
+import { Logger } from '@linch-kit/core'
 
-import { PostEntity } from '../schemas'
 import type { User, Post } from '../schemas'
 
-/**
- * 创建 CRUD 管理器
- * 注意：需要Extension上下文，这里使用简化的配置
- */
-const logger = Logger
+// 暂时注释掉 CRUD 创建，等待 @linch-kit/platform 包完善
+// const userCRUD = createCRUD({
+//   entityName: 'User',
+//   schema: UserSchema,
+//   extensionContext: extensionContext as ExtensionContext,
+// })
 
-// 简化的Extension上下文
-const extensionContext = {
-  name: 'DataService',
-  logger,
-  events: {
-    emit: (event: string, data?: unknown) => {
-      logger.info(`Event: ${event}`, data as Record<string, unknown>)
-    },
-    on: () => {
-      // 简化实现
-    },
-    off: () => {
-      // 简化实现
-    },
-  },
-  permissions: ['read', 'write'],
-  config: {},
-  storage: {
-    get: async () => null,
-    set: async () => {},
-    delete: async () => {},
-    clear: async () => {},
-  },
-}
-
-const userCRUD = createCRUD({
-  entityName: 'User',
-  schema: UserSchema,
-  extensionContext: extensionContext as ExtensionContext,
-})
-
-const postCRUD = createCRUD({
-  entityName: 'Post',
-  schema: PostEntity.zodSchema,
-  extensionContext: extensionContext as ExtensionContext,
-})
+// const postCRUD = createCRUD({
+//   entityName: 'Post',
+//   schema: PostEntity.zodSchema,
+//   extensionContext: extensionContext as ExtensionContext,
+// })
 
 /**
  * 数据服务类 - 基于 LinchKit Platform CRUD
@@ -226,8 +193,8 @@ export class DataService {
         viewCount: 0,
         likeCount: 0,
         publishedAt: data.status === 'PUBLISHED' ? new Date().toISOString() : null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       }
 
       Logger.info('DataService: 文章创建成功', { id: post.id })
@@ -288,5 +255,5 @@ export class DataService {
   }
 }
 
-// 导出 CRUD 管理器供其他模块使用
-export { userCRUD, postCRUD }
+// 导出 CRUD 管理器供其他模块使用 (暂时注释掉)
+// export { userCRUD, postCRUD }
