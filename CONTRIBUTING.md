@@ -45,6 +45,11 @@ git commit -m "feat: 简洁的提交描述"
 git push origin feature/your-feature-name
 ```
 
+**📝 注意**: 
+- **功能分支**: 提交时跳过代码校验，专注快速开发
+- **主要分支** (main/master/develop): 自动执行完整代码校验
+- 合并到主分支时将强制执行所有质量检查
+
 ### 4. 提交规范
 
 使用 [Conventional Commits](https://www.conventionalcommits.org/) 格式：

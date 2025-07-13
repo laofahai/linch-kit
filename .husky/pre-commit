@@ -1,1 +1,12 @@
-npx lint-staged
+#!/bin/sh
+# 获取当前分支名称
+current_branch=$(git branch --show-current)
+
+# 只在主要分支上执行校验
+if [ "$current_branch" = "main" ] || [ "$current_branch" = "master" ] || [ "$current_branch" = "develop" ]; then
+  echo "🔍 在主要分支 '$current_branch' 上执行完整校验..."
+  npx lint-staged
+else
+  echo "⚡ 在功能分支 '$current_branch' 上跳过校验，快速提交..."
+  echo "💡 提示：合并到主分支时将执行完整校验"
+fi

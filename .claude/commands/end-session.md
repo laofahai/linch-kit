@@ -9,7 +9,7 @@
 - [ ] 功能文档 - 如有新功能添加
 - [ ] API文档 - 如有接口变更
 - [ ] 使用指南 - 如有用法更新
-- [ ] ai-context/04_Project_Management/02_Development_Status.md - 更新开发进度
+- [ ] ai-context/98_Project_Management/02_Development_Status.md - 更新开发进度
 
 ### 2. 代码质量检查
 运行快速验证：

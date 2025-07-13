@@ -19,7 +19,7 @@ bun run validate
 ### 3. 更新项目文档
 - [ ] README.md - 更新功能说明
 - [ ] CHANGELOG.md - 添加版本更新记录
-- [ ] ai-context/04_Project_Management/02_Development_Status.md - 更新开发状态
+- [ ] ai-context/98_Project_Management/02_Development_Status.md - 更新开发状态
 - [ ] 相关API文档和使用指南
 
 ### 4. 提交最终代码

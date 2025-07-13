@@ -15,15 +15,15 @@
 
 # 强制读取 Essential Rules
 
-@ai-context/00_Getting_Started/03_Essential_Rules.md
+Read ai-context/00_Getting_Started/03_Essential_Rules.md
 
 # 强制读取知识库入口
 
-@ai-context/manifest.json
+Read ai-context/manifest.json
 
 # 强制读取 CLAUDE.md
 
-@CLAUDE.md
+Read CLAUDE.md
 
 !echo "✅ [$(date '+%H:%M:%S')] 约束文档读取完成"
 !echo ""
@@ -41,7 +41,7 @@ TodoRead
 !echo "任务: $ARGUMENTS"
 
 !echo "🔍 [$(date '+%H:%M:%S')] 输入验证和安全检查..."
-!if [[-z "$ARGUMENTS"]]; then
+!if [[ -z "$ARGUMENTS" ]]; then
 echo "❌ 错误：请提供任务描述"
 exit 1
 fi
@@ -49,7 +49,7 @@ fi
 !echo "🔍 [$(date '+%H:%M:%S')] 检查当前分支状态..."
 !CURRENT_BRANCH=$(git branch --show-current)
 !echo "当前分支: $CURRENT_BRANCH"
-!if [[ "$CURRENT_BRANCH" == "main" ]] || [["$CURRENT_BRANCH" == "master"]] || [["$CURRENT_BRANCH" == "develop"]] || [["$CURRENT_BRANCH" =~ ^release/.*]]; then
+!if [[ "$CURRENT_BRANCH" == "main" ]] || [[ "$CURRENT_BRANCH" == "master" ]] || [[ "$CURRENT_BRANCH" == "develop" ]] || [[ "$CURRENT_BRANCH" =~ ^release/.* ]]; then
 echo "❌ 错误：不能在保护分支 $CURRENT_BRANCH 上工作"
 echo "💡 建议：运行 /new-branch [功能名] 创建功能分支"
 exit 1
@@ -77,7 +77,7 @@ fi
 
 !echo "📋 执行强制 Graph RAG query 查询..."
 !GRAPH_RAG_RESULT=$(bun run ai:session query "$ARGUMENTS" 2>&1)
-!if [[$? -ne 0]]; then
+!if [[ $? -ne 0 ]]; then
 echo "🚨 FATAL: Graph RAG query 查询失败 - 这是零容忍违规"
 echo "📋 错误详情: $GRAPH_RAG_RESULT"
 echo "🛑 必须基于项目上下文进行开发，查询失败则停止"
@@ -88,7 +88,7 @@ fi
 !echo ""
 !echo "📋 执行强制 Graph RAG symbol 查询..."
 !SYMBOL_RESULT=$(bun run ai:session symbol "Service Controller Component" 2>&1)
-!if [[$? -ne 0]]; then
+!if [[ $? -ne 0 ]]; then
 echo "⚠️ Graph RAG symbol 查询失败，继续执行但需注意"
 echo "📋 错误详情: $SYMBOL_RESULT"
 else
@@ -98,7 +98,7 @@ fi
 !echo ""
 !echo "📋 执行强制 Graph RAG pattern 查询..."
 !PATTERN_RESULT=$(bun run ai:session pattern "singleton factory" "service" 2>&1)
-!if [[$? -ne 0]]; then
+!if [[ $? -ne 0 ]]; then
 echo "⚠️ Graph RAG pattern 查询失败，继续执行但需注意"
 echo "📋 错误详情: $PATTERN_RESULT"
 else
@@ -107,7 +107,7 @@ fi
 
 !echo ""
 !echo "📋 步骤6: 包复用强制检查..."
-!if [[-f "tools/dev/check-reuse.mjs"]]; then
+!if [[ -f "tools/dev/check-reuse.mjs" ]]; then
 bun run deps:check "$ARGUMENTS" || echo "⚠️ 包复用检查完成"
 else
 echo "⚠️ 包复用检查脚本不存在，请确保不重复实现已有功能"
@@ -187,7 +187,7 @@ EOF
 
 !echo ""
 !echo "📋 步骤8: AI Session 工具状态检查..."
-!if [[-f ".ai-session/config.json"]]; then
+!if [[ -f ".ai-session/config.json" ]]; then
 echo "✅ AI Session 已初始化"
 else
 echo "⚠️ AI Session 未初始化，运行 'bun run ai:session init' 初始化"
@@ -195,7 +195,7 @@ fi
 
 !echo ""
 !echo "🤝 [$(date '+%H:%M:%S')] 检查是否需要 Gemini 协商..."
-!if [[$ARGUMENTS =~ (设计|架构|技术选型|方案|复杂)]]; then
+!if [[ $ARGUMENTS =~ (设计|架构|技术选型|方案|复杂) ]]; then
 echo "💡 检测到复杂任务，建议与 Gemini 协商设计最佳实践"
 echo " 触发词：'与Gemini协商设计最佳实践'"
 echo " 触发词：'请Gemini分析技术方案'"
