@@ -183,6 +183,18 @@
       "priority": "medium"
     },
     {
+      "path": "ai-context/02_Guides/12_AI_Native_Development_Risk_Control.md",
+      "description": "【战略级】AI原生开发风险防控体系 - 100% AI Agent开发的完整质量保证策略",
+      "tags": ["ai-native", "risk-control", "guardian-agents", "quality-assurance", "evolution", "strategic"],
+      "priority": "critical"
+    },
+    {
+      "path": "ai-context/02_Guides/13_AI_Guardian_Implementation_Phases.md",
+      "description": "【实施指南】AI守护者智能体集群分阶段实施 - 8个阶段的详细执行计划和Prompts",
+      "tags": ["implementation", "guardian-agents", "phases", "prompts", "execution", "step-by-step"],
+      "priority": "critical"
+    },
+    {
       "path": "ai-context/03_Reference/01_Packages_API/",
       "description": "包API文档",
       "tags": ["api", "reference", "packages"],
@@ -336,7 +348,7 @@
     "corePackages": ["@linch-kit/core", "@linch-kit/auth", "@linch-kit/platform", "@linch-kit/ui"],
     "extensions": ["extensions/console", "extensions/admin", "extensions/blog-extension"],
     "applications": ["apps/starter"],
-    "tools": ["tools/schema", "tools/cli", "tools/context"],
+    "tools": ["tools/schema", "tools/cli", "tools/ai-platform"],
     "completionStatus": "100%"
   }
 }

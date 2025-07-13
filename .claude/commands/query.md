@@ -1,9 +1,8 @@
-🧠 强制 Graph RAG 查询 - 零容忍跳过
+🧠 查询代码库 - 检查现有实现，避免重复工作
 
-**必须完成** - 按照 @CLAUDE.md 约束，任何代码开发前必须查询现有实现
+**查询:** $ARGUMENTS
 
-查询: $ARGUMENTS
-
-!echo "🔍 执行强制 Graph RAG 查询..."
-!bun run ai:session query "$ARGUMENTS"
-!echo "⚠️ 请检查查询结果，避免重复实现现有功能"
+!echo "🔍 执行智能Graph RAG查询..."
+!bun run ai:session query "$ARGUMENTS" --debug
+!echo ""
+!echo "🤖 AI智能提示：请检查查询结果，避免重复实现现有功能"

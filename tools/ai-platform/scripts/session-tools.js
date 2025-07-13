@@ -179,7 +179,7 @@ function queryRelations(entity) {
   log.header('🔗 查询实体关系');
   
   try {
-    let cmd = `bun tools/context/scripts/context-cli.js --find-entity "${entity}" --include-related --debug`;
+    let cmd = `bun tools/ai-platform/scripts/context-cli.js --find-entity "${entity}" --include-related --debug`;
     
     // 使用静默模式执行命令，避免显示"查询结果:"
     log.info(`查询实体关系: ${entity}`);
@@ -251,7 +251,7 @@ function querySymbol(symbol) {
   log.header('🔍 查询符号定义');
   
   try {
-    const cmd = `bun tools/context/scripts/context-cli.js --find-symbol "${symbol}"`;
+    const cmd = `bun tools/ai-platform/scripts/context-cli.js --find-symbol "${symbol}"`;
     const result = runCommand(cmd, `查询符号: ${symbol}`);
     
     // 显示查询结果
@@ -284,8 +284,8 @@ function queryPattern(pattern, forEntity = '') {
   
   try {
     const cmd = forEntity
-      ? `bun tools/context/scripts/context-cli.js --find-pattern "${pattern}" --for-entity "${forEntity}"`
-      : `bun tools/context/scripts/context-cli.js --find-pattern "${pattern}"`;
+      ? `bun tools/ai-platform/scripts/context-cli.js --find-pattern "${pattern}" --for-entity "${forEntity}"`
+      : `bun tools/ai-platform/scripts/context-cli.js --find-pattern "${pattern}"`;
     
     const result = runCommand(cmd, `查询模式: ${pattern}`);
     
@@ -321,12 +321,12 @@ function syncGraphData() {
   
   try {
     // 检查是否存在 graph-data-extractor.js
-    if (!existsSync('tools/context/scripts/graph-data-extractor.js')) {
+    if (!existsSync('tools/ai-platform/scripts/graph-data-extractor.js')) {
       log.warn('graph-data-extractor.js 不存在，跳过图谱同步');
       return;
     }
     
-    runCommand('bun tools/context/scripts/graph-data-extractor.js', '提取并更新图谱数据');
+    runCommand('bun tools/ai-platform/scripts/graph-data-extractor.js', '提取并更新图谱数据');
     log.success('图谱数据同步完成');
     
     // 验证查询功能

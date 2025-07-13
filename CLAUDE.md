@@ -1,6 +1,6 @@
 # Claude AI 开发助手指令
 
-**版本**: v8.0  
+**版本**: v9.0 - AI原生工作流  
 **项目**: LinchKit - AI-First 全栈开发框架  
 **角色**: 智能开发伙伴
 
@@ -31,38 +31,67 @@ Claude必须明确声明："我已阅读Essential_Rules.md，将严格遵守所�
 
 **🔴 CLAUDE必须先阅读Essential_Rules.md了解完整约束**
 
-## 🔍 Graph RAG 查询智能处理
+## 🧠 AI原生持续能力 (v9.0新增)
 
-### 查询转换规则
+### 会话级智能行为模式
 
-Claude必须智能转换用户查询，不直接传递原始查询词：
+Claude现在具备以下内置的持续能力，无需手动触发：
+
+#### 🔄 包复用检查 (自动执行)
+- **触发时机**: 任何新功能开发请求
+- **执行方式**: AI自动分析关键词，查询现有实现
+- **决策逻辑**: 优先复用现有包，避免重复实现
+
+#### 🔍 Graph RAG查询 (持续查询)
+- **触发时机**: 代码相关任务开始前
+- **执行方式**: AI智能提取关键概念，主动查询知识图谱
+- **覆盖范围**: 现有实现、设计模式、API接口、组件库
+
+#### 🛡️ 质量监控 (实时关注)
+- **监控对象**: TypeScript类型安全、ESLint规范、测试覆盖率
+- **响应机制**: 发现问题立即提醒，提供修复建议
+- **预防策略**: 生成代码前评估质量风险
+
+#### 📊 上下文验证 (持续维护)
+- **验证内容**: 项目约束遵循、技术选型一致性
+- **更新机制**: 根据项目演进调整理解
+- **同步保证**: 确保AI理解与项目状态同步
+
+### 🔍 Graph RAG 智能查询处理
+
+Claude会智能转换用户查询，不直接传递原始查询词：
 
 ```
 用户: "console 组件"
-Claude执行:
-  1. bun run ai:session query "console" --debug
-  2. 基于结果查询相关组件
+Claude自动执行:
+  1. 分析关键词: console, component, UI
+  2. bun run ai:session query "console" --debug
+  3. 查询相关组件库和现有实现
+  4. 提供基于项目上下文的建议
   
-用户: "用户认证接口"  
-Claude执行:
-  1. bun run ai:session query "auth" --debug
-  2. bun run ai:session symbol "AuthService"
+用户: "用户认证功能"  
+Claude自动执行:
+  1. 分析关键词: auth, user, authentication
+  2. bun run ai:session query "auth" --debug
+  3. bun run ai:session symbol "AuthService"
+  4. 检查@linch-kit/auth包的现有实现
+  5. 建议复用或扩展现有功能
 ```
 
-### 必要查询命令
+### 核心查询命令 (AI自动执行)
 
 ```bash
-# 基础查询（任何代码任务前必须执行）
-bun run ai:session query "[技术关键词]" --debug
+# 基础查询（AI自动根据任务执行）
+bun run ai:session query "[智能提取的关键词]" --debug
 
-# 符号查询（查找具体函数/类）
-bun run ai:session symbol "[符号名]"
+# 符号查询（AI自动查找相关类/函数）
+bun run ai:session symbol "[相关符号]"
 
-# 模式查询（查找实现模式）
+# 模式查询（AI自动匹配设计模式）
 bun run ai:session pattern "[模式]" "[实体]"
 
-# 包复用检查（新功能前必须执行）
-bun run deps:check "[关键词]"
+# 包复用检查（AI自动执行，无需手动触发）
+bun run deps:check "[自动提取关键词]"
 ```
 
 ## 🎪 AI 协作触发词

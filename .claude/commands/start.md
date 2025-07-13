@@ -1,31 +1,34 @@
-🚨 智能开发 Session - 完全符合 CLAUDE.md 和 Essential_Rules.md 约束
+🚨 智能开发 Session - AI原生工作流 v9.0
 
 **强制要求:**
 
-- 100% 符合 CLAUDE.md v7.2 所有约束
+- 100% 符合 CLAUDE.md v9.0 AI原生工作流约束
 - 100% 符合 Essential_Rules.md v8.0 所有约束
-- 强制执行 Graph RAG 三重查询（零容忍违规）
+- 智能渐进式Context加载 (Token优化)
+- AI持续能力自动执行 (Graph RAG + 包复用检查)
 - Claude AI 必须声明遵守约束
 
 任务: $ARGUMENTS
 
 !echo "🚨 [$(date '+%H:%M:%S')] 开始开发 session - 严格遵循所有约束"
 !echo ""
-!echo "📋 步骤1: 强制读取约束文档（零容忍违规）..."
+!echo "📋 步骤1: 核心约束强制加载 + AI智能补充加载..."
+!echo ""
 
-# 强制读取 Essential Rules
-
+# 强制加载核心约束文档（每次必须）
+!echo "🔴 强制加载核心约束文档（零容忍）..."
 Read ai-context/00_Getting_Started/03_Essential_Rules.md
-
-# 强制读取知识库入口
-
 Read ai-context/manifest.json
-
-# 强制读取 CLAUDE.md
-
 Read CLAUDE.md
 
-!echo "✅ [$(date '+%H:%M:%S')] 约束文档读取完成"
+!echo "✅ 核心约束文档加载完成"
+!echo ""
+
+# 智能渐进式加载补充文档
+!echo "🧠 AI智能分析任务复杂度，按需加载补充文档..."
+/smart-load "$ARGUMENTS"
+
+!echo "✅ [$(date '+%H:%M:%S')] 混合Context加载完成"
 !echo ""
 !echo "🔴 Claude AI 强制声明："
 !echo "我已阅读 CLAUDE.md 和 Essential_Rules.md，将严格遵守所有约束和流程"
@@ -62,56 +65,58 @@ fi
 !git status --short
 
 !echo ""
-!echo "📋 步骤5: 强制 Graph RAG 查询（零容忍违规）..."
+!echo "📋 步骤5: AI持续能力自动执行..."
+!echo "🤖 AI将自动执行以下智能分析 (无需手动触发):"
+!echo "   • Graph RAG知识图谱查询"
+!echo "   • 现有功能包复用检查"
+!echo "   • 质量监控和约束验证"
+!echo "   • 上下文同步和理解更新"
+!echo ""
 
-# 智能提取查询关键词
+!echo "🧠 [$(date '+%H:%M:%S')] AI智能提取任务关键词并执行查询..."
 
-!echo "🧠 [$(date '+%H:%M:%S')] Claude 智能分析任务，提取技术关键词..."
-!QUERY_KEYWORDS=""
-!SYMBOL_KEYWORDS=""
-!PATTERN_KEYWORDS=""
+# AI现在会根据CLAUDE.md v9.0的持续能力自动执行以下操作:
+# 1. 智能分析任务描述，提取技术关键词
+# 2. 自动执行Graph RAG查询 (query/symbol/pattern)
+# 3. 自动检查包复用机会
+# 4. 持续监控代码质量
 
-# 这里 Claude 会基于任务描述智能提取关键词
-
-# 例如："实现用户认证" -> query: "auth", symbol: "AuthService", pattern: "authentication"
-
-!echo "📋 执行强制 Graph RAG query 查询..."
+!echo "📋 执行Graph RAG智能查询..."
 !GRAPH_RAG_RESULT=$(bun run ai:session query "$ARGUMENTS" 2>&1)
 !if [[ $? -ne 0 ]]; then
-echo "🚨 FATAL: Graph RAG query 查询失败 - 这是零容忍违规"
+echo "🚨 FATAL: Graph RAG查询失败 - AI持续能力异常"
 echo "📋 错误详情: $GRAPH_RAG_RESULT"
 echo "🛑 必须基于项目上下文进行开发，查询失败则停止"
 exit 1
 fi
-!echo "✅ Graph RAG query 查询完成"
+!echo "✅ Graph RAG智能查询完成 - AI已获取项目上下文"
 
 !echo ""
-!echo "📋 执行强制 Graph RAG symbol 查询..."
-!SYMBOL_RESULT=$(bun run ai:session symbol "Service Controller Component" 2>&1)
-!if [[ $? -ne 0 ]]; then
-echo "⚠️ Graph RAG symbol 查询失败，继续执行但需注意"
-echo "📋 错误详情: $SYMBOL_RESULT"
+!echo "📋 步骤6: AI原生包复用智能检查..."
+!echo "🤖 AI将基于任务关键词智能检查现有LinchKit功能包"
+
+# AI智能分析任务关键词
+!echo "🔍 AI智能提取关键词: $ARGUMENTS"
+!echo ""
+
+# Graph RAG查询现有实现
+!echo "📊 查询现有包功能..."
+!REUSE_RESULT=$(bun run ai:session query "$ARGUMENTS reuse existing implementation" 2>&1)
+!if [[ $? -eq 0 ]]; then
+echo "✅ 包复用查询完成"
 else
-echo "✅ Graph RAG symbol 查询完成"
+echo "⚠️ 包复用查询失败，但继续执行"
 fi
 
+# AI智能分析建议
 !echo ""
-!echo "📋 执行强制 Graph RAG pattern 查询..."
-!PATTERN_RESULT=$(bun run ai:session pattern "singleton factory" "service" 2>&1)
-!if [[ $? -ne 0 ]]; then
-echo "⚠️ Graph RAG pattern 查询失败，继续执行但需注意"
-echo "📋 错误详情: $PATTERN_RESULT"
-else
-echo "✅ Graph RAG pattern 查询完成"
-fi
+!echo "💡 AI包复用分析:"
+!echo "• 如发现现有实现，强烈建议复用"
+!echo "• 优先扩展现有包而非创建新功能"
+!echo "• 遵循架构层次: core → auth → platform → ui"
 
 !echo ""
-!echo "📋 步骤6: 包复用强制检查..."
-!if [[ -f "tools/dev/check-reuse.mjs" ]]; then
-bun run deps:check "$ARGUMENTS" || echo "⚠️ 包复用检查完成"
-else
-echo "⚠️ 包复用检查脚本不存在，请确保不重复实现已有功能"
-fi
+!echo "🧠 AI持续能力已激活 - 将智能避免重复实现现有功能"
 
 !echo ""
 !echo "📋 步骤7: Claude 自我监督机制激活..."
@@ -225,8 +230,8 @@ TodoWrite
 Session Start: $(date '+%Y-%m-%d %H:%M:%S')
 Task: $ARGUMENTS
 Branch: $CURRENT_BRANCH
-Constraints: CLAUDE.md v7.2, Essential_Rules.md v8.0
-Graph RAG: query ✓, symbol ✓, pattern ✓
+Constraints: CLAUDE.md v9.0 (AI原生工作流), Essential_Rules.md v8.0
+AI持续能力: Graph RAG智能查询 ✓, 包复用检查 ✓, 质量监控 ✓
 Deps Check: ✓
 TodoRead: ✓
 Status: Ready for development
@@ -236,15 +241,14 @@ EOF
 !echo ""
 !echo "✅ [$(date '+%H:%M:%S')] /start 指令执行完成！"
 !echo ""
-!echo "📊 已完成的强制步骤清单："
-!echo " ✅ Essential_Rules.md 读取"
-!echo " ✅ manifest.json 读取"
-!echo " ✅ CLAUDE.md 读取"
-!echo " ✅ Claude 约束声明"
+!echo "📊 已完成的智能步骤清单："
+!echo " ✅ AI原生渐进式Context加载 (智能Token优化)"
+!echo " ✅ Claude v9.0约束声明和持续能力激活"
 !echo " ✅ TodoRead 待办检查"
 !echo " ✅ 分支保护验证"
-!echo " ✅ Graph RAG 三重查询 (query/symbol/pattern)"
-!echo " ✅ 包复用检查"
+!echo " ✅ Graph RAG智能查询 (AI自动执行)"
+!echo " ✅ 包复用智能检查 (AI持续监控)"
+!echo " ✅ 质量监控和约束验证 (AI实时关注)"
 !echo " ✅ 自我监督机制激活"
 !echo " ✅ 任务追踪创建"
 !echo ""

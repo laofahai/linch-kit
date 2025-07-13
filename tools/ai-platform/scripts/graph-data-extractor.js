@@ -93,7 +93,7 @@ function extractToNeo4j() {
   
   try {
     // 直接使用Node.js调用AI CLI模块
-    const extractCmd = `bun tools/context/dist/cli/main.js ai:extract --extractors all --output neo4j --clear`;
+    const extractCmd = `bun tools/ai-platform/dist/index.js extract --all --output neo4j --clear`;
     
     runCommand(extractCmd, '提取项目数据到Neo4j数据库');
     
@@ -109,7 +109,7 @@ function extractToJson() {
   
   try {
     // 直接使用Node.js调用AI CLI模块
-    const extractCmd = `bun tools/context/dist/cli/main.js ai:extract --extractors all --output json`;
+    const extractCmd = `bun tools/ai-platform/dist/index.js extract --all --output json`;
     
     runCommand(extractCmd, '提取项目数据到JSON文件');
     
@@ -124,7 +124,7 @@ function validateExtraction() {
   
   try {
     // 检查graph-data目录是否存在
-    const graphDataPath = resolve('tools/context/graph-data');
+    const graphDataPath = resolve('tools/ai-platform/graph-data');
     if (existsSync(graphDataPath)) {
       log.success('JSON数据文件已生成');
     } else {
