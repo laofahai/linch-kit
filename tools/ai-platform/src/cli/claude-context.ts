@@ -10,6 +10,7 @@
 import { createLogger } from '@linch-kit/core/server'
 
 import { ContextQueryTool } from '../context/context-query-tool.js'
+import { createLogger } from '@linch-kit/core/server'
 
 const logger = createLogger({ name: 'claude-context-cli' })
 
@@ -124,7 +125,7 @@ function parseArgs(): CLIOptions {
  * 显示帮助信息
  */
 function showHelp(): void {
-  console.log(`
+  logger.info(`
 Claude Code 上下文查询工具
 
 用法:
@@ -166,7 +167,7 @@ function formatOutput(data: QueryResult, type: string, format: 'json' | 'text'):
       timestamp: new Date().toISOString(),
       data: data,
     }
-    console.log(JSON.stringify(output, null, 2))
+    logger.info(JSON.stringify(output, null, 2))
   } else {
     // 人类友好的文本格式
     formatTextOutput(data, type)
@@ -179,49 +180,49 @@ function formatOutput(data: QueryResult, type: string, format: 'json' | 'text'):
 function formatTextOutput(data: QueryResult, type: string): void {
   switch (type) {
     case 'context':
-      console.log('\n📋 上下文查询结果:')
+      logger.info('\n📋 上下文查询结果:')
       if (data.entities?.length > 0) {
-        console.log('\n🔍 相关实体:')
+        logger.info('\n🔍 相关实体:')
         data.entities.forEach((entity: EntityResult, index: number) => {
-          console.log(`  ${index + 1}. ${entity.name} (${entity.type})`)
-          if (entity.package) console.log(`     包: ${entity.package}`)
-          if (entity.description) console.log(`     描述: ${entity.description}`)
+          logger.info(`  ${index + 1}. ${entity.name} (${entity.type})`)
+          if (entity.package) logger.info(`     包: ${entity.package}`)
+          if (entity.description) logger.info(`     描述: ${entity.description}`)
         })
       }
 
       if (data.relationships?.length > 0) {
-        console.log('\n🔗 关系:')
+        logger.info('\n🔗 关系:')
         data.relationships.slice(0, 5).forEach((rel: RelationshipResult) => {
-          console.log(`  • ${rel.from} → ${rel.to} (${rel.type})`)
+          logger.info(`  • ${rel.from} → ${rel.to} (${rel.type})`)
         })
       }
 
       if (data.metadata) {
-        console.log(
+        logger.info(
           `\n📊 统计: ${data.metadata.total_results} 个结果，相关性 ${(data.metadata.relevance_score * 100).toFixed(0)}%`
         )
       }
       break
 
     case 'patterns':
-      console.log('\n🎨 代码模式:')
+      logger.info('\n🎨 代码模式:')
       ;(data as PatternResult[]).forEach((pattern, index) => {
-        console.log(`\n  ${index + 1}. ${pattern.name}`)
-        console.log(`     ${pattern.description}`)
-        if (pattern.usage) console.log(`     用法: ${pattern.usage}`)
+        logger.info(`\n  ${index + 1}. ${pattern.name}`)
+        logger.info(`     ${pattern.description}`)
+        if (pattern.usage) logger.info(`     用法: ${pattern.usage}`)
       })
       break
 
     case 'practices':
-      console.log('\n✨ 最佳实践:')
+      logger.info('\n✨ 最佳实践:')
       ;(data as PracticeResult[]).forEach((practice, index) => {
-        console.log(`\n  ${index + 1}. ${practice.name}`)
-        console.log(`     ${practice.description}`)
-        if (practice.category) console.log(`     分类: ${practice.category}`)
+        logger.info(`\n  ${index + 1}. ${practice.name}`)
+        logger.info(`     ${practice.description}`)
+        if (practice.category) logger.info(`     分类: ${practice.category}`)
       })
       break
   }
-  console.log()
+  logger.info()
 }
 
 /**
@@ -231,7 +232,7 @@ async function main(): Promise<void> {
   const options = parseArgs()
 
   if (!options.query) {
-    console.error('错误: 请提供查询内容\n')
+    logger.error('错误: 请提供查询内容\n')
     showHelp()
     process.exit(1)
   }
@@ -248,13 +249,13 @@ async function main(): Promise<void> {
     const tool = new ContextQueryTool()
 
     if (options.verbose) {
-      console.error('正在初始化上下文查询工具...')
+      logger.error('正在初始化上下文查询工具...')
     }
 
     await tool.initialize()
 
     if (options.verbose) {
-      console.error(`正在执行 ${options.type} 查询...`)
+      logger.error(`正在执行 ${options.type} 查询...`)
     }
 
     const startTime = Date.now()
@@ -277,7 +278,7 @@ async function main(): Promise<void> {
     const duration = Date.now() - startTime
 
     if (options.verbose) {
-      console.error(`查询完成，耗时 ${duration}ms`)
+      logger.error(`查询完成，耗时 ${duration}ms`)
     }
 
     formatOutput(result, options.type, options.format)
@@ -285,7 +286,7 @@ async function main(): Promise<void> {
     const errorMessage = error instanceof Error ? error.message : '未知错误'
 
     if (options.format === 'json') {
-      console.log(
+      logger.info(
         JSON.stringify(
           {
             success: false,
@@ -297,7 +298,7 @@ async function main(): Promise<void> {
         )
       )
     } else {
-      console.error(`❌ 查询失败: ${errorMessage}`)
+      logger.error(`❌ 查询失败: ${errorMessage}`)
     }
 
     process.exit(1)

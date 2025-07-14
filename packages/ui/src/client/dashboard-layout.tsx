@@ -49,11 +49,11 @@ export interface DashboardUser {
   /** 用户ID */
   id: string
   /** 用户名称 */
-  name?: string
+  name?: string | undefined
   /** 用户邮箱 */
-  email?: string
+  email?: string | undefined
   /** 头像URL */
-  image?: string
+  image?: string | undefined
   /** 用户角色 */
   role: string
   /** 用户权限列表 */

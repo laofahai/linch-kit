@@ -14,6 +14,7 @@ import type {
   AuditFilter,
 } from '../../audit/types'
 import type { Logger, MetricCollector, Counter } from '../../types/observability'
+import type { LogLevel } from '../../types/common'
 
 // Mock dependencies
 const mockLogger: Logger = {
@@ -21,19 +22,16 @@ const mockLogger: Logger = {
   warn: mock(),
   error: mock(),
   debug: mock(),
-  trace: mock(),
+  fatal: mock(),
   child: mock(() => mockLogger),
-  level: 'info',
-  isLevelEnabled: mock(() => true),
+  setLevel: mock(),
+  getLevel: mock(() => 'info' as LogLevel),
 }
 
 const mockCounter: Counter = {
   inc: mock(),
   get: mock(() => 0),
-  reset: mock(),
-  name: 'test_counter',
-  type: 'counter',
-  help: 'Test counter',
+  reset: mock()
 }
 
 const mockMetrics: MetricCollector = {
@@ -41,9 +39,8 @@ const mockMetrics: MetricCollector = {
   createGauge: mock(),
   createHistogram: mock(),
   createSummary: mock(),
-  getMetrics: mock(() => ({})),
-  register: mock(),
-  clear: mock(),
+  getMetrics: mock(() => Promise.resolve('{}')),
+  reset: mock(),
 }
 
 const mockStore: AuditStore = {
@@ -55,6 +52,7 @@ const mockStore: AuditStore = {
   initialize: mock(),
   destroy: mock(),
   healthCheck: mock(() => Promise.resolve(true)),
+  purge: mock(() => Promise.resolve(0)),
 }
 
 describe('DefaultAuditManager', () => {
@@ -215,28 +213,50 @@ describe('DefaultAuditManager', () => {
     })
 
     it('should filter events based on policy', async () => {
-      // 重置 mock 以避免前面测试的干扰
-      mockStore.store.mockClear()
-
+      // 创建新的Mock store以避免状态干扰
+      const freshMockStore: AuditStore = {
+        name: 'filter-test-store',
+        store: mock(),
+        query: mock(),
+        count: mock(),
+        export: mock(),
+        initialize: mock(),
+        destroy: mock(),
+        healthCheck: mock(() => Promise.resolve(true)),
+        purge: mock(() => Promise.resolve(0)),
+      }
+      auditManager.addStore(freshMockStore)
+      
       // 设置只记录 HIGH 级别的事件
       await auditManager.updatePolicy({ minSeverity: 'HIGH' })
 
       await auditManager.log({ ...testEvent, severity: 'LOW' })
       await auditManager.flush()
 
-      expect(mockStore.store).not.toHaveBeenCalled()
+      expect(freshMockStore.store).not.toHaveBeenCalled()
     })
 
     it('should filter events based on categories', async () => {
-      // 重置 mock 以避免前面测试的干扰
-      mockStore.store.mockClear()
-
+      // 创建新的Mock store以避免状态干扰
+      const freshMockStore: AuditStore = {
+        name: 'category-test-store',
+        store: mock(),
+        query: mock(),
+        count: mock(),
+        export: mock(),
+        initialize: mock(),
+        destroy: mock(),
+        healthCheck: mock(() => Promise.resolve(true)),
+        purge: mock(() => Promise.resolve(0)),
+      }
+      auditManager.addStore(freshMockStore)
+      
       await auditManager.updatePolicy({ categories: ['SECURITY'] })
 
       await auditManager.log({ ...testEvent, category: 'SYSTEM' })
       await auditManager.flush()
 
-      expect(mockStore.store).not.toHaveBeenCalled()
+      expect(freshMockStore.store).not.toHaveBeenCalled()
     })
 
     it('should mask sensitive data when enabled', async () => {
@@ -302,12 +322,12 @@ describe('DefaultAuditManager', () => {
     it('should query events from store', async () => {
       const filter: AuditFilter = {
         categories: ['SECURITY'],
-        startTime: new Date('2023-01-01'),
-        endTime: new Date('2023-12-31'),
+        startDate: new Date('2023-01-01'),
+        endDate: new Date('2023-12-31'),
       }
 
       const expectedEvents = [testEvent as AuditEvent]
-      ;(mockStore.query as Mock).mockResolvedValue(expectedEvents)
+      ;(mockStore.query as any).mockResolvedValue(expectedEvents)
 
       const result = await auditManager.query(filter)
 
@@ -327,7 +347,7 @@ describe('DefaultAuditManager', () => {
     it('should handle query errors', async () => {
       const filter: AuditFilter = { categories: ['SECURITY'] }
       const error = new Error('Query failed')
-      ;(mockStore.query as Mock).mockRejectedValue(error)
+      ;(mockStore.query as any).mockRejectedValue(error)
 
       await expect(auditManager.query(filter)).rejects.toThrow('Query failed')
       expect(mockLogger.error).toHaveBeenCalledWith('Audit query failed', error, { filter })
@@ -341,7 +361,7 @@ describe('DefaultAuditManager', () => {
 
     it('should count events from store', async () => {
       const filter: AuditFilter = { categories: ['SECURITY'] }
-      ;(mockStore.count as Mock).mockResolvedValue(42)
+      ;(mockStore.count as any).mockResolvedValue(42)
 
       const result = await auditManager.count(filter)
 
@@ -366,7 +386,7 @@ describe('DefaultAuditManager', () => {
     it('should export events from store', async () => {
       const filter: AuditFilter = { categories: ['SECURITY'] }
       const expectedData = 'exported data'
-      ;(mockStore.export as Mock).mockResolvedValue(expectedData)
+      ;(mockStore.export as any).mockResolvedValue(expectedData)
 
       const result = await auditManager.export(filter, 'json')
 

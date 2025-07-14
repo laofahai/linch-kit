@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: ['src/index.ts', 'src/client.ts'],
   format: ['esm'],
-  dts: false,
+  dts: true,
   clean: true,
   external: [
     'react',

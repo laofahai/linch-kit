@@ -18,7 +18,7 @@ program
   .command('query <keyword>')
   .description('查询项目知识图谱')
   .action(async (keyword: string) => {
-    console.log(`🔍 查询关键词: ${keyword}`)
+    logger.info(`🔍 查询关键词: ${keyword}`)
     // 调用 Graph RAG 查询
     const { spawn } = await import('child_process')
     spawn('bun', ['run', 'scripts/session-tools.js', 'query', keyword], {
@@ -31,7 +31,7 @@ program
   .command('extract')
   .description('提取项目代码到知识图谱')
   .action(async () => {
-    console.log('🔄 开始提取项目代码...')
+    logger.info('🔄 开始提取项目代码...')
     const { spawn } = await import('child_process')
     spawn('bun', ['run', 'scripts/graph-data-extractor.js'], {
       stdio: 'inherit',

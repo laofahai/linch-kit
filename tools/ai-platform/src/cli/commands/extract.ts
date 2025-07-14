@@ -6,15 +6,15 @@
 
 import { createLogger } from '@linch-kit/core/server'
 
-import type { CommandContext, CommandResult, CLICommand } from '../plugin.js'
-import { PackageExtractor } from '../../extractors/package-extractor.js'
-import { SchemaExtractor } from '../../extractors/schema-extractor.js'
+import { loadNeo4jConfig } from '../../config/neo4j-config.js'
 import { DocumentExtractor } from '../../extractors/document-extractor.js'
 import { FunctionExtractor } from '../../extractors/function-extractor.js'
 import { ImportExtractor } from '../../extractors/import-extractor.js'
+import { PackageExtractor } from '../../extractors/package-extractor.js'
+import { SchemaExtractor } from '../../extractors/schema-extractor.js'
 import { Neo4jService } from '../../graph/neo4j-service.js'
-import { loadNeo4jConfig } from '../../config/neo4j-config.js'
 import type { GraphNode, GraphRelationship } from '../../types/index.js'
+import type { CLICommand, CommandContext, CommandResult } from '../plugin.js'
 
 const logger = createLogger({ name: 'ai:extract-command' })
 
@@ -288,12 +288,12 @@ async function outputToJson(
  * 输出到控制台
  */
 function outputToConsole(nodes: GraphNode[], relationships: GraphRelationship[]): void {
-  console.log('\n📊 数据提取结果:')
-  console.log(`📦 节点数量: ${nodes.length}`)
-  console.log(`🔗 关系数量: ${relationships.length}`)
+  logger.info('\n📊 数据提取结果:')
+  logger.info(`📦 节点数量: ${nodes.length}`)
+  logger.info(`🔗 关系数量: ${relationships.length}`)
 
   if (nodes.length > 0) {
-    console.log('\n📋 节点类型分布:')
+    logger.info('\n📋 节点类型分布:')
     const nodeTypes = nodes.reduce(
       (acc, node) => {
         acc[node.type] = (acc[node.type] || 0) + 1
@@ -303,12 +303,12 @@ function outputToConsole(nodes: GraphNode[], relationships: GraphRelationship[])
     )
 
     Object.entries(nodeTypes).forEach(([type, count]) => {
-      console.log(`  ${type}: ${count}`)
+      logger.info(`  ${type}: ${count}`)
     })
   }
 
   if (relationships.length > 0) {
-    console.log('\n🔗 关系类型分布:')
+    logger.info('\n🔗 关系类型分布:')
     const relationshipTypes = relationships.reduce(
       (acc, rel) => {
         acc[rel.type] = (acc[rel.type] || 0) + 1
@@ -318,7 +318,7 @@ function outputToConsole(nodes: GraphNode[], relationships: GraphRelationship[])
     )
 
     Object.entries(relationshipTypes).forEach(([type, count]) => {
-      console.log(`  ${type}: ${count}`)
+      logger.info(`  ${type}: ${count}`)
     })
   }
 }

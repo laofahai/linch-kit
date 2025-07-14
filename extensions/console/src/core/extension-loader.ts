@@ -6,14 +6,13 @@
 import { EventEmitter } from 'eventemitter3'
 import React from 'react'
 import {
-  ExtensionManager,
   extensionManager as _extensionManager,
   type ExtensionInstance,
   type ExtensionLoadResult,
   type ExtensionState,
   type ExtensionMetrics,
   type ExtensionHealth,
-} from '@linch-kit/core/client'
+} from '@linch-kit/core'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import type { DynamicRouteConfig } from './enhanced-app-registry'
@@ -67,6 +66,12 @@ export interface ConsoleExtensionState extends ExtensionState {
     | 'stopping'
     | 'stopped'
     | 'error'
+  /** 状态更新时间 */
+  lastUpdated: number
+  /** 启动时间 */
+  startedAt?: number
+  /** 停止时间 */
+  stoppedAt?: number
   /** 错误信息 */
   error?: Error
 }
@@ -87,13 +92,13 @@ export class ExtensionLoader extends EventEmitter {
   constructor(
     private config: ExtensionLoaderConfig = {
       autoLoad: true,
-      extensionPath: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
+      extensionPath: process.env['EXTENSION_ROOT'] || process.cwd() + '/extensions',
       hotReload: true,
       maxRetryAttempts: 3,
       retryDelay: 1000,
       verboseLogging: false,
     },
-    private extensionManager: ExtensionManager = _extensionManager
+    private extensionManager = _extensionManager
   ) {
     super()
     this.setupEventHandlers()
@@ -193,7 +198,7 @@ export class ExtensionLoader extends EventEmitter {
           error: {
             code: 'LOAD_FAILED',
             message: `Failed to load after ${maxRetries} attempts: ${loadError.message}`,
-            stack: loadError.stack,
+            ...(loadError.stack && { stack: loadError.stack }),
           },
         }
       }
@@ -409,7 +414,7 @@ export class ExtensionLoader extends EventEmitter {
 
     if (status === 'running') {
       newState.startedAt = Date.now()
-      newState.error = undefined
+      delete newState.error
     } else if (status === 'stopped') {
       newState.stoppedAt = Date.now()
     }
@@ -478,8 +483,8 @@ export class ExtensionLoader extends EventEmitter {
 export function createExtensionLoader(config?: Partial<ExtensionLoaderConfig>): ExtensionLoader {
   const defaultConfig: ExtensionLoaderConfig = {
     autoLoad: true,
-    extensionPath: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
-    hotReload: process.env.NODE_ENV === 'development',
+    extensionPath: process.env['EXTENSION_ROOT'] || process.cwd() + '/extensions',
+    hotReload: process.env['NODE_ENV'] === 'development',
     allowedExtensions: [],
   }
   return new ExtensionLoader({ ...defaultConfig, ...config })

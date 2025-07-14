@@ -14,6 +14,9 @@ export * from './components'
 export * from './forms'
 export * from './tables'
 
+// Providers (统一配置管理)
+export * from './providers/linchkit-unified-provider'
+
 // 类型定义
 export * from './types'
 

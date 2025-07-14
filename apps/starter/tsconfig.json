@@ -54,13 +54,10 @@
         "./*"
       ],
       "@linch-kit/*": [
-        "../../packages/*/src"
-      ],
-      "@linch-kit/core": [
-        "../../packages/core/src"
-      ],
-      "@linch-kit/console": [
-        "../../extensions/console/src"
+        "../../packages/*/dist",
+        "../../packages/*/src",
+        "../../extensions/*/dist", 
+        "../../extensions/*/src"
       ]
     }
   },
@@ -86,6 +83,9 @@
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.spec.ts",
-    "**/*.spec.tsx"
+    "**/*.spec.tsx",
+    "../../packages/*/src/**/*",
+    "../../extensions/*/src/**/*",
+    "../../tools/*/src/**/*"
   ]
 }

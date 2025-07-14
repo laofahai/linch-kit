@@ -9,14 +9,16 @@
  */
 
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
+import { createLogger } from '@linch-kit/core';
 import { join, dirname } from 'path';
 
-// 临时简单日志实现，等待 @linch-kit/core logger 修复后替换
-const logger = {
-  info: (msg: string, meta?: unknown) => console.log(`[QA-Synthesizer] ${msg}`, meta || ''),
-  warn: (msg: string, meta?: unknown) => console.warn(`[QA-Synthesizer] ${msg}`, meta || ''),
-  error: (msg: string, meta?: unknown) => console.error(`[QA-Synthesizer] ${msg}`, meta || ''),
-  debug: (msg: string, meta?: unknown) => process.env.DEBUG && console.log(`[DEBUG] ${msg}`, meta || '')
+const logger = createLogger({ name: 'qa-synthesizer' });
+
+const log = {
+  info: (msg: string, meta?: unknown) => logger.info(`[QA-Synthesizer] ${msg}`, meta || ''),
+  warn: (msg: string, meta?: unknown) => logger.warn(`[QA-Synthesizer] ${msg}`, meta || ''),
+  error: (msg: string, meta?: unknown) => logger.error(`[QA-Synthesizer] ${msg}`, meta || ''),
+  debug: (msg: string, meta?: unknown) => process.env.DEBUG && logger.info(`[DEBUG] ${msg}`, meta || '')
 };
 
 /**

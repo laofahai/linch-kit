@@ -7,7 +7,7 @@
 
 import { Logger } from '../logger-client'
 import { PluginRegistry } from '../plugin'
-import type { Plugin } from '../types'
+import type { Extension } from '../extension/types'
 
 export interface LinchKitInitOptions {
   /**
@@ -31,9 +31,9 @@ export interface LinchKitInitOptions {
   debug?: boolean
 
   /**
-   * 插件列表
+   * 扩展列表
    */
-  plugins?: Plugin[]
+  extensions?: Extension[]
 
   /**
    * 自定义配置
@@ -83,10 +83,10 @@ export async function initLinchKit(options: LinchKitInitOptions): Promise<LinchK
     // 初始化插件系统
     const pluginSystem = new PluginRegistry()
 
-    // 注册插件
-    if (options.plugins) {
-      for (const plugin of options.plugins) {
-        await pluginSystem.register(plugin)
+    // 注册扩展
+    if (options.extensions) {
+      for (const extension of options.extensions) {
+        await pluginSystem.register(extension)
       }
     }
 

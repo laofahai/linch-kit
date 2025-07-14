@@ -128,9 +128,9 @@ export class TenantService {
     // 创建配额记录
     await db.tenantQuotas.create({
       data: {
-        tenantId: tenant.id,
-        maxUsers: tenant.maxUsers,
-        maxStorage: tenant.maxStorage,
+        tenantId: tenant['id'],
+        maxUsers: tenant['maxUsers'],
+        maxStorage: tenant['maxStorage'],
         maxApiCalls: 10000,
         maxPlugins: 5,
         maxSchemas: 10,
@@ -148,17 +148,17 @@ export class TenantService {
 
     const updateData: Record<string, unknown> = {}
 
-    if (input.name !== undefined) updateData.name = input.name
-    if (input.domain !== undefined) updateData.domain = input.domain
-    if (input.slug !== undefined) updateData.slug = input.slug
-    if (input.description !== undefined) updateData.description = input.description
-    if (input.status !== undefined) updateData.status = input.status
-    if (input.plan !== undefined) updateData.plan = input.plan
-    if (input.billingCycle !== undefined) updateData.billingCycle = input.billingCycle
-    if (input.maxUsers !== undefined) updateData.maxUsers = input.maxUsers
-    if (input.maxStorage !== undefined) updateData.maxStorage = input.maxStorage
-    if (input.settings !== undefined) updateData.settings = JSON.stringify(input.settings)
-    if (input.metadata !== undefined) updateData.metadata = JSON.stringify(input.metadata)
+    if (input['name'] !== undefined) updateData['name'] = input['name']
+    if (input['domain'] !== undefined) updateData['domain'] = input['domain']
+    if (input['slug'] !== undefined) updateData['slug'] = input['slug']
+    if (input['description'] !== undefined) updateData['description'] = input['description']
+    if (input['status'] !== undefined) updateData['status'] = input['status']
+    if (input['plan'] !== undefined) updateData['plan'] = input['plan']
+    if (input['billingCycle'] !== undefined) updateData['billingCycle'] = input['billingCycle']
+    if (input['maxUsers'] !== undefined) updateData['maxUsers'] = input['maxUsers']
+    if (input['maxStorage'] !== undefined) updateData['maxStorage'] = input['maxStorage']
+    if (input['settings'] !== undefined) updateData['settings'] = JSON.stringify(input['settings'])
+    if (input['metadata'] !== undefined) updateData['metadata'] = JSON.stringify(input['metadata'])
 
     const tenant = await db.tenant.update({
       where: { id: tenantId },
@@ -174,13 +174,13 @@ export class TenantService {
       await db.tenantQuotas.upsert({
         where: { tenantId },
         update: {
-          maxUsers: input.maxUsers || tenant.maxUsers,
-          maxStorage: input.maxStorage || tenant.maxStorage,
+          maxUsers: input['maxUsers'] || tenant['maxUsers'],
+          maxStorage: input['maxStorage'] || tenant['maxStorage'],
         },
         create: {
           tenantId,
-          maxUsers: input.maxUsers || tenant.maxUsers,
-          maxStorage: input.maxStorage || tenant.maxStorage,
+          maxUsers: input['maxUsers'] || tenant['maxUsers'],
+          maxStorage: input['maxStorage'] || tenant['maxStorage'],
           maxApiCalls: 10000,
           maxPlugins: 5,
           maxSchemas: 10,
@@ -245,7 +245,7 @@ export class TenantService {
     const where: Record<string, unknown> = {}
 
     if (search) {
-      where.OR = [
+      where['OR'] = [
         { name: { contains: search, mode: 'insensitive' } },
         { domain: { contains: search, mode: 'insensitive' } },
         { slug: { contains: search, mode: 'insensitive' } },
@@ -253,15 +253,15 @@ export class TenantService {
     }
 
     if (status) {
-      where.status = status
+      where['status'] = status
     }
 
     if (plan) {
-      where.plan = plan
+      where['plan'] = plan
     }
 
     // 软删除过滤
-    where.deletedAt = null
+    where['deletedAt'] = null
 
     // 计算偏移量
     const offset = (page - 1) * pageSize
@@ -325,8 +325,8 @@ export class TenantService {
 
     const where: Record<string, unknown> = { deletedAt: null }
 
-    if (filters.status) {
-      where.status = filters.status
+    if (filters['status']) {
+      where['status'] = filters['status']
     }
 
     return await db.tenant.count({ where })
@@ -341,7 +341,7 @@ export class TenantService {
     const where: Record<string, unknown> = { slug, deletedAt: null }
 
     if (excludeId) {
-      where.id = { not: excludeId }
+      where['id'] = { not: excludeId }
     }
 
     const existing = await db.tenant.findFirst({ where })
@@ -357,7 +357,7 @@ export class TenantService {
     const where: Record<string, unknown> = { domain, deletedAt: null }
 
     if (excludeId) {
-      where.id = { not: excludeId }
+      where['id'] = { not: excludeId }
     }
 
     const existing = await db.tenant.findFirst({ where })

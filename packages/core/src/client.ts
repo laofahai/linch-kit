@@ -7,7 +7,7 @@
 // 客户端安全的Logger
 export { logger as Logger, createLogger } from './logger-client'
 
-// Extension系统 - 正确的实现
+// Extension系统 - 客户端安全版本
 export {
   EnhancedPluginRegistry as ExtensionRegistry,
   isExtension,
@@ -17,16 +17,10 @@ export {
 // Extension和Plugin类型
 export type {
   Extension,
-  ExtensionInstance,
-  ExtensionLoadResult,
-  ExtensionRegistration,
   ExtensionCapabilities,
   ExtensionPermission,
   ExtensionMetadata,
   ExtensionConfig,
-  ExtensionConfiguration,
-  ExtensionContext,
-  ExtensionManager,
 } from './extension/types'
 
 export type {

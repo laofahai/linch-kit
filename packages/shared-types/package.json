@@ -1,0 +1,45 @@
+{
+  "name": "@linch-kit/shared-types",
+  "version": "1.0.0",
+  "description": "LinchKit shared types - prevents circular dependencies",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "bun test"
+  },
+  "keywords": [
+    "linchkit",
+    "types",
+    "shared",
+    "typescript"
+  ],
+  "author": "LinchKit Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.8.3",
+    "tsup": "^8.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

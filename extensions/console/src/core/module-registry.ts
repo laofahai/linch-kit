@@ -248,7 +248,7 @@ export class ModuleRegistry extends EventEmitter {
       }
 
       registration.status = 'registered'
-      registration.loadedAt = undefined
+      delete registration.loadedAt
       this.loadOrder = this.loadOrder.filter(name => name !== moduleName)
 
       this.emit('moduleUnloaded', { name: moduleName })

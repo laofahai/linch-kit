@@ -12,13 +12,11 @@
  */
 
 // import { logger } from '@linch-kit/core'
-// 临时使用console.log直到logger导出问题解决
-const logger = {
-  info: (...args: unknown[]) => console.log('[INFO]', ...args),
-  error: (...args: unknown[]) => console.error('[ERROR]', ...args),
-  warn: (...args: unknown[]) => console.warn('[WARN]', ...args)
-}
+import { createLogger } from '@linch-kit/core'
+
+const logger = createLogger({ name: 'meta-learner' })
 import { ExtensionMetadata } from '@linch-kit/core'
+import { createLogger } from '@linch-kit/core'
 import type { EntityMetadata } from '@linch-kit/platform'
 import { promises as fs } from 'fs'
 import { join, dirname } from 'path'

@@ -4,11 +4,14 @@
  * 独立的 AI CLI 工具，用于数据提取和查询
  */
 
+import { createLogger } from '@linch-kit/core/server'
 import { extractCommand } from './commands/extract.js'
 import { queryCommand } from './commands/query.js'
 import { generateCommand } from './commands/generate.js'
 import { contextCommand } from './commands/context.js'
 import type { CommandContext } from './plugin.js'
+
+const logger = createLogger({ name: 'ai:cli-main' })
 
 async function main() {
   const args = process.argv.slice(2)
@@ -43,9 +46,9 @@ async function main() {
     t: (key: string) => key, // 简单的翻译函数
     log: console.log,
     logger: {
-      info: (msg: string) => console.log(`[INFO] ${msg}`),
-      warn: (msg: string) => console.warn(`[WARN] ${msg}`),
-      error: (msg: string) => console.error(`[ERROR] ${msg}`),
+      info: (msg: string) => logger.info(`[INFO] ${msg}`),
+      warn: (msg: string) => logger.warn(`[WARN] ${msg}`),
+      error: (msg: string) => logger.error(`[ERROR] ${msg}`),
     },
   }
 
@@ -65,26 +68,26 @@ async function main() {
       command = contextCommand
       break
     default:
-      console.error(`Unknown command: ${commandName}`)
-      console.log('Available commands:')
-      console.log('  ai:extract   - 提取代码库结构化数据')
-      console.log('  ai:query     - 查询知识图谱')
-      console.log('  ai:generate  - 生成代码')
-      console.log('  ai:context   - 上下文分析')
+      logger.error(`Unknown command: ${commandName}`)
+      logger.info('Available commands:')
+      logger.info('  ai:extract   - 提取代码库结构化数据')
+      logger.info('  ai:query     - 查询知识图谱')
+      logger.info('  ai:generate  - 生成代码')
+      logger.info('  ai:context   - 上下文分析')
       process.exit(1)
   }
 
   try {
     const result = await command.handler(context)
     if (!result.success) {
-      console.error(`Command failed: ${result.error || result.message}`)
+      logger.error(`Command failed: ${result.error || result.message}`)
       process.exit(1)
     }
     if (result.message) {
-      console.log(result.message)
+      logger.info(result.message)
     }
   } catch (error) {
-    console.error('Command execution failed:', error)
+    logger.error('Command execution failed:', error)
     process.exit(1)
   }
 }

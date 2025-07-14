@@ -116,7 +116,7 @@ export function useUITranslation() {
  * @param key 配置键名
  * @param defaultValue 默认值
  */
-export function getUIConfig<T>(key: string, defaultValue?: T): T {
+export function getUIConfig<T>(_key: string, defaultValue?: T): T {
   // 临时实现，后续集成真实的配置系统
   return defaultValue as T
 }

@@ -54,8 +54,8 @@ export class PreCheckGuardian implements GuardianAgent {
    * 主要前置检查流程
    */
   async check(featureDescription: string): Promise<PreCheckResult> {
-    console.log('🔍 Pre-Check Guardian 启动...')
-    console.log(`📋 功能描述: ${featureDescription}`)
+    logger.info('🔍 Pre-Check Guardian 启动...')
+    logger.info(`📋 功能描述: ${featureDescription}`)
     
     this.violations = [] // 重置违规记录
     
@@ -93,7 +93,7 @@ export class PreCheckGuardian implements GuardianAgent {
   }
   
   private async checkEnvironment(): Promise<void> {
-    console.log('🌍 环境检查...')
+    logger.info('🌍 环境检查...')
     
     // Node.js版本检查
     try {
@@ -123,7 +123,7 @@ export class PreCheckGuardian implements GuardianAgent {
   }
   
   private async checkBranchStatus(currentBranch: string): Promise<void> {
-    console.log('🔀 分支状态检查...')
+    logger.info('🔀 分支状态检查...')
     
     // 保护分支检查
     const protectedBranches = ['main', 'master', 'develop']
@@ -144,7 +144,7 @@ export class PreCheckGuardian implements GuardianAgent {
   }
   
   private async checkDependencies(): Promise<void> {
-    console.log('📦 依赖状态检查...')
+    logger.info('📦 依赖状态检查...')
     
     if (!existsSync('./node_modules')) {
       this.addViolation('依赖未安装，运行: bun install')
@@ -157,7 +157,7 @@ export class PreCheckGuardian implements GuardianAgent {
   }
   
   private async checkCodeQuality(): Promise<void> {
-    console.log('🔍 代码质量预检...')
+    logger.info('🔍 代码质量预检...')
     
     try {
       execSync('bunx tsc --noEmit --skipLibCheck', { 
@@ -171,7 +171,7 @@ export class PreCheckGuardian implements GuardianAgent {
   }
   
   private async checkPackageReuse(featureDescription: string): Promise<void> {
-    console.log('🔄 包复用检查...')
+    logger.info('🔄 包复用检查...')
     
     try {
       const keywords = this.extractKeywords(featureDescription)
@@ -188,7 +188,7 @@ export class PreCheckGuardian implements GuardianAgent {
   }
   
   private async checkGraphRAGContext(featureDescription: string): Promise<void> {
-    console.log('🧠 Graph RAG上下文检查...')
+    logger.info('🧠 Graph RAG上下文检查...')
     
     try {
       const keywords = this.extractKeywords(featureDescription)
@@ -228,31 +228,31 @@ export class PreCheckGuardian implements GuardianAgent {
   }
   
   private printResults(result: PreCheckResult): void {
-    console.log('\n📊 Pre-Check Guardian 结果:')
+    logger.info('\n📊 Pre-Check Guardian 结果:')
     
     const violations = result.violations.filter(v => v.type === 'violation')
     const warnings = result.violations.filter(v => v.type === 'warning')
     const suggestions = result.violations.filter(v => v.type === 'suggestion')
     
     if (violations.length > 0) {
-      console.log('\n❌ 必须修复的违规项:')
-      violations.forEach(v => console.log(`  • ${v.message}`))
+      logger.info('\n❌ 必须修复的违规项:')
+      violations.forEach(v => logger.info(`  • ${v.message}`))
     }
     
     if (warnings.length > 0) {
-      console.log('\n⚠️ 警告项:')
-      warnings.forEach(v => console.log(`  • ${v.message}`))
+      logger.info('\n⚠️ 警告项:')
+      warnings.forEach(v => logger.info(`  • ${v.message}`))
     }
     
     if (suggestions.length > 0) {
-      console.log('\n💡 建议:')
-      suggestions.forEach(v => console.log(`  • ${v.message}`))
+      logger.info('\n💡 建议:')
+      suggestions.forEach(v => logger.info(`  • ${v.message}`))
     }
     
     if (result.success) {
-      console.log('\n✅ Pre-Check Guardian 通过，可以开始代码生成!')
+      logger.info('\n✅ Pre-Check Guardian 通过，可以开始代码生成!')
     } else {
-      console.log('\n🚨 Pre-Check Guardian 失败，请先修复违规项!')
+      logger.info('\n🚨 Pre-Check Guardian 失败，请先修复违规项!')
     }
   }
 }

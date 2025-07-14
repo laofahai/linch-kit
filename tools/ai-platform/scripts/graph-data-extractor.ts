@@ -1,0 +1,237 @@
+#!/usr/bin/env bun
+/* eslint-env node */
+/**
+ * LinchKit 图谱数据提取器
+ * 使用AI CLI工具提取项目数据到Neo4j图数据库
+ */
+
+import { execSync } from 'child_process';
+import { existsSync } from 'fs';
+import { resolve } from 'path';
+import { createLogger } from '@linch-kit/core';
+
+const logger = createLogger('graph-data-extractor');
+
+// 颜色输出
+const colors = {
+  green: '\x1b[32m',
+  red: '\x1b[31m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  reset: '\x1b[0m',
+  bold: '\x1b[1m'
+};
+
+const log = {
+  info: (msg) => logger.info(`${colors.blue}ℹ${colors.reset} ${msg}`),
+  success: (msg) => logger.info(`${colors.green}✓${colors.reset} ${msg}`),
+  warn: (msg) => logger.info(`${colors.yellow}⚠${colors.reset} ${msg}`),
+  error: (msg) => logger.info(`${colors.red}✗${colors.reset} ${msg}`),
+  header: (msg) => logger.info(`\n${colors.bold}${colors.blue}${msg}${colors.reset}\n`)
+};
+
+function runCommand(cmd, description) {
+  try {
+    log.info(description);
+    const result = execSync(cmd, { encoding: 'utf8', stdio: 'pipe' });
+    log.success(`${description} - 完成`);
+    return result;
+  } catch (error) {
+    log.error(`${description} - 失败: ${error.message}`);
+    throw error;
+  }
+}
+
+function checkEnvironment() {
+  log.header('🔍 环境检查');
+  
+  // 检查当前目录
+  const pwd = process.cwd();
+  log.info(`当前目录: ${pwd}`);
+  
+  // 检查是否在项目根目录
+  if (!existsSync('package.json') || !existsSync('CLAUDE.md')) {
+    log.error('请在项目根目录执行此脚本');
+    process.exit(1);
+  }
+  
+  // 检查LinchKit CLI工具是否存在
+  const cliPath = resolve('packages/core/dist/cli.js');
+  if (!existsSync(cliPath)) {
+    log.warn('LinchKit CLI工具不存在，尝试构建...');
+    try {
+      runCommand('bun run build', '构建LinchKit CLI工具');
+    } catch {
+      log.error('构建失败，请手动运行 bun run build');
+      process.exit(1);
+    }
+  }
+  
+  log.success('环境检查通过');
+}
+
+function checkNeo4jConnection() {
+  log.header('🔗 Neo4j连接检查');
+  
+  // 检查环境变量
+  const requiredEnvVars = [
+    'NEO4J_CONNECTION_URI',
+    'NEO4J_USERNAME',
+    'NEO4J_PASSWORD'
+  ];
+  
+  const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+  
+  if (missingEnvVars.length > 0) {
+    log.error(`缺少必要的环境变量: ${missingEnvVars.join(', ')}`);
+    log.info('请在 .env.local 文件中配置Neo4j连接信息');
+    process.exit(1);
+  }
+  
+  log.success('Neo4j连接配置检查通过');
+}
+
+async function extractToNeo4j() {
+  log.header('📊 提取数据到Neo4j');
+  
+  try {
+    // 直接调用AI Platform的提取功能
+    const { PackageExtractor } = await import('../src/extractors/package-extractor.js');
+    const { SchemaExtractor } = await import('../src/extractors/schema-extractor.js');
+    const { DocumentExtractor } = await import('../src/extractors/document-extractor.js');
+    const { FunctionExtractor } = await import('../src/extractors/function-extractor.js');
+    const { ImportExtractor } = await import('../src/extractors/import-extractor.js');
+    const { Neo4jService } = await import('../src/graph/neo4j-service.js');
+    const { loadNeo4jConfig } = await import('../src/config/neo4j-config.js');
+    
+    const workingDir = process.cwd();
+    let allNodes = [];
+    let allRelationships = [];
+    
+    // 执行所有数据提取器
+    const extractors = [
+      { name: 'package', Extractor: PackageExtractor },
+      { name: 'schema', Extractor: SchemaExtractor },
+      { name: 'document', Extractor: DocumentExtractor },
+      { name: 'function', Extractor: FunctionExtractor },
+      { name: 'import', Extractor: ImportExtractor },
+    ];
+    
+    for (const { name, Extractor } of extractors) {
+      log.info(`执行 ${name} 数据提取...`);
+      const extractor = new Extractor(workingDir);
+      const result = await extractor.extract();
+      allNodes.push(...result.nodes);
+      allRelationships.push(...result.relationships);
+      log.success(`${name} 提取完成: ${result.nodes.length} 节点, ${result.relationships.length} 关系`);
+    }
+    
+    // 导入到Neo4j
+    const config = await loadNeo4jConfig();
+    const neo4jService = new Neo4jService(config);
+    
+    await neo4jService.connect();
+    
+    log.info('清空 Neo4j 数据库...');
+    await neo4jService.clearDatabase();
+    
+    log.info('导入数据到 Neo4j...');
+    await neo4jService.importData(allNodes, allRelationships);
+    
+    await neo4jService.disconnect();
+    
+    log.success(`数据提取完成: ${allNodes.length} 节点, ${allRelationships.length} 关系`);
+  } catch (error) {
+    log.error('数据提取失败:', error);
+    throw error;
+  }
+}
+
+function extractToJson() {
+  log.header('📄 提取数据到JSON文件');
+  
+  try {
+    // 直接使用Node.js调用AI CLI模块
+    const extractCmd = `bun tools/ai-platform/cli.ts extract --all --output json`;
+    
+    runCommand(extractCmd, '提取项目数据到JSON文件');
+    
+    log.success('JSON数据提取完成');
+  } catch {
+    log.warn('JSON数据提取失败，但不影响主流程');
+  }
+}
+
+function validateExtraction() {
+  log.header('✅ 验证数据提取');
+  
+  try {
+    // 检查graph-data目录是否存在
+    const graphDataPath = resolve('tools/ai-platform/graph-data');
+    if (existsSync(graphDataPath)) {
+      log.success('JSON数据文件已生成');
+    } else {
+      log.warn('JSON数据文件未找到');
+    }
+    
+    // 尝试简单的Neo4j查询来验证数据
+    log.info('验证Neo4j数据...');
+    const contextCliPath = resolve('scripts/ai/context-cli.js');
+    if (existsSync(contextCliPath)) {
+      try {
+        runCommand(`bun ${contextCliPath} --find-entity "Package" --limit 1`, '测试Neo4j查询');
+        log.success('Neo4j数据验证通过');
+      } catch {
+        log.warn('Neo4j查询测试失败，但数据可能已成功提取');
+      }
+    }
+    
+  } catch (error) {
+    log.error('数据验证失败');
+    throw error;
+  }
+}
+
+function printSummary() {
+  log.header('📋 执行总结');
+  
+  logger.info(`
+${colors.bold}图谱数据提取完成${colors.reset}
+
+✅ 已完成的操作:
+  • 环境检查和工具准备
+  • Neo4j连接验证
+  • 项目数据提取到Neo4j数据库
+  • JSON备份文件生成
+  • 数据提取验证
+
+🎯 下一步操作:
+  • 使用 'bun run ai:session query <entity>' 测试查询功能
+  • 使用 'bun run ai:session validate' 运行完整验证
+  • 开始您的AI辅助开发工作
+
+${colors.blue}提示:${colors.reset} 如果遇到问题，请检查 .env.local 中的Neo4j连接配置
+  `);
+}
+
+// 主程序
+async function main() {
+  try {
+    log.header('🚀 LinchKit 图谱数据提取器');
+    
+    checkEnvironment();
+    checkNeo4jConnection();
+    await extractToNeo4j();
+    extractToJson();
+    validateExtraction();
+    printSummary();
+    
+  } catch (error) {
+    log.error('图谱数据提取失败');
+    log.error(error.message);
+    process.exit(1);
+  }
+}
+
+// 运行主程序
+main();

@@ -6,7 +6,7 @@
  */
 
 import { existsSync } from 'fs'
-import { resolve, join } from 'path'
+import { resolve, join, relative } from 'path'
 
 export interface ExtractorConfiguration {
   workingDirectory: string
@@ -98,7 +98,7 @@ export class ExtractorConfig {
    * 获取相对于项目根目录的路径
    */
   getRelativePath(absolutePath: string): string {
-    return require('path').relative(this.config.projectRoot, absolutePath)
+    return relative(this.config.projectRoot, absolutePath)
   }
 
   /**

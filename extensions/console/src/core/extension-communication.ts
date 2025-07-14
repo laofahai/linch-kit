@@ -4,7 +4,7 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-import type { ExtensionInstance } from '@linch-kit/core/client'
+import type { ExtensionInstance } from '@linch-kit/core'
 
 import { extensionLoader } from './extension-loader'
 
@@ -617,7 +617,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
     if (!this.stats.byExtension[message.from]) {
       this.stats.byExtension[message.from] = { sent: 0, received: 0 }
     }
-    this.stats.byExtension[message.from].sent++
+    this.stats.byExtension[message.from]!.sent++
 
     // 更新接收者统计
     const recipients = Array.isArray(message.to) ? message.to : [message.to]
@@ -625,7 +625,7 @@ export class ExtensionCommunicationHub extends EventEmitter {
       if (!this.stats.byExtension[recipient]) {
         this.stats.byExtension[recipient] = { sent: 0, received: 0 }
       }
-      this.stats.byExtension[recipient].received++
+      this.stats.byExtension[recipient]!.received++
     }
   }
 

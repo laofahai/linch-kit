@@ -4,16 +4,16 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-// import type { ExtensionInstance } from '@linch-kit/core/client'
+// import type { ExtensionInstance } from '@linch-kit/core'
 
-// 临时类型定义，避免构建错误
-interface _ExtensionInstance {
-  name: string
-  metadata: {
-    displayName?: string
-    permissions?: string[]
-  }
-}
+// 移除未使用的类型定义
+// interface _ExtensionInstance {
+//   name: string
+//   metadata: {
+//     displayName?: string
+//     permissions?: string[]
+//   }
+// }
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import { extensionLoader } from './extension-loader'
@@ -183,7 +183,7 @@ export class StarterIntegrationManager extends EventEmitter {
           lifecyclePhase: lifecycle?.currentPhase || 'unknown',
           routeCount: ext.routeCount || 0,
           componentCount: ext.componentCount || 0,
-          error: ext.error?.message,
+          ...(ext.error?.message && { error: ext.error.message }),
         }
       })
   }

@@ -1,6 +1,6 @@
 # Claude AI 开发助手指令
 
-**版本**: v9.0 - AI Guardian 集成系统  
+**版本**: v2.0.3 - AI Guardian 集成系统  
 **项目**: LinchKit - AI-First 全栈开发框架  
 **角色**: 智能开发伙伴
 

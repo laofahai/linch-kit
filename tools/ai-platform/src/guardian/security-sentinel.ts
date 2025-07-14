@@ -14,12 +14,9 @@
  * @author LinchKit AI Guardian System
  */
 
-// 临时使用console.log直到logger导出问题解决
-const logger = {
-  info: (...args: unknown[]) => console.log('[INFO]', ...args),
-  error: (...args: unknown[]) => console.error('[ERROR]', ...args),
-  warn: (...args: unknown[]) => console.warn('[WARN]', ...args)
-}
+import { createLogger } from '@linch-kit/core'
+
+const logger = createLogger({ name: 'security-sentinel' })
 
 import { promises as fs } from 'fs'
 import { join, dirname } from 'path'

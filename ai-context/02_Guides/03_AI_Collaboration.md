@@ -1,6 +1,6 @@
 # LinchKit AI 协作主指南 (AI Collaboration Master Guide)
 
-**版本**: 2.0  
+**版本**: v2.0.3  
 **状态**: 生效中  
 **目标**: 为所有 AI 助手提供统一、清晰、无歧义的协作指导
 

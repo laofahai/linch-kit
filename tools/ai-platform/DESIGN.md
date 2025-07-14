@@ -1,6 +1,6 @@
 # LinchKit AI Platform 架构设计文档
 
-**版本**: v1.0.0  
+**版本**: v2.0.3  
 **作者**: Claude Code  
 **创建日期**: 2025-07-14  
 **目的**: 全面分析现有ai-platform架构，为AI Guardian集成提供指导

@@ -18,8 +18,10 @@
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
+    "@linch-kit/configs": "workspace:*",
     "@linch-kit/console": "workspace:*",
     "@linch-kit/core": "workspace:*",
+    "@linch-kit/ui": "workspace:*",
     "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-query": "^5.81.5",
     "@trpc/client": "^11.4.3",

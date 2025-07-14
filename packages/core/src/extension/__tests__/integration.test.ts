@@ -29,14 +29,21 @@ const mockExtension: Extension = {
       hasHooks: false,
     },
     entries: {
-      main: 'index.ts',
       schema: 'schema.ts',
       api: 'api.ts',
       components: 'components.ts',
     },
     configuration: {
-      enabled: true,
-      autoStart: true,
+      enabled: {
+        type: 'boolean',
+        default: true,
+        description: 'Whether the extension is enabled'
+      },
+      autoStart: {
+        type: 'boolean', 
+        default: true,
+        description: 'Whether to auto-start the extension'
+      },
     },
     dependencies: [],
   },
@@ -66,7 +73,7 @@ const mockExtension: Extension = {
 
 describe('Extension System Integration Tests', () => {
   let extensionManager: ExtensionManager
-  let originalImport: typeof globalThis.import
+  let originalImport: any
   let originalReadFile: unknown
 
   beforeEach(() => {

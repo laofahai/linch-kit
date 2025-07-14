@@ -629,6 +629,91 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
     const nodes: GraphNode[] = []
     const relationships: GraphRelationship[] = []
 
+    // 收集所有文件信息，用于创建FILE节点
+    const fileMap = new Map<string, { packageName?: string; entities: Array<{ id: string; type: string; name: string }> }>()
+    
+    // 预处理：收集所有实体的文件信息
+    const allEntities = [
+      ...rawData.functions.map(f => ({ ...f, entityType: 'function' })),
+      ...rawData.classes.map(c => ({ ...c, entityType: 'class' })),
+      ...rawData.interfaces.map(i => ({ ...i, entityType: 'interface' })),
+      ...rawData.types.map(t => ({ ...t, entityType: 'type' }))
+    ]
+
+    // 按文件分组实体
+    for (const entity of allEntities) {
+      if (!fileMap.has(entity.filePath)) {
+        fileMap.set(entity.filePath, { packageName: entity.packageName, entities: [] })
+      }
+      
+      const entityId = NodeIdGenerator.api(
+        entity.packageName || 'unknown',
+        entity.name,
+        entity.entityType,
+        entity.filePath
+      )
+      
+      fileMap.get(entity.filePath)!.entities.push({
+        id: entityId,
+        type: entity.entityType,
+        name: entity.name
+      })
+    }
+
+    // 创建FILE节点和包含关系
+    for (const [filePath, fileInfo] of fileMap) {
+      const fileId = NodeIdGenerator.file(fileInfo.packageName || 'unknown', filePath)
+      
+      // 创建FILE节点
+      const fileNode: GraphNode = {
+        id: fileId,
+        type: NodeType.FILE,
+        name: filePath.split('/').pop() || 'unknown',
+        properties: {
+          file_path: filePath,
+          file_type: filePath.split('.').pop() || 'unknown',
+          entity_count: fileInfo.entities.length,
+          package_name: fileInfo.packageName || 'unknown',
+        },
+        metadata: this.createMetadata(filePath, fileInfo.packageName),
+      }
+      
+      nodes.push(fileNode)
+
+      // 创建FILE到PACKAGE的关系
+      if (fileInfo.packageName) {
+        const packageId = NodeIdGenerator.package(fileInfo.packageName)
+        const fileToPackageRelationship: GraphRelationship = {
+          id: RelationshipIdGenerator.create(RelationType.CONTAINS, packageId, fileId),
+          type: RelationType.CONTAINS,
+          source: packageId,
+          target: fileId,
+          properties: {
+            file_type: fileNode.properties?.file_type,
+            entity_count: fileInfo.entities.length,
+          },
+          metadata: this.createMetadata(filePath, fileInfo.packageName),
+        }
+        relationships.push(fileToPackageRelationship)
+      }
+
+      // 创建FILE包含实体的关系
+      for (const entity of fileInfo.entities) {
+        const containsRelationship: GraphRelationship = {
+          id: RelationshipIdGenerator.create(RelationType.CONTAINS, fileId, entity.id),
+          type: RelationType.CONTAINS,
+          source: fileId,
+          target: entity.id,
+          properties: {
+            entity_type: entity.type,
+            entity_name: entity.name,
+          },
+          metadata: this.createMetadata(filePath, fileInfo.packageName),
+        }
+        relationships.push(containsRelationship)
+      }
+    }
+
     // 创建函数节点
     for (const func of rawData.functions) {
       const nodeId = NodeIdGenerator.api(
@@ -713,11 +798,12 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
       // 创建继承关系
       if (cls.extendsClass) {
-        const parentId = NodeIdGenerator.api(
-          cls.packageName || 'unknown',
-          cls.extendsClass,
-          'class'
-        )
+        // 尝试在当前文件中查找父类，如果找不到则创建一个通用的ID
+        const parentClass = rawData.classes.find(c => c.name === cls.extendsClass && c.packageName === cls.packageName)
+        const parentId = parentClass 
+          ? NodeIdGenerator.api(parentClass.packageName || 'unknown', parentClass.name, 'class', parentClass.filePath)
+          : NodeIdGenerator.api(cls.packageName || 'unknown', cls.extendsClass, 'class')
+        
         const relationshipId = RelationshipIdGenerator.create(
           RelationType.EXTENDS,
           nodeId,
@@ -729,17 +815,22 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           type: RelationType.EXTENDS,
           source: nodeId,
           target: parentId,
+          properties: {
+            parent_class: cls.extendsClass,
+            is_same_package: parentClass ? true : false,
+          },
           metadata: this.createMetadata(cls.filePath, cls.packageName),
         })
       }
 
       // 创建实现关系
       for (const interfaceName of cls.implementsInterfaces) {
-        const interfaceId = NodeIdGenerator.api(
-          cls.packageName || 'unknown',
-          interfaceName,
-          'interface'
-        )
+        // 尝试在当前项目中查找接口，如果找不到则创建一个通用的ID
+        const targetInterface = rawData.interfaces.find(i => i.name === interfaceName && i.packageName === cls.packageName)
+        const interfaceId = targetInterface
+          ? NodeIdGenerator.api(targetInterface.packageName || 'unknown', targetInterface.name, 'interface', targetInterface.filePath)
+          : NodeIdGenerator.api(cls.packageName || 'unknown', interfaceName, 'interface')
+        
         const relationshipId = RelationshipIdGenerator.create(
           RelationType.IMPLEMENTS,
           nodeId,
@@ -751,6 +842,10 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           type: RelationType.IMPLEMENTS,
           source: nodeId,
           target: interfaceId,
+          properties: {
+            interface_name: interfaceName,
+            is_same_package: targetInterface ? true : false,
+          },
           metadata: this.createMetadata(cls.filePath, cls.packageName),
         })
       }
@@ -786,11 +881,12 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
 
       // 创建接口继承关系
       for (const parentInterface of iface.extendsInterfaces) {
-        const parentId = NodeIdGenerator.api(
-          iface.packageName || 'unknown',
-          parentInterface,
-          'interface'
-        )
+        // 尝试在当前项目中查找父接口，如果找不到则创建一个通用的ID
+        const targetInterface = rawData.interfaces.find(i => i.name === parentInterface && i.packageName === iface.packageName)
+        const parentId = targetInterface
+          ? NodeIdGenerator.api(targetInterface.packageName || 'unknown', targetInterface.name, 'interface', targetInterface.filePath)
+          : NodeIdGenerator.api(iface.packageName || 'unknown', parentInterface, 'interface')
+        
         const relationshipId = RelationshipIdGenerator.create(
           RelationType.EXTENDS,
           nodeId,
@@ -802,6 +898,10 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           type: RelationType.EXTENDS,
           source: nodeId,
           target: parentId,
+          properties: {
+            parent_interface: parentInterface,
+            is_same_package: targetInterface ? true : false,
+          },
           metadata: this.createMetadata(iface.filePath, iface.packageName),
         })
       }
@@ -842,7 +942,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
   }
 
   getNodeType(): NodeType[] {
-    return [NodeType.FUNCTION, NodeType.CLASS, NodeType.INTERFACE, NodeType.TYPE]
+    return [NodeType.FUNCTION, NodeType.CLASS, NodeType.INTERFACE, NodeType.TYPE, NodeType.FILE]
   }
 
   getRelationTypes(): RelationType[] {
@@ -850,6 +950,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       RelationType.CALLS,
       RelationType.EXTENDS,
       RelationType.IMPLEMENTS,
+      RelationType.CONTAINS,
       RelationType.USES_TYPE,
       RelationType.RETURNS,
       RelationType.PARAMETER,

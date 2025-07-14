@@ -114,7 +114,7 @@ export class DefaultAuditManager implements AuditManager {
     // 停止刷新定时器
     if (this.flushTimer) {
       clearInterval(this.flushTimer)
-      this.flushTimer = undefined
+      delete this.flushTimer
     }
 
     // 刷新剩余事件
@@ -230,6 +230,9 @@ export class DefaultAuditManager implements AuditManager {
     // 使用第一个可用的存储进行查询
     // TODO: 实现多存储聚合查询
     const primaryStore = stores[0]
+    if (!primaryStore) {
+      throw new Error('No audit store available for query')
+    }
 
     try {
       const results = await primaryStore.query(filter)
@@ -253,6 +256,9 @@ export class DefaultAuditManager implements AuditManager {
     }
 
     const primaryStore = stores[0]
+    if (!primaryStore) {
+      throw new Error('No audit store available for count')
+    }
 
     try {
       return await primaryStore.count(filter)

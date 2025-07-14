@@ -376,9 +376,9 @@ describe('DefaultDataMasker', () => {
 
       const masked = dataMasker.maskObject(complex)
 
-      expect(masked.level1.level2.level3.password).toBe('de***et')
-      expect(masked.level1.level2.level3.array[0].password).toBe('ar***et')
-      expect(masked.level1.level2.level3.array[1]).toBe('normal_value')
+      expect((masked.level1 as any).level2.level3.password).toBe('de***et')
+      expect((masked.level1 as any).level2.level3.array[0].password).toBe('ar***et')
+      expect((masked.level1 as any).level2.level3.array[1]).toBe('normal_value')
     })
   })
 })

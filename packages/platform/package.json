@@ -49,6 +49,7 @@
   "dependencies": {
     "@linch-kit/core": "workspace:*",
     "@linch-kit/ui": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
     "@trpc/server": "^11.0.0",
     "@trpc/client": "^11.0.0",
     "zod": "^3.22.0",

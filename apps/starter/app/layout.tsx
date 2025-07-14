@@ -1,10 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
-import { LinchKitProvider } from '@/components/providers/linchkit-provider'
-import { ThemeProvider } from '@/components/providers/theme-provider'
-import { TRPCProvider } from '@/components/providers/trpc-provider'
+import { createLinchKitProvider, defaultLinchKitConfig } from '@linch-kit/ui'
+
+import type { AppRouter } from '@/lib/trpc'
 import './globals.css'
+
+// 创建带有 tRPC 支持的 LinchKit Provider
+const { LinchKitUnifiedProvider } = createLinchKitProvider<AppRouter>()
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,18 +24,12 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+        <LinchKitUnifiedProvider
+          config={defaultLinchKitConfig}
+          AppRouter={undefined} // 类型已在创建时指定
         >
-          <LinchKitProvider>
-            <TRPCProvider>
-              {children}
-            </TRPCProvider>
-          </LinchKitProvider>
-        </ThemeProvider>
+          {children}
+        </LinchKitUnifiedProvider>
       </body>
     </html>
   )

@@ -16,17 +16,14 @@ mock.module('yaml', () => ({
 }))
 
 // Mock fetch for remote configs
-global.fetch = mock()
+global.fetch = mock() as any
 
 describe('ConfigManager', () => {
   let manager: ConfigManager
   beforeEach(() => {
     manager = new ConfigManager()
 
-    // Clear all mocks
-    mockReadFile.mockClear()
-    mockYamlParse.mockClear()
-    global.fetch.mockClear()
+    // Note: bun:test Mock doesn't have mockClear, mocks are auto-managed
   })
 
   afterEach(() => {
@@ -39,13 +36,13 @@ describe('ConfigManager', () => {
       manager.set('app.version', '1.0.0')
       manager.set('app.debug', true)
 
-      expect(manager.get('app.name')).toBe('TestApp')
-      expect(manager.get('app.version')).toBe('1.0.0')
-      expect(manager.get('app.debug')).toBe(true)
+      expect(manager.get<string>('app.name')).toBe('TestApp')
+      expect(manager.get<string>('app.version')).toBe('1.0.0')
+      expect(manager.get<boolean>('app.debug')).toBe(true)
     })
 
     it('should return default value for non-existent keys', () => {
-      expect(manager.get('non.existent')).toBeUndefined()
+      expect(manager.get<any>('non.existent')).toBeUndefined()
       expect(manager.get('non.existent', 'default')).toBe('default')
       expect(manager.get('non.existent', 42)).toBe(42)
       expect(manager.get('non.existent', { foo: 'bar' })).toEqual({ foo: 'bar' })
@@ -207,8 +204,8 @@ describe('ConfigManager', () => {
 
         await manager.loadConfig(source)
 
-        expect(manager.get('app')).toEqual({ name: 'TestApp', version: '1.0.0' })
-        expect(manager.get('database')).toEqual({ host: 'localhost', port: 5432 })
+        expect(manager.get<any>('app')).toEqual({ name: 'TestApp', version: '1.0.0' })
+        expect(manager.get<any>('database')).toEqual({ host: 'localhost', port: 5432 })
         expect(listener).toHaveBeenCalledWith({
           sourceId: 'test-object',
           config: source.data,
@@ -230,8 +227,8 @@ describe('ConfigManager', () => {
         await manager.loadConfig(source)
 
         expect(mockReadFile).toHaveBeenCalledWith('/path/to/config.json', 'utf-8')
-        expect(manager.get('app')).toEqual({ name: 'FileApp' })
-        expect(manager.get('port')).toBe(3000)
+        expect(manager.get<any>('app')).toEqual({ name: 'FileApp' })
+        expect(manager.get<number>('port')).toBe(3000)
       })
 
       it('should load YAML configuration from file', async () => {
@@ -249,8 +246,8 @@ describe('ConfigManager', () => {
 
         expect(mockReadFile).toHaveBeenCalledWith('/path/to/config.yaml', 'utf-8')
         expect(mockYamlParse).toHaveBeenCalledWith('app:\n  name: YamlApp\nenabled: true')
-        expect(manager.get('app')).toEqual({ name: 'YamlApp' })
-        expect(manager.get('enabled')).toBe(true)
+        expect(manager.get<any>('app')).toEqual({ name: 'YamlApp' })
+        expect(manager.get<boolean>('enabled')).toBe(true)
       })
 
       it('should handle file loading errors', async () => {
@@ -312,9 +309,9 @@ describe('ConfigManager', () => {
 
         await manager.loadConfig(source)
 
-        expect(manager.get('name')).toBe('EnvApp')
-        expect(manager.get('port')).toBe(8080)
-        expect(manager.get('debug')).toBe(true)
+        expect(manager.get<string>('name')).toBe('EnvApp')
+        expect(manager.get<number>('port')).toBe(8080)
+        expect(manager.get<boolean>('debug')).toBe(true)
         expect(manager.has('other_var')).toBe(false)
       })
 
@@ -329,8 +326,8 @@ describe('ConfigManager', () => {
 
         await manager.loadConfig(source)
 
-        expect(manager.get('test_var')).toBe('test-value')
-        expect(manager.get('another_var')).toBe(42)
+        expect(manager.get<string>('test_var')).toBe('test-value')
+        expect(manager.get<number>('another_var')).toBe(42)
       })
 
       it('should parse different value types from environment', async () => {
@@ -349,13 +346,13 @@ describe('ConfigManager', () => {
 
         await manager.loadConfig(source)
 
-        expect(manager.get('string_val')).toBe('hello')
-        expect(manager.get('int_val')).toBe(123)
-        expect(manager.get('float_val')).toBe(12.34)
-        expect(manager.get('true_val')).toBe(true)
-        expect(manager.get('false_val')).toBe(false)
-        expect(manager.get('json_val')).toEqual({ key: 'value' })
-        expect(manager.get('array_val')).toEqual([1, 2, 3])
+        expect(manager.get<string>('string_val')).toBe('hello')
+        expect(manager.get<number>('int_val')).toBe(123)
+        expect(manager.get<number>('float_val')).toBe(12.34)
+        expect(manager.get<boolean>('true_val')).toBe(true)
+        expect(manager.get<boolean>('false_val')).toBe(false)
+        expect(manager.get<any>('json_val')).toEqual({ key: 'value' })
+        expect(manager.get<number[]>('array_val')).toEqual([1, 2, 3])
       })
     })
 
@@ -379,8 +376,8 @@ describe('ConfigManager', () => {
         await manager.loadConfig(source)
 
         expect(fetch).toHaveBeenCalledWith('https://config.example.com/config.json')
-        expect(manager.get('app')).toEqual({ name: 'RemoteApp' })
-        expect(manager.get('version')).toBe('2.0.0')
+        expect(manager.get<any>('app')).toEqual({ name: 'RemoteApp' })
+        expect(manager.get<string>('version')).toBe('2.0.0')
       })
 
       it('should load YAML configuration from remote URL', async () => {
@@ -402,7 +399,7 @@ describe('ConfigManager', () => {
 
         await manager.loadConfig(source)
 
-        expect(manager.get('app')).toEqual({ name: 'RemoteYamlApp' })
+        expect(manager.get<any>('app')).toEqual({ name: 'RemoteYamlApp' })
       })
 
       it('should handle remote loading errors', async () => {
@@ -474,9 +471,9 @@ describe('ConfigManager', () => {
         data: { app: { name: 'HighPriorityApp' }, timeout: 5000 },
       })
 
-      expect(manager.get('app')).toEqual({ name: 'HighPriorityApp' })
-      expect(manager.get('port')).toBe(3000) // From low priority
-      expect(manager.get('timeout')).toBe(5000) // From high priority
+      expect(manager.get<any>('app')).toEqual({ name: 'HighPriorityApp' })
+      expect(manager.get<number>('port')).toBe(3000) // From low priority
+      expect(manager.get<number>('timeout')).toBe(5000) // From high priority
     })
   })
 
@@ -489,14 +486,14 @@ describe('ConfigManager', () => {
         data: { version: '1.0.0' },
       })
 
-      expect(manager.get('version')).toBe('1.0.0')
+      expect(manager.get<string>('version')).toBe('1.0.0')
 
       // For object sources, reloading will reload the same data
       // This test verifies that reload doesn't fail
       await manager.reload('reload-test')
 
       // Value should remain the same for object sources
-      expect(manager.get('version')).toBe('1.0.0')
+      expect(manager.get<string>('version')).toBe('1.0.0')
     })
 
     it('should reload all configuration sources', async () => {
@@ -512,14 +509,14 @@ describe('ConfigManager', () => {
         data: { key2: 'value2' },
       })
 
-      expect(manager.get('key1')).toBe('value1')
-      expect(manager.get('key2')).toBe('value2')
+      expect(manager.get<string>('key1')).toBe('value1')
+      expect(manager.get<string>('key2')).toBe('value2')
 
       await manager.reload()
 
       // Values should still be there after reload
-      expect(manager.get('key1')).toBe('value1')
-      expect(manager.get('key2')).toBe('value2')
+      expect(manager.get<string>('key1')).toBe('value1')
+      expect(manager.get<string>('key2')).toBe('value2')
     })
 
     it('should handle reload of non-existent source', async () => {

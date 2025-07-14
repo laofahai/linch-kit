@@ -68,7 +68,7 @@ export class QualityGateGuardian implements GuardianAgent {
    * 主要质量门禁检查流程
    */
   async validate(): Promise<QualityGateResult> {
-    console.log('🚨 Quality Gate Guardian 启动...')
+    logger.info('🚨 Quality Gate Guardian 启动...')
     
     this.violations = []
     this.resetMetrics()
@@ -106,14 +106,14 @@ export class QualityGateGuardian implements GuardianAgent {
   }
   
   private async checkTypeScript(): Promise<void> {
-    console.log('🔍 TypeScript严格检查...')
+    logger.info('🔍 TypeScript严格检查...')
     
     try {
       execSync('bunx tsc --noEmit --strict', { 
         encoding: 'utf8',
         stdio: 'pipe'
       })
-      console.log('✅ TypeScript检查通过')
+      logger.info('✅ TypeScript检查通过')
     } catch (error: any) {
       const errorOutput = error.stdout || error.stderr || ''
       const errorLines = errorOutput.split('\n').filter(line => line.includes('error TS'))
@@ -134,7 +134,7 @@ export class QualityGateGuardian implements GuardianAgent {
   }
   
   private async checkESLint(): Promise<void> {
-    console.log('📏 ESLint规范检查...')
+    logger.info('📏 ESLint规范检查...')
     
     try {
       const output = execSync('bunx eslint . --format=json --max-warnings=0', { 
@@ -152,7 +152,7 @@ export class QualityGateGuardian implements GuardianAgent {
       this.metrics.eslintViolations = totalViolations
       
       if (totalViolations === 0) {
-        console.log('✅ ESLint检查通过')
+        logger.info('✅ ESLint检查通过')
       } else {
         this.addWarning('eslint', `ESLint违规: ${totalViolations}个`)
         
@@ -168,7 +168,7 @@ export class QualityGateGuardian implements GuardianAgent {
   }
   
   private async checkBuild(): Promise<void> {
-    console.log('🔨 构建检查...')
+    logger.info('🔨 构建检查...')
     
     try {
       execSync('bun run build', { 
@@ -176,7 +176,7 @@ export class QualityGateGuardian implements GuardianAgent {
         stdio: 'pipe',
         timeout: 120000 // 2分钟超时
       })
-      console.log('✅ 构建成功')
+      logger.info('✅ 构建成功')
       this.metrics.buildSuccess = true
     } catch {
       this.addCritical('build', '构建失败，代码无法编译')
@@ -185,7 +185,7 @@ export class QualityGateGuardian implements GuardianAgent {
   }
   
   private async checkTests(): Promise<void> {
-    console.log('🧪 测试检查...')
+    logger.info('🧪 测试检查...')
     
     try {
       // 运行测试
@@ -196,7 +196,7 @@ export class QualityGateGuardian implements GuardianAgent {
       })
       
       this.metrics.testsPassing = true
-      console.log('✅ 测试通过')
+      logger.info('✅ 测试通过')
       
       // 检查覆盖率
       try {
@@ -224,7 +224,7 @@ export class QualityGateGuardian implements GuardianAgent {
   }
   
   private async checkAIGeneratedCode(): Promise<void> {
-    console.log('🤖 AI生成代码检查...')
+    logger.info('🤖 AI生成代码检查...')
     
     const tsFiles = await glob('**/*.ts', { ignore: ['node_modules/**', 'dist/**'] })
     let anyTypeCount = 0
@@ -319,38 +319,38 @@ export class QualityGateGuardian implements GuardianAgent {
   }
   
   private printResults(result: QualityGateResult): void {
-    console.log('\n📊 Quality Gate Guardian 结果:')
+    logger.info('\n📊 Quality Gate Guardian 结果:')
     
     // 显示质量指标
-    console.log('\n📈 质量指标:')
-    console.log(`  • 质量分数: ${result.metrics.codeQualityScore}/100`)
-    console.log(`  • TypeScript错误: ${result.metrics.typeScriptErrors}`)
-    console.log(`  • ESLint违规: ${result.metrics.eslintViolations}`)
-    console.log(`  • 测试覆盖率: ${result.metrics.testCoverage}%`)
-    console.log(`  • 测试状态: ${result.metrics.testsPassing ? '✅ 通过' : '❌ 失败'}`)
-    console.log(`  • 构建状态: ${result.metrics.buildSuccess ? '✅ 成功' : '❌ 失败'}`)
+    logger.info('\n📈 质量指标:')
+    logger.info(`  • 质量分数: ${result.metrics.codeQualityScore}/100`)
+    logger.info(`  • TypeScript错误: ${result.metrics.typeScriptErrors}`)
+    logger.info(`  • ESLint违规: ${result.metrics.eslintViolations}`)
+    logger.info(`  • 测试覆盖率: ${result.metrics.testCoverage}%`)
+    logger.info(`  • 测试状态: ${result.metrics.testsPassing ? '✅ 通过' : '❌ 失败'}`)
+    logger.info(`  • 构建状态: ${result.metrics.buildSuccess ? '✅ 成功' : '❌ 失败'}`)
     
     if (result.aiGeneratedFiles.length > 0) {
-      console.log(`  • AI生成文件: ${result.aiGeneratedFiles.length}个`)
+      logger.info(`  • AI生成文件: ${result.aiGeneratedFiles.length}个`)
     }
     
     const criticalViolations = result.violations.filter(v => v.type === 'critical')
     const warnings = result.violations.filter(v => v.type === 'warning')
     
     if (criticalViolations.length > 0) {
-      console.log('\n🚨 严重违规 (必须修复):')
-      criticalViolations.forEach(v => console.log(`  • [${v.category}] ${v.message}`))
+      logger.info('\n🚨 严重违规 (必须修复):')
+      criticalViolations.forEach(v => logger.info(`  • [${v.category}] ${v.message}`))
     }
     
     if (warnings.length > 0) {
-      console.log('\n⚠️ 警告项:')
-      warnings.forEach(v => console.log(`  • [${v.category}] ${v.message}`))
+      logger.info('\n⚠️ 警告项:')
+      warnings.forEach(v => logger.info(`  • [${v.category}] ${v.message}`))
     }
     
     if (result.success) {
-      console.log(`\n✅ Quality Gate Guardian 通过! 代码质量: ${result.metrics.codeQualityScore}/100`)
+      logger.info(`\n✅ Quality Gate Guardian 通过! 代码质量: ${result.metrics.codeQualityScore}/100`)
     } else {
-      console.log('\n🚨 Quality Gate Guardian 失败! 请修复严重违规项')
+      logger.info('\n🚨 Quality Gate Guardian 失败! 请修复严重违规项')
     }
   }
 }

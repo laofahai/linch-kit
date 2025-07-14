@@ -7,6 +7,7 @@
 import { createLogger } from '@linch-kit/core/server'
 
 import type { CommandContext, CommandResult, CLICommand } from '../plugin.js'
+import { createLogger } from '@linch-kit/core/server'
 import { Neo4jService } from '../../graph/neo4j-service.js'
 import { loadNeo4jConfig } from '../../config/neo4j-config.js'
 import type { GraphNode, GraphRelationship, NodeType, RelationType } from '../../types/index.js'
@@ -238,7 +239,7 @@ function outputQueryResult(
       break
 
     case 'json':
-      console.log(JSON.stringify(result, null, 2))
+      logger.info(JSON.stringify(result, null, 2))
       break
 
     case 'tree':
@@ -259,20 +260,20 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
   switch (queryType) {
     case 'node':
       if (Array.isArray(result) && result.length > 0) {
-        console.log('\n📋 找到的节点:')
-        console.log('ID | 类型 | 名称 | 描述')
-        console.log('---|------|------|------')
+        logger.info('\n📋 找到的节点:')
+        logger.info('ID | 类型 | 名称 | 描述')
+        logger.info('---|------|------|------')
         result.forEach((node: GraphNode) => {
           const description = node.properties?.description || node.properties?.file_path || '-'
           const truncatedDesc =
             String(description).length > 40
               ? String(description).substring(0, 40) + '...'
               : String(description)
-          console.log(`${node.id} | ${node.type} | ${node.name} | ${truncatedDesc}`)
+          logger.info(`${node.id} | ${node.type} | ${node.name} | ${truncatedDesc}`)
         })
-        console.log(`\n📊 总计: ${result.length} 个节点`)
+        logger.info(`\n📊 总计: ${result.length} 个节点`)
       } else {
-        console.log('\n❌ 未找到匹配的节点')
+        logger.info('\n❌ 未找到匹配的节点')
       }
       break
 
@@ -289,39 +290,39 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
       }
 
       if (relResult.nodes.length > 0) {
-        console.log('\n🔗 关联的节点:')
-        console.log('ID | 类型 | 名称 | 描述')
-        console.log('---|------|------|------')
+        logger.info('\n🔗 关联的节点:')
+        logger.info('ID | 类型 | 名称 | 描述')
+        logger.info('---|------|------|------')
         relResult.nodes.forEach((node: GraphNode) => {
           const description = node.properties?.description || node.properties?.file_path || '-'
           const truncatedDesc =
             String(description).length > 40
               ? String(description).substring(0, 40) + '...'
               : String(description)
-          console.log(`${node.id} | ${node.type} | ${node.name} | ${truncatedDesc}`)
+          logger.info(`${node.id} | ${node.type} | ${node.name} | ${truncatedDesc}`)
         })
       }
 
       if (relResult.relationships.length > 0) {
-        console.log('\n🔗 关系:')
-        console.log('源节点 | 关系类型 | 目标节点 | 属性')
-        console.log('-------|---------|---------|------')
+        logger.info('\n🔗 关系:')
+        logger.info('源节点 | 关系类型 | 目标节点 | 属性')
+        logger.info('-------|---------|---------|------')
         relResult.relationships.forEach((rel: GraphRelationship) => {
           const props = rel.properties ? Object.keys(rel.properties).length : 0
-          console.log(`${rel.source} | ${rel.type} | ${rel.target} | ${props}个属性`)
+          logger.info(`${rel.source} | ${rel.type} | ${rel.target} | ${props}个属性`)
         })
       }
 
       // 显示统计信息
-      console.log('\n📊 关系查询统计:')
-      console.log(`📦 节点数: ${relResult.stats.totalNodes}`)
-      console.log(`🔗 关系数: ${relResult.stats.totalRelationships}`)
-      console.log(`📏 最大深度: ${relResult.stats.maxDepth}`)
+      logger.info('\n📊 关系查询统计:')
+      logger.info(`📦 节点数: ${relResult.stats.totalNodes}`)
+      logger.info(`🔗 关系数: ${relResult.stats.totalRelationships}`)
+      logger.info(`📏 最大深度: ${relResult.stats.maxDepth}`)
 
       if (Object.keys(relResult.stats.relationshipTypes).length > 0) {
-        console.log('\n🔗 关系类型分布:')
+        logger.info('\n🔗 关系类型分布:')
         Object.entries(relResult.stats.relationshipTypes).forEach(([type, count]) => {
-          console.log(`  ${type}: ${count}`)
+          logger.info(`  ${type}: ${count}`)
         })
       }
       break
@@ -339,31 +340,31 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
       }
 
       if (pathResult.paths.length > 0) {
-        console.log('\n🛤️ 找到的路径:')
+        logger.info('\n🛤️ 找到的路径:')
         pathResult.paths.forEach((path, index) => {
-          console.log(`\n路径 ${index + 1} (${path.pathType === 'shortest' ? '最短' : '备选'}):`)
-          console.log(`  📏 长度: ${path.length}`)
-          console.log(`  ⚖️ 权重: ${path.weight}`)
-          console.log(`  📦 节点数: ${path.nodes.length}`)
-          console.log(`  🔗 关系数: ${path.relationships.length}`)
+          logger.info(`\n路径 ${index + 1} (${path.pathType === 'shortest' ? '最短' : '备选'}):`)
+          logger.info(`  📏 长度: ${path.length}`)
+          logger.info(`  ⚖️ 权重: ${path.weight}`)
+          logger.info(`  📦 节点数: ${path.nodes.length}`)
+          logger.info(`  🔗 关系数: ${path.relationships.length}`)
 
           // 显示路径详情
           if (path.nodes.length > 0) {
-            console.log('  📋 路径节点:')
+            logger.info('  📋 路径节点:')
             path.nodes.forEach((node, nodeIndex) => {
-              console.log(`    ${nodeIndex + 1}. ${node.name} (${node.type})`)
+              logger.info(`    ${nodeIndex + 1}. ${node.name} (${node.type})`)
             })
           }
 
           if (path.relationships.length > 0) {
-            console.log('  🔗 路径关系:')
+            logger.info('  🔗 路径关系:')
             path.relationships.forEach((rel, relIndex) => {
-              console.log(`    ${relIndex + 1}. ${rel.type}`)
+              logger.info(`    ${relIndex + 1}. ${rel.type}`)
             })
           }
         })
       } else {
-        console.log('\n❌ 未找到连接路径')
+        logger.info('\n❌ 未找到连接路径')
       }
       break
     }
@@ -375,21 +376,21 @@ function outputTableFormat(result: unknown, queryType: QueryType): void {
         nodeTypes: Record<string, number>
         relationshipTypes: Record<string, number>
       }
-      console.log('\n📊 图数据库统计信息:')
-      console.log(`📦 节点总数: ${statsResult.nodeCount}`)
-      console.log(`🔗 关系总数: ${statsResult.relationshipCount}`)
+      logger.info('\n📊 图数据库统计信息:')
+      logger.info(`📦 节点总数: ${statsResult.nodeCount}`)
+      logger.info(`🔗 关系总数: ${statsResult.relationshipCount}`)
 
       if (Object.keys(statsResult.nodeTypes).length > 0) {
-        console.log('\n📋 节点类型分布:')
+        logger.info('\n📋 节点类型分布:')
         Object.entries(statsResult.nodeTypes).forEach(([type, count]) => {
-          console.log(`  ${type}: ${count}`)
+          logger.info(`  ${type}: ${count}`)
         })
       }
 
       if (Object.keys(statsResult.relationshipTypes).length > 0) {
-        console.log('\n🔗 关系类型分布:')
+        logger.info('\n🔗 关系类型分布:')
         Object.entries(statsResult.relationshipTypes).forEach(([type, count]) => {
-          console.log(`  ${type}: ${count}`)
+          logger.info(`  ${type}: ${count}`)
         })
       }
       break
@@ -425,7 +426,7 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
             'Explore dependencies with: --type relations --search <node_name> --direction out',
           ],
         }
-        console.log(JSON.stringify(contextPacket, null, 2))
+        logger.info(JSON.stringify(contextPacket, null, 2))
       } else {
         const emptyPacket = {
           summary: 'No nodes found matching your query',
@@ -437,7 +438,7 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
             'Use --type stats to see available node types',
           ],
         }
-        console.log(JSON.stringify(emptyPacket, null, 2))
+        logger.info(JSON.stringify(emptyPacket, null, 2))
       }
       break
 
@@ -479,7 +480,7 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
           'Analyze dependency chains: --type relations --depth 2',
         ],
       }
-      console.log(JSON.stringify(contextPacket, null, 2))
+      logger.info(JSON.stringify(contextPacket, null, 2))
       break
     }
 
@@ -516,7 +517,7 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
           'Analyze relationship types in the path',
         ],
       }
-      console.log(JSON.stringify(contextPacket, null, 2))
+      logger.info(JSON.stringify(contextPacket, null, 2))
       break
     }
 
@@ -555,7 +556,7 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
           'Search for specific entities: --type node --search <entity_name>',
         ],
       }
-      console.log(JSON.stringify(contextPacket, null, 2))
+      logger.info(JSON.stringify(contextPacket, null, 2))
       break
     }
 
@@ -567,7 +568,7 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
         metadata: { query_type: queryType, confidence: 0.5 },
         follow_up_suggestions: ['Use --format table for detailed view'],
       }
-      console.log(JSON.stringify(genericPacket, null, 2))
+      logger.info(JSON.stringify(genericPacket, null, 2))
       break
     }
   }
@@ -577,8 +578,8 @@ function outputAIContextFormat(result: unknown, queryType: QueryType): void {
  * 树形格式输出
  */
 function outputTreeFormat(result: unknown, _queryType: QueryType): void {
-  console.log('\n🌳 树形视图:')
-  console.log(JSON.stringify(result, null, 2))
+  logger.info('\n🌳 树形视图:')
+  logger.info(JSON.stringify(result, null, 2))
 }
 
 /**

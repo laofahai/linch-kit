@@ -12,8 +12,8 @@ const clientLogger = {
 
 interface ErrorBoundaryState {
   hasError: boolean
-  error?: Error
-  errorInfo?: ErrorInfo
+  error?: Error | null
+  errorInfo?: ErrorInfo | null
 }
 
 interface ErrorBoundaryProps {
@@ -31,7 +31,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // 记录错误到客户端日志
     clientLogger.error('React Error Boundary 捕获错误', error, {
       errorInfo,
@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     })
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // 如果有自定义的 fallback，使用自定义的
       if (this.props.fallback && this.state.error && this.state.errorInfo) {
@@ -105,7 +105,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               </button>
               <button
                 onClick={() => {
-                  this.setState({ hasError: false, error: undefined, errorInfo: undefined })
+                  this.setState({ hasError: false, error: null, errorInfo: null })
                 }}
                 className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
               >
@@ -128,7 +128,7 @@ export function withErrorBoundary<T extends object>(
 ) {
   return function WithErrorBoundaryComponent(props: T) {
     return (
-      <ErrorBoundary fallback={fallback}>
+      <ErrorBoundary {...(fallback && { fallback })}>
         <Component {...props} />
       </ErrorBoundary>
     )

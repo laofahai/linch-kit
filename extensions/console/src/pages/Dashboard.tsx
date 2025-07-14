@@ -103,8 +103,8 @@ export function Dashboard() {
         />
         <StatCard
           title={t('dashboard.stats.systemLoad')}
-          value={`${systemStats?.cpu?.usage || 0}%`}
-          // change={systemStats?.cpu?.trend}
+          value={`${systemStats?.['cpu']?.['usage'] || 0}%`}
+          // change={systemStats?.['cpu']?.['trend']}
           icon={<Activity className="h-4 w-4" />}
           // color="orange"
         />
@@ -176,32 +176,32 @@ function SystemHealthCard({ health }: { health: Record<string, unknown> | undefi
 
   if (!health) return null
 
-  const StatusIcon = getStatusIcon(String(health?.status || 'unknown'))
+  const StatusIcon = getStatusIcon(String(health?.['status'] || 'unknown'))
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{t('dashboard.systemHealth.title')}</CardTitle>
-        <StatusIcon className={`h-4 w-4 ${getStatusColor(String(health?.status || 'unknown'))}`} />
+        <StatusIcon className={`h-4 w-4 ${getStatusColor(String(health?.['status'] || 'unknown'))}`} />
       </CardHeader>
       <CardContent>
         <div className="flex items-center space-x-2">
           <Badge
-            variant={health?.status === 'healthy' ? 'default' : 'destructive'}
-            className={getStatusColor(String(health?.status || 'unknown'))}
+            variant={health?.['status'] === 'healthy' ? 'default' : 'destructive'}
+            className={getStatusColor(String(health?.['status'] || 'unknown'))}
           >
-            {t(`dashboard.systemHealth.status.${health?.status || 'unknown'}`)}
+            {t(`dashboard.systemHealth.status.${health?.['status'] || 'unknown'}`)}
           </Badge>
           <span className="text-sm text-muted-foreground">
-            {t('dashboard.systemHealth.lastCheck')}: {String(health?.lastCheck || 'N/A')}
+            {t('dashboard.systemHealth.lastCheck')}: {String(health?.['lastCheck'] || 'N/A')}
           </span>
         </div>
 
-        {Array.isArray(health?.issues) && health.issues.length > 0 && (
+        {Array.isArray(health?.['issues']) && health['issues'].length > 0 && (
           <div className="mt-3 space-y-1">
-            {health.issues.slice(0, 3).map((issue: Record<string, unknown>, index: number) => (
+            {health['issues'].slice(0, 3).map((issue: Record<string, unknown>, index: number) => (
               <div key={index} className="text-sm text-muted-foreground">
-                • {String(issue?.message || 'Unknown issue')}
+                • {String(issue?.['message'] || 'Unknown issue')}
               </div>
             ))}
           </div>
@@ -291,10 +291,10 @@ function RecentActivityCard({ activities }: { activities: Record<string, unknown
                 <div className="w-2 h-2 bg-primary rounded-full" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">
-                    {String(activity?.description || 'No description')}
+                    {String(activity?.['description'] || 'No description')}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {String(activity?.timestamp || 'Unknown time')}
+                    {String(activity?.['timestamp'] || 'Unknown time')}
                   </p>
                 </div>
               </div>
@@ -323,12 +323,12 @@ function SystemResourcesCard({ stats }: { stats: Record<string, unknown> | undef
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>{t('dashboard.systemResources.cpu')}</span>
-            <span>{Number((stats?.cpu as Record<string, unknown>)?.usage || 0)}%</span>
+            <span>{Number((stats?.['cpu'] as Record<string, unknown>)?.['usage'] || 0)}%</span>
           </div>
           <div className="w-full bg-secondary rounded-full h-2">
             <div
               className="bg-primary h-2 rounded-full transition-all"
-              style={{ width: `${Number((stats?.cpu as Record<string, unknown>)?.usage || 0)}%` }}
+              style={{ width: `${Number((stats?.['cpu'] as Record<string, unknown>)?.['usage'] || 0)}%` }}
             />
           </div>
         </div>
@@ -336,13 +336,13 @@ function SystemResourcesCard({ stats }: { stats: Record<string, unknown> | undef
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>{t('dashboard.systemResources.memory')}</span>
-            <span>{Number((stats?.memory as Record<string, unknown>)?.usage || 0)}%</span>
+            <span>{Number((stats?.['memory'] as Record<string, unknown>)?.['usage'] || 0)}%</span>
           </div>
           <div className="w-full bg-secondary rounded-full h-2">
             <div
               className="bg-blue-500 h-2 rounded-full transition-all"
               style={{
-                width: `${Number((stats?.memory as Record<string, unknown>)?.usage || 0)}%`,
+                width: `${Number((stats?.['memory'] as Record<string, unknown>)?.['usage'] || 0)}%`,
               }}
             />
           </div>
@@ -351,12 +351,12 @@ function SystemResourcesCard({ stats }: { stats: Record<string, unknown> | undef
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>{t('dashboard.systemResources.disk')}</span>
-            <span>{Number((stats?.disk as Record<string, unknown>)?.usage || 0)}%</span>
+            <span>{Number((stats?.['disk'] as Record<string, unknown>)?.['usage'] || 0)}%</span>
           </div>
           <div className="w-full bg-secondary rounded-full h-2">
             <div
               className="bg-orange-500 h-2 rounded-full transition-all"
-              style={{ width: `${Number((stats?.disk as Record<string, unknown>)?.usage || 0)}%` }}
+              style={{ width: `${Number((stats?.['disk'] as Record<string, unknown>)?.['usage'] || 0)}%` }}
             />
           </div>
         </div>
@@ -418,15 +418,15 @@ function PluginStatusCard({ plugins }: { plugins: Record<string, unknown>[] }) {
                   </div>
                   <div>
                     <p className="text-sm font-medium">
-                      {String(plugin?.name || 'Unknown plugin')}
+                      {String(plugin?.['name'] || 'Unknown plugin')}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      v{String(plugin?.version || '0.0.0')}
+                      v{String(plugin?.['version'] || '0.0.0')}
                     </p>
                   </div>
                 </div>
-                <Badge variant={plugin?.status === 'active' ? 'default' : 'secondary'}>
-                  {t(`dashboard.pluginStatus.status.${plugin?.status || 'unknown'}`)}
+                <Badge variant={plugin?.['status'] === 'active' ? 'default' : 'secondary'}>
+                  {t(`dashboard.pluginStatus.status.${plugin?.['status'] || 'unknown'}`)}
                 </Badge>
               </div>
             ))
@@ -460,16 +460,16 @@ function RecentAlertsCard({ alerts }: { alerts: Record<string, unknown>[] }) {
             >
               <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium">{String(alert?.title || 'Unknown alert')}</p>
+                <p className="text-sm font-medium">{String(alert?.['title'] || 'Unknown alert')}</p>
                 <p className="text-sm text-muted-foreground">
-                  {String(alert?.description || 'No description')}
+                  {String(alert?.['description'] || 'No description')}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {String(alert?.timestamp || 'Unknown time')}
+                  {String(alert?.['timestamp'] || 'Unknown time')}
                 </p>
               </div>
               <Badge variant="outline" className="text-yellow-600 border-yellow-600">
-                {String(alert?.severity || 'Unknown')}
+                {String(alert?.['severity'] || 'Unknown')}
               </Badge>
             </div>
           ))}

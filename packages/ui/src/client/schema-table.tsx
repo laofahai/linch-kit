@@ -105,7 +105,7 @@ export function SchemaTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: pagination ? getPaginationRowModel() : undefined,
+    ...(pagination && { getPaginationRowModel: getPaginationRowModel() }),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: updater => {
@@ -113,8 +113,11 @@ export function SchemaTable({
       setTableSorting(newSorting)
 
       if (sorting && newSorting.length > 0) {
-        const { id, desc } = newSorting[0]
-        sorting.onSort(id, desc ? 'desc' : 'asc')
+        const sortInfo = newSorting[0]
+        if (sortInfo) {
+          const { id, desc } = sortInfo
+          sorting.onSort(id, desc ? 'desc' : 'asc')
+        }
       }
     },
     onColumnFiltersChange: setColumnFilters,
@@ -123,14 +126,14 @@ export function SchemaTable({
       sorting: tableSorting,
       columnFilters,
       globalFilter,
-      pagination: pagination
-        ? {
-            pageIndex: pagination.page - 1,
-            pageSize: pagination.pageSize,
-          }
-        : undefined,
+      ...(pagination && {
+        pagination: {
+          pageIndex: pagination.page - 1,
+          pageSize: pagination.pageSize,
+        }
+      }),
     },
-    pageCount: pagination ? Math.ceil(pagination.total / pagination.pageSize) : undefined,
+    ...(pagination && { pageCount: Math.ceil(pagination.total / pagination.pageSize) }),
     manualPagination: !!pagination,
     manualSorting: !!sorting,
   })

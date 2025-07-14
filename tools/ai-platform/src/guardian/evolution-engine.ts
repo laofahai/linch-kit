@@ -9,14 +9,16 @@
  */
 
 import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync, statSync } from 'fs';
+import { createLogger } from '@linch-kit/core';
 import { join, extname } from 'path';
 
-// 临时简单日志实现，等待 @linch-kit/core logger 修复后替换
-const logger = {
-  info: (msg: string, meta?: unknown) => console.log(`[Evolution-Engine] ${msg}`, meta || ''),
-  warn: (msg: string, meta?: unknown) => console.warn(`[Evolution-Engine] ${msg}`, meta || ''),
-  error: (msg: string, meta?: unknown) => console.error(`[Evolution-Engine] ${msg}`, meta || ''),
-  debug: (msg: string, meta?: unknown) => process.env.DEBUG && console.log(`[DEBUG] ${msg}`, meta || '')
+const logger = createLogger({ name: 'evolution-engine' });
+
+const log = {
+  info: (msg: string, meta?: unknown) => logger.info(`[Evolution-Engine] ${msg}`, meta || ''),
+  warn: (msg: string, meta?: unknown) => logger.warn(`[Evolution-Engine] ${msg}`, meta || ''),
+  error: (msg: string, meta?: unknown) => logger.error(`[Evolution-Engine] ${msg}`, meta || ''),
+  debug: (msg: string, meta?: unknown) => process.env.DEBUG && logger.info(`[DEBUG] ${msg}`, meta || '')
 };
 
 /**

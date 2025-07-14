@@ -20,7 +20,7 @@ import type {
   ExtensionPermission,
 } from './types'
 import type { ExtensionSandbox } from './sandbox'
-// import { appRegistry } from '../../console/src/core/app-registry' // TODO: 修复导入路径
+// AppRegistry 已移除循环依赖 - 将通过依赖注入方式解决
 
 /**
  * Extension实例实现

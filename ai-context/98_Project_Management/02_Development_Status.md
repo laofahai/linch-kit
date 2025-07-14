@@ -1,6 +1,6 @@
 # LinchKit 开发状态记录
 
-**版本**: v2.9  
+**版本**: v2.0.3  
 **更新**: 2025-07-14  
 **当前分支**: fix/branch-violation-cleanup  
 **状态**: AI原生重构完成，Guardian智能体集群激活，Extension系统增强

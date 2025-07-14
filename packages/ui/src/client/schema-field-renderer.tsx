@@ -58,8 +58,8 @@ export function SchemaFieldRenderer({
             onChange={e => onChange(e.target.valueAsNumber || null)}
             disabled={disabled}
             placeholder={field.description || `请输入${name}`}
-            min={(field as unknown as Record<string, unknown>).min as number | undefined}
-            max={(field as unknown as Record<string, unknown>).max as number | undefined}
+            min={(field as unknown as Record<string, unknown>)['min'] as number | undefined}
+            max={(field as unknown as Record<string, unknown>)['max'] as number | undefined}
             className={cn(error && 'border-destructive')}
           />
         )
@@ -94,7 +94,7 @@ export function SchemaFieldRenderer({
         )
 
       case 'enum': {
-        const options = ((field as unknown as Record<string, unknown>).values as string[]) || []
+        const options = ((field as unknown as Record<string, unknown>)['values'] as string[]) || []
         return (
           <select
             value={(value as string) || ''}

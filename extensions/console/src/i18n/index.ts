@@ -4,7 +4,7 @@
  * 使用 @linch-kit/core 的 i18n 系统，遵循 LinchKit 包级 i18n 模式
  */
 
-import { createPackageI18n, type TranslationFunction } from '@linch-kit/core/client'
+import { createPackageI18n, type TranslationFunction } from '@linch-kit/core'
 
 /**
  * Console 包的默认翻译消息
@@ -487,4 +487,4 @@ export const consoleI18nResource = {
 /**
  * 导出类型
  */
-export type { TranslationFunction } from '@linch-kit/core/client'
+export type { TranslationFunction } from '@linch-kit/core'

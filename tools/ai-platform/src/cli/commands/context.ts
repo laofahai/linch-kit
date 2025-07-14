@@ -6,6 +6,7 @@
 
 import { createLogger } from '@linch-kit/core/server'
 import chalk from 'chalk'
+import { createLogger } from '@linch-kit/core/server'
 
 import type { CommandContext, CommandResult, CLICommand } from '../plugin.js'
 import { ContextQueryTool } from '../../context/context-query-tool.js'
@@ -124,46 +125,46 @@ function outputContextResult(data: unknown, type: string): void {
     case 'context': {
       const context = data as ContextResult
 
-      console.log(chalk.cyan('\n📋 查询结果:\n'))
+      logger.info(chalk.cyan('\n📋 查询结果:\n'))
 
       // 显示实体
       if (context.entities && context.entities.length > 0) {
-        console.log(chalk.yellow('🔍 相关实体:'))
+        logger.info(chalk.yellow('🔍 相关实体:'))
         context.entities.forEach((entity: EntityResult) => {
-          console.log(`  • ${chalk.green(entity.name)} (${entity.type}) - ${entity.package}`)
+          logger.info(`  • ${chalk.green(entity.name)} (${entity.type}) - ${entity.package}`)
           if (entity.description) {
-            console.log(`    ${chalk.gray(entity.description)}`)
+            logger.info(`    ${chalk.gray(entity.description)}`)
           }
         })
-        console.log()
+        logger.info()
       }
 
       // 显示关系
       if (context.relationships && context.relationships.length > 0) {
-        console.log(chalk.yellow('🔗 关系:'))
+        logger.info(chalk.yellow('🔗 关系:'))
         context.relationships.slice(0, 10).forEach((rel: RelationshipResult) => {
-          console.log(`  • ${rel.from} ${chalk.blue(rel.type)} ${rel.to}`)
+          logger.info(`  • ${rel.from} ${chalk.blue(rel.type)} ${rel.to}`)
         })
-        console.log()
+        logger.info()
       }
 
       // 显示示例
       if (context.examples && context.examples.length > 0) {
-        console.log(chalk.yellow('💡 示例:'))
+        logger.info(chalk.yellow('💡 示例:'))
         context.examples.slice(0, 3).forEach((example: ExampleResult) => {
-          console.log(`  • ${example.description}`)
+          logger.info(`  • ${example.description}`)
           if (example.code) {
-            console.log(chalk.gray('    ' + example.code.split('\n')[0] + '...'))
+            logger.info(chalk.gray('    ' + example.code.split('\n')[0] + '...'))
           }
         })
-        console.log()
+        logger.info()
       }
 
       // 显示元数据
       if (context.metadata) {
-        console.log(chalk.yellow('📊 统计:'))
-        console.log(`  • 总结果数: ${context.metadata.total_results}`)
-        console.log(`  • 相关性评分: ${(context.metadata.relevance_score * 100).toFixed(0)}%`)
+        logger.info(chalk.yellow('📊 统计:'))
+        logger.info(`  • 总结果数: ${context.metadata.total_results}`)
+        logger.info(`  • 相关性评分: ${(context.metadata.relevance_score * 100).toFixed(0)}%`)
       }
       break
     }
@@ -171,15 +172,15 @@ function outputContextResult(data: unknown, type: string): void {
     case 'patterns': {
       const patterns = data as PatternResult[]
 
-      console.log(chalk.cyan('\n🎨 代码模式:\n'))
+      logger.info(chalk.cyan('\n🎨 代码模式:\n'))
       patterns.forEach(pattern => {
-        console.log(chalk.yellow(`📌 ${pattern.name}`))
-        console.log(`  ${pattern.description}`)
-        console.log(`  ${chalk.gray('用法:')} ${pattern.usage}`)
+        logger.info(chalk.yellow(`📌 ${pattern.name}`))
+        logger.info(`  ${pattern.description}`)
+        logger.info(`  ${chalk.gray('用法:')} ${pattern.usage}`)
         if (pattern.related_entities && pattern.related_entities.length > 0) {
-          console.log(`  ${chalk.gray('相关实体:')} ${pattern.related_entities.join(', ')}`)
+          logger.info(`  ${chalk.gray('相关实体:')} ${pattern.related_entities.join(', ')}`)
         }
-        console.log()
+        logger.info()
       })
       break
     }
@@ -187,18 +188,18 @@ function outputContextResult(data: unknown, type: string): void {
     case 'practices': {
       const practices = data as PracticeResult[]
 
-      console.log(chalk.cyan('\n✨ 最佳实践:\n'))
+      logger.info(chalk.cyan('\n✨ 最佳实践:\n'))
       practices.forEach(practice => {
-        console.log(chalk.yellow(`🏆 ${practice.name}`))
-        console.log(`  ${practice.description}`)
-        console.log(`  ${chalk.gray('分类:')} ${practice.category}`)
+        logger.info(chalk.yellow(`🏆 ${practice.name}`))
+        logger.info(`  ${practice.description}`)
+        logger.info(`  ${chalk.gray('分类:')} ${practice.category}`)
         if (practice.examples && practice.examples.length > 0) {
-          console.log(`  ${chalk.gray('示例:')}`)
+          logger.info(`  ${chalk.gray('示例:')}`)
           practice.examples.forEach((ex: string) => {
-            console.log(`    ${chalk.green(ex)}`)
+            logger.info(`    ${chalk.green(ex)}`)
           })
         }
-        console.log()
+        logger.info()
       })
       break
     }

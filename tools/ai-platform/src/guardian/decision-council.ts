@@ -11,13 +11,9 @@
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
-// 临时简单日志实现，等待 @linch-kit/core logger 修复后替换
-const logger = {
-  info: (msg: string, meta?: unknown) => console.log(`[Decision-Council] ${msg}`, meta || ''),
-  warn: (msg: string, meta?: unknown) => console.warn(`[Decision-Council] ${msg}`, meta || ''),
-  error: (msg: string, meta?: unknown) => console.error(`[Decision-Council] ${msg}`, meta || ''),
-  debug: (msg: string, meta?: unknown) => process.env.DEBUG && console.log(`[DEBUG] ${msg}`, meta || '')
-};
+import { createLogger } from '@linch-kit/core'
+
+const logger = createLogger({ name: 'decision-council' });
 
 /**
  * 决策类型

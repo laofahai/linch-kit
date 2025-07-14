@@ -3,12 +3,8 @@
  * 最小化示例页面，展示基本功能
  */
 
-// import Link from 'next/link' // 暂时不使用
-
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui'
 import Link from 'next/link'
-
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function HomePage() {
   return (
