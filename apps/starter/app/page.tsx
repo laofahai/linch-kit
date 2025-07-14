@@ -5,6 +5,8 @@
 
 // import Link from 'next/link' // 暂时不使用
 
+import Link from 'next/link'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -22,7 +24,7 @@ export default function HomePage() {
           </p>
           <div className="flex gap-4 justify-center">
             <Button size="lg" asChild>
-              <a href="/console">进入 Console</a>
+              <Link href="/console">进入 Console</Link>
             </Button>
           </div>
         </div>

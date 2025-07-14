@@ -5,6 +5,7 @@
 
 import { starterIntegrationManager } from '@linch-kit/console'
 import { Logger } from '@linch-kit/core/client'
+// 使用 LinchKit Core 的正式 Logger (未使用但保留以便未来扩展)
 // 临时内联类型定义，避免导入问题
 interface StarterIntegrationState {
   initialized: boolean
@@ -60,7 +61,7 @@ export async function loadExtension(extensionName: string): Promise<void> {
     await starterIntegrationManager.loadExtension(extensionName)
     Logger.info(`Extension ${extensionName} loaded successfully`)
   } catch (error) {
-    Logger.error(`Failed to load extension ${extensionName}:`, error)
+    Logger.error(`Failed to load extension ${extensionName}:`, error instanceof Error ? error : new Error(String(error)))
     throw error
   }
 }
@@ -73,7 +74,7 @@ export async function unloadExtension(extensionName: string): Promise<void> {
     await starterIntegrationManager.unloadExtension(extensionName)
     Logger.info(`Extension ${extensionName} unloaded successfully`)
   } catch (error) {
-    Logger.error(`Failed to unload extension ${extensionName}:`, error)
+    Logger.error(`Failed to unload extension ${extensionName}:`, error instanceof Error ? error : new Error(String(error)))
     throw error
   }
 }
@@ -86,7 +87,7 @@ export async function reloadExtension(extensionName: string): Promise<void> {
     await starterIntegrationManager.reloadExtension(extensionName)
     Logger.info(`Extension ${extensionName} reloaded successfully`)
   } catch (error) {
-    Logger.error(`Failed to reload extension ${extensionName}:`, error)
+    Logger.error(`Failed to reload extension ${extensionName}:`, error instanceof Error ? error : new Error(String(error)))
     throw error
   }
 }

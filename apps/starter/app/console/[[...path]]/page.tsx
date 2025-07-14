@@ -14,7 +14,7 @@ interface ExtensionPageProps {
 export default async function ConsolePage({ params }: ExtensionPageProps) {
   // 在 Server Component 中处理 async params
   const resolvedParams = await params
-  const extensionPath = resolvedParams.path?.join('/') || ''
+  const extensionPath = resolvedParams.path?.join('/') ?? ''
   const fullPath = `/console/${extensionPath}`
 
   // 传递给 Client Component

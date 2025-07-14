@@ -3,10 +3,12 @@
  * 提供类型安全的 API 层
  */
 
+import { Logger } from '@linch-kit/core/client'
 import { initTRPC } from '@trpc/server'
-import { z } from 'zod'
 import superjson from 'superjson'
-import { Logger } from '@linch-kit/core'
+import { z } from 'zod'
+// 使用 LinchKit Core 的正式 Logger
+const TrpcLogger = Logger
 
 // 创建 tRPC 实例
 const t = initTRPC.create({
@@ -24,7 +26,7 @@ export const publicProcedure = t.procedure
 const healthRouter = router({
   check: publicProcedure
     .query(() => {
-      Logger.info('Health check requested')
+      TrpcLogger.info('Health check requested')
       return {
         status: 'ok',
         timestamp: new Date().toISOString(),
@@ -39,7 +41,7 @@ const exampleRouter = router({
     .input(z.object({ name: z.string().optional() }))
     .query(({ input }) => {
       const name = input.name ?? 'World'
-      Logger.debug('Hello endpoint called', { name })
+      TrpcLogger.debug('Hello endpoint called', { name })
       return `Hello ${name}! 这是来自 LinchKit Starter 的问候。`
     }),
 })

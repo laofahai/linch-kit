@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
 import { LinchKitProvider } from '@/components/providers/linchkit-provider'
-import { TRPCProvider } from '@/components/providers/trpc-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { TRPCProvider } from '@/components/providers/trpc-provider'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })

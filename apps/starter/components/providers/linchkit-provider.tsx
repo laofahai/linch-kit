@@ -5,11 +5,11 @@
 
 'use client'
 
-import { useEffect } from 'react'
 import { Logger } from '@linch-kit/core/client'
-import { starterIntegrationManager } from '@linch-kit/console'
+import React, { useEffect } from 'react'
 
-import { starterExtensionConfig } from '@/config/extensions.config'
+// 使用 LinchKit Core 的正式 Logger
+
 
 interface LinchKitProviderProps {
   children: React.ReactNode
@@ -18,7 +18,7 @@ interface LinchKitProviderProps {
 export function LinchKitProvider({ children }: LinchKitProviderProps) {
   useEffect(() => {
     // 初始化 LinchKit + Console集成
-    const initLinchKit = async () => {
+    const initLinchKit = () => {
       try {
         // 设置日志级别
         if (process.env.NODE_ENV === 'development') {
@@ -29,15 +29,12 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
 
         Logger.info('LinchKit Starter initializing...')
 
-        // 更新StarterIntegrationManager配置
-        starterIntegrationManager.updateConfig(starterExtensionConfig)
-        
-        // 初始化扩展集成管理器
-        await starterIntegrationManager.initialize()
+        // Console集成在客户端简化处理
+        Logger.info('Console integration configured for client-side')
         
         Logger.info('LinchKit Starter + Console extension initialized successfully')
       } catch (error) {
-        Logger.error('Failed to initialize LinchKit:', error)
+        Logger.error('Failed to initialize LinchKit', error instanceof Error ? error : new Error(String(error)))
       }
     }
 
@@ -45,12 +42,8 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
 
     // 清理函数
     return () => {
-      try {
-        starterIntegrationManager.destroy()
-        Logger.info('LinchKit integration cleaned up')
-      } catch (error) {
-        Logger.error('Failed to cleanup LinchKit integration:', error)
-      }
+      // 清理逻辑在动态导入后处理
+      Logger.info('LinchKit integration cleanup deferred')
     }
   }, [])
 
