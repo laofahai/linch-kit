@@ -18,6 +18,18 @@ import { createHybridAIManager } from '../src/provider/hybrid-ai-manager'
 const logger = createLogger('ai-guardian-validator')
 
 /**
+ * 打印清晰的验证启动标题
+ */
+function printValidationHeader(taskDescription) {
+  console.log('\n┌─────────────────────────────────────────────────────────────────────────────┐')
+  console.log('│                    🛡️  AI Guardian 智能验证系统                           │')
+  console.log('├─────────────────────────────────────────────────────────────────────────────┤')
+  console.log(`│ 任务: ${taskDescription.substring(0, 60)}${taskDescription.length > 60 ? '...' : ''}`)
+  console.log('│ 版本: v2.0.0 - 混合AI集成版本')
+  console.log('└─────────────────────────────────────────────────────────────────────────────┘\n')
+}
+
+/**
  * AI Guardian 验证结果
  * @typedef {Object} AIGuardianValidationResult
  * @property {boolean} success
@@ -46,7 +58,7 @@ class AIGuardianValidator {
    * @returns {Promise<GuardianValidationResult>}
    */
   async validate(taskDescription) {
-    logger.info('🚨 AI Guardian 混合智能验证启动...')
+    printValidationHeader(taskDescription)
     
     // 0. AI 增强分析 (如果有可用的AI)
     await this.performAIAnalysis(taskDescription)
@@ -95,7 +107,7 @@ class AIGuardianValidator {
         return
       }
       
-      logger.info(`✅ 分支检查通过: ${currentBranch}`)
+      console.log(`✅ 分支检查通过: ${currentBranch}`)
       
     } catch (error) {
       this.violations.push('🚨 Git分支检查失败')
@@ -103,8 +115,7 @@ class AIGuardianValidator {
   }
   
   async executeGraphRAGQuery(taskDescription) {
-    logger.info('🔍 执行强制Graph RAG查询...')
-    logger.info(`  查询关键词: ${taskDescription}`)
+    console.log('🔍 执行强制Graph RAG查询...')
     
     try {
       // 使用ai-platform的session-tools进行查询
@@ -112,7 +123,7 @@ class AIGuardianValidator {
         encoding: 'utf8'
       })
       
-      logger.info('✅ Graph RAG查询完成')
+      console.log('✅ Graph RAG查询完成')
       
       // 检查查询结果
       if (result.includes('"total_found": 0')) {
@@ -132,7 +143,7 @@ class AIGuardianValidator {
         stdio: 'pipe'
       })
       
-      logger.info('✅ 架构合规性检查通过')
+      console.log('✅ 架构合规性检查通过')
       
     } catch (error) {
       // arch-check失败时添加警告而非阻断
@@ -148,7 +159,7 @@ class AIGuardianValidator {
         stdio: 'pipe'
       })
       
-      logger.info('✅ 上下文验证通过')
+      console.log('✅ 上下文验证通过')
       
     } catch (error) {
       this.warnings.push('⚠️ 上下文验证发现问题')
@@ -176,7 +187,7 @@ class AIGuardianValidator {
    */
   async checkConfigurationDuplication() {
     try {
-      logger.info('🔍 检查配置重复...')
+      console.log('🔍 检查配置重复...')
       
       // 检查CSS变量重复 - 严格排除node_modules和构建目录
       const cssFiles = this.findFiles(['**/*.css'], [
@@ -230,7 +241,7 @@ class AIGuardianValidator {
       
     } catch (error) {
       this.warnings.push('⚠️ 配置重复检查失败')
-      logger.error('配置重复检查错误:', error)
+      console.error('配置重复检查错误:', error)
     }
   }
 
@@ -377,34 +388,34 @@ bun test --coverage
 会话ID: ${sessionId}`
 
     writeFileSync(constraintsFile, constraintsContent)
-    logger.info('✅ 约束文件已生成')
-    logger.info('📋 约束文件: .claude/session-constraints.md')
+    console.log('✅ 约束文件已生成')
+    console.log('📋 约束文件: .claude/session-constraints.md')
   }
   
   printResults(result) {
     if (result.violations.length > 0) {
-      logger.info('\n❌ 发现违规项:')
-      result.violations.forEach(violation => logger.info(`  ${violation}`))
+      console.log('\n❌ 发现违规项:')
+      result.violations.forEach(violation => console.log(`  ${violation}`))
     }
     
     if (result.warnings.length > 0) {
-      logger.info('\n⚠️ 警告项:')
-      result.warnings.forEach(warning => logger.info(`  ${warning}`))
+      console.log('\n⚠️ 警告项:')
+      result.warnings.forEach(warning => console.log(`  ${warning}`))
     }
     
     if (result.success) {
-      logger.info('\n✅ 所有强制验证已通过！')
-      logger.info(`✅ AI Guardian已激活 (分析来源: ${this.analysisSource})`)
+      console.log('\n✅ 所有强制验证已通过！')
+      console.log(`✅ AI Guardian已激活 (分析来源: ${this.analysisSource})`)
     } else {
-      logger.info('\n🚨 验证失败，请修复违规项后重试')
+      console.log('\n🚨 验证失败，请修复违规项后重试')
     }
     
-    logger.info('\n⚠️ 注意事项：')
+    console.log('\n⚠️ 注意事项：')
     if (this.hasUncommittedChanges()) {
-      logger.info('  ⚠️ 工作目录有未提交的更改')
+      console.log('  ⚠️ 工作目录有未提交的更改')
     }
     if (!this.hasDesignDoc()) {
-      logger.info('  ⚠️ 未找到设计文档，复杂功能开发前应创建DESIGN.md')
+      console.log('  ⚠️ 未找到设计文档，复杂功能开发前应创建DESIGN.md')
     }
   }
   
@@ -427,7 +438,7 @@ bun test --coverage
    */
   async performAIAnalysis(taskDescription) {
     try {
-      logger.info('🤖 启动AI智能分析...')
+      console.log('🤖 启动AI智能分析...')
       
       const analysisPrompt = `
 任务分析：${taskDescription}
@@ -448,8 +459,7 @@ bun test --coverage
       })
       
       if (aiResult.success) {
-        logger.info(`🧠 AI分析完成 (来源: ${aiResult.source})`)
-        logger.info('分析结果:', aiResult.content)
+        console.log(`🧠 AI分析完成 (来源: ${aiResult.source})`)
         this.analysisSource = aiResult.source
         
         // 根据AI分析结果添加建议
@@ -457,11 +467,11 @@ bun test --coverage
           this.warnings.push('⚠️ AI分析发现潜在风险，请仔细审查')
         }
       } else {
-        logger.warn('🤖 AI分析失败，使用规则引擎')
+        console.log('🤖 AI分析降级为规则引擎')
         this.analysisSource = 'rules'
       }
     } catch (error) {
-      logger.warn('AI分析出错:', error.message)
+      console.log('🤖 AI分析失败，使用规则引擎')
       this.analysisSource = 'rules'
     }
   }
@@ -501,8 +511,8 @@ async function main() {
   const taskDescription = process.argv[2]
   
   if (!taskDescription) {
-    logger.error('❌ 错误: 请提供任务描述')
-    logger.error('使用方法: bun run ai:guardian:validate "任务描述"')
+    console.error('❌ 错误: 请提供任务描述')
+    console.error('使用方法: bun run ai:guardian:validate "任务描述"')
     process.exit(1)
   }
   

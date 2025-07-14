@@ -47,6 +47,9 @@ export * from './init'
 // React 组件 (可选导入)
 export * from './react'
 
+// Provider 组合系统
+export * from './providers'
+
 // 默认实例导出
 export { unifiedExtensionManager as ExtensionManager } from './extension'
 // ConfigManager 已移至 server.ts (需要文件系统访问)

@@ -14,8 +14,8 @@ export * from './components'
 export * from './forms'
 export * from './tables'
 
-// Providers (统一配置管理)
-export * from './providers/linchkit-unified-provider'
+// Note: LinchKit Provider has been moved to @linch-kit/core package
+// Use @linch-kit/core for Provider composition
 
 // 类型定义
 export * from './types'
