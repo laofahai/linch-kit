@@ -32,6 +32,12 @@ export interface ExtensionLoaderConfig {
   allowedExtensions?: string[]
   /** 是否启用权限检查 */
   permissionCheck?: boolean
+  /** 最大重试次数 */
+  maxRetryAttempts?: number
+  /** 重试延迟（毫秒） */
+  retryDelay?: number
+  /** 是否启用详细日志 */
+  verboseLogging?: boolean
 }
 
 /**
@@ -83,6 +89,9 @@ export class ExtensionLoader extends EventEmitter {
       autoLoad: true,
       extensionPath: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
       hotReload: true,
+      maxRetryAttempts: 3,
+      retryDelay: 1000,
+      verboseLogging: false,
     },
     private extensionManager: ExtensionManager = _extensionManager
   ) {
@@ -91,83 +100,106 @@ export class ExtensionLoader extends EventEmitter {
   }
 
   /**
-   * 加载 Extension
+   * 加载 Extension（支持重试机制）
    */
   async loadExtension(extensionName: string): Promise<ExtensionLoadResult> {
-    // 更新加载状态
-    this.updateExtensionState(extensionName, 'loading')
-
-    try {
-      // 检查是否允许加载（仅基础检查，权限验证由Core负责）
-      if (!this.isExtensionAllowed(extensionName)) {
-        throw new Error(`Extension ${extensionName} is not allowed to load`)
-      }
-
-      // 使用 ExtensionManager 加载（权限验证已在Core中处理）
-      const result = await this.extensionManager.loadExtension(extensionName)
-
-      if (!result.success || !result.instance) {
-        throw new Error(result.error?.message || 'Failed to load extension')
-      }
-
-      const instance = result.instance
-      this.extensionInstances.set(extensionName, instance)
-
-      // 注册 Extension 菜单组
-      enhancedAppRegistry.registerExtensionMenuGroup(instance)
-
-      // 获取 Extension 的路由配置
-      const routes = await this.getExtensionRoutes(instance)
-
-      // 注册路由到 AppRegistry
-      if (routes.length > 0) {
-        await enhancedAppRegistry.registerExtensionRoutes(instance, routes)
-      }
-
-      // 获取 Extension 的组件
-      const components = await this.getExtensionComponents(instance)
-
-      // 注册组件到 AppRegistry
-      for (const [componentName, component] of components) {
-        enhancedAppRegistry.registerExtensionComponent(instance, componentName, component)
-      }
-
+    const maxRetries = this.config.maxRetryAttempts ?? 3
+    const retryDelay = this.config.retryDelay ?? 1000
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
       // 更新加载状态
-      this.updateExtensionState(extensionName, 'running', {
-        routeCount: routes.length,
-        componentCount: components.size,
-      })
+      this.updateExtensionState(extensionName, 'loading')
 
-      // 触发加载完成事件
-      this.emit('extensionLoaded', {
-        name: extensionName,
-        instance,
-        routes,
-        components: Array.from(components.keys()),
-      })
+      try {
+        // 检查是否允许加载（仅基础检查，权限验证由Core负责）
+        if (!this.isExtensionAllowed(extensionName)) {
+          throw new Error(`Extension ${extensionName} is not allowed to load`)
+        }
 
-      return result
-    } catch (error) {
-      const loadError = error instanceof Error ? error : new Error(String(error))
+        // 使用 ExtensionManager 加载（权限验证已在Core中处理）
+        const result = await this.extensionManager.loadExtension(extensionName)
 
-      // 更新加载状态
-      this.updateExtensionState(extensionName, 'error', { error: loadError })
+        if (!result.success || !result.instance) {
+          throw new Error(result.error?.message || 'Failed to load extension')
+        }
 
-      // 触发加载失败事件
-      this.emit('extensionLoadFailed', {
-        name: extensionName,
-        error: loadError,
-      })
+        const instance = result.instance
+        this.extensionInstances.set(extensionName, instance)
 
-      return {
-        success: false,
-        error: {
-          code: 'LOAD_FAILED',
-          message: loadError.message,
-          stack: loadError.stack,
-        },
+        if (this.config.verboseLogging) {
+          console.log(`[ExtensionLoader] Successfully loaded ${extensionName} on attempt ${attempt}`)
+        }
+
+        // 注册 Extension 菜单组
+        enhancedAppRegistry.registerExtensionMenuGroup(instance)
+
+        // 获取 Extension 的路由配置
+        const routes = await this.getExtensionRoutes(instance)
+
+        // 注册路由到 AppRegistry
+        if (routes.length > 0) {
+          await enhancedAppRegistry.registerExtensionRoutes(instance, routes)
+        }
+
+        // 获取 Extension 的组件
+        const components = await this.getExtensionComponents(instance)
+
+        // 注册组件到 AppRegistry
+        for (const [componentName, component] of components) {
+          enhancedAppRegistry.registerExtensionComponent(instance, componentName, component)
+        }
+
+        // 更新加载状态
+        this.updateExtensionState(extensionName, 'running', {
+          routeCount: routes.length,
+          componentCount: components.size,
+        })
+
+        // 触发加载完成事件
+        this.emit('extensionLoaded', {
+          name: extensionName,
+          instance,
+          routes,
+          components: Array.from(components.keys()),
+        })
+
+        return result
+      } catch (error) {
+        const loadError = error instanceof Error ? error : new Error(String(error))
+
+        if (this.config.verboseLogging) {
+          console.warn(`[ExtensionLoader] Attempt ${attempt}/${maxRetries} failed for ${extensionName}: ${loadError.message}`)
+        }
+
+        // 如果还有重试机会，等待后重试
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay))
+          continue
+        }
+
+        // 所有重试都失败了，更新状态并返回错误
+        this.updateExtensionState(extensionName, 'error', { error: loadError })
+
+        // 触发加载失败事件
+        this.emit('extensionLoadFailed', {
+          name: extensionName,
+          error: loadError,
+          attemptCount: maxRetries,
+        })
+
+        return {
+          success: false,
+          error: {
+            code: 'LOAD_FAILED',
+            message: `Failed to load after ${maxRetries} attempts: ${loadError.message}`,
+            stack: loadError.stack,
+          },
+        }
       }
     }
+
+    // 这里应该不会到达，但TypeScript需要返回值
+    throw new Error(`Unexpected: loadExtension loop completed without return`)
   }
 
   /**
