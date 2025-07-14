@@ -71,5 +71,18 @@ export { VibeCodingEngine } from './generation/vibe-coding-engine.js'
 // 配置加载器
 export { loadNeo4jConfig, validateNeo4jConfig } from './config/neo4j-config.js'
 
+// AI Guardian 智能体集群
+export { ArchWarden } from './guardian/arch-warden.js'
+export { 
+  getAllGuardians, 
+  getGuardiansByPhase, 
+  getActiveGuardians,
+  ACTIVE_GUARDIANS,
+  PLANNED_GUARDIANS,
+  GUARDIAN_VERSION,
+  GUARDIAN_PHASE
+} from './guardian/index.js'
+export type { GuardianAgent } from './guardian/index.js'
+
 // 版本信息
 export const VERSION = '1.0.0'

@@ -4,10 +4,7 @@ export default defineConfig({
   entry: ['src/index.ts'],
   outDir: 'dist',
   format: ['esm'],
-  dts: {
-    resolve: true,
-    entry: 'src/index.ts'
-  },
+  dts: false,
   clean: true,
   external: ['@linch-kit/core', 'dotenv', 'fs'],
   treeshake: true,
