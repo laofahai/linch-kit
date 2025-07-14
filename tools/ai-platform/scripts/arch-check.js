@@ -12,7 +12,7 @@
  * - bun run arch:check @linch-kit/ui   # 检查特定包
  */
 
-import { ArchWarden } from '../dist/index.js'
+import { ArchWarden } from '../dist/guardian/arch-warden.js'
 import process from 'process'
 
 async function main() {
