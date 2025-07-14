@@ -1,0 +1,249 @@
+{
+  "decision-1752458870650": {
+    "input": {
+      "id": "decision-1752458870650",
+      "title": "选择前端状态管理方案",
+      "description": "为LinchKit UI包选择合适的状态管理解决方案",
+      "type": "technology",
+      "priority": "high",
+      "context": {},
+      "options": [
+        {
+          "id": "option-1",
+          "name": "方案A",
+          "description": "第一个可选方案",
+          "complexity": 5,
+          "cost": {
+            "development": 100,
+            "maintenance": 5,
+            "learning": 3
+          },
+          "pros": [
+            "实现简单",
+            "风险较低"
+          ],
+          "cons": [
+            "功能有限"
+          ],
+          "risks": []
+        },
+        {
+          "id": "option-2",
+          "name": "方案B",
+          "description": "第二个可选方案",
+          "complexity": 7,
+          "cost": {
+            "development": 200,
+            "maintenance": 7,
+            "learning": 6
+          },
+          "pros": [
+            "功能丰富",
+            "扩展性好"
+          ],
+          "cons": [
+            "复杂度高",
+            "成本较大"
+          ],
+          "risks": []
+        }
+      ]
+    },
+    "result": {
+      "decisionId": "decision-1752458870650",
+      "recommendedOption": "option-1",
+      "confidence": 80.54678932622194,
+      "agentAnalyses": [
+        {
+          "role": "architect",
+          "recommendedOption": "option-1",
+          "confidence": 62.931860749036304,
+          "reasoning": [
+            "从architect角度分析，推荐选择\"方案A\"",
+            "在flexibility方面表现出色 (评分: 7.6)",
+            "实施复杂度适中，风险可控",
+            "开发成本合理，投入产出比良好"
+          ],
+          "concerns": [
+            "系统架构的长期演进性",
+            "模块间耦合度",
+            "技术债务累积"
+          ],
+          "suggestions": [
+            "建议采用分层架构",
+            "考虑微服务架构的适用性",
+            "制定架构演进路线图"
+          ],
+          "riskAssessment": {
+            "majorRisks": [
+              {
+                "description": "架构决策可能影响系统的长期演进能力",
+                "level": 3,
+                "impact": "中长期开发效率和维护成本",
+                "mitigation": "建立架构评审机制和演进计划"
+              }
+            ],
+            "riskScore": 5
+          },
+          "scoring": {
+            "scalability": 6.099555902968188,
+            "maintainability": 6.942372703717052,
+            "flexibility": 7.6120035029809
+          }
+        },
+        {
+          "role": "developer",
+          "recommendedOption": "option-1",
+          "confidence": 66.17775376877783,
+          "reasoning": [
+            "从developer角度分析，推荐选择\"方案A\"",
+            "在code_quality方面表现出色 (评分: 7.4)",
+            "实施复杂度适中，风险可控",
+            "开发成本合理，投入产出比良好"
+          ],
+          "concerns": [
+            "开发复杂度",
+            "代码可维护性",
+            "测试覆盖率"
+          ],
+          "suggestions": [
+            "采用最佳实践",
+            "建立代码规范",
+            "完善测试策略"
+          ],
+          "riskAssessment": {
+            "majorRisks": [],
+            "riskScore": 5
+          },
+          "scoring": {
+            "development_speed": 6.943258243825447,
+            "code_quality": 7.406324589091621,
+            "testing": 6.803342371964366
+          }
+        },
+        {
+          "role": "business",
+          "recommendedOption": "option-1",
+          "confidence": 69.95602680315324,
+          "reasoning": [
+            "从business角度分析，推荐选择\"方案A\"",
+            "在business_value方面表现出色 (评分: 7.4)",
+            "在user_experience方面表现出色 (评分: 7.0)",
+            "在market_fit方面表现出色 (评分: 7.9)",
+            "实施复杂度适中，风险可控",
+            "开发成本合理，投入产出比良好"
+          ],
+          "concerns": [
+            "业务价值实现",
+            "用户体验影响",
+            "市场竞争力"
+          ],
+          "suggestions": [
+            "明确业务目标",
+            "收集用户反馈",
+            "分析竞品方案"
+          ],
+          "riskAssessment": {
+            "majorRisks": [],
+            "riskScore": 5
+          },
+          "scoring": {
+            "business_value": 7.420640722798102,
+            "user_experience": 7.034844998017571,
+            "market_fit": 7.935510025384943
+          }
+        },
+        {
+          "role": "qa",
+          "recommendedOption": "option-1",
+          "confidence": 71.1215159839204,
+          "reasoning": [
+            "从qa角度分析，推荐选择\"方案A\"",
+            "在testability方面表现出色 (评分: 7.2)",
+            "在reliability方面表现出色 (评分: 7.9)",
+            "在quality方面表现出色 (评分: 7.6)",
+            "实施复杂度适中，风险可控",
+            "开发成本合理，投入产出比良好"
+          ],
+          "concerns": [
+            "质量保证流程",
+            "测试自动化",
+            "缺陷率控制"
+          ],
+          "suggestions": [
+            "建立质量门禁",
+            "实施自动化测试",
+            "制定质量指标"
+          ],
+          "riskAssessment": {
+            "majorRisks": [],
+            "riskScore": 5
+          },
+          "scoring": {
+            "testability": 7.163836138267559,
+            "reliability": 7.893818147502502,
+            "quality": 7.614463469680046
+          }
+        }
+      ],
+      "consensusLevel": "high",
+      "controversies": [
+        "仅有一名专家关注: 系统架构的长期演进性",
+        "仅有一名专家关注: 模块间耦合度",
+        "仅有一名专家关注: 技术债务累积",
+        "仅有一名专家关注: 开发复杂度",
+        "仅有一名专家关注: 代码可维护性",
+        "仅有一名专家关注: 测试覆盖率",
+        "仅有一名专家关注: 业务价值实现",
+        "仅有一名专家关注: 用户体验影响",
+        "仅有一名专家关注: 市场竞争力",
+        "仅有一名专家关注: 质量保证流程",
+        "仅有一名专家关注: 测试自动化",
+        "仅有一名专家关注: 缺陷率控制"
+      ],
+      "riskSummary": {
+        "overallRisk": 5,
+        "criticalRisks": [
+          {
+            "description": "架构决策可能影响系统的长期演进能力",
+            "level": 3,
+            "impact": "中长期开发效率和维护成本",
+            "mitigation": "建立架构评审机制和演进计划"
+          }
+        ],
+        "mitigationPlan": [
+          "建立架构评审机制和演进计划",
+          "建议采用分层架构",
+          "考虑微服务架构的适用性",
+          "制定架构演进路线图",
+          "建立定期评估和调整机制",
+          "设置关键指标监控"
+        ]
+      },
+      "implementationPlan": {
+        "steps": [
+          "制定实施计划和时间表",
+          "分配开发资源",
+          "开始核心功能开发",
+          "进行测试验证",
+          "部署上线",
+          "监控运行状态"
+        ],
+        "monitoringMetrics": [
+          "实施进度跟踪",
+          "质量指标监控",
+          "性能指标监控"
+        ],
+        "rollbackPlan": [
+          "建立回退触发条件",
+          "准备数据备份和恢复方案",
+          "制定紧急回退流程",
+          "设置回退后的恢复计划"
+        ]
+      },
+      "decidedAt": "2025-07-14T02:07:51.286Z",
+      "requiresHumanReview": false
+    },
+    "implementationStatus": "pending"
+  }
+}

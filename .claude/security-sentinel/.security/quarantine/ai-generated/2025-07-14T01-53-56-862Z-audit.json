@@ -1,0 +1,39 @@
+{
+  "sessionId": "default",
+  "generatedAt": "2025-07-14T01:53:56.860Z",
+  "codeSnippets": [
+    {
+      "content": "eval('console.log(\"dangerous\")')",
+      "filePath": "ai-generated.ts",
+      "riskScore": 99,
+      "threats": [
+        {
+          "fileName": "ai-generated.ts",
+          "filePath": "ai-generated.ts",
+          "threatType": "code_injection",
+          "severity": "critical",
+          "description": "代码注入漏洞：检测到可能的动态代码执行",
+          "line": 1,
+          "column": 0,
+          "code": "eval('console.log(\"dangerous\")')",
+          "recommendation": "避免使用eval、new Function等动态代码执行，使用安全的替代方案",
+          "autoFixAvailable": false,
+          "riskScore": 90
+        }
+      ]
+    }
+  ],
+  "overallRiskScore": 99,
+  "securityPatterns": [
+    {
+      "pattern": "eval使用",
+      "violations": 1,
+      "severity": "critical"
+    }
+  ],
+  "recommendations": [
+    "避免在AI生成代码中使用动态代码执行",
+    "对AI生成代码进行人工安全审查",
+    "使用静态分析工具验证代码安全性"
+  ]
+}

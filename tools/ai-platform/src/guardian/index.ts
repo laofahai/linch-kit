@@ -20,8 +20,7 @@ export { MetaLearner } from './meta-learner.js'
 
 // Phase 2 - 智能验证系统
 export { ContextVerifier } from './context-verifier.js'
-// TODO: Security Sentinel 待实施
-// export { SecuritySentinel } from './security-sentinel.js'
+export { SecuritySentinel } from './security-sentinel.js'
 
 // TODO: Phase 3 - 完整智能体集群
 // export { QASynthesizer } from './qa-synthesizer.js'
@@ -83,6 +82,19 @@ export const ACTIVE_GUARDIANS: GuardianAgent[] = [
       '理解偏差纠正',
       '双向验证机制'
     ]
+  },
+  {
+    name: 'Security-Sentinel',
+    version: '1.0.0',
+    phase: 2,
+    status: 'active',
+    capabilities: [
+      'Extension代码静态安全分析',
+      'AI生成代码安全模式检查',
+      '沙箱隔离机制',
+      '权限控制和威胁检测',
+      'CASL权限系统集成'
+    ]
   }
 ]
 
@@ -90,18 +102,6 @@ export const ACTIVE_GUARDIANS: GuardianAgent[] = [
  * 计划中的 Guardian 智能体
  */
 export const PLANNED_GUARDIANS: GuardianAgent[] = [
-  {
-    name: 'Security-Sentinel',
-    version: '1.0.0',
-    phase: 2,
-    status: 'planned',
-    capabilities: [
-      'Extension安全检查',
-      'AI代码安全分析',
-      '沙箱隔离',
-      '威胁检测'
-    ]
-  },
   {
     name: 'QA-Synthesizer',
     version: '1.0.0',

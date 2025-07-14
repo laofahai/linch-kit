@@ -1,0 +1,296 @@
+[
+  {
+    "id": "evolution-1752459286470",
+    "title": [
+      {
+        "type": "architecture",
+        "description": "包结构发生变化",
+        "impact": 12,
+        "files": [
+          "packages/auth/package.json",
+          "packages/core/package.json",
+          "packages/platform/package.json",
+          "packages/ui/package.json"
+        ],
+        "details": {
+          "added": [
+            "新增包: auth",
+            "新增包: core",
+            "新增包: platform",
+            "新增包: ui"
+          ],
+          "modified": [],
+          "removed": []
+        },
+        "detectedAt": "2025-07-14T02:14:46.446Z"
+      },
+      {
+        "type": "tooling",
+        "description": "配置文件发生变化",
+        "impact": 4,
+        "files": [
+          "tsconfig.json",
+          "turbo.json"
+        ],
+        "details": {
+          "added": [
+            "新增配置文件: tsconfig.json",
+            "新增配置文件: turbo.json"
+          ],
+          "modified": [],
+          "removed": []
+        },
+        "detectedAt": "2025-07-14T02:14:46.448Z"
+      }
+    ],
+    "description": [
+      {
+        "id": "schema-entity-pattern",
+        "name": "Schema实体模式",
+        "description": "Schema实体定义模式",
+        "frequency": 9,
+        "examples": [
+          "export const ExampleEntity = defineEntity(",
+          "export const TenantEntity = defineEntity(",
+          "export const TenantQuotasEntity = defineEntity(",
+          "export const UserActivityEntity = defineEntity(",
+          "export const UserNotificationEntity = defineEntity(",
+          "export const ConsoleUserEntity = defineEntity(",
+          "export const UserActivityEntity = defineEntity(",
+          "export const TenantEntity = defineEntity(",
+          "export const TenantQuotasEntity = defineEntity(",
+          "export const SystemMetricEntity = defineEntity(",
+          "export const AuditLogEntity = defineEntity(",
+          "export const PluginEntity = defineEntity(",
+          "export const PluginVersionEntity = defineEntity(",
+          "export const SystemMetricEntity = defineEntity(",
+          "export const AuditLogEntity = defineEntity(",
+          "export const PluginEntity = defineEntity(",
+          "export const PluginVersionEntity = defineEntity("
+        ],
+        "relatedFiles": [
+          "/home/laofahai/workspace/linch-kit/tools/cli/src/extension.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/tenant.entity.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/user-extensions.entity.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/user-extensions.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/tenant.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/monitoring.entity.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/plugin.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/monitoring.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/plugin.entity.ts"
+        ],
+        "bestPractices": [
+          "使用描述性的实体名称",
+          "定义完整的字段验证规则",
+          "考虑数据关系和外键",
+          "添加适当的索引提示"
+        ],
+        "recommendedRules": [
+          "实体名称使用PascalCase",
+          "字段必须有类型定义",
+          "避免使用any类型"
+        ]
+      }
+    ],
+    "cycle": {
+      "assessmentTime": "2025-07-14T02:14:46.447Z",
+      "overallHealth": 89,
+      "dimensions": {
+        "architecture": 96,
+        "codeQuality": 75,
+        "performance": 90,
+        "security": 95,
+        "toolchain": 90
+      },
+      "issues": [
+        {
+          "level": "warning",
+          "description": "codeQuality健康度偏低 (75/100)",
+          "impact": "可能影响codeQuality效果",
+          "recommendation": "建议优化codeQuality相关设置"
+        }
+      ],
+      "recommendations": [
+        "加强代码质量控制，完善ESLint和TypeScript配置"
+      ],
+      "trends": [
+        {
+          "description": "系统健康度保持良好状态",
+          "direction": "stable",
+          "metrics": [
+            "整体评分",
+            "各维度平衡"
+          ]
+        }
+      ]
+    },
+    "targetDate": {
+      "cycle": "weekly",
+      "type": "performance",
+      "priority": "medium"
+    },
+    "steps": [],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-14T02:14:46.471Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1752459305436",
+    "title": [
+      {
+        "type": "architecture",
+        "description": "包结构发生变化",
+        "impact": 12,
+        "files": [
+          "packages/auth/package.json",
+          "packages/core/package.json",
+          "packages/platform/package.json",
+          "packages/ui/package.json"
+        ],
+        "details": {
+          "added": [
+            "新增包: auth",
+            "新增包: core",
+            "新增包: platform",
+            "新增包: ui"
+          ],
+          "modified": [],
+          "removed": []
+        },
+        "detectedAt": "2025-07-14T02:15:05.402Z"
+      },
+      {
+        "type": "tooling",
+        "description": "配置文件发生变化",
+        "impact": 4,
+        "files": [
+          "tsconfig.json",
+          "turbo.json"
+        ],
+        "details": {
+          "added": [
+            "新增配置文件: tsconfig.json",
+            "新增配置文件: turbo.json"
+          ],
+          "modified": [],
+          "removed": []
+        },
+        "detectedAt": "2025-07-14T02:15:05.404Z"
+      }
+    ],
+    "description": [
+      {
+        "id": "schema-entity-pattern",
+        "name": "Schema实体模式",
+        "description": "Schema实体定义模式",
+        "frequency": 9,
+        "examples": [
+          "export const ExampleEntity = defineEntity(",
+          "export const TenantEntity = defineEntity(",
+          "export const TenantQuotasEntity = defineEntity(",
+          "export const UserActivityEntity = defineEntity(",
+          "export const UserNotificationEntity = defineEntity(",
+          "export const ConsoleUserEntity = defineEntity(",
+          "export const UserActivityEntity = defineEntity(",
+          "export const TenantEntity = defineEntity(",
+          "export const TenantQuotasEntity = defineEntity(",
+          "export const SystemMetricEntity = defineEntity(",
+          "export const AuditLogEntity = defineEntity(",
+          "export const PluginEntity = defineEntity(",
+          "export const PluginVersionEntity = defineEntity(",
+          "export const SystemMetricEntity = defineEntity(",
+          "export const AuditLogEntity = defineEntity(",
+          "export const PluginEntity = defineEntity(",
+          "export const PluginVersionEntity = defineEntity("
+        ],
+        "relatedFiles": [
+          "/home/laofahai/workspace/linch-kit/tools/cli/src/extension.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/tenant.entity.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/user-extensions.entity.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/user-extensions.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/tenant.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/monitoring.entity.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/plugin.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/monitoring.ts",
+          "/home/laofahai/workspace/linch-kit/extensions/console/src/entities/plugin.entity.ts"
+        ],
+        "bestPractices": [
+          "使用描述性的实体名称",
+          "定义完整的字段验证规则",
+          "考虑数据关系和外键",
+          "添加适当的索引提示"
+        ],
+        "recommendedRules": [
+          "实体名称使用PascalCase",
+          "字段必须有类型定义",
+          "避免使用any类型"
+        ]
+      }
+    ],
+    "cycle": {
+      "assessmentTime": "2025-07-14T02:15:05.403Z",
+      "overallHealth": 89,
+      "dimensions": {
+        "architecture": 96,
+        "codeQuality": 75,
+        "performance": 90,
+        "security": 95,
+        "toolchain": 90
+      },
+      "issues": [
+        {
+          "level": "warning",
+          "description": "codeQuality健康度偏低 (75/100)",
+          "impact": "可能影响codeQuality效果",
+          "recommendation": "建议优化codeQuality相关设置"
+        }
+      ],
+      "recommendations": [
+        "加强代码质量控制，完善ESLint和TypeScript配置"
+      ],
+      "trends": [
+        {
+          "description": "系统健康度保持良好状态",
+          "direction": "stable",
+          "metrics": [
+            "整体评分",
+            "各维度平衡"
+          ]
+        }
+      ]
+    },
+    "targetDate": {
+      "cycle": "weekly",
+      "type": "performance",
+      "priority": "medium"
+    },
+    "steps": [],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-14T02:15:05.436Z",
+    "status": "draft"
+  }
+]
