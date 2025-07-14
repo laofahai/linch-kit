@@ -1,19 +1,15 @@
+/**
+ * Theme Provider
+ * 提供主题切换功能
+ */
+
 'use client'
 
 import * as React from 'react'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
-import { Logger } from '@linch-kit/core/client'
 
-export function ThemeProvider({
-  children,
-  ...props
-}: React.ComponentProps<typeof NextThemesProvider>) {
-  React.useEffect(() => {
-    Logger.info('Theme Provider initialized', {
-      attribute: props.attribute,
-      defaultTheme: props.defaultTheme,
-    })
-  }, [props.attribute, props.defaultTheme])
+type ThemeProviderProps = React.ComponentProps<typeof NextThemesProvider>
 
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>
 }

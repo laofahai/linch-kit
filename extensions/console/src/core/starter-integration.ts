@@ -171,18 +171,21 @@ export class StarterIntegrationManager extends EventEmitter {
     const loadedExtensions = extensionLoader.getLoadedExtensions()
     const lifecycleStates = extensionLifecycleManager.getAllLifecycleStates()
 
-    return loadedExtensions.map(ext => {
-      const lifecycle = lifecycleStates.find(state => state.name === ext.name)
+    // 过滤掉undefined元素并添加防御性检查
+    return loadedExtensions
+      .filter(ext => ext && ext.name) // 过滤undefined和无效的扩展
+      .map(ext => {
+        const lifecycle = lifecycleStates.find(state => state.name === ext.name)
 
-      return {
-        name: ext.name,
-        loadStatus: ext.status,
-        lifecyclePhase: lifecycle?.currentPhase || 'unknown',
-        routeCount: ext.routeCount,
-        componentCount: ext.componentCount,
-        error: ext.error?.message,
-      }
-    })
+        return {
+          name: ext.name,
+          loadStatus: ext.status || 'unknown',
+          lifecyclePhase: lifecycle?.currentPhase || 'unknown',
+          routeCount: ext.routeCount || 0,
+          componentCount: ext.componentCount || 0,
+          error: ext.error?.message,
+        }
+      })
   }
 
   /**

@@ -1,47 +1,53 @@
 /**
- * tRPC 配置文件
- * 基于 @linch-kit/trpc 创建的应用级tRPC配置
+ * tRPC 配置和路由定义
+ * 提供类型安全的 API 层
  */
 
-import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
+import { initTRPC } from '@trpc/server'
+import { z } from 'zod'
 import superjson from 'superjson'
-import type { AppRouter } from './trpc-server'
+import { Logger } from '@linch-kit/core'
 
-/**
- * 客户端 tRPC 实例
- */
-export const trpc = createTRPCProxyClient<AppRouter>({
-  links: [
-    httpBatchLink({
-      url: '/api/trpc',
-      transformer: superjson,
-      // 可选：添加认证头
-      headers() {
-        return {
-          // 'authorization': getAuthToken(),
-        }
-      },
-    }),
-  ],
+// 创建 tRPC 实例
+const t = initTRPC.create({
+  transformer: superjson,
+  errorFormatter({ shape }) {
+    return shape
+  },
 })
 
-/**
- * 工具函数：获取 URL（用于 SSR）
- */
-function getBaseUrl() {
-  if (typeof window !== 'undefined') return '' // 浏览器端使用相对 URL
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}` // Vercel
-  return `http://localhost:${process.env.PORT ?? 3000}` // 开发环境
-}
+// 导出路由和程序构建器
+export const router = t.router
+export const publicProcedure = t.procedure
 
-/**
- * SSR 专用的 tRPC 客户端
- */
-export const trpcSsr = createTRPCProxyClient<AppRouter>({
-  links: [
-    httpBatchLink({
-      url: `${getBaseUrl()}/api/trpc`,
-      transformer: superjson,
+// 示例路由 - 健康检查
+const healthRouter = router({
+  check: publicProcedure
+    .query(() => {
+      Logger.info('Health check requested')
+      return {
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
+      }
     }),
-  ],
 })
+
+// 示例路由 - Hello World
+const exampleRouter = router({
+  hello: publicProcedure
+    .input(z.object({ name: z.string().optional() }))
+    .query(({ input }) => {
+      const name = input.name ?? 'World'
+      Logger.debug('Hello endpoint called', { name })
+      return `Hello ${name}! 这是来自 LinchKit Starter 的问候。`
+    }),
+})
+
+// 主应用路由
+export const appRouter = router({
+  health: healthRouter,
+  example: exampleRouter,
+})
+
+export type AppRouter = typeof appRouter

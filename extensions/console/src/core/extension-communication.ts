@@ -162,16 +162,64 @@ export class ExtensionCommunicationHub extends EventEmitter {
    * 订阅消息主题
    */
   subscribe(extensionName: string, subject: string, handler: ExtensionMessageHandler): () => void {
-    const subscription: ExtensionMessageSubscription = {
-      extensionName,
-      subject,
-      handler,
-      subscribedAt: Date.now(),
-    }
+    try {
+      // 防御性检查
+      if (!extensionName || !subject || !handler) {
+        throw new Error(`Invalid subscription parameters: extensionName=${extensionName}, subject=${subject}, handler=${!!handler}`)
+      }
 
-    const extensionSubs = this.subscriptions.get(extensionName) || []
-    extensionSubs.push(subscription)
-    this.subscriptions.set(extensionName, extensionSubs)
+      const subscription: ExtensionMessageSubscription = {
+        extensionName,
+        subject,
+        handler,
+        subscribedAt: Date.now(),
+      }
+
+      // 额外的防御性检查
+      if (!subscription) {
+        throw new Error('Failed to create subscription object')
+      }
+
+      // 检查subscription的所有属性
+      if (!subscription.extensionName || !subscription.subject || !subscription.handler) {
+        throw new Error(`Invalid subscription object: ${JSON.stringify({
+          extensionName: !!subscription.extensionName,
+          subject: !!subscription.subject,
+          handler: !!subscription.handler,
+          subscribedAt: !!subscription.subscribedAt
+        })}`)
+      }
+
+      const extensionSubs = this.subscriptions.get(extensionName) || []
+      
+      // 确保extensionSubs是数组
+      if (!Array.isArray(extensionSubs)) {
+        throw new Error(`extensionSubs is not an array: ${typeof extensionSubs}`)
+      }
+      
+      // 详细的防御性检查 - 避免任何可能的undefined访问
+      const debugInfo = {
+        subscriptionExists: !!subscription,
+        extensionName: subscription?.extensionName || 'undefined',
+        subject: subscription?.subject || 'undefined', 
+        handlerType: typeof subscription?.handler,
+        subscribedAt: subscription?.subscribedAt || 'undefined'
+      }
+      
+      // 验证subscription对象的完整性
+      if (!subscription.extensionName || !subscription.subject || !subscription.handler || !subscription.subscribedAt) {
+        throw new Error(`Incomplete subscription object: ${JSON.stringify(debugInfo)}`)
+      }
+      
+      extensionSubs.push(subscription)
+      this.subscriptions.set(extensionName, extensionSubs)
+    } catch (error) {
+      // 使用简单的错误处理，避免循环依赖
+      if (typeof window !== 'undefined' && window.console) {
+        window.console.error('[ExtensionCommunicationHub] Subscribe error:', error)
+      }
+      throw error
+    }
 
     // 返回取消订阅函数
     return () => {

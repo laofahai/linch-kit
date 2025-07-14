@@ -153,6 +153,7 @@ export class ExtensionLoader extends EventEmitter {
         this.updateExtensionState(extensionName, 'running', {
           routeCount: routes.length,
           componentCount: components.size,
+          loadStatus: 'loaded',
         })
 
         // 触发加载完成事件
@@ -265,7 +266,7 @@ export class ExtensionLoader extends EventEmitter {
    * 获取所有Extension状态
    */
   getAllExtensionStates(): ConsoleExtensionState[] {
-    return Array.from(this.extensionStates.values())
+    return Array.from(this.extensionStates.values()).filter(state => state && state.name)
   }
 
   /**
@@ -376,6 +377,7 @@ export class ExtensionLoader extends EventEmitter {
     const currentState = this.extensionStates.get(extensionName) || {
       name: extensionName,
       status: 'loading',
+      loadStatus: 'loading' as ExtensionLoadStatus,
       lastUpdated: Date.now(),
       metrics: {
         initializationTime: 0,
@@ -400,6 +402,7 @@ export class ExtensionLoader extends EventEmitter {
     const newState: ConsoleExtensionState = {
       ...currentState,
       status,
+      loadStatus: this.mapStatusToLoadStatus(status),
       lastUpdated: Date.now(),
       ...additional,
     }
@@ -427,6 +430,30 @@ export class ExtensionLoader extends EventEmitter {
     // EnhancedPluginRegistry 不具备 EventEmitter 功能
     // 移除事件监听器设置，如需要事件处理功能，应该在调用方处理
     // 或者在 ExtensionManager 接口中明确定义事件处理方法
+  }
+
+  /**
+   * 映射状态到加载状态
+   */
+  private mapStatusToLoadStatus(status: ExtensionState['status']): ExtensionLoadStatus {
+    switch (status) {
+      case 'registered':
+        return 'unloaded'
+      case 'loading':
+      case 'starting':
+        return 'loading'
+      case 'loaded':
+      case 'running':
+        return 'loaded'
+      case 'error':
+        return 'failed'
+      case 'stopping':
+        return 'unloading'
+      case 'stopped':
+        return 'unloaded'
+      default:
+        return 'unloaded'
+    }
   }
 
   /**

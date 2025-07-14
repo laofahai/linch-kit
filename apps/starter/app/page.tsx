@@ -1,131 +1,49 @@
-'use client'
+/**
+ * LinchKit Starter - 开发基座主页
+ * 最小化示例页面，展示基本功能
+ */
 
-import { Logger } from '@linch-kit/core/client'
-import { useEffect, useState } from 'react'
+// import Link from 'next/link' // 暂时不使用
 
-export default function Home() {
-  const [extensionCount, setExtensionCount] = useState(0)
-  const [isInitialized, setIsInitialized] = useState(false)
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-  useEffect(() => {
-    const initializeLinchKit = async () => {
-      try {
-        Logger.info('LinchKit Starter 应用启动', { timestamp: new Date().toISOString() })
-
-        // 模拟extension系统状态 - 实际状态应该通过API获取
-        setExtensionCount(2) // console, core 等基础extension
-        setIsInitialized(true)
-
-        Logger.info('LinchKit 客户端初始化完成', { extensionCount: 2 })
-      } catch (error) {
-        Logger.error(
-          'LinchKit 初始化失败',
-          error instanceof Error ? error : new Error(String(error))
-        )
-      }
-    }
-
-    initializeLinchKit()
-  }, [])
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 to-primary/10 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-bold text-slate-900 dark:text-slate-100 mb-6">
             LinchKit Starter
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-            AI-First 全栈开发框架 - 企业级生产应用
+          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">
+            AI-First 开发基座 - 基于 LinchKit 框架的现代化全栈开发模板
           </p>
-
-          <div className="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900 rounded-full">
-            <div
-              className={`w-3 h-3 rounded-full mr-2 ${isInitialized ? 'bg-green-500' : 'bg-yellow-500'}`}
-            ></div>
-            <span className="text-sm font-medium text-green-800 dark:text-green-200">
-              {isInitialized ? 'LinchKit 核心已初始化' : '正在初始化...'}
-            </span>
+          <div className="flex gap-4 justify-center">
+            <Button size="lg" asChild>
+              <a href="/console">进入 Console</a>
+            </Button>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">核心功能</h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">基于 @linch-kit/core 的基础设施</p>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Extension系统:</span>
-                <span className="font-medium">{extensionCount} 个Extension</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>日志系统:</span>
-                <span className="font-medium text-green-600">已启用</span>
-              </div>
+        {/* Quick Start */}
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle>快速开始</CardTitle>
+            <CardDescription>几个命令即可启动您的项目开发</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-slate-900 dark:bg-slate-800 rounded-lg p-4 font-mono text-sm">
+              <div className="text-green-400"># 安装依赖</div>
+              <div className="text-slate-300">bun install</div>
+              <div className="text-green-400 mt-2"># 启动开发服务器</div>
+              <div className="text-slate-300">bun dev</div>
+              <div className="text-green-400 mt-2"># 构建生产版本</div>
+              <div className="text-slate-300">bun run build</div>
             </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">技术栈</h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">现代化全栈技术组合</p>
-            <ul className="space-y-1 text-sm">
-              <li>• Next.js 15.3.4</li>
-              <li>• React 19</li>
-              <li>• TypeScript 5</li>
-              <li>• Tailwind CSS 4</li>
-              <li>• Turbopack</li>
-            </ul>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              LinchKit 包
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">已集成的功能模块</p>
-            <ul className="space-y-1 text-sm">
-              <li>• @linch-kit/core</li>
-              <li>• @linch-kit/schema</li>
-              <li>• @linch-kit/auth</li>
-              <li>• @linch-kit/crud</li>
-              <li>• @linch-kit/trpc</li>
-              <li>• @linch-kit/ui</li>
-              <li>• @linch-kit/console</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* 导航链接 */}
-        <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto mt-12">
-          <a
-            href="/dashboard"
-            className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-primary/20 dark:border-primary/30"
-          >
-            <h3 className="text-lg font-semibold text-primary dark:text-primary mb-2">
-              📊 业务 Dashboard
-            </h3>
-            <p className="text-primary/80 dark:text-primary/80 text-sm">
-              查看用户数据、文章内容等业务指标
-            </p>
-          </a>
-
-          <a
-            href="/admin"
-            className="block p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-primary/20 dark:border-primary/30"
-          >
-            <h3 className="text-lg font-semibold text-primary dark:text-primary mb-2">
-              ⚙️ 管理控制台
-            </h3>
-            <p className="text-primary/80 dark:text-primary/80 text-sm">
-              企业级管理功能，基于 Console 模块
-            </p>
-          </a>
-        </div>
-
-        <div className="text-center mt-12">
-          <p className="text-gray-500 dark:text-gray-400">
-            LinchKit Framework - 让 AI 驱动的全栈开发变得简单
-          </p>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
