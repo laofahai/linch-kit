@@ -1,9 +1,13 @@
+import { Button } from '@linch-kit/ui/client'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+
 
 import { TRPCLinchKitProvider } from '@/components/providers/trpc-linchkit-provider'
 
 import './globals.css'
+
+import '@linch-kit/ui/styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,7 +20,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className={inter.className}>
-        <div className="h-12 w-12 bg-red-500">123</div>
+        <div className="p-8 bg-primary text-primary-foreground">Primary Test</div>
+        <Button>Hi</Button>
         <TRPCLinchKitProvider>
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {children as any}

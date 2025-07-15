@@ -1,4 +1,7 @@
-/* LinchKit "Quantum" Theme - 统一主题定义 */
+/**
+ * LinchKit "Quantum" Theme - 默认主题
+ * 量子蓝 + 宇宙紫的现代科技主题
+ */
 
 :root {
   --background: 0 0% 100%; /* Clean White */
@@ -81,10 +84,9 @@
   --sidebar: 224 71% 3%;
 }
 
-/* 移除重复的@theme块，保持:root块作为唯一的CSS变量定义源 */
-
-/* Additional LinchKit enhancements */
+/* LinchKit 专属量子主题增强 - 主题特定的样式 */
 @layer utilities {
+  /* 量子主题特殊效果 */
   .quantum-glow {
     box-shadow: 0 0 20px hsla(262, 84%, 59%, 0.3);
   }
@@ -97,5 +99,30 @@
     background: linear-gradient(135deg, 
       hsla(224, 71%, 4%, 0.95) 0%, 
       hsla(262, 84%, 59%, 0.05) 100%);
+  }
+  
+  .quantum-gradient {
+    background: linear-gradient(135deg, 
+      hsl(var(--primary)) 0%, 
+      hsl(var(--accent)) 100%);
+  }
+  
+  /* 量子主题动画效果 */
+  .quantum-pulse {
+    animation: quantum-pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes quantum-pulse {
+    0%, 100% { box-shadow: 0 0 20px hsla(262, 84%, 59%, 0.3); }
+    50% { box-shadow: 0 0 40px hsla(262, 84%, 59%, 0.6); }
+  }
+  
+  /* 量子主题悬停效果 */
+  .quantum-hover:hover {
+    background: linear-gradient(135deg, 
+      hsl(var(--primary)) 0%, 
+      hsl(var(--accent)) 100%);
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
   }
 }

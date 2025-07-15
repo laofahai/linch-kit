@@ -46,8 +46,16 @@ export default defineConfig({
     const themesDir = 'dist/styles/themes'
     mkdirSync(stylesDir, { recursive: true })
     mkdirSync(themesDir, { recursive: true })
+    
     copyFileSync('src/styles/globals.css', 'dist/styles/globals.css')
     copyFileSync('src/styles/themes/linch-kit.css', 'dist/styles/themes/linch-kit.css')
-    console.log('CSS files copied to dist/styles/')
+    copyFileSync('src/styles/utilities.css', 'dist/styles/utilities.css')
+    copyFileSync('src/styles/index.css', 'dist/styles/index.css')
+    
+    console.log('✅ CSS files copied to dist/styles/')
+    console.log('   - index.css (complete theme system)')
+    console.log('   - globals.css (base styles)')
+    console.log('   - themes/linch-kit.css (default theme)')
+    console.log('   - utilities.css (theme utilities)')
   },
 })

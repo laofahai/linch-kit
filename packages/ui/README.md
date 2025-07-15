@@ -5,10 +5,11 @@ LinchKit UI组件库 - Schema驱动的企业级React组件
 ## 🚀 特性
 
 - **Schema驱动**: 基于LinchKit Schema自动生成表单和表格组件
-- **企业级**: 内置权限控制、国际化、主题系统
+- **企业级**: 内置权限控制、国际化、完整主题系统
 - **现代化**: 基于shadcn/ui + Radix UI + Tailwind CSS构建
 - **类型安全**: 100% TypeScript，端到端类型安全
 - **可扩展**: 插件化架构，易于扩展和定制
+- **主题系统**: 完整的主题管理，支持自定义主题和暗色模式
 
 ## 📦 安装
 
@@ -86,19 +87,59 @@ import { Button, Input, Card } from '@linch-kit/ui/components'
 </Card>
 ```
 
-## 🎨 主题定制
+## 🎨 主题系统
 
-组件支持通过Tailwind CSS变量进行主题定制：
+### 快速开始
 
 ```css
-:root {
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96%;
-  --border: 214.3 31.8% 91.4%;
-  --radius: 0.5rem;
+/* 导入完整主题系统 */
+@import "tailwindcss";
+@import "@linch-kit/ui/styles";
+```
+
+### 使用主题工具
+
+```tsx
+import { useTheme, createTheme } from '@linch-kit/ui'
+
+function ThemeExample() {
+  const { theme, mode, toggleMode } = useTheme()
+
+  return (
+    <div className="bg-primary text-primary-foreground p-4 rounded-theme">
+      <h1>当前主题: {theme.displayName}</h1>
+      <button 
+        onClick={toggleMode}
+        className="bg-accent text-accent-foreground px-4 py-2 rounded-theme hover:bg-accent/90"
+      >
+        切换模式
+      </button>
+    </div>
+  )
 }
 ```
+
+### 创建自定义主题
+
+```typescript
+import { createTheme } from '@linch-kit/ui'
+
+const customTheme = createTheme({
+  primary: '142 76% 36%',        // 森林绿
+  accent: '39 100% 50%',         // 金黄色
+  ring: '142 76% 36%',           // 聚焦环
+})
+```
+
+### 主题实用类
+
+- **背景**: `bg-primary`, `bg-secondary`, `bg-accent`, `bg-muted`
+- **文字**: `text-primary-foreground`, `text-muted-foreground`
+- **边框**: `border-border`, `border-primary`
+- **圆角**: `rounded-theme`, `rounded-theme-lg`
+- **透明度**: `bg-primary/50`, `text-primary/70`
+
+详细文档请参考：[主题系统文档](../../docs/theme-system.md)
 
 ## 🔌 插件集成
 

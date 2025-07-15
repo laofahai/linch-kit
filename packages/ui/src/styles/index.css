@@ -1,0 +1,39 @@
+/**
+ * LinchKit UI Complete Theme System
+ * 完整的主题系统入口文件
+ * 
+ * 使用方法：
+ * @import "@linch-kit/ui/styles";
+ * 
+ * 这将自动导入：
+ * - 基础样式
+ * - 主题变量
+ * - 完整的 utilities 实用类
+ */
+
+/* 基础样式 */
+@import "./globals.css";
+
+/* 主题变量 (默认 LinchKit 量子主题) */
+@import "./themes/linch-kit.css";
+
+/* 完整的主题实用类 */
+@import "./utilities.css";
+
+/**
+ * 自定义主题使用方法：
+ * 
+ * 1. 只导入基础样式和实用类：
+ *    @import "@linch-kit/ui/styles/globals.css";
+ *    @import "@linch-kit/ui/styles/utilities.css";
+ * 
+ * 2. 然后导入您的自定义主题：
+ *    @import "./my-custom-theme.css";
+ * 
+ * 3. 或者直接在 CSS 中定义自定义主题变量：
+ *    :root {
+ *      --primary: 210 100% 50%;
+ *      --accent: 280 100% 70%;
+ *      等等...
+ *    }
+ */

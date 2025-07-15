@@ -1,22 +1,10 @@
 /**
  * LinchKit UI Global Styles
- * 基础样式配置，使用内置主题避免重复导入
+ * 基础样式文件，不包含主题变量和实用类
+ * 主题变量和实用类由应用层管理
  */
 
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "./themes/linch-kit.css";
-
-@custom-variant dark (&:is(.dark *));
-
-/* CSS变量由主题文件定义 - 避免重复 */
-/* 使用 themes/linch-kit.css 或 themes/neutral.css */
-
-/* Tailwind CSS 主题配置 - 映射CSS变量到Tailwind colors */
-/* Tailwind CSS 主题配置已移至 tailwind.config.ts 文件 */
-/* 避免重复定义 CSS 变量 */
-
-
+/* 基础样式 */
 * {
   border-color: hsl(var(--border));
 }
@@ -26,11 +14,9 @@ body {
   color: hsl(var(--foreground));
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+/* 
+ * 使用说明：
+ * 1. 此文件只包含基础样式，不包含主题变量
+ * 2. 主题变量请从 @linch-kit/ui/styles/themes/linch-kit.css 导入
+ * 3. 实用类请在应用层定义，确保正确的加载顺序
+ */
