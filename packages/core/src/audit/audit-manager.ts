@@ -49,35 +49,31 @@ export class DefaultAuditManager implements AuditManager {
   private initializeCounters(): void {
     this.counters.set(
       'audit_events_queued',
-      this.metrics.createCounter({
-        name: 'audit_events_queued',
-        type: 'counter',
-        help: 'Number of audit events queued for processing',
-      })
+      this.metrics.createCounter(
+        'audit_events_queued',
+        'Number of audit events queued for processing'
+      )
     )
     this.counters.set(
       'audit_events_processed',
-      this.metrics.createCounter({
-        name: 'audit_events_processed',
-        type: 'counter',
-        help: 'Number of audit events successfully processed',
-      })
+      this.metrics.createCounter(
+        'audit_events_processed',
+        'Number of audit events successfully processed'
+      )
     )
     this.counters.set(
       'audit_events_failed',
-      this.metrics.createCounter({
-        name: 'audit_events_failed',
-        type: 'counter',
-        help: 'Number of audit events that failed to process',
-      })
+      this.metrics.createCounter(
+        'audit_events_failed',
+        'Number of audit events that failed to process'
+      )
     )
     this.counters.set(
       'audit_alerts_triggered',
-      this.metrics.createCounter({
-        name: 'audit_alerts_triggered',
-        type: 'counter',
-        help: 'Number of audit alerts triggered',
-      })
+      this.metrics.createCounter(
+        'audit_alerts_triggered',
+        'Number of audit alerts triggered'
+      )
     )
   }
 

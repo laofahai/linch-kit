@@ -5,131 +5,16 @@
 
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./themes/linch-kit.css";
 
 @custom-variant dark (&:is(.dark *));
 
-/* LinchKit Quantum Theme 内置变量 */
-:root {
-  --background: 0 0% 100%; /* Clean White */
-  --foreground: 224 10% 10%; /* Dark Slate Gray */
-  --card: 0 0% 100%;
-  --card-foreground: 224 10% 10%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 224 10% 10%;
-  --primary: 217 91% 60%; /* Quantum Blue */
-  --primary-foreground: 210 20% 98%; /* Almost White */
-  --secondary: 220 15% 96%; /* Light Gray */
-  --secondary-foreground: 222 47% 11%;
-  --muted: 220 15% 96%;
-  --muted-foreground: 220 9% 45%;
-  --accent: 262 84% 59%; /* Cosmic Purple */
-  --accent-foreground: 210 20% 98%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 210 20% 98%;
-  --border: 220 13% 91%;
-  --input: 220 13% 91%;
-  --ring: 262 84% 59%; /* Cosmic Purple for focus ring */
-  --radius: 0.5rem; /* Professional rounded corners */
-  
-  /* Chart colors with quantum theme */
-  --chart-1: 217 91% 60%; /* Quantum Blue */
-  --chart-2: 262 84% 59%; /* Cosmic Purple */
-  --chart-3: 195 100% 50%; /* Cyan */
-  --chart-4: 280 100% 70%; /* Magenta */
-  --chart-5: 150 100% 40%; /* Emerald */
-  
-  /* Sidebar with quantum theme */
-  --sidebar-background: 220 20% 98%;
-  --sidebar-foreground: 220 15% 40%;
-  --sidebar-primary: 217 91% 60%; /* Quantum Blue */
-  --sidebar-primary-foreground: 210 20% 98%;
-  --sidebar-accent: 262 84% 59%; /* Cosmic Purple */
-  --sidebar-accent-foreground: 210 20% 98%;
-  --sidebar-border: 220 13% 91%;
-  --sidebar-ring: 262 84% 59%; /* Cosmic Purple */
-  --sidebar: 220 20% 98%;
-}
+/* CSS变量由主题文件定义 - 避免重复 */
+/* 使用 themes/linch-kit.css 或 themes/neutral.css */
 
-.dark {
-  --background: 224 71% 4%; /* Stellar Night */
-  --foreground: 210 20% 98%; /* Almost White */
-  --card: 224 71% 6%;
-  --card-foreground: 210 20% 98%;
-  --popover: 224 71% 4%;
-  --popover-foreground: 210 20% 98%;
-  --primary: 217 91% 60%; /* Quantum Blue */
-  --primary-foreground: 210 20% 98%;
-  --secondary: 215 28% 17%; /* Darker Slate */
-  --secondary-foreground: 210 20% 98%;
-  --muted: 215 28% 17%;
-  --muted-foreground: 215 20% 65%;
-  --accent: 262 84% 59%; /* Cosmic Purple */
-  --accent-foreground: 210 20% 98%;
-  --destructive: 0 72% 51%;
-  --destructive-foreground: 210 20% 98%;
-  --border: 215 28% 17%;
-  --input: 215 28% 17%;
-  --ring: 262 84% 59%; /* Cosmic Purple for focus ring */
-  
-  /* Dark mode chart colors */
-  --chart-1: 217 91% 70%; /* Brighter Quantum Blue */
-  --chart-2: 262 84% 69%; /* Brighter Cosmic Purple */
-  --chart-3: 195 100% 60%; /* Bright Cyan */
-  --chart-4: 280 100% 80%; /* Bright Magenta */
-  --chart-5: 150 100% 50%; /* Bright Emerald */
-  
-  /* Dark sidebar with quantum theme */
-  --sidebar-background: 224 71% 3%;
-  --sidebar-foreground: 215 20% 65%;
-  --sidebar-primary: 217 91% 60%; /* Quantum Blue */
-  --sidebar-primary-foreground: 210 20% 98%;
-  --sidebar-accent: 262 84% 59%; /* Cosmic Purple */
-  --sidebar-accent-foreground: 210 20% 98%;
-  --sidebar-border: 215 28% 17%;
-  --sidebar-ring: 262 84% 59%; /* Cosmic Purple */
-  --sidebar: 224 71% 3%;
-}
-
-/* Tailwind CSS 主题配置 */
-@theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar-background: var(--sidebar-background);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar: var(--sidebar);
-  --radius: 0.5rem;
-  --default-border-color: var(--border);
-  --default-background-color: var(--background);
-  --default-text-color: var(--foreground);
-}
+/* Tailwind CSS 主题配置 - 映射CSS变量到Tailwind colors */
+/* Tailwind CSS 主题配置已移至 tailwind.config.ts 文件 */
+/* 避免重复定义 CSS 变量 */
 
 
 * {

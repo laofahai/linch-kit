@@ -56,6 +56,27 @@ export default defineConfig([
       '@godaddy/terminus',
     ],
   },
+  // Providers入口（客户端组件）
+  {
+    entry: ['src/providers.ts'],
+    format: ['cjs', 'esm'],
+    dts: true,
+    clean: false,
+    splitting: false,
+    sourcemap: true,
+    treeshake: true,
+    minify: false,
+    target: 'esnext',
+    outDir: 'dist',
+    platform: 'browser',
+    external: [
+      'react',
+      'react-dom',
+      'next',
+      '@tanstack/react-query',
+      'next-themes',
+    ],
+  },
   // 服务端入口
   {
     entry: ['src/index.ts', 'src/cli.ts', 'src/server.ts'],

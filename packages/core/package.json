@@ -25,6 +25,11 @@
       "types": "./dist/server.d.ts",
       "import": "./dist/server.mjs",
       "require": "./dist/server.js"
+    },
+    "./providers": {
+      "types": "./dist/providers.d.ts",
+      "import": "./dist/providers.mjs",
+      "require": "./dist/providers.js"
     }
   },
   "files": [

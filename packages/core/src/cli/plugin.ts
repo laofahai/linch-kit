@@ -4,7 +4,7 @@
  * 允许各个包动态注册自己的 CLI 命令
  */
 
-import { Logger } from '../logger-client'
+import { logger } from '../logger'
 
 import { type CLIManager, type CLICommand } from './index'
 
@@ -41,7 +41,7 @@ export class CLIPluginManager {
    */
   async registerPlugin(plugin: CLIPlugin) {
     if (this.plugins.has(plugin.name)) {
-      Logger.warn(`CLI plugin ${plugin.name} already registered`)
+      logger.warn(`CLI plugin ${plugin.name} already registered`)
       return
     }
 
@@ -50,7 +50,7 @@ export class CLIPluginManager {
     // 调用插件的注册函数
     await plugin.register(this.cli)
 
-    Logger.debug(`CLI plugin ${plugin.name} registered`)
+    logger.debug(`CLI plugin ${plugin.name} registered`)
   }
 
   /**
@@ -78,8 +78,7 @@ export class CLIPluginManager {
         }
       } catch {
         // 包可能没有 CLI 插件，这是正常的
-        // 包可能没有 CLI 插件，这是正常的
-        Logger.debug(`No CLI plugin found for ${packageName}`)
+        logger.debug(`No CLI plugin found for ${packageName}`)
       }
     }
   }

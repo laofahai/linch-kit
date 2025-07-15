@@ -22,6 +22,14 @@ const nextConfig: NextConfig = {
     // 在构建时启用 ESLint 检查
     ignoreDuringBuilds: false,
   },
+  
+  // 实验性功能配置
+  experimental: {
+    // 实验性配置
+  },
+  
+  // 输出配置 - 禁用静态生成
+  output: 'standalone',
 
   // Webpack 配置
   webpack: (config, { isServer }) => {

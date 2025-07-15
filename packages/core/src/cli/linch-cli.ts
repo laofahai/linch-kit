@@ -22,7 +22,8 @@ export class LinchKitCLI {
 
   private async setupCLI() {
     // 修改程序信息
-    const program = (this.cli as { program: unknown }).program
+    const cliImpl = this.cli as unknown as { program: any }
+    const program = cliImpl.program
     program.name('linch').description('LinchKit AI-First 全栈开发框架 CLI').version('1.0.0')
 
     // 添加全局选项
@@ -48,9 +49,10 @@ export class LinchKitCLI {
       await this.setupCLI()
 
       // 解析并执行命令
-      await (this.cli as { parse: (args: string[]) => Promise<void> }).parse(args)
+      const cliImpl = this.cli as unknown as { parse: (args: string[]) => Promise<void> }
+      await cliImpl.parse(args)
     } catch (error) {
-      Logger.error('CLI execution failed:', error)
+      Logger.error('CLI execution failed:', error instanceof Error ? error : new Error(String(error)))
       process.exit(1)
     }
   }

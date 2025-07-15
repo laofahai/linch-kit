@@ -3,15 +3,23 @@
  * 提供类型安全的 API 层
  */
 
-import { Logger } from '@linch-kit/core/client'
+import { logger } from '@linch-kit/core/server'
 import { initTRPC } from '@trpc/server'
 import superjson from 'superjson'
 import { z } from 'zod'
 // 使用 LinchKit Core 的正式 Logger
-const TrpcLogger = Logger
+const TrpcLogger = logger
+
+// 创建 tRPC 上下文类型
+export type TRPCContext = Record<string, never>
+
+// 创建 tRPC 上下文工厂函数
+export const createTRPCContext = (): TRPCContext => {
+  return {}
+}
 
 // 创建 tRPC 实例
-const t = initTRPC.create({
+const t = initTRPC.context<TRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape }) {
     return shape

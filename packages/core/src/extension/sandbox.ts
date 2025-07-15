@@ -8,13 +8,31 @@ import { EventEmitter } from 'eventemitter3'
 import type { ExtensionPermission, ExtensionContext } from './types'
 import type { ExtensionPermissionManager } from './permission-manager'
 
-// 可选的isolated-vm依赖
+// 可选的isolated-vm依赖 - 使用标准动态导入
 let ivm: typeof import('isolated-vm') | undefined
-try {
-  ivm = require('isolated-vm')
-} catch {
-  console.warn('isolated-vm not available, sandbox will run in unsafe mode')
+
+// 仅在服务器环境中异步加载
+async function loadIsolatedVM(): Promise<typeof import('isolated-vm') | undefined> {
+  if (typeof window !== 'undefined' || typeof process === 'undefined') {
+    return undefined
+  }
+  
+  try {
+    // 使用标准的动态导入
+    const ivmModule = await import('isolated-vm')
+    return ivmModule
+  } catch {
+    // 静默失败，isolated-vm可能未安装
+    return undefined
+  }
 }
+
+// 在模块加载时初始化
+loadIsolatedVM().then(module => {
+  ivm = module
+}).catch(() => {
+  // 静默失败
+})
 
 export interface SandboxConfig {
   /** 是否启用沙箱 */

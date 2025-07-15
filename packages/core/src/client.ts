@@ -9,10 +9,9 @@ export { logger as Logger, createLogger } from './logger-client'
 
 // Extension系统 - 客户端安全版本
 export {
-  EnhancedPluginRegistry as ExtensionRegistry,
-  isExtension,
-  pluginToExtension,
-} from './extension/enhanced-plugin'
+  ClientUnifiedExtensionManager as ExtensionRegistry,
+  clientExtensionManager,
+} from './extension/unified-manager-client'
 
 // Extension和Plugin类型
 export type {
@@ -39,11 +38,14 @@ export {
   type PackageI18nOptions,
 } from './i18n'
 
+// Note: Provider 组合系统已移至独立导出
+// 使用: import { LinchKitProvider, withTRPCProvider } from '@linch-kit/core/providers'
+
 // 默认实例
-export { enhancedPluginRegistry as ExtensionSystem } from './extension/enhanced-plugin'
+export { clientExtensionManager as ExtensionSystem } from './extension/unified-manager-client'
 
 // 客户端ExtensionManager（简化版，适合客户端使用）
-export { enhancedPluginRegistry as extensionManager } from './extension/enhanced-plugin'
+export { clientExtensionManager as extensionManager } from './extension/unified-manager-client'
 
 // 客户端 AppRegistry（简化版，适合客户端使用）
 export class AppRegistry {

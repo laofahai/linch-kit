@@ -4,13 +4,19 @@
  * @module metrics
  */
 
-import type { MetricCollector, Counter, Gauge, Histogram, Summary, MetricConfig } from '../types'
+import type { MetricCollector, Counter, Gauge, Histogram, Summary } from '../types/observability'
+
+// 定义Metrics专用的配置接口，与observability.ts中的MetricConfig区分
+export interface MetricsConfig {
+  enableDefaultMetrics?: boolean
+  defaultMetricsTimeout?: number
+}
 
 /**
  * 检查当前环境是否为服务器端
  */
 function isServerEnvironment(): boolean {
-  return typeof window === 'undefined' && typeof process !== 'undefined' && process.versions?.node
+  return typeof window === 'undefined' && typeof process !== 'undefined' && Boolean(process.versions?.node)
 }
 
 /**
@@ -20,7 +26,7 @@ class ServerMetrics implements MetricCollector {
   private promClient: any
   private registry: any
 
-  constructor(config: MetricConfig = {}) {
+  constructor(config: MetricsConfig = {}) {
     // 动态导入prom-client以避免客户端打包问题
     this.promClient = require('prom-client')
     
@@ -310,7 +316,7 @@ class ClientMetrics implements MetricCollector {
  * 统一的Metrics工厂函数
  * 根据环境自动选择合适的实现
  */
-export function createMetricCollector(config: MetricConfig = {}): MetricCollector {
+export function createMetricCollector(config: MetricsConfig = {}): MetricCollector {
   if (isServerEnvironment()) {
     return new ServerMetrics(config)
   } else {

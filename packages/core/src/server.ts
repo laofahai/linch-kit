@@ -33,3 +33,11 @@ export * from './observability'
 
 // 网络工具 - 服务端专用 (使用 Node.js http/os 模块)
 export * from './utils/network'
+
+// Extension 热重载管理器 (使用 chokidar，仅限服务端)
+export { 
+  HotReloadManager, 
+  createHotReloadManager,
+  type HotReloadConfig,
+  type HotReloadEvent
+} from './extension/hot-reload'

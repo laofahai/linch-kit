@@ -11,11 +11,11 @@
 
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { type ReactNode, useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 
-import { logger } from '../logger'
+import { logger } from '../logger-client'
 
 export interface LinchKitProviderConfig {
   /**
@@ -48,7 +48,7 @@ export interface LinchKitProviderConfig {
 }
 
 export interface LinchKitProviderProps {
-  children: React.ReactNode
+  children: ReactNode
   config?: LinchKitProviderConfig
 }
 
@@ -172,16 +172,12 @@ export const defaultLinchKitConfig: LinchKitProviderConfig = {
  * @param trpcConfig - tRPC 客户端配置
  * @returns 集成了 tRPC 的 LinchKit Provider 组件
  */
-export function withTRPCProvider<TRouter = unknown>(
+export function withTRPCProvider<TRouter = any>(
   trpcApi: {
-    Provider: React.ComponentType<{
-      client: unknown
-      queryClient: QueryClient  
-      children: React.ReactNode
-    }>
-    createClient: (config: unknown) => unknown
+    Provider: React.ComponentType<any>
+    createClient: (config: any) => any
   },
-  trpcConfig: unknown
+  trpcConfig: any
 ) {
   return function TRPCLinchKitProvider({
     children,

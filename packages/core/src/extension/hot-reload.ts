@@ -8,7 +8,7 @@ import { watch } from 'chokidar'
 // @ts-ignore - lodash-es types not needed for build
 import { debounce } from 'lodash-es'
 
-import type { ExtensionManager } from './manager'
+import { UnifiedExtensionManager } from './unified-manager'
 
 export interface HotReloadConfig {
   /** 是否启用热重载 */
@@ -39,7 +39,7 @@ export class HotReloadManager extends EventEmitter {
   private isReloading = false
 
   constructor(
-    private extensionManager: ExtensionManager,
+    private extensionManager: UnifiedExtensionManager,
     private config: HotReloadConfig = {
       enabled: true,
       extensionRoot: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
@@ -59,14 +59,14 @@ export class HotReloadManager extends EventEmitter {
 
     // 为所有已加载的Extension启用热重载
     const extensions = this.extensionManager.getAllExtensions()
-    extensions.forEach(ext => this.enableForExtension(ext.name))
+    extensions.forEach((ext: any) => this.enableForExtension(ext.name))
 
     // 监听Extension管理器事件
-    this.extensionManager.on('extensionLoaded', ({ name }) => {
+    this.extensionManager.on('extensionLoaded', ({ name }: { name: string }) => {
       this.enableForExtension(name)
     })
 
-    this.extensionManager.on('extensionUnloaded', ({ name }) => {
+    this.extensionManager.on('extensionUnloaded', ({ name }: { name: string }) => {
       this.disableForExtension(name)
     })
   }
@@ -279,7 +279,7 @@ export class HotReloadManager extends EventEmitter {
  * 创建热重载管理器实例
  */
 export function createHotReloadManager(
-  extensionManager: ExtensionManager,
+  extensionManager: UnifiedExtensionManager,
   config?: Partial<HotReloadConfig>
 ): HotReloadManager {
   const fullConfig: HotReloadConfig = {

@@ -750,32 +750,39 @@ export class UnifiedExtensionManager extends EventEmitter implements IExtensionM
     }
 
     try {
-      const { readFile } = await import('node:fs/promises')
-      const manifestPath = `${this.config.extensionRoot}/${extensionName}/package.json`
-      const manifestContent = await readFile(manifestPath, 'utf-8')
-      const packageJson = JSON.parse(manifestContent)
+      // 仅在服务器环境中导入fs/promises
+      if (typeof window === 'undefined' && typeof process !== 'undefined') {
+        // 使用标准的动态导入
+        const fsPromises = await import('node:fs/promises')
+        const manifestPath = `${this.config.extensionRoot}/${extensionName}/package.json`
+        const manifestContent = await fsPromises.readFile(manifestPath, 'utf-8')
+        const packageJson = JSON.parse(manifestContent)
 
-      if (!packageJson.linchkit) {
+        if (!packageJson.linchkit) {
+          return null
+        }
+
+        const manifest: ExtensionMetadata = {
+          id: packageJson.name,
+          name: packageJson.linchkit.displayName || packageJson.name,
+          version: packageJson.version,
+          description: packageJson.description,
+          displayName: packageJson.linchkit.displayName,
+          capabilities: packageJson.linchkit.capabilities || {},
+          category: packageJson.linchkit.category,
+          tags: packageJson.linchkit.tags || [],
+          permissions: packageJson.linchkit.permissions || [],
+          configuration: packageJson.linchkit.configuration,
+          entries: packageJson.linchkit.entries,
+          dependencies: packageJson.linchkit.dependencies,
+        }
+
+        this.manifestCache.set(extensionName, manifest)
+        return manifest
+      } else {
+        // 客户端环境不支持文件系统访问
         return null
       }
-
-      const manifest: ExtensionMetadata = {
-        id: packageJson.name,
-        name: packageJson.linchkit.displayName || packageJson.name,
-        version: packageJson.version,
-        description: packageJson.description,
-        displayName: packageJson.linchkit.displayName,
-        capabilities: packageJson.linchkit.capabilities || {},
-        category: packageJson.linchkit.category,
-        tags: packageJson.linchkit.tags || [],
-        permissions: packageJson.linchkit.permissions || [],
-        configuration: packageJson.linchkit.configuration,
-        entries: packageJson.linchkit.entries,
-        dependencies: packageJson.linchkit.dependencies,
-      }
-
-      this.manifestCache.set(extensionName, manifest)
-      return manifest
     } catch (error) {
       console.warn(`Failed to load manifest for ${extensionName}:`, error)
       return null

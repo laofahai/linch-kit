@@ -264,7 +264,7 @@ class AIGuardianValidator {
   checkCSSVariableDuplication(cssFiles) {
     const fs = require('fs')
     const duplications = []
-    const variableMap = new Map()
+    const variableMap = new Map() // key: varName, value: Set<filename>
     
     for (const file of cssFiles) {
       try {
@@ -274,17 +274,22 @@ class AIGuardianValidator {
         for (const variable of variables) {
           const varName = variable.match(/--[\w-]+/)?.[0]
           if (varName) {
-            if (variableMap.has(varName)) {
-              if (!duplications.includes(varName)) {
-                duplications.push(`${varName} (${variableMap.get(varName)} & ${file})`)
-              }
-            } else {
-              variableMap.set(varName, file)
+            if (!variableMap.has(varName)) {
+              variableMap.set(varName, new Set())
             }
+            variableMap.get(varName).add(file)
           }
         }
       } catch (error) {
         // 忽略文件读取错误
+      }
+    }
+    
+    // 只检查跨文件重复，同一文件内的重复是正常的（如 :root 和 .dark）
+    for (const [varName, files] of variableMap) {
+      if (files.size > 1) {
+        const fileArray = Array.from(files)
+        duplications.push(`${varName} (${fileArray.join(' & ')})`)
       }
     }
     

@@ -6,6 +6,85 @@
 
 import { type CLIManager, type CLICommand } from '../index'
 
+/**
+ * 获取所有可用命令的静态列表
+ */
+function getAllAvailableCommands(): CLICommand[] {
+  return [
+    // 核心命令
+    {
+      name: 'init',
+      description: '初始化 LinchKit 项目',
+      category: 'core',
+      options: [
+        { name: 'skip-env', description: '跳过环境变量配置', type: 'boolean' },
+        { name: 'skip-deps', description: '跳过依赖安装', type: 'boolean' },
+        { name: 'skip-db', description: '跳过数据库初始化', type: 'boolean' },
+      ],
+      handler: async () => ({ success: true }),
+    },
+    {
+      name: 'info',
+      description: '显示项目信息和状态',
+      category: 'core',
+      handler: async () => ({ success: true }),
+    },
+    {
+      name: 'help',
+      description: '显示所有可用命令和使用帮助',
+      category: 'core',
+      handler: async () => ({ success: true }),
+    },
+    {
+      name: 'doctor',
+      description: '诊断开发环境和项目配置问题',
+      category: 'ops',
+      options: [
+        { name: 'fix', description: '自动修复发现的问题', type: 'boolean' },
+        { name: 'verbose', description: '显示详细诊断信息', type: 'boolean' },
+      ],
+      handler: async () => ({ success: true }),
+    },
+    {
+      name: 'upgrade',
+      description: '升级 LinchKit 框架和依赖',
+      category: 'ops',
+      options: [
+        { name: 'check', description: '仅检查可用更新', type: 'boolean' },
+        { name: 'force', description: '强制升级到最新版本', type: 'boolean' },
+      ],
+      handler: async () => ({ success: true }),
+    },
+    // Schema 命令
+    {
+      name: 'schema:generate',
+      description: '生成 Schema 类型定义',
+      category: 'schema',
+      handler: async () => ({ success: true }),
+    },
+    {
+      name: 'schema:sync',
+      description: '同步数据库 Schema',
+      category: 'schema',
+      handler: async () => ({ success: true }),
+    },
+    // CRUD 命令
+    {
+      name: 'crud:generate',
+      description: '生成 CRUD 操作代码',
+      category: 'crud',
+      handler: async () => ({ success: true }),
+    },
+    // tRPC 命令
+    {
+      name: 'trpc:generate',
+      description: '生成 tRPC 路由',
+      category: 'trpc',
+      handler: async () => ({ success: true }),
+    },
+  ]
+}
+
 const helpCommand: CLICommand = {
   name: 'help',
   description: '显示所有可用命令和使用帮助',
@@ -23,19 +102,19 @@ const helpCommand: CLICommand = {
       type: 'string',
     },
   ],
-  handler: async ({ options, cli }) => {
+  handler: async ({ options }) => {
     try {
       const { command, category } = options as {
         command?: string
         category?: string
       }
 
-      // 获取所有已注册的命令
-      const commands = cli?.getCommands() || []
+      // 获取所有已注册的命令 (静态列表)
+      const commands = getAllAvailableCommands()
 
       if (command) {
         // 显示特定命令的详细帮助
-        const cmd = commands.find(c => c.name === command)
+        const cmd = commands.find((c: CLICommand) => c.name === command)
         if (!cmd) {
           console.error(`❌ 未找到命令: ${command}`)
           return { success: false, error: `Command not found: ${command}` }
@@ -167,7 +246,14 @@ function getCategoryDisplayName(category: string): string {
     schema: 'Schema 引擎',
     crud: 'CRUD 操作',
     trpc: 'tRPC API层',
-    system: '系统工具',
+    ops: '运维工具',
+    dev: '开发工具',
+    deploy: '部署工具',
+    util: '实用工具',
+    auth: '认证权限',
+    ui: 'UI 组件',
+    config: '配置管理',
+    plugin: '插件管理',
   }
   return names[category] || category
 }
@@ -178,7 +264,14 @@ function getCategoryIcon(category: string): string {
     schema: '📋',
     crud: '⚡',
     trpc: '🔌',
-    system: '🔧',
+    ops: '🔧',
+    dev: '👨‍💻',
+    deploy: '🚀',
+    util: '🛠️',
+    auth: '🔐',
+    ui: '🎨',
+    config: '⚙️',
+    plugin: '🧩',
   }
   return icons[category] || '📦'
 }

@@ -21,7 +21,8 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <body className={inter.className}>
         <TRPCLinchKitProvider>
-          {children}
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {children as any}
         </TRPCLinchKitProvider>
       </body>
     </html>

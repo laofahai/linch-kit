@@ -26,12 +26,12 @@ export interface MetricConfig {
  * 指标收集器接口
  */
 export interface MetricCollector {
-  createCounter(config: MetricConfig): Counter
-  createGauge(config: MetricConfig): Gauge
-  createHistogram(config: MetricConfig): Histogram
-  createSummary(config: MetricConfig): Summary
+  createCounter(name: string, help: string, labels?: string[]): Counter
+  createGauge(name: string, help: string, labels?: string[]): Gauge
+  createHistogram(name: string, help: string, buckets?: number[], labels?: string[]): Histogram
+  createSummary(name: string, help: string, percentiles?: number[], labels?: string[]): Summary
   getMetrics(): Promise<string>
-  reset(): void
+  getRegistry?(): any
 }
 
 /**
@@ -59,12 +59,7 @@ export interface Gauge {
  */
 export interface Histogram {
   observe(value: number, labels?: Record<string, string>): void
-  startTimer(labels?: Record<string, string>): () => void
-  get(labels?: Record<string, string>): {
-    buckets: Record<string, number>
-    count: number
-    sum: number
-  }
+  get(labels?: Record<string, string>): number
   reset(): void
 }
 
@@ -73,11 +68,7 @@ export interface Histogram {
  */
 export interface Summary {
   observe(value: number, labels?: Record<string, string>): void
-  get(labels?: Record<string, string>): {
-    quantiles: Record<string, number>
-    count: number
-    sum: number
-  }
+  get(labels?: Record<string, string>): number
   reset(): void
 }
 

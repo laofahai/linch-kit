@@ -7,6 +7,19 @@
 import type { Logger, LogLevel } from '../types'
 
 /**
+ * Pino Logger 接口定义
+ */
+interface PinoLogger {
+  debug(data: Record<string, unknown> | undefined, message: string): void
+  info(data: Record<string, unknown> | undefined, message: string): void
+  warn(data: Record<string, unknown> | undefined, message: string): void
+  error(data: Record<string, unknown> | undefined, message: string): void
+  fatal(data: Record<string, unknown> | undefined, message: string): void
+  level: LogLevel
+  bindings?: { name?: string } & Record<string, unknown>
+}
+
+/**
  * Logger配置
  */
 export interface LoggerConfig {
@@ -21,32 +34,104 @@ export interface LoggerConfig {
  * 检查当前环境是否为服务器端
  */
 function isServerEnvironment(): boolean {
-  return typeof window === 'undefined' && typeof process !== 'undefined' && process.versions?.node
+  return typeof window === 'undefined' && typeof process !== 'undefined' && Boolean(process.versions?.node)
 }
 
 /**
  * 服务器端Logger实现
  */
 class ServerLogger implements Logger {
-  private pinoLogger: any
+  private pinoLogger: PinoLogger
+  private initializationPromise: Promise<void>
 
   constructor(config: LoggerConfig = {}) {
-    // 动态导入pino以避免客户端打包问题
-    const pino = require('pino')
-    const { hostname } = require('os')
-    
-    const pinoConfig = {
-      name: config.name || 'linchkit',
-      level: config.level || 'info',
-      ...(config.pretty && { transport: { target: 'pino-pretty' } }),
-      base: {
-        hostname: hostname(),
-        pid: process.pid,
-        ...config.bindings,
-      },
+    // 确保仅在服务器环境中使用pino
+    if (typeof window !== 'undefined') {
+      throw new Error('ServerLogger can only be used in server environment')
     }
+    
+    // 创建fallback logger作为默认值
+    this.pinoLogger = this.createFallbackLogger(config)
+    
+    // 异步初始化真正的pino logger
+    this.initializationPromise = this.initializePinoLogger(config)
+  }
 
-    this.pinoLogger = config.destination ? pino(pinoConfig, pino.destination(config.destination)) : pino(pinoConfig)
+  private async initializePinoLogger(config: LoggerConfig): Promise<void> {
+    try {
+      // 使用标准的动态导入
+      const [pinoModule, osModule] = await Promise.all([
+        import('pino'),
+        import('os')
+      ])
+      
+      const pino = pinoModule.default
+      const { hostname } = osModule
+      
+      const pinoConfig = {
+        name: config.name || 'linchkit',
+        level: config.level || 'info',
+        ...(config.pretty && { transport: { target: 'pino-pretty' } }),
+        base: {
+          hostname: hostname(),
+          pid: process.pid,
+          ...config.bindings,
+        },
+      }
+
+      const logger = config.destination ? pino(pinoConfig, pino.destination(config.destination)) : pino(pinoConfig)
+      
+      // 类型守卫验证
+      if (!this.isPinoLogger(logger)) {
+        throw new Error('Failed to create valid pino logger')
+      }
+      
+      this.pinoLogger = logger
+    } catch (error) {
+      console.error('Failed to initialize pino logger:', error)
+      // 保持使用fallback logger
+    }
+  }
+
+  private createFallbackLogger(config: LoggerConfig): PinoLogger {
+    const level = config.level || 'info'
+    const name = config.name || 'linchkit'
+    
+    return {
+      debug: (data: Record<string, unknown> | undefined, message: string) => {
+        if (this.shouldLog('debug', level)) console.debug(`[${name}] ${message}`, data)
+      },
+      info: (data: Record<string, unknown> | undefined, message: string) => {
+        if (this.shouldLog('info', level)) console.info(`[${name}] ${message}`, data)
+      },
+      warn: (data: Record<string, unknown> | undefined, message: string) => {
+        if (this.shouldLog('warn', level)) console.warn(`[${name}] ${message}`, data)
+      },
+      error: (data: Record<string, unknown> | undefined, message: string) => {
+        if (this.shouldLog('error', level)) console.error(`[${name}] ${message}`, data)
+      },
+      fatal: (data: Record<string, unknown> | undefined, message: string) => {
+        if (this.shouldLog('fatal', level)) console.error(`[${name}] FATAL: ${message}`, data)
+      },
+      level: level as LogLevel,
+      bindings: { name }
+    }
+  }
+
+  private shouldLog(messageLevel: string, currentLevel: string): boolean {
+    const levels = ['debug', 'info', 'warn', 'error', 'fatal']
+    return levels.indexOf(messageLevel) >= levels.indexOf(currentLevel)
+  }
+
+  private isPinoLogger(logger: unknown): logger is PinoLogger {
+    return typeof logger === 'object' && 
+           logger !== null && 
+           'debug' in logger &&
+           'info' in logger &&
+           'warn' in logger &&
+           'error' in logger &&
+           'fatal' in logger &&
+           'level' in logger
   }
 
   debug(message: string, data?: Record<string, unknown>): void {

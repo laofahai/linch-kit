@@ -6,6 +6,14 @@
 
 ## 🚨 不可违背的核心约束 (每次必须遵守)
 
+### 0. 架构完整性 (绝对禁止)
+
+- **🔴 禁止简化已有实现**：不得简化任何LinchKit核心功能
+- **🔴 禁止绕过架构设计**：必须遵循LinchKit的分层架构
+- **🔴 禁止重复实现功能**：优先使用现有包和组件
+- **🔴 禁止破坏类型安全**：维护完整的TypeScript类型系统
+- **🔴 禁止降级功能**：新实现不得低于现有功能水平
+
 ### 1. TypeScript 严格模式
 
 - **🔴 禁止 `any` 类型**，使用 `unknown` 替代
@@ -167,6 +175,58 @@ bun run deps:check "[关键词]"
 - **权限检查**: `@linch-kit/auth` PermissionChecker - 🔴 禁止自实现权限
 - **CRUD操作**: `@linch-kit/platform` createCRUD - 🔴 禁止手写增删改查
 - **UI组件**: `@linch-kit/ui` 组件库 - 🔴 禁止重复创建基础组件
+
+## 9. Server/Client完全分离 (零容忍违规)
+
+### 🔴 强制条件导出 (2025-07-15 新增)
+
+- **🔴 所有包必须支持条件导出**:
+  - 主入口: `@linch-kit/core` (通用功能)
+  - 服务端: `@linch-kit/core/server` (Node.js专用)
+  - 客户端: `@linch-kit/core/client` (浏览器安全)
+  
+- **🔴 客户端代码纯净性**:
+  - 客户端代码禁止包含任何Node.js专用依赖
+  - 禁止: `isolated-vm`, `fs/promises`, `chokidar`, `pino`, `os`, `child_process`
+  - 允许: 纯JS库、React、DOM API、浏览器API
+
+### 🔴 导入规范 (强制执行)
+
+```typescript
+// ✅ 正确 - 服务端使用
+import { logger } from '@linch-kit/core/server'
+
+// ❌ 错误 - 混合导入可能导致客户端包含服务端代码
+import { Logger } from '@linch-kit/core'
+
+// ✅ 正确 - 客户端使用
+import { Logger } from '@linch-kit/core/client'
+```
+
+### 🔴 构建验证 (每次发布前必须执行)
+
+```bash
+# 构建所有包
+bun run build:packages
+
+# 验证客户端构建
+cd apps/starter && bun run build
+
+# 检查客户端构建产物纯净性
+grep -r "isolated-vm\|fs/promises\|chokidar\|pino" packages/*/dist/client.*
+```
+
+### 🔴 React组件导入修复
+
+```typescript
+// ✅ 正确 - 避免构建时出现 a.createContext is not a function 错误
+import { createContext } from 'react'
+const Context = createContext(undefined)
+
+// ❌ 错误 - 可能导致构建错误
+import React from 'react'
+const Context = React.createContext(undefined)
+```
 
 ## 📊 AI代码生成零错误约束
 

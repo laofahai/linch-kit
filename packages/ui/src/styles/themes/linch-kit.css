@@ -1,15 +1,4 @@
-/* LinchKit "Quantum" Theme - 不导入基础样式，避免重复 */
-
-/* 
-  LinchKit "Quantum" Theme
-  Designed for a modern, professional, and AI-driven feel.
-  
-  Color Philosophy:
-  - Quantum Blue: Deep, intelligent blue representing technology and stability
-  - Cosmic Purple: Bright purple for highlights and AI elements  
-  - Stellar Night: Dark background with subtle blue tint to reduce eye strain
-  - Professional typography with enhanced readability
-*/
+/* LinchKit "Quantum" Theme - 统一主题定义 */
 
 :root {
   --background: 0 0% 100%; /* Clean White */

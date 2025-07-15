@@ -6,9 +6,8 @@
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 import { EventEmitter } from 'eventemitter3'
 
-import { ExtensionManager } from '../manager'
+import { UnifiedExtensionManager } from '../unified-manager'
 import { permissionManager } from '../permission-manager'
-import { pluginRegistry } from '../../plugin/registry'
 import type { Extension, ExtensionLoadResult, ExtensionInstance } from '../types'
 
 // Mock Extension示例
@@ -72,13 +71,13 @@ const mockExtension: Extension = {
 }
 
 describe('Extension System Integration Tests', () => {
-  let extensionManager: ExtensionManager
+  let extensionManager: UnifiedExtensionManager
   let originalImport: any
   let originalReadFile: unknown
 
   beforeEach(() => {
-    // 创建新的ExtensionManager实例
-    extensionManager = new ExtensionManager({
+    // 创建新的UnifiedExtensionManager实例
+    extensionManager = new UnifiedExtensionManager({
       extensionRoot: '/mock/extensions',
       enableSandbox: false, // 禁用沙箱以避免VM2在测试环境中的兼容问题
     })
@@ -194,8 +193,8 @@ describe('Extension System Integration Tests', () => {
       expect(firstResult.success).toBe(true)
 
       // 重置mock计数以清除第一次加载的调用
-      const initCallCount = mockExtension.init.mock.calls.length
-      const startCallCount = mockExtension.start.mock.calls.length
+      const initCallCount = (mockExtension.init as any).mock.calls.length
+      const startCallCount = (mockExtension.start as any).mock.calls.length
 
       // 第二次加载应该返回现有实例
       const secondResult = await extensionManager.loadExtension('test-extension')
@@ -213,6 +212,7 @@ describe('Extension System Integration Tests', () => {
       permissionManager.grantExtensionPermissions = mock(async () => ({
         granted: [],
         denied: ['database:read'],
+        requiresConfirmation: [],
       }))
 
       const result = await extensionManager.loadExtension('test-extension')
@@ -226,8 +226,8 @@ describe('Extension System Integration Tests', () => {
     })
 
     it('应该处理Extension导入失败的情况', async () => {
-      // 创建新的ExtensionManager并设置失败的导入器
-      const failingManager = new ExtensionManager({
+      // 创建新的UnifiedExtensionManager并设置失败的导入器
+      const failingManager = new UnifiedExtensionManager({
         extensionRoot: '/mock/extensions',
         enableSandbox: false,
       })
@@ -331,9 +331,9 @@ describe('Extension System Integration Tests', () => {
       expect(loadResult.success).toBe(true)
 
       // 重置mock计数
-      mockExtension.init.mockClear()
-      mockExtension.start.mockClear()
-      mockExtension.destroy.mockClear()
+      ;(mockExtension.init as any).mockClear()
+      ;(mockExtension.start as any).mockClear()
+      ;(mockExtension.destroy as any).mockClear()
 
       // 热重载Extension
       const reloadResult = await extensionManager.reloadExtension('test-extension')
