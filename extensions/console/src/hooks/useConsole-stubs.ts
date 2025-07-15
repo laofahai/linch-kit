@@ -247,8 +247,8 @@ export function useAuditLogs(filters?: Record<string, unknown>) {
           },
         ],
         total: 2,
-        page: filters?.page || 1,
-        pageSize: filters?.pageSize || 10,
+        page: filters?.['page'] || 1,
+        pageSize: filters?.['pageSize'] || 10,
       }
     },
     staleTime: 5 * 60 * 1000,

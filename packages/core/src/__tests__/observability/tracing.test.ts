@@ -210,7 +210,7 @@ describe('LinchKitTracer', () => {
           throw new Error('Intentional error')
         })
       } catch (error) {
-        expect(error.message).toBe('Intentional error')
+        expect((error as Error).message).toBe('Intentional error')
         spanEnded = true
       }
 

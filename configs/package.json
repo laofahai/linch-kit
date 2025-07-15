@@ -3,11 +3,18 @@
   "version": "0.1.0",
   "description": "Shared configuration files for Linch Kit monorepo",
   "private": true,
+  "main": "./tsconfig.base.json",
   "files": [
     "*.json",
     "*.ts",
     "*.js"
   ],
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tailwind.base": "./tailwind.base.ts",
+    "./eslint.base": "./eslint.base.js",
+    "./prettier.base": "./prettier.base.js"
+  },
   "scripts": {
     "build": "echo 'No build needed for config files'",
     "clean": "echo 'No clean needed for config files'",
@@ -22,5 +29,9 @@
     "monorepo"
   ],
   "author": "Linch Kit Team",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^4",
+    "typescript": "^5.8.3"
+  }
 }

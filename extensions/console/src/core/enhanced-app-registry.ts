@@ -3,7 +3,7 @@
  * @module core/enhanced-app-registry
  */
 
-// import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core/client'
+// import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core'
 
 // 临时类型定义，避免构建错误
 interface ExtensionInstance {

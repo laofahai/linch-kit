@@ -166,8 +166,8 @@ MIT © [LinchKit Team](https://github.com/laofahai/linch-kit)
 
 - [GitHub](https://github.com/laofahai/linch-kit)
 - [NPM 组织](https://www.npmjs.com/org/linch-kit)
-- [文档站点](https://kit.linch.tech)
-- [演示应用](https://kit-demo.linch.tech)
+- [文档站点](https://kit.linch.tech) ⚠️ *即将上线*
+- [演示应用](https://kit-demo.linch.tech) ⚠️ *即将上线*
 
 ---
 

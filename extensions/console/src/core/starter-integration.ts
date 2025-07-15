@@ -4,16 +4,16 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-// import type { ExtensionInstance } from '@linch-kit/core/client'
+// import type { ExtensionInstance } from '@linch-kit/core'
 
-// 临时类型定义，避免构建错误
-interface _ExtensionInstance {
-  name: string
-  metadata: {
-    displayName?: string
-    permissions?: string[]
-  }
-}
+// 移除未使用的类型定义
+// interface _ExtensionInstance {
+//   name: string
+//   metadata: {
+//     displayName?: string
+//     permissions?: string[]
+//   }
+// }
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import { extensionLoader } from './extension-loader'
@@ -171,18 +171,21 @@ export class StarterIntegrationManager extends EventEmitter {
     const loadedExtensions = extensionLoader.getLoadedExtensions()
     const lifecycleStates = extensionLifecycleManager.getAllLifecycleStates()
 
-    return loadedExtensions.map(ext => {
-      const lifecycle = lifecycleStates.find(state => state.name === ext.name)
+    // 过滤掉undefined元素并添加防御性检查
+    return loadedExtensions
+      .filter(ext => ext && ext.name) // 过滤undefined和无效的扩展
+      .map(ext => {
+        const lifecycle = lifecycleStates.find(state => state.name === ext.name)
 
-      return {
-        name: ext.name,
-        loadStatus: ext.status,
-        lifecyclePhase: lifecycle?.currentPhase || 'unknown',
-        routeCount: ext.routeCount,
-        componentCount: ext.componentCount,
-        error: ext.error?.message,
-      }
-    })
+        return {
+          name: ext.name,
+          loadStatus: ext.status || 'unknown',
+          lifecyclePhase: lifecycle?.currentPhase || 'unknown',
+          routeCount: ext.routeCount || 0,
+          componentCount: ext.componentCount || 0,
+          ...(ext.error?.message && { error: ext.error.message }),
+        }
+      })
   }
 
   /**

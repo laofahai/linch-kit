@@ -1,12 +1,16 @@
-#!/bin/sh
-# 获取当前分支名称
-current_branch=$(git branch --show-current)
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# 只在主要分支上执行校验
-if [ "$current_branch" = "main" ] || [ "$current_branch" = "master" ] || [ "$current_branch" = "develop" ]; then
-  echo "🔍 在主要分支 '$current_branch' 上执行完整校验..."
-  npx lint-staged
-else
-  echo "⚡ 在功能分支 '$current_branch' 上跳过校验，快速提交..."
-  echo "💡 提示：合并到主分支时将执行完整校验"
+# AI Guardian强制验证
+echo "🛡️ AI Guardian pre-commit验证..."
+if ! bun run ai:guardian:validate "pre-commit verification" 2>/dev/null; then
+    echo "🚨 AI Guardian验证失败，提交被阻止"
+    echo "💡 请确保在正确分支且遵守所有约束"
+    exit 1
 fi
+
+echo "✅ AI Guardian验证通过"
+
+# 标准的pre-commit检查
+bun run lint:fix
+bun run check-types

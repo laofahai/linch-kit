@@ -518,9 +518,17 @@ export class Neo4jService implements IGraphService {
   private neo4jNodeToGraphNode(node: Node): GraphNode | null {
     const properties = node.properties
 
-    if (!properties.id || !properties.type || !properties.name) {
-      this.logger.warn('Neo4j 节点缺少必要属性', { properties })
-      return null
+    // 提供默认值来处理缺失的必要属性
+    const id = properties.id as string || properties.elementId || node.elementId || `unknown_${Date.now()}`
+    const type = properties.type as NodeType || 'unknown'
+    const name = properties.name as string || properties.id as string || 'Unknown'
+
+    // 只在完全无法确定id的情况下才警告
+    if (!properties.id && !properties.elementId && !node.elementId) {
+      this.logger.warn('Neo4j 节点缺少 id 属性，使用生成的默认值', { 
+        properties,
+        generatedId: id 
+      })
     }
 
     // 分离出metadata属性和普通属性
@@ -529,16 +537,18 @@ export class Neo4jService implements IGraphService {
 
     for (const [key, value] of Object.entries(properties)) {
       if (key.startsWith('metadata_')) {
-        metadata[key] = value
+        metadata[key.replace('metadata_', '')] = value
+      } else if (key.startsWith('prop_')) {
+        nodeProperties[key.replace('prop_', '')] = value
       } else if (!['id', 'type', 'name'].includes(key)) {
         nodeProperties[key] = value
       }
     }
 
     return {
-      id: properties.id as string,
-      type: properties.type as NodeType,
-      name: properties.name as string,
+      id,
+      type,
+      name,
       properties: nodeProperties,
       metadata: metadata,
     }
@@ -550,18 +560,39 @@ export class Neo4jService implements IGraphService {
   private neo4jRelationshipToGraphRelationship(rel: Relationship): GraphRelationship | null {
     const properties = rel.properties
 
-    if (!properties.id) {
-      this.logger.warn('Neo4j 关系缺少必要属性', { properties })
-      return null
+    // 提供默认值来处理缺失的必要属性
+    const id = properties.id as string || rel.elementId || `${rel.start}-${rel.type}-${rel.end}-${Date.now()}`
+    
+    // 只在完全无法确定id的情况下才警告
+    if (!properties.id && !rel.elementId) {
+      this.logger.warn('Neo4j 关系缺少 id 属性，使用生成的默认值', { 
+        properties,
+        generatedId: id,
+        relationshipType: rel.type
+      })
+    }
+
+    // 分离metadata和普通属性
+    const metadata: Record<string, unknown> = {}
+    const relProperties: Record<string, unknown> = {}
+
+    for (const [key, value] of Object.entries(properties)) {
+      if (key.startsWith('metadata_')) {
+        metadata[key.replace('metadata_', '')] = value
+      } else if (key.startsWith('prop_')) {
+        relProperties[key.replace('prop_', '')] = value
+      } else if (!['id'].includes(key)) {
+        relProperties[key] = value
+      }
     }
 
     return {
-      id: properties.id as string,
+      id,
       type: rel.type as RelationType,
       source: rel.start.toString(),
       target: rel.end.toString(),
-      properties: (properties.properties as Record<string, unknown>) || {},
-      metadata: (properties.metadata as Record<string, unknown>) || {},
+      properties: relProperties,
+      metadata: metadata,
     }
   }
 

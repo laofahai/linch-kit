@@ -90,7 +90,7 @@ describe('LinchKitHealthMonitor', () => {
 
     it('should handle checker errors', async () => {
       const error = new Error('Checker failed')
-      ;(mockChecker.check as Mock).mockRejectedValue(error)
+      ;(mockChecker.check as any).mockRejectedValue(error)
 
       const result = await healthMonitor.check('test-checker')
 

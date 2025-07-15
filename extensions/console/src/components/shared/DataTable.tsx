@@ -122,8 +122,8 @@ export function DataTable<T = Record<string, unknown>>({
   data,
   columns,
   actions,
-  loading = false,
-  emptyText,
+  loading: _loading = false,
+  emptyText: _emptyText,
   pagination,
   searchable = true,
   searchValue,
@@ -132,9 +132,9 @@ export function DataTable<T = Record<string, unknown>>({
   filters,
   filterValues,
   onFilterChange,
-  selectable = false,
-  selectedRows = [],
-  onSelectionChange,
+  selectable: _selectable = false,
+  selectedRows: _selectedRows = [],
+  onSelectionChange: _onSelectionChange,
   batchActions,
   toolbarActions,
   className,
@@ -243,15 +243,15 @@ export function DataTable<T = Record<string, unknown>>({
               ))}
 
             {/* 批量操作 */}
-            {batchActions && selectedRows.length > 0 && (
+            {batchActions && _selectedRows.length > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">已选择 {selectedRows.length} 项</span>
+                <span className="text-sm text-gray-600">已选择 {_selectedRows.length} 项</span>
                 {batchActions.map(action => (
                   <Button
                     key={action.key}
                     size="sm"
                     variant={action.danger ? 'destructive' : 'default'}
-                    onClick={() => action.handler(selectedRows)}
+                    onClick={() => action.handler(_selectedRows)}
                   >
                     {action.icon}
                     {action.title}
@@ -282,14 +282,26 @@ export function DataTable<T = Record<string, unknown>>({
 
       {/* 表格 */}
       <SchemaTable
-        data={data}
-        columns={finalColumns}
-        loading={loading}
-        emptyText={emptyText || t('common.noData')}
-        pagination={pagination}
-        selectable={selectable}
-        selectedRows={selectedRows}
-        onSelectionChange={onSelectionChange}
+        schema={{
+          name: 'DataTable',
+          fields: finalColumns.reduce((acc, col) => {
+            acc[col.key] = {
+              type: 'string' as const,
+              required: false,
+              description: col.title
+            }
+            return acc
+          }, {} as Record<string, { type: 'string'; required: boolean; description: string }>)
+        }}
+        data={data as Record<string, unknown>[]}
+{...pagination && {
+          pagination: {
+            page: pagination.current,
+            pageSize: pagination.pageSize,
+            total: pagination.total,
+            onPageChange: (page: number) => pagination.onChange(page, pagination.pageSize)
+          }
+        }}
         className="console-schema-table"
       />
     </div>
@@ -324,11 +336,11 @@ export function SimpleDataTable<T = Record<string, unknown>>({
       data={data}
       columns={columns}
       loading={loading}
-      emptyText={emptyText}
+{...emptyText && { emptyText }}
       searchable={false}
       filterable={false}
       selectable={false}
-      className={className}
+{...className && { className }}
     />
   )
 }

@@ -6,14 +6,14 @@
 // Extension类型定义
 export * from './types'
 
-// 增强的Plugin系统（支持Extension）
-export * from './enhanced-plugin'
+// 统一的Extension管理器
+export { UnifiedExtensionManager, unifiedExtensionManager } from './unified-manager'
 
-// Extension管理器（完整管理器功能）
-export { ExtensionManager, extensionManager } from './manager'
+// 向后兼容的导出
+export { unifiedExtensionManager as extensionManager } from './unified-manager'
 
-// 热重载管理器
-export { HotReloadManager, createHotReloadManager } from './hot-reload'
+// 热重载管理器 - 已移至 server.ts (需要 chokidar，仅限服务端)
+// export { HotReloadManager, createHotReloadManager } from './hot-reload'
 
 // 状态管理器
 export { ExtensionStateManager, createStateManager } from './state-manager'
@@ -28,8 +28,8 @@ export {
 // 沙箱环境 (暂时禁用以修复构建问题)
 // export { ExtensionSandbox, createSandbox } from './sandbox'
 
-// 导出类型
-export type { HotReloadConfig, HotReloadEvent } from './hot-reload'
+// 导出类型 - HotReload 已移至 server.ts
+// export type { HotReloadConfig, HotReloadEvent } from './hot-reload'
 
 export type {
   ExtensionState,
@@ -49,4 +49,4 @@ export type {
 // export type { SandboxConfig, SandboxedFunction, SandboxExecution } from './sandbox'
 
 // 默认实例
-export { enhancedPluginRegistry as ExtensionRegistry } from './enhanced-plugin'
+export { unifiedExtensionManager as ExtensionRegistry } from './unified-manager'

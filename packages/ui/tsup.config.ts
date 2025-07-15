@@ -43,8 +43,11 @@ export default defineConfig({
   // 复制CSS文件
   onSuccess: async () => {
     const stylesDir = 'dist/styles'
+    const themesDir = 'dist/styles/themes'
     mkdirSync(stylesDir, { recursive: true })
+    mkdirSync(themesDir, { recursive: true })
     copyFileSync('src/styles/globals.css', 'dist/styles/globals.css')
+    copyFileSync('src/styles/themes/linch-kit.css', 'dist/styles/themes/linch-kit.css')
     console.log('CSS files copied to dist/styles/')
   },
 })

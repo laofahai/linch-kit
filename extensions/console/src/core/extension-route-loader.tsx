@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState, Suspense } from 'react'
 import { usePathname } from 'next/navigation'
-import type { ExtensionInstance } from '@linch-kit/core/client'
+import type { ExtensionInstance } from '@linch-kit/core'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import type { DynamicRouteConfig } from './enhanced-app-registry'
@@ -155,10 +155,12 @@ function matchPath(pathname: string, pattern: string): Record<string, string> | 
       return params
     }
 
-    if (patternPart.startsWith(':')) {
+    if (patternPart?.startsWith(':')) {
       // 参数匹配
       const paramName = patternPart.slice(1)
-      params[paramName] = pathPart
+      if (pathPart !== undefined) {
+        params[paramName] = pathPart
+      }
     } else if (patternPart !== pathPart) {
       // 静态部分不匹配
       return null
@@ -218,7 +220,7 @@ export function useExtensionRoute() {
     const match = pathname.match(/\/dashboard\/ext\/([^/]+)/)
 
     if (match) {
-      setCurrentExtension(match[1])
+      setCurrentExtension(match[1] || null)
     } else {
       setCurrentExtension(null)
     }

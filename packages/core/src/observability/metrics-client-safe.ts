@@ -3,7 +3,7 @@
  * @module observability/metrics-client-safe
  */
 
-import type { MetricCollector, Counter, Gauge, Histogram, Summary, MetricConfig } from '../types'
+import type { MetricCollector, Counter, Gauge, Histogram, Summary } from '../types/observability'
 
 /**
  * Client-side Counter stub implementation
@@ -55,16 +55,8 @@ class ClientHistogramStub implements Histogram {
     // No-op on client side
   }
 
-  startTimer(_labels?: Record<string, string>): () => void {
-    return () => {} // No-op on client side
-  }
-
-  get(_labels?: Record<string, string>): {
-    buckets: Record<string, number>
-    count: number
-    sum: number
-  } {
-    return { buckets: {}, count: 0, sum: 0 }
+  get(_labels?: Record<string, string>): number {
+    return 0
   }
 
   reset(): void {
@@ -80,12 +72,8 @@ class ClientSummaryStub implements Summary {
     // No-op on client side
   }
 
-  get(_labels?: Record<string, string>): {
-    quantiles: Record<string, number>
-    count: number
-    sum: number
-  } {
-    return { quantiles: {}, count: 0, sum: 0 }
+  get(_labels?: Record<string, string>): number {
+    return 0
   }
 
   reset(): void {
@@ -97,19 +85,19 @@ class ClientSummaryStub implements Summary {
  * Client-side metric collector stub
  */
 class ClientMetricCollector implements MetricCollector {
-  createCounter(_config: MetricConfig): Counter {
+  createCounter(_name: string, _help: string, _labels?: string[]): Counter {
     return new ClientCounterStub()
   }
 
-  createGauge(_config: MetricConfig): Gauge {
+  createGauge(_name: string, _help: string, _labels?: string[]): Gauge {
     return new ClientGaugeStub()
   }
 
-  createHistogram(_config: MetricConfig): Histogram {
+  createHistogram(_name: string, _help: string, _buckets?: number[], _labels?: string[]): Histogram {
     return new ClientHistogramStub()
   }
 
-  createSummary(_config: MetricConfig): Summary {
+  createSummary(_name: string, _help: string, _percentiles?: number[], _labels?: string[]): Summary {
     return new ClientSummaryStub()
   }
 
@@ -117,8 +105,8 @@ class ClientMetricCollector implements MetricCollector {
     return '# No metrics available on client side'
   }
 
-  reset(): void {
-    // No-op on client side
+  getRegistry?(): null {
+    return null
   }
 }
 
@@ -168,4 +156,4 @@ export async function createMetricCollector(config: unknown = {}): Promise<Metri
 export const metrics = new ClientMetricCollector()
 
 // Re-export types
-export type { MetricCollector, Counter, Gauge, Histogram, Summary, MetricConfig } from '../types'
+export type { MetricCollector, Counter, Gauge, Histogram, Summary, MetricConfig } from '../types/observability'

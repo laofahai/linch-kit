@@ -49,35 +49,31 @@ export class DefaultAuditManager implements AuditManager {
   private initializeCounters(): void {
     this.counters.set(
       'audit_events_queued',
-      this.metrics.createCounter({
-        name: 'audit_events_queued',
-        type: 'counter',
-        help: 'Number of audit events queued for processing',
-      })
+      this.metrics.createCounter(
+        'audit_events_queued',
+        'Number of audit events queued for processing'
+      )
     )
     this.counters.set(
       'audit_events_processed',
-      this.metrics.createCounter({
-        name: 'audit_events_processed',
-        type: 'counter',
-        help: 'Number of audit events successfully processed',
-      })
+      this.metrics.createCounter(
+        'audit_events_processed',
+        'Number of audit events successfully processed'
+      )
     )
     this.counters.set(
       'audit_events_failed',
-      this.metrics.createCounter({
-        name: 'audit_events_failed',
-        type: 'counter',
-        help: 'Number of audit events that failed to process',
-      })
+      this.metrics.createCounter(
+        'audit_events_failed',
+        'Number of audit events that failed to process'
+      )
     )
     this.counters.set(
       'audit_alerts_triggered',
-      this.metrics.createCounter({
-        name: 'audit_alerts_triggered',
-        type: 'counter',
-        help: 'Number of audit alerts triggered',
-      })
+      this.metrics.createCounter(
+        'audit_alerts_triggered',
+        'Number of audit alerts triggered'
+      )
     )
   }
 
@@ -114,7 +110,7 @@ export class DefaultAuditManager implements AuditManager {
     // 停止刷新定时器
     if (this.flushTimer) {
       clearInterval(this.flushTimer)
-      this.flushTimer = undefined
+      delete this.flushTimer
     }
 
     // 刷新剩余事件
@@ -230,6 +226,9 @@ export class DefaultAuditManager implements AuditManager {
     // 使用第一个可用的存储进行查询
     // TODO: 实现多存储聚合查询
     const primaryStore = stores[0]
+    if (!primaryStore) {
+      throw new Error('No audit store available for query')
+    }
 
     try {
       const results = await primaryStore.query(filter)
@@ -253,6 +252,9 @@ export class DefaultAuditManager implements AuditManager {
     }
 
     const primaryStore = stores[0]
+    if (!primaryStore) {
+      throw new Error('No audit store available for count')
+    }
 
     try {
       return await primaryStore.count(filter)

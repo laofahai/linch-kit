@@ -13,7 +13,7 @@ import { Logger } from '../../logger-client'
 const upgradeCommand: CLICommand = {
   name: 'upgrade',
   description: '升级LinchKit框架和处理版本迁移',
-  category: 'system',
+  category: 'ops',
   options: [
     {
       name: 'target',
@@ -112,7 +112,7 @@ const upgradeCommand: CLICommand = {
 
       return result
     } catch (error) {
-      Logger.error('Upgrade failed:', error)
+      Logger.error('Upgrade failed:', error instanceof Error ? error : new Error(String(error)))
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -136,7 +136,7 @@ async function checkProject(): Promise<ProjectInfo> {
       name: '',
       version: '',
       linchKitPackages: [],
-      packageJson: null,
+      packageJson: {},
     }
   }
 
@@ -272,7 +272,10 @@ async function performUpgrade(
 
   // 1. 更新package.json中的LinchKit包版本
   if (!dryRun) {
-    const packageJson = projectInfo.packageJson
+    const packageJson = projectInfo.packageJson as {
+      dependencies?: Record<string, string>
+      devDependencies?: Record<string, string>
+    }
 
     projectInfo.linchKitPackages.forEach(pkg => {
       if (packageJson.dependencies?.[pkg.name]) {

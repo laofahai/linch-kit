@@ -1,6 +1,6 @@
 # LinchKit AI Context 知识库
 
-**版本**: v8.0  
+**项目版本**: v2.0.3  
 **更新**: 2025-07-11  
 **状态**: 重构完成 - 清晰的分层文档结构
 
@@ -145,7 +145,7 @@ API文档和配置参考：
 | ❌ **新增**                                | `01_Architecture/09_Disaster_Recovery.md`  | 【新增】灾难恢复计划    |
 | `01_Concepts/08_Extension_Architecture.md` | `01_Architecture/10_Extension_System.md`   | 整合Extension文档       |
 | `01_Concepts/09_Extension_System.md`       | `01_Architecture/10_Extension_System.md`   | 整合Extension文档       |
-| `v8-upgrade-plan/`                         | `99_Archive/v8-upgrade-plan/`              | 移动到归档              |
+| `v8-upgrade-plan/`                         | **已删除**                                 | 升级完成，文档已整合    |
 
 ## 🔍 使用建议
 

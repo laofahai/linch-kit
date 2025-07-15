@@ -67,7 +67,7 @@ export function ConsoleProvider({
   config = {},
   tenantId,
   permissions = [],
-  _apiUrl = '/api/trpc',
+  // _apiUrl = '/api/trpc',
   language = 'zh-CN',
   devtools = process.env.NODE_ENV === 'development',
 }: ConsoleProviderProps) {
@@ -136,7 +136,7 @@ export function ConsoleProvider({
         },
         ...config,
       },
-      tenantId,
+      tenantId: tenantId || '',
       permissions,
       isAdmin,
       isSystemAdmin,

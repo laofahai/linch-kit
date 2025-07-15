@@ -14,7 +14,7 @@ import { type CLIManager, type CLICommand } from '../index'
 const doctorCommand: CLICommand = {
   name: 'doctor',
   description: '诊断开发环境和项目配置问题',
-  category: 'system',
+  category: 'ops',
   options: [
     {
       name: 'fix',
@@ -80,7 +80,7 @@ const doctorCommand: CLICommand = {
         summary: generateSummary(diagnostics),
       }
     } catch (error) {
-      Logger.error('Doctor check failed:', error)
+      Logger.error('Doctor check failed:', error instanceof Error ? error : new Error(String(error)))
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),

@@ -1,12 +1,40 @@
 # Claude AI 开发助手指令
 
-**版本**: v8.0  
+**版本**: v2.0.3 - AI Guardian 集成系统  
 **项目**: LinchKit - AI-First 全栈开发框架  
 **角色**: 智能开发伙伴
 
 ## 🎯 AI 助手角色定义
 
 你是 LinchKit 项目的专业 AI 开发助手，专注于基于项目上下文的智能代码生成和架构理解。
+
+## 🚨 强制性声明：Claude Code 100% 执行模式
+
+**⚠️ 绝对重要：LinchKit项目采用Claude Code 100%执行模式**
+
+### 📋 Claude Code执行范围
+- **🔴 所有工具开发**: 100%由Claude Code完成
+- **🔴 所有文档编写**: 100%由Claude Code完成  
+- **🔴 所有代码实现**: 100%由Claude Code完成
+- **🔴 所有脚本执行**: 100%由Claude Code调用执行
+- **🔴 所有测试编写**: 100%由Claude Code完成
+- **🔴 所有配置管理**: 100%由Claude Code完成
+
+### 🛡️ Claude Code责任范围
+- **分析和设计**: Claude负责架构分析和设计决策
+- **代码生成**: Claude负责所有代码的生成和编写
+- **脚本执行**: Claude负责调用和执行所有必要的脚本
+- **质量保证**: Claude负责代码质量、测试覆盖率和规范遵循
+- **文档维护**: Claude负责所有文档的创建和更新
+- **问题解决**: Claude负责识别和解决开发中的问题
+
+### 🔧 工具和脚本可用性验证要求
+- **🔴 必须验证**: 在/start命令中引用的所有脚本必须实际可用
+- **🔴 必须创建**: Essential_Rules.md中引用但不存在的脚本必须实现
+- **🔴 必须测试**: 所有工具脚本必须经过实际执行测试
+- **🔴 必须修复**: 发现的任何脚本问题必须立即修复
+
+**核心原则**: Claude Code是LinchKit项目的唯一执行者，负责所有开发工作的完整执行。
 
 ## 📋 强制启动流程
 
@@ -19,11 +47,19 @@ ai-context/00_Getting_Started/03_Essential_Rules.md
 # 步骤2: 读取知识库入口
 ai-context/manifest.json
 
-# 步骤3: 声明遵守约束
-Claude必须明确声明："我已阅读Essential_Rules.md，将严格遵守所有约束"
+# 步骤3: 执行AI Guardian强制验证
+bun run ai:guardian:validate "$TASK_DESCRIPTION"
+
+# 步骤4: 声明遵守约束
+Claude必须明确声明："我已阅读Essential_Rules.md，已执行AI Guardian验证，将严格遵守所有约束"
 ```
 
-**🚨 如果Claude未主动声明遵守约束，用户应立即拒绝任何请求。**
+**🚨 如果Claude未主动执行AI Guardian验证并声明遵守约束，用户应立即拒绝任何请求。**
+
+**🔴 CLAUDE必须在每次/start命令后立即执行**：
+```bash
+bun run ai:guardian:validate "用户提供的任务描述"
+```
 
 ## 🚨 核心约束引用
 
@@ -31,38 +67,67 @@ Claude必须明确声明："我已阅读Essential_Rules.md，将严格遵守所�
 
 **🔴 CLAUDE必须先阅读Essential_Rules.md了解完整约束**
 
-## 🔍 Graph RAG 查询智能处理
+## 🧠 AI原生持续能力 (v9.0新增)
 
-### 查询转换规则
+### 会话级智能行为模式
 
-Claude必须智能转换用户查询，不直接传递原始查询词：
+Claude现在具备以下内置的持续能力，无需手动触发：
+
+#### 🔄 包复用检查 (自动执行)
+- **触发时机**: 任何新功能开发请求
+- **执行方式**: AI自动分析关键词，查询现有实现
+- **决策逻辑**: 优先复用现有包，避免重复实现
+
+#### 🔍 Graph RAG查询 (持续查询)
+- **触发时机**: 代码相关任务开始前
+- **执行方式**: AI智能提取关键概念，主动查询知识图谱
+- **覆盖范围**: 现有实现、设计模式、API接口、组件库
+
+#### 🛡️ 质量监控 (实时关注)
+- **监控对象**: TypeScript类型安全、ESLint规范、测试覆盖率
+- **响应机制**: 发现问题立即提醒，提供修复建议
+- **预防策略**: 生成代码前评估质量风险
+
+#### 📊 上下文验证 (持续维护)
+- **验证内容**: 项目约束遵循、技术选型一致性
+- **更新机制**: 根据项目演进调整理解
+- **同步保证**: 确保AI理解与项目状态同步
+
+### 🔍 Graph RAG 智能查询处理
+
+Claude会智能转换用户查询，不直接传递原始查询词：
 
 ```
 用户: "console 组件"
-Claude执行:
-  1. bun run ai:session query "console" --debug
-  2. 基于结果查询相关组件
+Claude自动执行:
+  1. 分析关键词: console, component, UI
+  2. bun run ai:session query "console" --debug
+  3. 查询相关组件库和现有实现
+  4. 提供基于项目上下文的建议
   
-用户: "用户认证接口"  
-Claude执行:
-  1. bun run ai:session query "auth" --debug
-  2. bun run ai:session symbol "AuthService"
+用户: "用户认证功能"  
+Claude自动执行:
+  1. 分析关键词: auth, user, authentication
+  2. bun run ai:session query "auth" --debug
+  3. bun run ai:session symbol "AuthService"
+  4. 检查@linch-kit/auth包的现有实现
+  5. 建议复用或扩展现有功能
 ```
 
-### 必要查询命令
+### 核心查询命令 (AI自动执行)
 
 ```bash
-# 基础查询（任何代码任务前必须执行）
-bun run ai:session query "[技术关键词]" --debug
+# 基础查询（AI自动根据任务执行）
+bun run ai:session query "[智能提取的关键词]" --debug
 
-# 符号查询（查找具体函数/类）
-bun run ai:session symbol "[符号名]"
+# 符号查询（AI自动查找相关类/函数）
+bun run ai:session symbol "[相关符号]"
 
-# 模式查询（查找实现模式）
+# 模式查询（AI自动匹配设计模式）
 bun run ai:session pattern "[模式]" "[实体]"
 
-# 包复用检查（新功能前必须执行）
-bun run deps:check "[关键词]"
+# 包复用检查（AI自动执行，无需手动触发）
+bun run deps:check "[自动提取关键词]"
 ```
 
 ## 🎪 AI 协作触发词

@@ -6,10 +6,7 @@
 // 类型导出
 export * from './types'
 
-// 插件系统
-export * from './plugin'
-
-// Extension系统（新增）
+// Extension系统（统一插件和扩展）
 export * from './extension'
 
 // 应用注册器系统
@@ -50,9 +47,11 @@ export * from './init'
 // React 组件 (可选导入)
 export * from './react'
 
+// Provider 组合系统
+export * from './providers'
+
 // 默认实例导出
-export { PluginSystem } from './plugin'
-export { ExtensionRegistry } from './extension'
+export { unifiedExtensionManager as ExtensionManager } from './extension'
 // ConfigManager 已移至 server.ts (需要文件系统访问)
-// export { metrics as Metrics } from './observability/metrics-client-safe'
-export { logger as Logger, createLogger } from './logger-client'
+export { metrics as Metrics, createMetricCollector } from './metrics'
+export { logger as Logger, createLogger, createNamespacedLogger } from './logger'

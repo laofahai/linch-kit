@@ -1,24 +1,27 @@
 /**
- * tRPC Provider 组件
- * 为应用提供 tRPC React Hook 客户端
+ * tRPC Provider
+ * 提供类型安全的 API 客户端
  */
 
 'use client'
 
-import React, { useState } from 'react'
+import { Logger } from '@linch-kit/core/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { httpBatchLink } from '@trpc/client'
 import { createTRPCReact } from '@trpc/react-query'
+import React, { useState } from 'react'
 import superjson from 'superjson'
-import type { AppRouter } from '@/lib/trpc-server'
+
+import type { AppRouter } from '@/lib/trpc'
+// 使用 LinchKit Core 的正式 Logger
 
 // 创建 tRPC React 客户端
 export const api = createTRPCReact<AppRouter>()
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') return '' // 浏览器端使用相对 URL
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}` // Vercel
-  return `http://localhost:${process.env.PORT ?? 3000}` // 开发环境
+  if (process.env['VERCEL_URL']) return `https://${process.env['VERCEL_URL']}` // Vercel
+  return `http://localhost:${process.env['PORT'] ?? 3000}` // 开发环境
 }
 
 interface TRPCProviderProps {
@@ -32,28 +35,29 @@ export function TRPCProvider({ children }: TRPCProviderProps) {
         defaultOptions: {
           queries: {
             staleTime: 5 * 60 * 1000, // 5 分钟
-            retry: 2, // 重试次数
+            retry: 2,
           },
         },
       })
   )
 
-  const [trpcClient] = useState(() =>
-    api.createClient({
+  const [trpcClient] = useState(() => {
+    Logger.info('[TRPC] Initializing tRPC client')
+    
+    return api.createClient({
       links: [
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           transformer: superjson,
-          // 可选：添加认证头
           headers() {
             return {
-              // 'authorization': getAuthToken(),
+              'content-type': 'application/json',
             }
           },
         }),
       ],
     })
-  )
+  })
 
   return (
     <api.Provider client={trpcClient} queryClient={queryClient}>

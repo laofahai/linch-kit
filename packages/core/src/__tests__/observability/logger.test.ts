@@ -312,7 +312,7 @@ describe('Logger System', () => {
 
   describe('Logger Configuration Options', () => {
     it('should handle all log levels', () => {
-      const levels: LogLevel[] = ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+      const levels: LogLevel[] = ['debug', 'info', 'warn', 'error', 'fatal']
 
       levels.forEach(level => {
         createLogger({ level })

@@ -6,8 +6,8 @@
  */
 
 import { Logger } from '../logger-client'
-import { PluginRegistry } from '../plugin'
-import type { Plugin } from '../types'
+import { UnifiedExtensionManager } from '../extension/unified-manager'
+import type { Extension } from '../extension/types'
 
 export interface LinchKitInitOptions {
   /**
@@ -31,9 +31,9 @@ export interface LinchKitInitOptions {
   debug?: boolean
 
   /**
-   * 插件列表
+   * 扩展列表
    */
-  plugins?: Plugin[]
+  extensions?: Extension[]
 
   /**
    * 自定义配置
@@ -58,7 +58,7 @@ export interface LinchKitContext {
     environment: string
   }
   config: Record<string, unknown>
-  plugins: PluginRegistry
+  extensions: UnifiedExtensionManager
   logger: typeof Logger
 }
 
@@ -80,13 +80,13 @@ export async function initLinchKit(options: LinchKitInitOptions): Promise<LinchK
 
     Logger.info(`Initializing ${options.appName} v${version} in ${environment} mode`)
 
-    // 初始化插件系统
-    const pluginSystem = new PluginRegistry()
+    // 初始化扩展系统
+    const extensionSystem = new UnifiedExtensionManager()
 
-    // 注册插件
-    if (options.plugins) {
-      for (const plugin of options.plugins) {
-        await pluginSystem.register(plugin)
+    // 注册扩展
+    if (options.extensions) {
+      for (const extension of options.extensions) {
+        await extensionSystem.register(extension)
       }
     }
 
@@ -98,7 +98,7 @@ export async function initLinchKit(options: LinchKitInitOptions): Promise<LinchK
         environment,
       },
       config: options.config || {},
-      plugins: pluginSystem,
+      extensions: extensionSystem,
       logger: Logger,
     }
 

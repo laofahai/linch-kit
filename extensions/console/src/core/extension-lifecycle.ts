@@ -4,7 +4,7 @@
  */
 
 import { EventEmitter } from 'eventemitter3'
-import type { ExtensionInstance } from '@linch-kit/core/client'
+import type { ExtensionInstance } from '@linch-kit/core'
 
 import { extensionLoader } from './extension-loader'
 import type { ExtensionLoadStatus as _ExtensionLoadStatus } from './extension-loader'
@@ -105,7 +105,7 @@ export class ExtensionLifecycleManager extends EventEmitter {
       ],
       createdAt: Date.now(),
       lastUpdated: Date.now(),
-      instance,
+      ...(instance && { instance }),
     }
 
     this.lifecycleStates.set(extensionName, state)
@@ -152,7 +152,7 @@ export class ExtensionLifecycleManager extends EventEmitter {
       phase: newPhase,
       previousPhase,
       timestamp: now,
-      duration: currentPhaseHistory?.duration,
+      ...(currentPhaseHistory?.duration !== undefined && { duration: currentPhaseHistory.duration }),
       data,
     }
 
@@ -263,7 +263,9 @@ export class ExtensionLifecycleManager extends EventEmitter {
     // 计算平均时间
     for (const phase in phaseStats) {
       const stats = phaseStats[phase]
-      stats.avgTime = stats.totalTime / stats.count
+      if (stats) {
+        stats.avgTime = stats.totalTime / stats.count
+      }
     }
 
     return {

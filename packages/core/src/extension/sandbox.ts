@@ -8,13 +8,31 @@ import { EventEmitter } from 'eventemitter3'
 import type { ExtensionPermission, ExtensionContext } from './types'
 import type { ExtensionPermissionManager } from './permission-manager'
 
-// 可选的vm2依赖
-let VM: typeof import('vm2').VM | undefined
-try {
-  VM = require('vm2').VM
-} catch {
-  console.warn('vm2 not available, sandbox will run in unsafe mode')
+// 可选的isolated-vm依赖 - 使用标准动态导入
+let ivm: typeof import('isolated-vm') | undefined
+
+// 仅在服务器环境中异步加载
+async function loadIsolatedVM(): Promise<typeof import('isolated-vm') | undefined> {
+  if (typeof window !== 'undefined' || typeof process === 'undefined') {
+    return undefined
+  }
+  
+  try {
+    // 使用标准的动态导入
+    const ivmModule = await import('isolated-vm')
+    return ivmModule
+  } catch {
+    // 静默失败，isolated-vm可能未安装
+    return undefined
+  }
 }
+
+// 在模块加载时初始化
+loadIsolatedVM().then(module => {
+  ivm = module
+}).catch(() => {
+  // 静默失败
+})
 
 export interface SandboxConfig {
   /** 是否启用沙箱 */
@@ -72,13 +90,14 @@ export interface SandboxExecution {
  * 提供安全的代码执行环境
  */
 export class ExtensionSandbox extends EventEmitter {
-  private vm?: VM
+  private isolate?: import('isolated-vm').Isolate
+  private context?: import('isolated-vm').Context
   private executions = new Map<string, SandboxExecution>()
   private activeExecutions = new Set<string>()
   private config: SandboxConfig
 
   constructor(
-    private context: ExtensionContext,
+    private extensionContext: ExtensionContext,
     private permissionManager: ExtensionPermissionManager,
     config?: Partial<SandboxConfig>
   ) {
@@ -97,42 +116,76 @@ export class ExtensionSandbox extends EventEmitter {
     }
 
     if (this.config.enabled) {
-      this.initializeVM()
+      // 异步初始化，但不等待完成
+      this.initializeIsolate().catch(error => {
+        console.error(`Failed to initialize sandbox for ${this.extensionContext.name}:`, error)
+      })
     }
   }
 
   /**
-   * 初始化虚拟机
+   * 初始化isolated-vm沙箱
    */
-  private initializeVM(): void {
-    if (!VM) {
+  private async initializeIsolate(): Promise<void> {
+    if (!ivm) {
       console.warn(
-        `[Sandbox] VM not available for extension: ${this.context.name}, running in unsafe mode`
+        `[Sandbox] isolated-vm not available for extension: ${this.extensionContext.name}, running in unsafe mode`
       )
       return
     }
 
     try {
-      this.vm = new VM({
-        timeout: this.config.timeout,
-        sandbox: this.createSandboxEnvironment(),
-        require: {
-          external: this.config.allowedModules,
-          builtin: this.config.allowedModules,
-        },
-        eval: false,
-        wasm: false,
+      // 创建隔离实例
+      this.isolate = new ivm.Isolate({ 
+        memoryLimit: Math.floor(this.config.memoryLimit / 1024 / 1024), // MB
+        inspector: false 
       })
+      
+      // 创建上下文
+      this.context = await this.isolate.createContext()
+      
+      // 设置全局对象
+      await this.setupSandboxGlobals()
 
-      console.info(`[Sandbox] VM initialized for extension: ${this.context.name}`)
+      console.info(`[Sandbox] isolated-vm initialized for extension: ${this.extensionContext.name}`)
     } catch (error) {
-      console.error(`[Sandbox] Failed to initialize VM for ${this.context.name}:`, error)
+      console.error(`[Sandbox] Failed to initialize isolated-vm for ${this.extensionContext.name}:`, error)
       throw error
     }
   }
 
   /**
-   * 创建沙箱环境
+   * 设置沙箱全局对象
+   */
+  private async setupSandboxGlobals(): Promise<void> {
+    if (!this.context || !ivm) return
+
+    const global = this.context.global
+    
+    // 设置基础全局对象
+    await global.set('console', this.createSandboxedConsole(), { reference: true })
+    await global.set('setTimeout', this.createSandboxedTimeout(), { reference: true })
+    await global.set('setInterval', this.createSandboxedInterval(), { reference: true })
+    
+    // 设置Extension API
+    await global.set('extension', this.createExtensionAPI(), { reference: true })
+    
+    // 设置安全的工具对象
+    await global.set('JSON', new ivm.Reference(JSON))
+    await global.set('Math', new ivm.Reference(Math))
+    await global.set('Date', new ivm.Reference(Date))
+    await global.set('Array', new ivm.Reference(Array))
+    await global.set('Object', new ivm.Reference(Object))
+    await global.set('String', new ivm.Reference(String))
+    await global.set('Number', new ivm.Reference(Number))
+    await global.set('Boolean', new ivm.Reference(Boolean))
+    await global.set('RegExp', new ivm.Reference(RegExp))
+    await global.set('Error', new ivm.Reference(Error))
+    await global.set('Promise', new ivm.Reference(Promise))
+  }
+
+  /**
+   * 创建沙箱环境（保留用于向后兼容）
    */
   private createSandboxEnvironment(): Record<string, unknown> {
     const sandbox: Record<string, unknown> = {
@@ -174,21 +227,21 @@ export class ExtensionSandbox extends EventEmitter {
    * 创建受限的console对象
    */
   private createSandboxedConsole(): Console {
-    const prefix = `[Extension:${this.context.name}]`
+    const prefix = `[Extension:${this.extensionContext.name}]`
 
     return {
-      log: (...args: unknown[]) => this.context.logger.info(prefix, ...args),
-      info: (...args: unknown[]) => this.context.logger.info(prefix, ...args),
-      warn: (...args: unknown[]) => this.context.logger.warn(prefix, ...args),
-      error: (...args: unknown[]) => this.context.logger.error(prefix, ...args),
-      debug: (...args: unknown[]) => this.context.logger.debug(prefix, ...args),
+      log: (...args: unknown[]) => this.extensionContext.logger.info(prefix, ...args),
+      info: (...args: unknown[]) => this.extensionContext.logger.info(prefix, ...args),
+      warn: (...args: unknown[]) => this.extensionContext.logger.warn(prefix, ...args),
+      error: (...args: unknown[]) => this.extensionContext.logger.error(prefix, ...args),
+      debug: (...args: unknown[]) => this.extensionContext.logger.debug(prefix, ...args),
     } as Console
   }
 
   /**
    * 创建受限的setTimeout
    */
-  private createSandboxedTimeout(): typeof setTimeout {
+  private createSandboxedTimeout(): (callback: (...args: unknown[]) => void, delay: number, ...args: unknown[]) => NodeJS.Timeout {
     return (callback: (...args: unknown[]) => void, delay: number, ...args: unknown[]) => {
       // 限制最大延迟时间
       const maxDelay = 60000 // 1分钟
@@ -198,7 +251,7 @@ export class ExtensionSandbox extends EventEmitter {
         try {
           callback(...args)
         } catch (error) {
-          this.context.logger.error(`Timeout callback error:`, error)
+          this.extensionContext.logger.error(`Timeout callback error:`, error)
         }
       }, safeDelay)
     }
@@ -207,7 +260,7 @@ export class ExtensionSandbox extends EventEmitter {
   /**
    * 创建受限的setInterval
    */
-  private createSandboxedInterval(): typeof setInterval {
+  private createSandboxedInterval(): (callback: (...args: unknown[]) => void, delay: number, ...args: unknown[]) => NodeJS.Timeout {
     return (callback: (...args: unknown[]) => void, delay: number, ...args: unknown[]) => {
       // 限制最小间隔时间
       const minInterval = 100 // 100ms
@@ -217,7 +270,7 @@ export class ExtensionSandbox extends EventEmitter {
         try {
           callback(...args)
         } catch (error) {
-          this.context.logger.error(`Interval callback error:`, error)
+          this.extensionContext.logger.error(`Interval callback error:`, error)
         }
       }, safeInterval)
     }
@@ -229,18 +282,18 @@ export class ExtensionSandbox extends EventEmitter {
   private createExtensionAPI(): Record<string, unknown> {
     return {
       // 配置访问
-      config: this.context.config,
+      config: this.extensionContext.config,
 
       // 事件系统
       events: {
         emit: (event: string, data?: unknown) => {
-          this.context.events.emit(event, data)
+          this.extensionContext.events.emit(event, data)
         },
         on: (event: string, handler: (data: unknown) => void) => {
-          this.context.events.on(event, handler)
+          this.extensionContext.events.on(event, handler)
         },
         off: (event: string, handler: (data: unknown) => void) => {
-          this.context.events.off(event, handler)
+          this.extensionContext.events.off(event, handler)
         },
       },
 
@@ -248,19 +301,19 @@ export class ExtensionSandbox extends EventEmitter {
       storage: {
         get: async (key: string) => {
           await this.requirePermission('database:read')
-          return this.context.storage.get(key)
+          return this.extensionContext.storage.get(key)
         },
         set: async (key: string, value: unknown) => {
           await this.requirePermission('database:write')
-          return this.context.storage.set(key, value)
+          return this.extensionContext.storage.set(key, value)
         },
         delete: async (key: string) => {
           await this.requirePermission('database:write')
-          return this.context.storage.delete(key)
+          return this.extensionContext.storage.delete(key)
         },
         clear: async () => {
           await this.requirePermission('database:write')
-          return this.context.storage.clear()
+          return this.extensionContext.storage.clear()
         },
       },
 
@@ -274,11 +327,11 @@ export class ExtensionSandbox extends EventEmitter {
 
       // 权限检查
       hasPermission: async (permission: ExtensionPermission) => {
-        return this.permissionManager.checkPermission(this.context.name, permission)
+        return this.permissionManager.checkPermission(this.extensionContext.name, permission)
       },
 
       // 日志记录
-      logger: this.context.logger,
+      logger: this.extensionContext.logger,
     }
   }
 
@@ -287,12 +340,12 @@ export class ExtensionSandbox extends EventEmitter {
    */
   private async requirePermission(permission: ExtensionPermission): Promise<void> {
     const hasPermission = await this.permissionManager.checkPermission(
-      this.context.name,
+      this.extensionContext.name,
       permission
     )
 
     if (!hasPermission) {
-      throw new Error(`Extension ${this.context.name} does not have permission: ${permission}`)
+      throw new Error(`Extension ${this.extensionContext.name} does not have permission: ${permission}`)
     }
   }
 
@@ -309,14 +362,14 @@ export class ExtensionSandbox extends EventEmitter {
       return this.executeUnsafe(code, args)
     }
 
-    if (!this.vm) {
-      throw new Error('VM not initialized')
+    if (!this.isolate || !this.context) {
+      throw new Error('Isolate not initialized')
     }
 
     const executionId = this.generateExecutionId()
     const execution: SandboxExecution = {
       id: executionId,
-      extensionName: this.context.name,
+      extensionName: this.extensionContext.name,
       functionName,
       startTime: Date.now(),
       status: 'running',
@@ -333,7 +386,11 @@ export class ExtensionSandbox extends EventEmitter {
     try {
       this.emit('executionStart', execution)
 
-      const result = await this.vm.run(code, 'extension.js')
+      // 编译代码
+      const script = await this.isolate.compileScript(code, { filename: 'extension.js' })
+      
+      // 执行代码
+      const result = await script.run(this.context, { timeout: this.config.timeout })
 
       execution.endTime = Date.now()
       execution.status = 'completed'
@@ -344,7 +401,7 @@ export class ExtensionSandbox extends EventEmitter {
       return result
     } catch (error) {
       execution.endTime = Date.now()
-      execution.status = error.message?.includes('timeout') ? 'timeout' : 'failed'
+      execution.status = (error instanceof Error && error.message?.includes('timeout')) ? 'timeout' : 'failed'
       execution.error = error instanceof Error ? error : new Error(String(error))
       execution.resourceUsage.duration = execution.endTime - execution.startTime
 
@@ -395,9 +452,11 @@ export class ExtensionSandbox extends EventEmitter {
 
     this.activeExecutions.clear()
 
-    // 重新初始化VM
+    // 重新初始化Isolate
     if (this.config.enabled) {
-      this.initializeVM()
+      this.initializeIsolate().catch(error => {
+        console.error(`Failed to reinitialize sandbox for ${this.extensionContext.name}:`, error)
+      })
     }
   }
 
@@ -430,10 +489,14 @@ export class ExtensionSandbox extends EventEmitter {
   updateConfig(newConfig: Partial<SandboxConfig>): void {
     this.config = { ...this.config, ...newConfig }
 
-    if (this.config.enabled && !this.vm) {
-      this.initializeVM()
-    } else if (!this.config.enabled && this.vm) {
-      this.vm = undefined
+    if (this.config.enabled && !this.isolate) {
+      this.initializeIsolate().catch(error => {
+        console.error(`Failed to reinitialize sandbox for ${this.extensionContext.name}:`, error)
+      })
+    } else if (!this.config.enabled && this.isolate) {
+      this.isolate.dispose()
+      this.isolate = undefined
+      this.context = undefined
     }
   }
 
@@ -468,7 +531,7 @@ export class ExtensionSandbox extends EventEmitter {
    * 生成执行ID
    */
   private generateExecutionId(): string {
-    return `${this.context.name}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `${this.extensionContext.name}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   }
 
   /**
@@ -476,7 +539,11 @@ export class ExtensionSandbox extends EventEmitter {
    */
   destroy(): void {
     this.stopAllExecutions()
-    this.vm = undefined
+    if (this.isolate) {
+      this.isolate.dispose()
+      this.isolate = undefined
+      this.context = undefined
+    }
     this.executions.clear()
     this.removeAllListeners()
   }

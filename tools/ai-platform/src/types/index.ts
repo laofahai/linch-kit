@@ -40,6 +40,7 @@ export enum NodeType {
   VARIABLE = 'Variable', // 变量
   IMPORT = 'Import', // 导入语句
   EXPORT = 'Export', // 导出语句
+  UNKNOWN = 'unknown', // 未知类型（用于兼容性）
 }
 
 /**

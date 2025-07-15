@@ -1,0 +1,1 @@
+export { cn } from '@linch-kit/ui'

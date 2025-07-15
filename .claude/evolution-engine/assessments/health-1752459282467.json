@@ -1,0 +1,39 @@
+{
+  "assessmentTime": "2025-07-14T02:14:42.465Z",
+  "overallHealth": 84,
+  "dimensions": {
+    "architecture": 70,
+    "codeQuality": 75,
+    "performance": 90,
+    "security": 95,
+    "toolchain": 90
+  },
+  "issues": [
+    {
+      "level": "warning",
+      "description": "architecture健康度偏低 (70/100)",
+      "impact": "可能影响architecture效果",
+      "recommendation": "建议优化architecture相关设置"
+    },
+    {
+      "level": "warning",
+      "description": "codeQuality健康度偏低 (75/100)",
+      "impact": "可能影响codeQuality效果",
+      "recommendation": "建议优化codeQuality相关设置"
+    }
+  ],
+  "recommendations": [
+    "考虑重构架构，简化包依赖关系",
+    "加强代码质量控制，完善ESLint和TypeScript配置"
+  ],
+  "trends": [
+    {
+      "description": "系统健康度处于可接受范围，有改进空间",
+      "direction": "stable",
+      "metrics": [
+        "整体评分",
+        "部分维度待改进"
+      ]
+    }
+  ]
+}

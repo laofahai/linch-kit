@@ -6,8 +6,8 @@
 // 基础类型
 export * from './common'
 
-// 插件系统类型
-export * from './plugin'
+// 插件系统类型已合并至Extension系统
+// export * from './plugin'
 
 // 配置管理类型
 export * from './config'

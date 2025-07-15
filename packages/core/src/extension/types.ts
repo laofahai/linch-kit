@@ -3,7 +3,7 @@
  * @module extension/types
  */
 
-import type { Plugin, PluginConfig, PluginMetadata } from '../types/plugin'
+import type { BaseConfig, OperationResult } from '../types/common'
 
 /**
  * Extension能力配置
@@ -46,9 +46,21 @@ export type ExtensionPermission =
   | string
 
 /**
- * Extension元数据(扩展Plugin元数据)
+ * Extension元数据
  */
-export interface ExtensionMetadata extends PluginMetadata {
+export interface ExtensionMetadata {
+  /** 扩展ID (唯一标识) */
+  id: string
+  /** 扩展名称 */
+  name: string
+  /** 版本号 */
+  version: string
+  /** 描述 */
+  description?: string
+  /** 作者 */
+  author?: string
+  /** 依赖的其他扩展 */
+  dependencies?: string[]
   /** 显示名称 */
   displayName: string
   /** 扩展能力 */
@@ -71,9 +83,13 @@ export interface ExtensionMetadata extends PluginMetadata {
 }
 
 /**
- * Extension配置(扩展Plugin配置)
+ * Extension配置
  */
-export interface ExtensionConfig extends PluginConfig {
+export interface ExtensionConfig extends BaseConfig {
+  /** 是否启用 */
+  enabled?: boolean
+  /** 优先级 */
+  priority?: number
   /** 扩展特定配置 */
   [key: string]: unknown
 }
@@ -135,9 +151,21 @@ export interface ExtensionInstance {
 }
 
 /**
- * Extension定义(基于Plugin)
+ * Extension生命周期钩子
  */
-export interface Extension extends Plugin {
+export interface ExtensionLifecycleHooks {
+  init?: (config: ExtensionConfig) => Promise<void> | void
+  setup?: (config: ExtensionConfig) => Promise<void> | void
+  start?: (config: ExtensionConfig) => Promise<void> | void
+  ready?: (config: ExtensionConfig) => Promise<void> | void
+  stop?: (config: ExtensionConfig) => Promise<void> | void
+  destroy?: (config: ExtensionConfig) => Promise<void> | void
+}
+
+/**
+ * Extension定义
+ */
+export interface Extension extends ExtensionLifecycleHooks {
   /** Extension元数据 */
   metadata: ExtensionMetadata
   /** 默认配置 */
@@ -184,15 +212,35 @@ export interface ExtensionLoadResult {
  * Extension管理器接口
  */
 export interface ExtensionManager {
-  /** 加载Extension */
+  /** 注册Extension */
+  register(extension: Extension, config?: ExtensionConfig): Promise<OperationResult>
+  /** 注销Extension */
+  unregister(extensionId: string): Promise<OperationResult>
+  /** 启动Extension */
+  start(extensionId: string): Promise<OperationResult>
+  /** 停止Extension */
+  stop(extensionId: string): Promise<OperationResult>
+  /** 获取Extension */
+  get(extensionId: string): ExtensionRegistration | undefined
+  /** 获取所有Extension */
+  getAll(): ExtensionRegistration[]
+  /** 检查Extension是否存在 */
+  has(extensionId: string): boolean
+  /** 获取Extension状态 */
+  getStatus(extensionId: string): string | undefined
+  /** 启动所有Extension */
+  startAll(): Promise<OperationResult[]>
+  /** 停止所有Extension */
+  stopAll(): Promise<OperationResult[]>
+  /** 加载Extension (动态加载) */
   loadExtension(extensionName: string): Promise<ExtensionLoadResult>
-  /** 卸载Extension */  
+  /** 卸载Extension (动态卸载) */  
   unloadExtension(extensionName: string): Promise<boolean>
   /** 热重载Extension */
   reloadExtension(extensionName: string): Promise<ExtensionLoadResult>
   /** 获取Extension实例 */
   getExtension(extensionName: string): ExtensionInstance | undefined
-  /** 获取所有Extension */
+  /** 获取所有Extension实例 */
   getAllExtensions(): ExtensionInstance[]
   /** 检查Extension是否存在 */
   hasExtension(extensionName: string): boolean

@@ -6,14 +6,13 @@
 import { EventEmitter } from 'eventemitter3'
 import React from 'react'
 import {
-  ExtensionManager,
   extensionManager as _extensionManager,
   type ExtensionInstance,
   type ExtensionLoadResult,
   type ExtensionState,
   type ExtensionMetrics,
   type ExtensionHealth,
-} from '@linch-kit/core/client'
+} from '@linch-kit/core'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import type { DynamicRouteConfig } from './enhanced-app-registry'
@@ -32,6 +31,12 @@ export interface ExtensionLoaderConfig {
   allowedExtensions?: string[]
   /** 是否启用权限检查 */
   permissionCheck?: boolean
+  /** 最大重试次数 */
+  maxRetryAttempts?: number
+  /** 重试延迟（毫秒） */
+  retryDelay?: number
+  /** 是否启用详细日志 */
+  verboseLogging?: boolean
 }
 
 /**
@@ -61,6 +66,12 @@ export interface ConsoleExtensionState extends ExtensionState {
     | 'stopping'
     | 'stopped'
     | 'error'
+  /** 状态更新时间 */
+  lastUpdated: number
+  /** 启动时间 */
+  startedAt?: number
+  /** 停止时间 */
+  stoppedAt?: number
   /** 错误信息 */
   error?: Error
 }
@@ -81,93 +92,120 @@ export class ExtensionLoader extends EventEmitter {
   constructor(
     private config: ExtensionLoaderConfig = {
       autoLoad: true,
-      extensionPath: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
+      extensionPath: process.env['EXTENSION_ROOT'] || process.cwd() + '/extensions',
       hotReload: true,
+      maxRetryAttempts: 3,
+      retryDelay: 1000,
+      verboseLogging: false,
     },
-    private extensionManager: ExtensionManager = _extensionManager
+    private extensionManager = _extensionManager
   ) {
     super()
     this.setupEventHandlers()
   }
 
   /**
-   * 加载 Extension
+   * 加载 Extension（支持重试机制）
    */
   async loadExtension(extensionName: string): Promise<ExtensionLoadResult> {
-    // 更新加载状态
-    this.updateExtensionState(extensionName, 'loading')
-
-    try {
-      // 检查是否允许加载（仅基础检查，权限验证由Core负责）
-      if (!this.isExtensionAllowed(extensionName)) {
-        throw new Error(`Extension ${extensionName} is not allowed to load`)
-      }
-
-      // 使用 ExtensionManager 加载（权限验证已在Core中处理）
-      const result = await this.extensionManager.loadExtension(extensionName)
-
-      if (!result.success || !result.instance) {
-        throw new Error(result.error?.message || 'Failed to load extension')
-      }
-
-      const instance = result.instance
-      this.extensionInstances.set(extensionName, instance)
-
-      // 注册 Extension 菜单组
-      enhancedAppRegistry.registerExtensionMenuGroup(instance)
-
-      // 获取 Extension 的路由配置
-      const routes = await this.getExtensionRoutes(instance)
-
-      // 注册路由到 AppRegistry
-      if (routes.length > 0) {
-        await enhancedAppRegistry.registerExtensionRoutes(instance, routes)
-      }
-
-      // 获取 Extension 的组件
-      const components = await this.getExtensionComponents(instance)
-
-      // 注册组件到 AppRegistry
-      for (const [componentName, component] of components) {
-        enhancedAppRegistry.registerExtensionComponent(instance, componentName, component)
-      }
-
+    const maxRetries = this.config.maxRetryAttempts ?? 3
+    const retryDelay = this.config.retryDelay ?? 1000
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
       // 更新加载状态
-      this.updateExtensionState(extensionName, 'running', {
-        routeCount: routes.length,
-        componentCount: components.size,
-      })
+      this.updateExtensionState(extensionName, 'loading')
 
-      // 触发加载完成事件
-      this.emit('extensionLoaded', {
-        name: extensionName,
-        instance,
-        routes,
-        components: Array.from(components.keys()),
-      })
+      try {
+        // 检查是否允许加载（仅基础检查，权限验证由Core负责）
+        if (!this.isExtensionAllowed(extensionName)) {
+          throw new Error(`Extension ${extensionName} is not allowed to load`)
+        }
 
-      return result
-    } catch (error) {
-      const loadError = error instanceof Error ? error : new Error(String(error))
+        // 使用 ExtensionManager 加载（权限验证已在Core中处理）
+        const result = await this.extensionManager.loadExtension(extensionName)
 
-      // 更新加载状态
-      this.updateExtensionState(extensionName, 'error', { error: loadError })
+        if (!result.success || !result.instance) {
+          throw new Error(result.error?.message || 'Failed to load extension')
+        }
 
-      // 触发加载失败事件
-      this.emit('extensionLoadFailed', {
-        name: extensionName,
-        error: loadError,
-      })
+        const instance = result.instance
+        this.extensionInstances.set(extensionName, instance)
 
-      return {
-        success: false,
-        error: {
-          code: 'LOAD_FAILED',
-          message: loadError.message,
-          stack: loadError.stack,
-        },
+        if (this.config.verboseLogging) {
+          console.log(`[ExtensionLoader] Successfully loaded ${extensionName} on attempt ${attempt}`)
+        }
+
+        // 注册 Extension 菜单组
+        enhancedAppRegistry.registerExtensionMenuGroup(instance)
+
+        // 获取 Extension 的路由配置
+        const routes = await this.getExtensionRoutes(instance)
+
+        // 注册路由到 AppRegistry
+        if (routes.length > 0) {
+          await enhancedAppRegistry.registerExtensionRoutes(instance, routes)
+        }
+
+        // 获取 Extension 的组件
+        const components = await this.getExtensionComponents(instance)
+
+        // 注册组件到 AppRegistry
+        for (const [componentName, component] of components) {
+          enhancedAppRegistry.registerExtensionComponent(instance, componentName, component)
+        }
+
+        // 更新加载状态
+        this.updateExtensionState(extensionName, 'running', {
+          routeCount: routes.length,
+          componentCount: components.size,
+          loadStatus: 'loaded',
+        })
+
+        // 触发加载完成事件
+        this.emit('extensionLoaded', {
+          name: extensionName,
+          instance,
+          routes,
+          components: Array.from(components.keys()),
+        })
+
+        return result
+      } catch (error) {
+        const loadError = error instanceof Error ? error : new Error(String(error))
+
+        if (this.config.verboseLogging) {
+          console.warn(`[ExtensionLoader] Attempt ${attempt}/${maxRetries} failed for ${extensionName}: ${loadError.message}`)
+        }
+
+        // 如果还有重试机会，等待后重试
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay))
+          continue
+        }
+
+        // 所有重试都失败了，更新状态并返回错误
+        this.updateExtensionState(extensionName, 'error', { error: loadError })
+
+        // 触发加载失败事件
+        this.emit('extensionLoadFailed', {
+          name: extensionName,
+          error: loadError,
+          attemptCount: maxRetries,
+        })
+
+        return {
+          success: false,
+          error: {
+            code: 'LOAD_FAILED',
+            message: `Failed to load after ${maxRetries} attempts: ${loadError.message}`,
+            ...(loadError.stack && { stack: loadError.stack }),
+          },
+        }
       }
     }
+
+    // 这里应该不会到达，但TypeScript需要返回值
+    throw new Error(`Unexpected: loadExtension loop completed without return`)
   }
 
   /**
@@ -233,7 +271,7 @@ export class ExtensionLoader extends EventEmitter {
    * 获取所有Extension状态
    */
   getAllExtensionStates(): ConsoleExtensionState[] {
-    return Array.from(this.extensionStates.values())
+    return Array.from(this.extensionStates.values()).filter(state => state && state.name)
   }
 
   /**
@@ -344,6 +382,7 @@ export class ExtensionLoader extends EventEmitter {
     const currentState = this.extensionStates.get(extensionName) || {
       name: extensionName,
       status: 'loading',
+      loadStatus: 'loading' as ExtensionLoadStatus,
       lastUpdated: Date.now(),
       metrics: {
         initializationTime: 0,
@@ -368,13 +407,14 @@ export class ExtensionLoader extends EventEmitter {
     const newState: ConsoleExtensionState = {
       ...currentState,
       status,
+      loadStatus: this.mapStatusToLoadStatus(status),
       lastUpdated: Date.now(),
       ...additional,
     }
 
     if (status === 'running') {
       newState.startedAt = Date.now()
-      newState.error = undefined
+      delete newState.error
     } else if (status === 'stopped') {
       newState.stoppedAt = Date.now()
     }
@@ -395,6 +435,30 @@ export class ExtensionLoader extends EventEmitter {
     // EnhancedPluginRegistry 不具备 EventEmitter 功能
     // 移除事件监听器设置，如需要事件处理功能，应该在调用方处理
     // 或者在 ExtensionManager 接口中明确定义事件处理方法
+  }
+
+  /**
+   * 映射状态到加载状态
+   */
+  private mapStatusToLoadStatus(status: ExtensionState['status']): ExtensionLoadStatus {
+    switch (status) {
+      case 'registered':
+        return 'unloaded'
+      case 'loading':
+      case 'starting':
+        return 'loading'
+      case 'loaded':
+      case 'running':
+        return 'loaded'
+      case 'error':
+        return 'failed'
+      case 'stopping':
+        return 'unloading'
+      case 'stopped':
+        return 'unloaded'
+      default:
+        return 'unloaded'
+    }
   }
 
   /**
@@ -419,8 +483,8 @@ export class ExtensionLoader extends EventEmitter {
 export function createExtensionLoader(config?: Partial<ExtensionLoaderConfig>): ExtensionLoader {
   const defaultConfig: ExtensionLoaderConfig = {
     autoLoad: true,
-    extensionPath: process.env.EXTENSION_ROOT || process.cwd() + '/extensions',
-    hotReload: process.env.NODE_ENV === 'development',
+    extensionPath: process.env['EXTENSION_ROOT'] || process.cwd() + '/extensions',
+    hotReload: process.env['NODE_ENV'] === 'development',
     allowedExtensions: [],
   }
   return new ExtensionLoader({ ...defaultConfig, ...config })

@@ -1,0 +1,21 @@
+[
+  {
+    "timestamp": "2025-07-14T00:29:17.705Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "User",
+    "understanding": {
+      "description": "User 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  }
+]
