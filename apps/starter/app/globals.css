@@ -1,3 +1,6 @@
-@import '@linch-kit/ui/styles/globals.css';
+/* Import Tailwind CSS */
+@import "tailwindcss";
+@import "tw-animate-css";
 
-/* LinchKit Starter应用的CSS变量全部来自UI包，不在此处重复定义 */
+/* Import LinchKit UI Theme System Components */
+@import "@linch-kit/ui/styles/globals.css";

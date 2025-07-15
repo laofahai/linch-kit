@@ -22,12 +22,12 @@ const nextConfig: NextConfig = {
     // 在构建时启用 ESLint 检查
     ignoreDuringBuilds: false,
   },
-  
+
   // 实验性功能配置
   experimental: {
     // 实验性配置
   },
-  
+
   // 输出配置 - 禁用静态生成
   output: 'standalone',
 
@@ -54,12 +54,12 @@ const nextConfig: NextConfig = {
         'node:util': false,
         'node:fs/promises': false,
       }
-      
+
       // 排除 bun:test 和服务器端模块
       config.externals = config.externals ?? []
       config.externals.push('bun:test')
       config.externals.push('chokidar')
-      
+
       // 忽略测试文件和服务器端文件
       config.module.rules.push({
         test: /\.(test|spec)\.(ts|tsx|js|jsx)$/,

@@ -33,3 +33,6 @@ export * from './client/dashboard-layout'
 
 // Extension 管理组件
 export * from './client/extension-manager'
+
+// Re-export commonly used server components for convenience
+export { Button, buttonVariants } from './server/button'

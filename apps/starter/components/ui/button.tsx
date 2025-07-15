@@ -1,1 +1,1 @@
-export { Button, buttonVariants } from '@linch-kit/ui/server'
+export { Button, buttonVariants } from '@linch-kit/ui/client'

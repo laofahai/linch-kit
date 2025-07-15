@@ -1,5 +1,5 @@
-import { defineConfig } from 'tsup'
 import { copyFileSync, mkdirSync } from 'fs'
+import { defineConfig } from 'tsup'
 
 export default defineConfig({
   entry: ['src/client.ts', 'src/server.ts', 'src/shared.ts'],
@@ -40,14 +40,18 @@ export default defineConfig({
     }
   },
   
-  // 复制CSS文件
+  // 复制CSS文件并生成正确的导入路径
   onSuccess: async () => {
+    const { writeFileSync } = await import('fs')
     const stylesDir = 'dist/styles'
     const themesDir = 'dist/styles/themes'
+
     mkdirSync(stylesDir, { recursive: true })
     mkdirSync(themesDir, { recursive: true })
+    
+    // 直接复制单个文件
     copyFileSync('src/styles/globals.css', 'dist/styles/globals.css')
-    copyFileSync('src/styles/themes/linch-kit.css', 'dist/styles/themes/linch-kit.css')
-    console.log('CSS files copied to dist/styles/')
+
+    console.log('✅ CSS files copied to dist/styles/')
   },
 })
