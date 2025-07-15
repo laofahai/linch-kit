@@ -172,12 +172,12 @@ export const defaultLinchKitConfig: LinchKitProviderConfig = {
  * @param trpcConfig - tRPC 客户端配置
  * @returns 集成了 tRPC 的 LinchKit Provider 组件
  */
-export function withTRPCProvider<TRouter = any>(
+export function withTRPCProvider(
   trpcApi: {
-    Provider: React.ComponentType<any>
-    createClient: (config: any) => any
+    Provider: React.ComponentType<{ children: React.ReactNode; client: unknown; queryClient: unknown }>
+    createClient: (config: unknown) => unknown
   },
-  trpcConfig: any
+  trpcConfig: unknown
 ) {
   return function TRPCLinchKitProvider({
     children,

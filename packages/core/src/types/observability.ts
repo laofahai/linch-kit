@@ -31,7 +31,7 @@ export interface MetricCollector {
   createHistogram(name: string, help: string, buckets?: number[], labels?: string[]): Histogram
   createSummary(name: string, help: string, percentiles?: number[], labels?: string[]): Summary
   getMetrics(): Promise<string>
-  getRegistry?(): any
+  getRegistry?(): unknown
 }
 
 /**

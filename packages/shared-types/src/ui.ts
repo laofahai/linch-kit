@@ -6,12 +6,17 @@
 import type { ComponentType } from 'react'
 
 /**
+ * 通用组件属性类型
+ */
+export type ComponentProps = Record<string, unknown>
+
+/**
  * 组件定义
  */
 export interface ComponentDefinition {
   name: string
-  component: ComponentType<any>
-  props?: Record<string, unknown>
+  component: ComponentType<ComponentProps>
+  props?: ComponentProps
   category?: string
   description?: string
 }
@@ -36,18 +41,18 @@ export type ResponsiveValue<T> = T | T[] | Record<string, T>
  */
 export interface OverrideOptions {
   replace?: boolean
-  wrapper?: ComponentType<any>
-  fallback?: ComponentType<any>
+  wrapper?: ComponentType<ComponentProps>
+  fallback?: ComponentType<ComponentProps>
 }
 
 /**
  * 布局配置
  */
 export interface LayoutConfig {
-  header?: ComponentType<any>
-  footer?: ComponentType<any>
-  sidebar?: ComponentType<any>
-  navigation?: ComponentType<any>
+  header?: ComponentType<ComponentProps>
+  footer?: ComponentType<ComponentProps>
+  sidebar?: ComponentType<ComponentProps>
+  navigation?: ComponentType<ComponentProps>
 }
 
 /**

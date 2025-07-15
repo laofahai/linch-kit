@@ -59,7 +59,7 @@ export class HotReloadManager extends EventEmitter {
 
     // 为所有已加载的Extension启用热重载
     const extensions = this.extensionManager.getAllExtensions()
-    extensions.forEach((ext: any) => this.enableForExtension(ext.name))
+    extensions.forEach((ext: { name: string }) => this.enableForExtension(ext.name))
 
     // 监听Extension管理器事件
     this.extensionManager.on('extensionLoaded', ({ name }: { name: string }) => {

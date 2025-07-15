@@ -13,7 +13,7 @@ import {
   Registry,
 } from 'prom-client'
 
-import type { MetricCollector, Counter, Gauge, Histogram, Summary, MetricConfig } from '../types'
+import type { MetricCollector, Counter, Gauge, Histogram, Summary } from '../types'
 
 /**
  * Prometheus metric value interface

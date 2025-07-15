@@ -19,12 +19,46 @@ function isServerEnvironment(): boolean {
   return typeof window === 'undefined' && typeof process !== 'undefined' && Boolean(process.versions?.node)
 }
 
+// Prometheus metric类型定义
+interface PromCounter {
+  inc: (labels: Record<string, string>, value?: number) => void
+  get: () => { values?: Array<{ labels: Record<string, string>; value: number }> }
+  reset: () => void
+}
+
+interface PromGauge {
+  set: (labels: Record<string, string>, value: number) => void
+  inc: (labels: Record<string, string>, value?: number) => void
+  dec: (labels: Record<string, string>, value?: number) => void
+  get: () => { values?: Array<{ labels: Record<string, string>; value: number }> }
+  reset: () => void
+}
+
+interface PromHistogram {
+  observe: (labels: Record<string, string>, value: number) => void
+  get: () => { values?: Array<{ labels: Record<string, string>; value: number }> }
+  reset: () => void
+}
+
+interface PromSummary {
+  observe: (labels: Record<string, string>, value: number) => void
+  get: () => { values?: Array<{ labels: Record<string, string>; value: number }> }
+  reset: () => void
+}
+
 /**
  * 服务器端Metrics实现
  */
 class ServerMetrics implements MetricCollector {
-  private promClient: any
-  private registry: any
+  private promClient: {
+    register: { metrics: () => Promise<string> }
+    collectDefaultMetrics: (options: { register: unknown; timeout: number }) => void
+    Counter: new (config: { name: string; help: string; labelNames?: string[] }) => PromCounter
+    Gauge: new (config: { name: string; help: string; labelNames?: string[] }) => PromGauge
+    Histogram: new (config: { name: string; help: string; buckets?: number[]; labelNames?: string[] }) => PromHistogram
+    Summary: new (config: { name: string; help: string; percentiles?: number[]; labelNames?: string[] }) => PromSummary
+  }
+  private registry: { metrics: () => Promise<string> }
 
   constructor(config: MetricsConfig = {}) {
     // 动态导入prom-client以避免客户端打包问题
@@ -40,11 +74,11 @@ class ServerMetrics implements MetricCollector {
     this.registry = this.promClient.register
   }
 
-  createCounter(name: string, help: string, labels?: string[]): Counter {
+  createCounter(name: string, _help: string, _labels?: string[]): Counter {
     const counter = new this.promClient.Counter({
       name,
-      help,
-      labelNames: labels || [],
+      help: _help,
+      labelNames: _labels || [],
     })
 
     return {
@@ -54,22 +88,22 @@ class ServerMetrics implements MetricCollector {
       get: (labelValues?: Record<string, string>) => {
         const metric = counter.get()
         if (labelValues) {
-          const found = metric.values?.find((v: any) =>
+          const found = metric.values?.find((v: { labels: Record<string, string>; value: number }) =>
             Object.entries(labelValues).every(([key, val]) => v.labels[key] === val)
           )
           return found?.value || 0
         }
-        return metric.values?.reduce((sum: number, v: any) => sum + v.value, 0) || 0
+        return metric.values?.reduce((sum: number, v: { value: number }) => sum + v.value, 0) || 0
       },
       reset: () => counter.reset(),
     }
   }
 
-  createGauge(name: string, help: string, labels?: string[]): Gauge {
+  createGauge(name: string, _help: string, _labels?: string[]): Gauge {
     const gauge = new this.promClient.Gauge({
       name,
-      help,
-      labelNames: labels || [],
+      help: _help,
+      labelNames: _labels || [],
     })
 
     return {
@@ -85,7 +119,7 @@ class ServerMetrics implements MetricCollector {
       get: (labelValues?: Record<string, string>) => {
         const metric = gauge.get()
         if (labelValues) {
-          const found = metric.values?.find((v: any) =>
+          const found = metric.values?.find((v: { labels: Record<string, string>; value: number }) =>
             Object.entries(labelValues).every(([key, val]) => v.labels[key] === val)
           )
           return found?.value || 0
@@ -96,12 +130,12 @@ class ServerMetrics implements MetricCollector {
     }
   }
 
-  createHistogram(name: string, help: string, buckets?: number[], labels?: string[]): Histogram {
+  createHistogram(name: string, _help: string, _buckets?: number[], _labels?: string[]): Histogram {
     const histogram = new this.promClient.Histogram({
       name,
-      help,
-      buckets: buckets || [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10],
-      labelNames: labels || [],
+      help: _help,
+      buckets: _buckets || [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10],
+      labelNames: _labels || [],
     })
 
     return {
@@ -111,7 +145,7 @@ class ServerMetrics implements MetricCollector {
       get: (labelValues?: Record<string, string>) => {
         const metric = histogram.get()
         if (labelValues) {
-          const found = metric.values?.find((v: any) =>
+          const found = metric.values?.find((v: { labels: Record<string, string>; value: number }) =>
             Object.entries(labelValues).every(([key, val]) => v.labels[key] === val)
           )
           return found?.value || 0
@@ -122,12 +156,12 @@ class ServerMetrics implements MetricCollector {
     }
   }
 
-  createSummary(name: string, help: string, percentiles?: number[], labels?: string[]): Summary {
+  createSummary(name: string, _help: string, _percentiles?: number[], _labels?: string[]): Summary {
     const summary = new this.promClient.Summary({
       name,
-      help,
-      percentiles: percentiles || [0.5, 0.9, 0.95, 0.99],
-      labelNames: labels || [],
+      help: _help,
+      percentiles: _percentiles || [0.5, 0.9, 0.95, 0.99],
+      labelNames: _labels || [],
     })
 
     return {
@@ -137,7 +171,7 @@ class ServerMetrics implements MetricCollector {
       get: (labelValues?: Record<string, string>) => {
         const metric = summary.get()
         if (labelValues) {
-          const found = metric.values?.find((v: any) =>
+          const found = metric.values?.find((v: { labels: Record<string, string>; value: number }) =>
             Object.entries(labelValues).every(([key, val]) => v.labels[key] === val)
           )
           return found?.value || 0
@@ -152,7 +186,7 @@ class ServerMetrics implements MetricCollector {
     return await this.registry.metrics()
   }
 
-  getRegistry(): any {
+  getRegistry(): { metrics: () => Promise<string> } {
     return this.registry
   }
 }
@@ -163,7 +197,7 @@ class ServerMetrics implements MetricCollector {
 class ClientMetrics implements MetricCollector {
   private metrics = new Map<string, { type: string; value: number; labels: Record<string, string> }>()
 
-  createCounter(name: string, help: string, labels?: string[]): Counter {
+  createCounter(name: string, _help: string, _labels?: string[]): Counter {
     return {
       inc: (value = 1, labelValues?: Record<string, string>) => {
         const key = this.getMetricKey(name, labelValues)
@@ -188,7 +222,7 @@ class ClientMetrics implements MetricCollector {
     }
   }
 
-  createGauge(name: string, help: string, labels?: string[]): Gauge {
+  createGauge(name: string, _help: string, _labels?: string[]): Gauge {
     return {
       set: (value: number, labelValues?: Record<string, string>) => {
         const key = this.getMetricKey(name, labelValues)
@@ -230,7 +264,7 @@ class ClientMetrics implements MetricCollector {
     }
   }
 
-  createHistogram(name: string, help: string, buckets?: number[], labels?: string[]): Histogram {
+  createHistogram(name: string, _help: string, _buckets?: number[], _labels?: string[]): Histogram {
     return {
       observe: (value: number, labelValues?: Record<string, string>) => {
         const key = this.getMetricKey(name, labelValues)
@@ -255,7 +289,7 @@ class ClientMetrics implements MetricCollector {
     }
   }
 
-  createSummary(name: string, help: string, percentiles?: number[], labels?: string[]): Summary {
+  createSummary(name: string, _help: string, _percentiles?: number[], _labels?: string[]): Summary {
     return {
       observe: (value: number, labelValues?: Record<string, string>) => {
         const key = this.getMetricKey(name, labelValues)
@@ -293,7 +327,7 @@ class ClientMetrics implements MetricCollector {
     return result.join('\n')
   }
 
-  getRegistry(): any {
+  getRegistry(): { metrics: () => Promise<string>; clear: () => void } {
     return {
       metrics: () => this.getMetrics(),
       clear: () => this.metrics.clear(),

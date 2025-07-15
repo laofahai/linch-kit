@@ -3,7 +3,7 @@
  * @module observability/metrics-client-safe
  */
 
-import type { MetricCollector, Counter, Gauge, Histogram, Summary, MetricConfig } from '../types/observability'
+import type { MetricCollector, Counter, Gauge, Histogram, Summary } from '../types/observability'
 
 /**
  * Client-side Counter stub implementation
@@ -105,7 +105,7 @@ class ClientMetricCollector implements MetricCollector {
     return '# No metrics available on client side'
   }
 
-  getRegistry?(): any {
+  getRegistry?(): null {
     return null
   }
 }

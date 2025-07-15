@@ -22,7 +22,7 @@ export class LinchKitCLI {
 
   private async setupCLI() {
     // 修改程序信息
-    const cliImpl = this.cli as unknown as { program: any }
+    const cliImpl = this.cli as unknown as { program: { name: (name: string) => unknown; description: (desc: string) => unknown; version: (version: string) => unknown; option: (flags: string, description: string) => unknown } }
     const program = cliImpl.program
     program.name('linch').description('LinchKit AI-First 全栈开发框架 CLI').version('1.0.0')
 
