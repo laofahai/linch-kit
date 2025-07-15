@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
+
 import { applyTheme, linchKitTheme, getThemeColor, setThemeColor } from '../utils/theme'
 import type { Theme, ThemeMode } from '../types/theme'
 
