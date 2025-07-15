@@ -80,6 +80,10 @@ export interface ExtensionMetadata {
     components?: string
     hooks?: string
   }
+  /** UI 图标 */
+  icon?: string
+  /** UI 颜色主题 */
+  color?: string
 }
 
 /**

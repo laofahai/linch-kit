@@ -5,11 +5,11 @@
 
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import type { ClientExtensionRegistration } from '@linch-kit/core/extension'
 import { Logger } from '@linch-kit/core/client'
+import type { ClientExtensionRegistration } from '@linch-kit/core/extension'
 import { unifiedExtensionManager } from '@linch-kit/core/extension'
+import { useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
 
 interface DynamicExtensionClientProps {
   extensionName: string
@@ -131,7 +131,7 @@ export function DynamicExtensionClient({
       }
     }
 
-    loadExtension().catch(error => Logger.error('Extension loading error:', error))
+    loadExtension().catch(error => { Logger.error('Extension loading error:', error); })
   }, [extensionName, subPath])
 
   if (state.loading) {

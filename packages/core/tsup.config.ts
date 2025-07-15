@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup'
 export default defineConfig([
   // 客户端安全入口
   {
-    entry: ['src/client.ts'],
+    entry: ['src/client.ts', 'src/extension-client.ts'],
     format: ['cjs', 'esm'],
     dts: true,
     clean: false,
