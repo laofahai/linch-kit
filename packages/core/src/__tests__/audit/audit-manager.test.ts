@@ -106,28 +106,20 @@ describe('DefaultAuditManager', () => {
     it('should initialize metrics counters', () => {
       // 由于 bun:test 中 mock 状态可能在测试间共享，我们只验证调用参数而不是次数
       expect(mockMetrics.createCounter).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'audit_events_queued',
-          type: 'counter',
-        })
+        'audit_events_queued',
+        'Number of audit events queued for processing'
       )
       expect(mockMetrics.createCounter).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'audit_events_processed',
-          type: 'counter',
-        })
+        'audit_events_processed',
+        'Number of audit events successfully processed'
       )
       expect(mockMetrics.createCounter).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'audit_events_failed',
-          type: 'counter',
-        })
+        'audit_events_failed',
+        'Number of audit events that failed to process'
       )
       expect(mockMetrics.createCounter).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'audit_alerts_triggered',
-          type: 'counter',
-        })
+        'audit_alerts_triggered',
+        'Number of audit alerts triggered'
       )
     })
   })
