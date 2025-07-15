@@ -1,4 +1,4 @@
-import { uiTailwindConfig } from '@linch-kit/ui/tailwind.config'
+import uiTailwindConfig from '@linch-kit/ui/tailwind.config'
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
@@ -11,8 +11,8 @@ const config: Config = {
     // 开发环境下的相对路径支持 (monorepo 环境)
     '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
   ],
-  ...uiTailwindConfig,
-  // 可以在这里覆盖或扩展UI包的配置
+
+  ...uiTailwindConfig
 }
 
 export default config

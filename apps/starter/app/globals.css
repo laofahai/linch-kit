@@ -1,15 +1,6 @@
-/* Import Tailwind CSS 4.0 */
+/* Import Tailwind CSS */
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Import LinchKit UI Complete Theme System */
-@import "@linch-kit/ui/styles";
-
-/* 
- * 应用特定的样式扩展
- * 如果需要自定义主题，请在这里定义或导入自定义主题文件
- */
-@layer utilities {
-  /* 应用特定的实用类可以在这里定义 */
-  /* 例如：特定的动画、布局等 */
-}
+/* Import LinchKit UI Theme System Components */
+@import "@linch-kit/ui/styles/globals.css";

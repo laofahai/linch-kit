@@ -1,37 +1,29 @@
 import type { Config } from 'tailwindcss'
 
-export const uiTailwindConfig: Partial<Config> = {
+const uiTailwindConfig: Partial<Config> = {
   theme: {
     extend: {
-      // 保留基础功能，主题色彩由CSS直接处理
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
-      keyframes: {
-        'accordion-down': {
-          from: { height: '0' },
-          to: { height: 'var(--radix-accordion-content-height)' },
-        },
-        'accordion-up': {
-          from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: '0' },
-        },
-        'collapsible-down': {
-          from: { height: '0' },
-          to: { height: 'var(--radix-collapsible-content-height)' },
-        },
-        'collapsible-up': {
-          from: { height: 'var(--radix-collapsible-content-height)' },
-          to: { height: '0' },
-        },
-      },
-      animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out',
-        'collapsible-down': 'collapsible-down 0.2s ease-out',
-        'collapsible-up': 'collapsible-up 0.2s ease-out',
+      colors: {
+        background: 'oklch(var(--background))',
+        foreground: 'oklch(var(--foreground))',
+        primary: 'oklch(var(--primary))',
+        'primary-foreground': 'oklch(var(--primary-foreground))',
+        secondary: 'oklch(var(--secondary))',
+        'secondary-foreground': 'oklch(var(--secondary-foreground))',
+        destructive: 'oklch(var(--destructive))',
+        'destructive-foreground': 'oklch(var(--destructive-foreground))',
+        muted: 'oklch(var(--muted))',
+        'muted-foreground': 'oklch(var(--muted-foreground))',
+        accent: 'oklch(var(--accent))',
+        'accent-foreground': 'oklch(var(--accent-foreground))',
+        border: 'oklch(var(--border))',
+        input: 'oklch(var(--input))',
+        ring: 'oklch(var(--ring))',
       },
     },
   },
