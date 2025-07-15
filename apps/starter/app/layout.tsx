@@ -12,14 +12,11 @@ export const metadata: Metadata = {
   description: '基于 LinchKit 框架的现代化全栈开发基座',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className={inter.className}>
+        <div className="h-12 w-12 bg-red-500">123</div>
         <TRPCLinchKitProvider>
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {children as any}

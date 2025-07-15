@@ -1,5 +1,5 @@
+import { uiTailwindConfig } from '@linch-kit/ui/tailwind.config'
 import type { Config } from 'tailwindcss'
-import { baseTailwindConfig } from '../../configs/tailwind.base'
 
 const config: Config = {
   content: [
@@ -9,8 +9,8 @@ const config: Config = {
     // 扫描 LinchKit UI 包的组件
     '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
   ],
-  ...baseTailwindConfig,
-  // 可以在这里覆盖或扩展基础配置
+  ...uiTailwindConfig,
+  // 可以在这里覆盖或扩展UI包的配置
 }
 
 export default config
