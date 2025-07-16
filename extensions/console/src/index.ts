@@ -122,6 +122,9 @@ export {
 // 1. 首先启用Dashboard页面
 export { Dashboard } from './pages/Dashboard'
 
+// Console App Wrapper - 提供必要的Provider包装
+export { ConsoleAppWrapper } from './components/ConsoleAppWrapper'
+
 // 2. 基础组件 (暂时禁用以解决构建问题)
 // export * from './components'
 

@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test'
  * 用于部署前的自动化验证
  */
 export default defineConfig({
-  testDir: './e2e',
+  testDir: './tools/testing/e2e-playwright',
   testMatch: '**/*.e2e.ts',
   /* 最大并行测试数 */
   fullyParallel: true,
@@ -58,11 +58,11 @@ export default defineConfig({
     },
   ],
 
-  /* 本地开发服务器配置 - 如果需要自动启动服务器，取消注释以下配置 */
-  // webServer: {
-  //   command: process.env.CI ? 'cd apps/starter && bun run build && bun run start' : 'cd apps/starter && bun run dev',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  //   timeout: 120 * 1000,
-  // },
+  /* 本地开发服务器配置 */
+  webServer: {
+    command: 'cd apps/starter && bun run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+  },
 })

@@ -9,8 +9,11 @@ import { Logger, clientExtensionManager } from '@linch-kit/core/client'
 import type { ClientExtensionRegistration } from '@linch-kit/core/client'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import type { ComponentType } from 'react'
 
+import type { ExtensionUIComponentProps } from '../../../lib/extension-ui-registry'
 import { extensionUIRegistry } from '../../../lib/extension-ui-registry'
+import { initializeExtensions } from '../../../lib/extensions-loader'
 
 // 声明 window 对象类型
 declare global {
@@ -72,6 +75,9 @@ export function DynamicExtensionClient({
   
   const router = useRouter()
   const [config, setConfig] = useState(() => getExtensionConfig(extensionName))
+  
+  // 扩展已加载 - 智能获取组件（带重试机制）
+  const [ExtensionComponent, setExtensionComponent] = useState<ComponentType<ExtensionUIComponentProps> | null>(null)
 
   useEffect(() => {
     const loadExtension = async () => {
@@ -82,32 +88,41 @@ export function DynamicExtensionClient({
         // 检查扩展是否已注册
         let registration = clientExtensionManager.getRegistration(extensionName)
         
-        if (!registration) {
-          // 开发环境下显示占位符
-          Logger.info(`Extension ${extensionName} not registered, showing placeholder`)
-          if (process.env.NODE_ENV === 'development') {
-            setState({
-              loading: false,
-              loaded: false,
-              error: null,
-              registration: null
-            })
-            return
-          }
+        // 强制等待初始化完成（特别是在页面刷新后）
+        if (!registration || !extensionUIRegistry.getDefaultComponent(extensionName)) {
+          Logger.info(`Extension ${extensionName} not ready, forcing initialization...`)
+          
+          // 等待一短时间，让ExtensionsInitializer有机会执行
+          await new Promise(resolve => window.setTimeout(resolve, 300))
+          
+          // 强制重新初始化
+          await initializeExtensions(true)
+          
+          // 再次检查
+          registration = clientExtensionManager.getRegistration(extensionName)
         }
         
-        // 更新配置信息
-        if (registration?.metadata) {
-          setConfig({
-            displayName: registration.metadata.displayName,
-            icon: registration.metadata.icon ?? '📦',
-            description: registration.metadata.description ?? 'Extension',
-            color: registration.metadata.color ?? 'gray'
+        if (!registration) {
+          Logger.warn(`Extension ${extensionName} not registered after initialization attempts`)
+          setState({
+            loading: false,
+            loaded: false,
+            error: null,
+            registration: null
           })
+          return
         }
+        
+        // 更新配置信息 - registration.metadata 在 ClientExtensionRegistration 中总是存在
+        setConfig({
+          displayName: registration.metadata.displayName,
+          icon: registration.metadata.icon ?? '📦',
+          description: registration.metadata.description ?? 'Extension',
+          color: registration.metadata.color ?? 'gray'
+        })
 
         // 启动扩展
-        if (registration?.status !== 'running') {
+        if (registration.status !== 'running') {
           Logger.info(`Starting extension: ${extensionName}`)
           const startResult = await clientExtensionManager.start(extensionName)
           
@@ -143,6 +158,29 @@ export function DynamicExtensionClient({
 
     loadExtension().catch(error => { Logger.error('Extension loading error:', error) })
   }, [extensionName, subPath])
+  
+  useEffect(() => {
+    if (state.loaded && state.registration) {
+      const getComponent = () => {
+        const component = extensionUIRegistry.getDefaultComponent(extensionName)
+        if (component) {
+          Logger.info(`Found UI component for ${extensionName}`)
+          setExtensionComponent(() => component)
+        } else {
+          Logger.warn(`UI component for ${extensionName} not found, will show placeholder`)
+          // 延迟重试获取组件
+          window.setTimeout(() => {
+            const retryComponent = extensionUIRegistry.getDefaultComponent(extensionName)
+            if (retryComponent) {
+              Logger.info(`Extension ${extensionName} component found on retry`)
+              setExtensionComponent(() => retryComponent)
+            }
+          }, 100)
+        }
+      }
+      getComponent()
+    }
+  }, [state.loaded, state.registration, extensionName])
 
   if (state.loading) {
     return (
@@ -298,9 +336,6 @@ export function DynamicExtensionClient({
     )
   }
 
-  // 扩展已加载 - 显示实际内容
-  const ExtensionComponent = extensionUIRegistry.getDefaultComponent(extensionName)
-  
   if (ExtensionComponent) {
     // 渲染实际的扩展组件
     return (

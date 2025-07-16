@@ -40,6 +40,9 @@ export { ExtensionManager as ExtensionManagement } from './pages/ExtensionManage
 // Dashboard 页面
 export { Dashboard } from './pages/Dashboard'
 
+// Console App Wrapper - 提供必要的Provider包装
+export { ConsoleAppWrapper } from './components/ConsoleAppWrapper'
+
 // 核心客户端功能
 export {
   StarterIntegrationManager,
