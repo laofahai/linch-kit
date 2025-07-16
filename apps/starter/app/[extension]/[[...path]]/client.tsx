@@ -5,11 +5,17 @@
 
 'use client'
 
-import { Logger } from '@linch-kit/core/client'
-import type { ClientExtensionRegistration } from '@linch-kit/core/extension'
-import { unifiedExtensionManager } from '@linch-kit/core/extension'
+import { Logger, clientExtensionManager } from '@linch-kit/core/client'
+import type { ClientExtensionRegistration } from '@linch-kit/core/client'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+
+// 声明 window 对象类型
+declare global {
+  interface Window {
+    location: Location
+  }
+}
 
 interface DynamicExtensionClientProps {
   extensionName: string
@@ -27,11 +33,11 @@ interface ExtensionState {
 // 动态获取扩展配置
 const getExtensionConfig = (extensionName: string) => {
   // 尝试从扩展管理器获取注册信息
-  const registration = unifiedExtensionManager.getRegistration(extensionName)
+  const registration = clientExtensionManager.getRegistration(extensionName)
   
   if (registration?.metadata) {
     return {
-      displayName: registration.metadata.displayName ?? registration.metadata.name,
+      displayName: registration.metadata.displayName,
       icon: registration.metadata.icon ?? '📦',
       description: registration.metadata.description ?? 'Extension',
       color: registration.metadata.color ?? 'gray'
@@ -72,40 +78,42 @@ export function DynamicExtensionClient({
         Logger.info(`Loading extension: ${extensionName}`)
 
         // 检查扩展是否已注册
-        let registration = unifiedExtensionManager.getRegistration(extensionName)
+        let registration = clientExtensionManager.getRegistration(extensionName)
         
         if (!registration) {
           // 开发环境下显示占位符
           Logger.info(`Extension ${extensionName} not registered, showing placeholder`)
-          setState({
-            loading: false,
-            loaded: false,
-            error: null,
-            registration: null
-          })
-          return
+          if (process.env.NODE_ENV === 'development') {
+            setState({
+              loading: false,
+              loaded: false,
+              error: null,
+              registration: null
+            })
+            return
+          }
         }
         
         // 更新配置信息
-        if (registration.metadata) {
+        if (registration?.metadata) {
           setConfig({
-            displayName: registration.metadata.displayName || registration.metadata.name,
-            icon: registration.metadata.icon || '📦',
-            description: registration.metadata.description || 'Extension',
-            color: registration.metadata.color || 'gray'
+            displayName: registration.metadata.displayName,
+            icon: registration.metadata.icon ?? '📦',
+            description: registration.metadata.description ?? 'Extension',
+            color: registration.metadata.color ?? 'gray'
           })
         }
 
         // 启动扩展
-        if (registration.status !== 'running') {
+        if (registration?.status !== 'running') {
           Logger.info(`Starting extension: ${extensionName}`)
-          const startResult = await unifiedExtensionManager.start(extensionName)
+          const startResult = await clientExtensionManager.start(extensionName)
           
           if (!startResult.success) {
             throw new Error(startResult.error?.message ?? 'Failed to start extension')
           }
           
-          registration = unifiedExtensionManager.getRegistration(extensionName)
+          registration = clientExtensionManager.getRegistration(extensionName)
           if (!registration) {
             throw new Error('Extension registration lost after start')
           }
@@ -131,17 +139,17 @@ export function DynamicExtensionClient({
       }
     }
 
-    loadExtension().catch(error => { Logger.error('Extension loading error:', error); })
+    loadExtension().catch(error => { Logger.error('Extension loading error:', error) })
   }, [extensionName, subPath])
 
   if (state.loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-bounce">{config?.icon ?? '📦'}</div>
+          <div className="text-6xl mb-4 animate-bounce">{config.icon}</div>
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 font-medium">
-            Loading {config?.displayName ?? extensionName}...
+            Loading {config.displayName}...
           </p>
         </div>
       </div>
@@ -158,13 +166,15 @@ export function DynamicExtensionClient({
               Extension Error
             </h2>
             <p className="text-gray-600 mb-4">
-              Failed to load {config?.displayName ?? extensionName}
+              Failed to load {config.displayName}
             </p>
             <p className="text-red-600 text-sm mb-6">{state.error}</p>
             
             <div className="space-y-3">
               <button 
-                onClick={() => { window.location.reload() }}
+                onClick={() => { 
+                  location.reload()
+                }}
                 className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Retry
@@ -189,15 +199,15 @@ export function DynamicExtensionClient({
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className={`bg-gradient-to-r from-${config?.color ?? 'gray'}-500 to-${config?.color ?? 'gray'}-600 text-white p-12`}>
+              <div className={`bg-gradient-to-r from-${config.color}-500 to-${config.color}-600 text-white p-12`}>
                 <div className="flex items-center gap-6">
-                  <div className="text-6xl drop-shadow-lg">{config?.icon ?? '📦'}</div>
+                  <div className="text-6xl drop-shadow-lg">{config.icon}</div>
                   <div>
                     <h1 className="text-4xl font-bold mb-2">
-                      {config?.displayName ?? extensionName}
+                      {config.displayName}
                     </h1>
                     <p className="text-lg opacity-90">
-                      {config?.description ?? 'Extension placeholder'}
+                      {config.description}
                     </p>
                   </div>
                 </div>
@@ -235,9 +245,9 @@ export function DynamicExtensionClient({
                       <span className="text-green-500">📱</span> Registered Extensions
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {Array.from(unifiedExtensionManager.getExtensions().values()).map((reg) => {
+                      {Array.from(clientExtensionManager.getExtensions().values()).map((reg) => {
                         const extConfig = {
-                          displayName: reg.metadata.displayName ?? reg.metadata.name,
+                          displayName: reg.metadata.displayName,
                           icon: reg.metadata.icon ?? '📦',
                           description: reg.metadata.description ?? 'Extension',
                           color: reg.metadata.color ?? 'gray'
@@ -269,7 +279,7 @@ export function DynamicExtensionClient({
                           </button>
                         )
                       })}
-                      {unifiedExtensionManager.getExtensions().size === 0 && (
+                      {clientExtensionManager.getExtensions().size === 0 && (
                         <div className="col-span-full text-center py-8 text-gray-500">
                           <p>No extensions registered yet.</p>
                           <p className="text-sm mt-1">Extensions will appear here once they are installed.</p>
@@ -293,12 +303,12 @@ export function DynamicExtensionClient({
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="flex items-center gap-4 mb-8 pb-6 border-b">
-              <div className="text-5xl">{config?.icon}</div>
+              <div className="text-5xl">{config.icon}</div>
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {config?.displayName ?? state.registration.metadata.displayName}
+                  {config.displayName}
                 </h1>
-                <p className="text-gray-600 mt-1">{config?.description}</p>
+                <p className="text-gray-600 mt-1">{config.description}</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">

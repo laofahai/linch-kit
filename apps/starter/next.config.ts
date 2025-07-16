@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  // 对 workspace 包进行转译
+  transpilePackages: ['@linch-kit/ui', '@linch-kit/core', '@linch-kit/auth', '@linch-kit/schema'],
+
   // Turbopack 配置 (稳定版)
   turbopack: {
     rules: {

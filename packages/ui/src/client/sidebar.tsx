@@ -7,11 +7,11 @@ import * as React from 'react'
 
 import { useIsMobile } from '../hooks/use-mobile'
 import { cn } from '../utils/cn'
-import { Button } from '../server/button'
-import { Input } from '../server/input'
 import { Separator } from '../server/separator'
 import { Skeleton } from '../server/skeleton'
 
+import { Button } from './button'
+import { Input } from './input'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from './sheet'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip'
 

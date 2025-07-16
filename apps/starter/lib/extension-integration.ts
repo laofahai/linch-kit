@@ -80,7 +80,7 @@ export function getMenuTree() {
     .filter(registration => registration.config.enabled && registration.status === 'running')
     .map(registration => ({
       id: registration.id,
-      name: registration.metadata.displayName ?? registration.metadata.name,
+      name: registration.metadata.displayName,
       path: `/${registration.metadata.name}`,
       icon: registration.metadata.icon ?? 'puzzle-piece',
       children: [],

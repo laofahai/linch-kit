@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
-
+import { ExtensionsInitializer } from '@/components/extensions-initializer'
 import { TRPCLinchKitProvider } from '@/components/providers/trpc-linchkit-provider'
 
-import '@linch-kit/ui/styles/globals.css'
+import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-CN" suppressHydrationWarning>
       <body className={inter.className}>
         <TRPCLinchKitProvider>
+          <ExtensionsInitializer />
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {children as any}
         </TRPCLinchKitProvider>

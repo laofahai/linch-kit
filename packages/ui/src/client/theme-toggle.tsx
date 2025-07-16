@@ -4,8 +4,9 @@ import * as React from 'react'
 import { useTheme } from 'next-themes'
 import { Sun, Moon } from 'lucide-react'
 
-import { Button } from '../server/button'
 import { cn } from '../utils'
+
+import { Button } from './button'
 
 interface ThemeToggleProps {
   className?: string

@@ -136,6 +136,9 @@ export { Dashboard } from './pages/Dashboard'
 // 4. Hooks (暂时禁用以解决构建问题)
 // export * from './hooks'
 
+// Extension 注册器
+export { registerConsoleExtension, unregisterConsoleExtension } from './register'
+
 // 默认导出已在上面包含ConsoleProvider，不需要重复导出
 
 // 导入需要的模块
