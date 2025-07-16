@@ -3,18 +3,7 @@
  * @module core/enhanced-app-registry
  */
 
-// import type { ExtensionInstance, ExtensionMetadata } from '@linch-kit/core'
-
-// 临时类型定义，避免构建错误
-interface ExtensionInstance {
-  name: string
-  metadata: ExtensionMetadata
-}
-
-interface ExtensionMetadata {
-  displayName?: string
-  permissions: string[]
-}
+import type { Extension as ExtensionInstance, ExtensionMetadata } from '@linch-kit/core/client'
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 import { AppRegistry } from './app-registry'
@@ -82,7 +71,8 @@ export class EnhancedAppRegistry extends AppRegistry {
     extension: ExtensionInstance,
     routes: DynamicRouteConfig[]
   ): Promise<void> {
-    const { name, metadata } = extension
+    const { metadata } = extension
+    const name = metadata.name || metadata.id
     const basePath = `${this.routePrefix}/${name}`
 
     // 验证权限
@@ -209,19 +199,19 @@ export class EnhancedAppRegistry extends AppRegistry {
     componentName: string,
     component: React.ComponentType<unknown>
   ): void {
-    const namespacedName = `${extension.name}/${componentName}`
+    const namespacedName = `${extension.metadata.name}/${componentName}`
 
     super.registerComponent({
       name: namespacedName,
       component,
       metadata: {
-        extensionName: extension.name,
+        extensionName: extension.metadata.name,
         originalName: componentName,
       },
     })
 
     this.emit('extensionComponentRegistered', {
-      extension: extension.name,
+      extension: extension.metadata.name,
       component: namespacedName,
     })
   }
@@ -236,7 +226,7 @@ export class EnhancedAppRegistry extends AppRegistry {
   ): void {
     // 验证权限
     if (!this.validateExtensionPermissions(extension.metadata, 'ui:render')) {
-      throw new Error(`Extension ${extension.name} does not have component override permission`)
+      throw new Error(`Extension ${extension.metadata.name} does not have component override permission`)
     }
 
     // 记录原始组件
@@ -253,7 +243,7 @@ export class EnhancedAppRegistry extends AppRegistry {
     super.overrideComponent(targetComponent, newComponent)
 
     this.emit('componentOverriddenByExtension', {
-      extension: extension.name,
+      extension: extension.metadata.name,
       target: targetComponent,
       hasOriginal: !!original,
     })
@@ -308,7 +298,8 @@ export class EnhancedAppRegistry extends AppRegistry {
    * 创建Extension菜单组
    */
   registerExtensionMenuGroup(extension: ExtensionInstance): void {
-    const { name, metadata } = extension
+    const { metadata } = extension
+    const name = metadata.name
 
     super.registerMenu({
       id: `ext-${name}`,

@@ -10,10 +10,10 @@ import { defineEntity } from '@linch-kit/schema'
 // import type { UIEntityDefinition } from '../types' // 临时移除未使用导入
 import { logger, useUITranslation } from '../infrastructure'
 import type { SchemaFormProps } from '../types'
-import { Button } from '../server/button'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../server/card'
 import { useForm } from '../forms/form-wrapper'
 
+import { Button } from './button'
 import { SchemaFieldRenderer } from './schema-field-renderer'
 
 /**

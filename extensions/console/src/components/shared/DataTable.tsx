@@ -8,7 +8,8 @@
 
 import { useState, useMemo } from 'react'
 import { SchemaTable } from '@linch-kit/ui/client'
-import { Button, Input } from '@linch-kit/ui/server'
+import { Button } from '@linch-kit/ui/client'
+import { Input } from '@linch-kit/ui/client'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@linch-kit/ui/client'
 import { cn } from '@linch-kit/ui/shared'
 import { Search, MoreHorizontal } from 'lucide-react'

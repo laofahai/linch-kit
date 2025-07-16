@@ -16,6 +16,11 @@
       "import": "./dist/client.mjs",
       "require": "./dist/client.js"
     },
+    "./extension": {
+      "types": "./dist/extension-client.d.ts",
+      "import": "./dist/extension-client.mjs",
+      "require": "./dist/extension-client.js"
+    },
     "./cli": {
       "types": "./dist/cli.d.ts",
       "import": "./dist/cli.mjs",

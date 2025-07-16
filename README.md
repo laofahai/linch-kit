@@ -1,6 +1,6 @@
 # LinchKit
 
-**🚀 生产就绪的企业级 AI-First 全栈开发框架 v2.0.2**
+**🚀 生产就绪的企业级 AI-First 全栈开发框架 v2.0.6**
 
 [![npm](https://img.shields.io/npm/v/@linch-kit/core)](https://www.npmjs.com/package/@linch-kit/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -28,7 +28,7 @@ L2: @linch-kit/platform  业务开发平台 (Schema+CRUD+tRPC+验证)
 L3: @linch-kit/ui        UI 组件库 (shadcn/ui + 企业组件)
 
 Extensions:
-- extensions/console     管理平台Extension (多租户、权限管理)
+- extensions/console     管理平台Extension (生产就绪 - 支持页面刷新持久化)
 - extensions/admin       管理功能Extension (规划中)
 - extensions/blog        博客系统Extension (开发中)
 
@@ -53,7 +53,7 @@ Tools:
 
 | Extension              | 描述                                               |
 | ---------------------- | -------------------------------------------------- |
-| **extensions/console** | 管理平台Extension - 多租户管理、权限控制、系统监控 |
+| **extensions/console** | 管理平台Extension - 多租户管理、权限控制、系统监控<br/>✅ **页面刷新持久化** - 彻底解决刷新后UI丢失问题 |
 | **extensions/admin**   | 管理功能Extension (规划中)                         |
 | **extensions/blog**    | 博客系统Extension (开发中)                         |
 

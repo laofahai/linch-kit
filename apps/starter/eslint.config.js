@@ -35,6 +35,10 @@ export default [
         __filename: 'readonly',
         global: 'readonly',
         globalThis: 'readonly',
+        window: 'readonly',
+        location: 'readonly',
+        document: 'readonly',
+        navigator: 'readonly',
       },
       parserOptions: {
         ecmaFeatures: {

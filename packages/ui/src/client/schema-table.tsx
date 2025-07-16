@@ -19,11 +19,12 @@ import {
 
 import { useUITranslation } from '../infrastructure'
 import type { SchemaTableProps } from '../types'
-import { Button } from '../server/button'
-import { Input } from '../server/input'
 import { Card, CardContent, CardHeader, CardTitle } from '../server/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../server/table'
 import { cn } from '../utils'
+
+import { Input } from './input'
+import { Button } from './button'
 
 /**
  * Schema驱动的CRUD表格组件

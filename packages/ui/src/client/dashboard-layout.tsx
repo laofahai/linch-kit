@@ -3,9 +3,9 @@
 import React, { ComponentType } from 'react'
 import { Home, Settings, Users, BarChart3, Package, LogOut, User, LucideIcon } from 'lucide-react'
 
-import { Button } from '../server/button'
 import { Avatar, AvatarFallback, AvatarImage } from '../server/avatar'
 
+import { Button } from './button'
 import {
   SidebarProvider,
   Sidebar,

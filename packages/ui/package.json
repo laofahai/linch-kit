@@ -34,21 +34,23 @@
       "require": "./dist/shared.js",
       "import": "./dist/shared.mjs"
     },
-    "./styles/globals.css": "./dist/styles/globals.css",
-    "./tailwind.config": {
-      "types": "./tailwind.config.ts",
-      "require": "./tailwind.config.ts",
-      "import": "./tailwind.config.ts"
-    }
+    "./styles": {
+      "types": "./dist/styles/index.d.ts",
+      "require": "./dist/styles/index.js",
+      "import": "./dist/styles/index.mjs"
+    },
+    "./styles/themes.css": "./src/styles/themes.css",
+    "./styles/globals.css": "./src/styles/globals.css"
   },
   "files": [
     "dist/**/*",
-    "tailwind.config.ts",
+    "src/styles/**/*",
+    "tailwind-content.js",
     "README.md"
   ],
   "scripts": {
     "build": "tsup",
-    "build:packages": "tsup",
+    "build:packages": "bun run build",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
@@ -87,6 +89,7 @@
     "pino-pretty": "^13.0.0",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
+    "tailwind-variants": "^1.0.0",
     "tailwindcss-animate": "^1.0.7",
     "tw-animate-css": "^1.3.5",
     "vaul": "^1.1.2",
@@ -109,7 +112,6 @@
     "eslint": "^9.30.0",
     "jsdom": "^26.1.0",
     "react-hook-form": "^7.59.0",
-    "tailwindcss": "^4.1.11",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },

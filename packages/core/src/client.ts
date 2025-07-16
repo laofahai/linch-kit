@@ -13,6 +13,11 @@ export {
   clientExtensionManager,
 } from './extension/unified-manager-client'
 
+export type { ClientExtensionRegistration } from './extension/unified-manager-client'
+
+// 通用类型
+export type { OperationResult, ErrorInfo } from './types/common'
+
 // Extension和Plugin类型
 export type {
   Extension,

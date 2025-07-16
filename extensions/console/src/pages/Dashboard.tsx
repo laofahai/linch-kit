@@ -7,9 +7,9 @@
 'use client'
 
 import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@linch-kit/ui/server'
-import { Button } from '@linch-kit/ui/server'
-import { Badge } from '@linch-kit/ui/server'
+import type { ClientExtensionRegistration } from '@linch-kit/core/client'
+import { Card, CardContent, CardHeader, CardTitle, Badge } from '@linch-kit/ui/server'
+import { Button } from '@linch-kit/ui/client'
 import {
   Users,
   Building2,
@@ -30,10 +30,17 @@ import { useDashboard, useSystemStats, useSystemHealth } from '../hooks/useConso
 import { useConsoleTranslation } from '../i18n'
 import { useConsolePermission } from '../providers/ConsoleProvider'
 
+interface DashboardProps {
+  extensionName: string
+  subPath: string
+  fullPath: string
+  registration: ClientExtensionRegistration
+}
+
 /**
  * Dashboard 主页面
  */
-export function Dashboard() {
+export function Dashboard(_props: DashboardProps) {
   const t = useConsoleTranslation()
   const canManage = useConsolePermission('console:admin')
 

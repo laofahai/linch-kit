@@ -7,10 +7,11 @@
 import React from 'react'
 import type { FieldDefinition } from '@linch-kit/schema'
 
-import { Input } from '../server/input'
 import { Label } from '../server/label'
 import { cn } from '../utils'
 import { Control, Controller } from '../forms/form-wrapper'
+
+import { Input } from './input'
 
 interface SchemaFieldRendererProps {
   name: string

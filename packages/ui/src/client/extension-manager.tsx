@@ -14,11 +14,11 @@ import {
   XCircle,
 } from 'lucide-react'
 
-import { Button } from '../server/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../server/card'
 import { Badge } from '../server/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../server/table'
 
+import { Button } from './button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './dialog'
 import {
   DropdownMenu,
