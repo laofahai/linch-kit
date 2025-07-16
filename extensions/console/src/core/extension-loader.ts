@@ -7,15 +7,24 @@ import { EventEmitter } from 'eventemitter3'
 import React from 'react'
 import {
   extensionManager as _extensionManager,
-  type ExtensionInstance,
-  type ExtensionLoadResult,
+  type Extension as ExtensionInstance,
   type ExtensionState,
   type ExtensionMetrics,
   type ExtensionHealth,
-} from '@linch-kit/core'
+} from '@linch-kit/core/client'
 
 import { enhancedAppRegistry } from './enhanced-app-registry'
 import type { DynamicRouteConfig } from './enhanced-app-registry'
+
+/**
+ * Extension 加载结果
+ */
+export interface ExtensionLoadResult {
+  success: boolean
+  instance?: ExtensionInstance
+  error?: Error
+  loadTime?: number
+}
 
 /**
  * Extension 加载配置
@@ -110,6 +119,7 @@ export class ExtensionLoader extends EventEmitter {
   async loadExtension(extensionName: string): Promise<ExtensionLoadResult> {
     const maxRetries = this.config.maxRetryAttempts ?? 3
     const retryDelay = this.config.retryDelay ?? 1000
+    const loadStartTime = Date.now()
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       // 更新加载状态
@@ -121,14 +131,19 @@ export class ExtensionLoader extends EventEmitter {
           throw new Error(`Extension ${extensionName} is not allowed to load`)
         }
 
-        // 使用 ExtensionManager 加载（权限验证已在Core中处理）
-        const result = await this.extensionManager.loadExtension(extensionName)
+        // 使用 ExtensionManager 启动（权限验证已在Core中处理）
+        const result = await this.extensionManager.start(extensionName)
 
-        if (!result.success || !result.instance) {
-          throw new Error(result.error?.message || 'Failed to load extension')
+        if (!result.success) {
+          throw new Error(result.error?.message || 'Failed to start extension')
         }
 
-        const instance = result.instance
+        const registration = this.extensionManager.getRegistration(extensionName)
+        if (!registration?.instance) {
+          throw new Error('Extension started but no instance found')
+        }
+
+        const instance = registration.instance
         this.extensionInstances.set(extensionName, instance)
 
         if (this.config.verboseLogging) {
@@ -169,7 +184,11 @@ export class ExtensionLoader extends EventEmitter {
           components: Array.from(components.keys()),
         })
 
-        return result
+        return {
+          success: true,
+          instance,
+          loadTime: Date.now() - loadStartTime
+        }
       } catch (error) {
         const loadError = error instanceof Error ? error : new Error(String(error))
 
@@ -195,11 +214,7 @@ export class ExtensionLoader extends EventEmitter {
 
         return {
           success: false,
-          error: {
-            code: 'LOAD_FAILED',
-            message: `Failed to load after ${maxRetries} attempts: ${loadError.message}`,
-            ...(loadError.stack && { stack: loadError.stack }),
-          },
+          error: new Error(`Failed to load after ${maxRetries} attempts: ${loadError.message}`),
         }
       }
     }
@@ -221,10 +236,10 @@ export class ExtensionLoader extends EventEmitter {
       // 从 AppRegistry 注销路由
       await enhancedAppRegistry.unregisterExtensionRoutes(extensionName)
 
-      // 使用 ExtensionManager 卸载
-      const result = await this.extensionManager.unloadExtension(extensionName)
+      // 使用 ExtensionManager 停止
+      const result = await this.extensionManager.stop(extensionName)
 
-      if (result) {
+      if (result.success) {
         // 清理本地状态
         this.extensionInstances.delete(extensionName)
         this.updateExtensionState(extensionName, 'stopped')
@@ -236,7 +251,7 @@ export class ExtensionLoader extends EventEmitter {
         })
       }
 
-      return result
+      return result.success
     } catch (error) {
       const unloadError = error instanceof Error ? error : new Error(String(error))
 
@@ -333,10 +348,10 @@ export class ExtensionLoader extends EventEmitter {
     if (instance.metadata.capabilities.hasUI) {
       routes.push({
         path: '',
-        component: () => React.createElement('div', {}, `Extension ${instance.name} UI`),
+        component: () => React.createElement('div', {}, `Extension ${instance.metadata.name} UI`),
         metadata: {
-          title: instance.metadata.displayName || instance.name,
-          description: `Main page for ${instance.name}`,
+          title: instance.metadata.displayName || instance.metadata.name,
+          description: `Main page for ${instance.metadata.name}`,
           permissions: instance.metadata.permissions,
         },
         requireAuth: true,

@@ -7,54 +7,7 @@ import { Logger, clientExtensionManager } from '@linch-kit/core/client'
 
 import { extensionFeatures, starterExtensionConfig } from '../config/extensions.config'
 
-/**
- * 注册Console扩展
- */
-async function registerConsoleExtension() {
-  try {
-    // 暂时创建一个简化的console extension注册
-    const consoleExtension = {
-      metadata: {
-        id: 'console',
-        name: 'console',
-        displayName: 'Console Dashboard',
-        version: '0.1.0',
-        description: 'LinchKit 企业级管理控制台',
-        icon: '🎛️',
-        author: 'LinchKit Team',
-        capabilities: {
-          hasUI: true,
-          hasAPI: false,
-          hasSchema: false,
-          hasHooks: false,
-          standalone: false,
-        },
-        permissions: ['ui:render'],
-      },
-      defaultConfig: {
-        enabled: true,
-        priority: 100,
-      },
-      start: () => {
-        Logger.info('Console extension started')
-      },
-      stop: () => {
-        Logger.info('Console extension stopped')
-      },
-    }
-    
-    // 注册扩展
-    const result = await clientExtensionManager.register(consoleExtension)
-    
-    if (!result.success) {
-      throw new Error(result.error?.message ?? 'Failed to register console extension')
-    }
-    
-    Logger.info('Console extension registered successfully')
-  } catch (error) {
-    Logger.error('Failed to register console extension:', error instanceof Error ? error : new Error(String(error)))
-  }
-}
+import { extensionUIRegistry } from './extension-ui-registry'
 
 /**
  * 初始化所有扩展
@@ -85,7 +38,28 @@ export async function initializeExtensions() {
       
       switch (extensionName) {
         case 'console':
-          await registerConsoleExtension()
+          // 动态导入 console extension 的注册函数
+          try {
+            const { registerConsoleExtension, Dashboard } = await import('@linch-kit/console')
+            await registerConsoleExtension()
+            
+            // 注册 UI 组件
+            extensionUIRegistry.registerExtensionUI('console', {
+              components: [
+                {
+                  name: 'Dashboard',
+                  component: Dashboard,
+                  path: '/',
+                  isDefault: true
+                }
+              ],
+              defaultComponent: 'Dashboard'
+            })
+            
+            Logger.info('Console extension UI components registered')
+          } catch (error) {
+            Logger.error(`Failed to import console extension:`, error instanceof Error ? error : new Error(String(error)))
+          }
           break
         // 未来可以添加更多扩展
         default:

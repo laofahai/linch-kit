@@ -10,6 +10,8 @@ import type { ClientExtensionRegistration } from '@linch-kit/core/client'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
+import { extensionUIRegistry } from '../../../lib/extension-ui-registry'
+
 // 声明 window 对象类型
 declare global {
   interface Window {
@@ -297,6 +299,23 @@ export function DynamicExtensionClient({
   }
 
   // 扩展已加载 - 显示实际内容
+  const ExtensionComponent = extensionUIRegistry.getDefaultComponent(extensionName)
+  
+  if (ExtensionComponent) {
+    // 渲染实际的扩展组件
+    return (
+      <div className="min-h-screen">
+        <ExtensionComponent 
+          extensionName={extensionName} 
+          subPath={subPath}
+          fullPath={fullPath}
+          registration={state.registration}
+        />
+      </div>
+    )
+  }
+  
+  // 如果没有找到UI组件，显示占位符
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto px-4 py-8">
@@ -361,12 +380,12 @@ export function DynamicExtensionClient({
             </div>
             
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-8 text-center">
-              <div className="text-6xl mb-4">🎨</div>
+              <div className="text-6xl mb-4">⚠️</div>
               <p className="text-gray-600 text-lg">
-                Extension UI components will be rendered here.
+                Extension is running but no UI components are registered.
               </p>
               <p className="text-gray-500 text-sm mt-2">
-                The extension developer can implement custom React components for this space.
+                The extension developer needs to register UI components using the extensionUIRegistry.
               </p>
             </div>
           </div>
