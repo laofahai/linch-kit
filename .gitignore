@@ -63,6 +63,13 @@ graph-data/
 .claude/feedback-logs/
 .claude/prompts/*.temp
 
+# Claude AI Generated Files (should not be committed)
+.claude/session-constraints.md
+.claude/settings.local.json
+.claude/evolution-engine/assessments/
+.claude/security-sentinel/.security/quarantine/
+.claude/security-sentinel/assessments/
+
 # Playwright
 playwright-report/
 test-results/
