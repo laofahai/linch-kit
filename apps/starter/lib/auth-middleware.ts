@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthService } from '@linch-kit/auth'
+import { getAuthService } from '@linch-kit/auth/server'
 
 /**
  * 认证中间件配置

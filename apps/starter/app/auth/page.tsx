@@ -9,12 +9,11 @@
 
 'use client'
 
-import { AuthProvider } from '@linch-kit/auth'
+import { AuthProvider } from '@linch-kit/auth/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui/server'
 import { Button } from '@linch-kit/ui/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
-import { getAuthService } from '@linch-kit/auth'
 
 function AuthPageContent() {
   const router = useRouter()
@@ -28,24 +27,19 @@ function AuthPageContent() {
     setError(null)
 
     try {
-      // 使用AuthService接口进行认证 - 现在支持JWT认证
-      const authService = await getAuthService({
-        type: 'jwt',
-        fallbackToMock: true,
-        config: {
-          jwtSecret: process.env.NEXT_PUBLIC_JWT_SECRET || 'your-super-secret-jwt-key-with-at-least-32-characters',
-          accessTokenExpiry: '15m',
-          refreshTokenExpiry: '7d'
-        }
-      })
-
-      const result = await authService.authenticate({
-        provider: 'credentials',
-        credentials: {
+      // 调用登录API端点
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           email: 'test@example.com',
           password: 'password123'
-        }
+        })
       })
+
+      const result = await response.json()
 
       if (result.success && result.tokens) {
         // 设置认证Cookie

@@ -45,6 +45,52 @@ export { TOTPManager, type TOTPConfig } from '../mfa/totp-manager'
  */
 export { SimpleAuditLogger, createSimpleAuditLogger } from '../audit/simple-logger'
 
+// ==================== 安全功能 ====================
+/**
+ * 安全防护组件
+ */
+export { 
+  JWTBlacklistManager, 
+  createJWTBlacklistManager,
+  type JWTBlacklistManagerConfig,
+  type BlacklistedToken,
+  type BlacklistStorage,
+  InMemoryBlacklistStorage
+} from '../security/jwt-blacklist-manager'
+
+export { 
+  RateLimiter, 
+  createRateLimiter,
+  type RateLimitConfig,
+  type RateLimitResult,
+  type RateLimitAttempt,
+  type RateLimitStorage,
+  InMemoryRateLimitStorage,
+  rateLimitPresets
+} from '../security/rate-limiter'
+
+export { 
+  MultiDeviceSessionManager, 
+  createMultiDeviceSessionManager,
+  type MultiDeviceSessionManagerConfig,
+  type DeviceSession,
+  type DeviceInfo,
+  type DeviceSessionStorage,
+  InMemoryDeviceSessionStorage,
+  defaultMultiDeviceSessionManagerConfig
+} from '../security/multi-device-session-manager'
+
+// ==================== 增强认证服务 ====================
+/**
+ * 增强JWT认证服务
+ */
+export { 
+  EnhancedJWTAuthService, 
+  createEnhancedJWTAuthService,
+  type EnhancedJWTAuthServiceConfig,
+  defaultEnhancedJWTAuthServiceConfig
+} from '../services/enhanced-jwt-auth.service'
+
 // ==================== 工厂函数 ====================
 /**
  * 便捷的实例创建函数
