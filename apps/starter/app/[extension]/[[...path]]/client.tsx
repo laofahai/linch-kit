@@ -5,22 +5,11 @@
 
 'use client'
 
-import { Logger, clientExtensionManager } from '@linch-kit/core/client'
-import type { ClientExtensionRegistration } from '@linch-kit/core/client'
+import { Logger } from '@linch-kit/core/client'
+import type { ClientExtensionRegistration } from '@linch-kit/core/extension'
+import { unifiedExtensionManager } from '@linch-kit/core/extension'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import type { ComponentType } from 'react'
-
-import type { ExtensionUIComponentProps } from '../../../lib/extension-ui-registry'
-import { extensionUIRegistry } from '../../../lib/extension-ui-registry'
-import { initializeExtensions } from '../../../lib/extensions-loader'
-
-// 声明 window 对象类型
-declare global {
-  interface Window {
-    location: Location
-  }
-}
 
 interface DynamicExtensionClientProps {
   extensionName: string
@@ -38,11 +27,11 @@ interface ExtensionState {
 // 动态获取扩展配置
 const getExtensionConfig = (extensionName: string) => {
   // 尝试从扩展管理器获取注册信息
-  const registration = clientExtensionManager.getRegistration(extensionName)
+  const registration = unifiedExtensionManager.getRegistration(extensionName)
   
   if (registration?.metadata) {
     return {
-      displayName: registration.metadata.displayName,
+      displayName: registration.metadata.displayName ?? registration.metadata.name,
       icon: registration.metadata.icon ?? '📦',
       description: registration.metadata.description ?? 'Extension',
       color: registration.metadata.color ?? 'gray'
@@ -75,9 +64,6 @@ export function DynamicExtensionClient({
   
   const router = useRouter()
   const [config, setConfig] = useState(() => getExtensionConfig(extensionName))
-  
-  // 扩展已加载 - 智能获取组件（带重试机制）
-  const [ExtensionComponent, setExtensionComponent] = useState<ComponentType<ExtensionUIComponentProps> | null>(null)
 
   useEffect(() => {
     const loadExtension = async () => {
@@ -86,24 +72,11 @@ export function DynamicExtensionClient({
         Logger.info(`Loading extension: ${extensionName}`)
 
         // 检查扩展是否已注册
-        let registration = clientExtensionManager.getRegistration(extensionName)
-        
-        // 强制等待初始化完成（特别是在页面刷新后）
-        if (!registration || !extensionUIRegistry.getDefaultComponent(extensionName)) {
-          Logger.info(`Extension ${extensionName} not ready, forcing initialization...`)
-          
-          // 等待一短时间，让ExtensionsInitializer有机会执行
-          await new Promise(resolve => window.setTimeout(resolve, 300))
-          
-          // 强制重新初始化
-          await initializeExtensions(true)
-          
-          // 再次检查
-          registration = clientExtensionManager.getRegistration(extensionName)
-        }
+        let registration = unifiedExtensionManager.getRegistration(extensionName)
         
         if (!registration) {
-          Logger.warn(`Extension ${extensionName} not registered after initialization attempts`)
+          // 开发环境下显示占位符
+          Logger.info(`Extension ${extensionName} not registered, showing placeholder`)
           setState({
             loading: false,
             loaded: false,
@@ -113,24 +86,26 @@ export function DynamicExtensionClient({
           return
         }
         
-        // 更新配置信息 - registration.metadata 在 ClientExtensionRegistration 中总是存在
-        setConfig({
-          displayName: registration.metadata.displayName,
-          icon: registration.metadata.icon ?? '📦',
-          description: registration.metadata.description ?? 'Extension',
-          color: registration.metadata.color ?? 'gray'
-        })
+        // 更新配置信息
+        if (registration.metadata) {
+          setConfig({
+            displayName: registration.metadata.displayName || registration.metadata.name,
+            icon: registration.metadata.icon || '📦',
+            description: registration.metadata.description || 'Extension',
+            color: registration.metadata.color || 'gray'
+          })
+        }
 
         // 启动扩展
         if (registration.status !== 'running') {
           Logger.info(`Starting extension: ${extensionName}`)
-          const startResult = await clientExtensionManager.start(extensionName)
+          const startResult = await unifiedExtensionManager.start(extensionName)
           
           if (!startResult.success) {
             throw new Error(startResult.error?.message ?? 'Failed to start extension')
           }
           
-          registration = clientExtensionManager.getRegistration(extensionName)
+          registration = unifiedExtensionManager.getRegistration(extensionName)
           if (!registration) {
             throw new Error('Extension registration lost after start')
           }
@@ -156,40 +131,17 @@ export function DynamicExtensionClient({
       }
     }
 
-    loadExtension().catch(error => { Logger.error('Extension loading error:', error) })
+    loadExtension().catch(error => { Logger.error('Extension loading error:', error); })
   }, [extensionName, subPath])
-  
-  useEffect(() => {
-    if (state.loaded && state.registration) {
-      const getComponent = () => {
-        const component = extensionUIRegistry.getDefaultComponent(extensionName)
-        if (component) {
-          Logger.info(`Found UI component for ${extensionName}`)
-          setExtensionComponent(() => component)
-        } else {
-          Logger.warn(`UI component for ${extensionName} not found, will show placeholder`)
-          // 延迟重试获取组件
-          window.setTimeout(() => {
-            const retryComponent = extensionUIRegistry.getDefaultComponent(extensionName)
-            if (retryComponent) {
-              Logger.info(`Extension ${extensionName} component found on retry`)
-              setExtensionComponent(() => retryComponent)
-            }
-          }, 100)
-        }
-      }
-      getComponent()
-    }
-  }, [state.loaded, state.registration, extensionName])
 
   if (state.loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-bounce">{config.icon}</div>
+          <div className="text-6xl mb-4 animate-bounce">{config?.icon ?? '📦'}</div>
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 font-medium">
-            Loading {config.displayName}...
+            Loading {config?.displayName ?? extensionName}...
           </p>
         </div>
       </div>
@@ -206,15 +158,13 @@ export function DynamicExtensionClient({
               Extension Error
             </h2>
             <p className="text-gray-600 mb-4">
-              Failed to load {config.displayName}
+              Failed to load {config?.displayName ?? extensionName}
             </p>
             <p className="text-red-600 text-sm mb-6">{state.error}</p>
             
             <div className="space-y-3">
               <button 
-                onClick={() => { 
-                  location.reload()
-                }}
+                onClick={() => { window.location.reload() }}
                 className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Retry
@@ -239,15 +189,15 @@ export function DynamicExtensionClient({
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className={`bg-gradient-to-r from-${config.color}-500 to-${config.color}-600 text-white p-12`}>
+              <div className={`bg-gradient-to-r from-${config?.color ?? 'gray'}-500 to-${config?.color ?? 'gray'}-600 text-white p-12`}>
                 <div className="flex items-center gap-6">
-                  <div className="text-6xl drop-shadow-lg">{config.icon}</div>
+                  <div className="text-6xl drop-shadow-lg">{config?.icon ?? '📦'}</div>
                   <div>
                     <h1 className="text-4xl font-bold mb-2">
-                      {config.displayName}
+                      {config?.displayName ?? extensionName}
                     </h1>
                     <p className="text-lg opacity-90">
-                      {config.description}
+                      {config?.description ?? 'Extension placeholder'}
                     </p>
                   </div>
                 </div>
@@ -285,9 +235,9 @@ export function DynamicExtensionClient({
                       <span className="text-green-500">📱</span> Registered Extensions
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {Array.from(clientExtensionManager.getExtensions().values()).map((reg) => {
+                      {Array.from(unifiedExtensionManager.getExtensions().values()).map((reg) => {
                         const extConfig = {
-                          displayName: reg.metadata.displayName,
+                          displayName: reg.metadata.displayName ?? reg.metadata.name,
                           icon: reg.metadata.icon ?? '📦',
                           description: reg.metadata.description ?? 'Extension',
                           color: reg.metadata.color ?? 'gray'
@@ -319,7 +269,7 @@ export function DynamicExtensionClient({
                           </button>
                         )
                       })}
-                      {clientExtensionManager.getExtensions().size === 0 && (
+                      {unifiedExtensionManager.getExtensions().size === 0 && (
                         <div className="col-span-full text-center py-8 text-gray-500">
                           <p>No extensions registered yet.</p>
                           <p className="text-sm mt-1">Extensions will appear here once they are installed.</p>
@@ -336,33 +286,19 @@ export function DynamicExtensionClient({
     )
   }
 
-  if (ExtensionComponent) {
-    // 渲染实际的扩展组件
-    return (
-      <div className="min-h-screen">
-        <ExtensionComponent 
-          extensionName={extensionName} 
-          subPath={subPath}
-          fullPath={fullPath}
-          registration={state.registration}
-        />
-      </div>
-    )
-  }
-  
-  // 如果没有找到UI组件，显示占位符
+  // 扩展已加载 - 显示实际内容
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="flex items-center gap-4 mb-8 pb-6 border-b">
-              <div className="text-5xl">{config.icon}</div>
+              <div className="text-5xl">{config?.icon}</div>
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {config.displayName}
+                  {config?.displayName ?? state.registration.metadata.displayName}
                 </h1>
-                <p className="text-gray-600 mt-1">{config.description}</p>
+                <p className="text-gray-600 mt-1">{config?.description}</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
@@ -415,12 +351,12 @@ export function DynamicExtensionClient({
             </div>
             
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-8 text-center">
-              <div className="text-6xl mb-4">⚠️</div>
+              <div className="text-6xl mb-4">🎨</div>
               <p className="text-gray-600 text-lg">
-                Extension is running but no UI components are registered.
+                Extension UI components will be rendered here.
               </p>
               <p className="text-gray-500 text-sm mt-2">
-                The extension developer needs to register UI components using the extensionUIRegistry.
+                The extension developer can implement custom React components for this space.
               </p>
             </div>
           </div>
