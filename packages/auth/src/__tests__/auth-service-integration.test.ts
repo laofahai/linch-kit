@@ -44,7 +44,7 @@ describe('AuthService Integration Tests', () => {
         provider: 'credentials',
         credentials: {
           email: 'test@linchkit.com',
-          password: 'test-password'
+          password: 'password123'
         }
       }
 
@@ -80,7 +80,7 @@ describe('AuthService Integration Tests', () => {
         provider: 'credentials',
         credentials: {
           email: 'test@linchkit.com',
-          password: 'test-password'
+          password: 'password123'
         }
       })
 
@@ -107,7 +107,7 @@ describe('AuthService Integration Tests', () => {
         provider: 'credentials',
         credentials: {
           email: 'test@linchkit.com',
-          password: 'test-password'
+          password: 'password123'
         }
       })
 
@@ -128,7 +128,7 @@ describe('AuthService Integration Tests', () => {
         provider: 'credentials',
         credentials: {
           email: 'test@linchkit.com',
-          password: 'test-password'
+          password: 'password123'
         }
       })
 
@@ -153,7 +153,7 @@ describe('AuthService Integration Tests', () => {
         provider: 'credentials',
         credentials: {
           email: 'test@linchkit.com',
-          password: 'test-password'
+          password: 'password123'
         }
       })
 
@@ -161,7 +161,7 @@ describe('AuthService Integration Tests', () => {
         provider: 'credentials',
         credentials: {
           email: 'test@linchkit.com',
-          password: 'test-password'
+          password: 'password123'
         }
       })
 
@@ -190,7 +190,7 @@ describe('AuthService Integration Tests', () => {
     it('should validate credentials directly', async () => {
       const user = await authService.validateCredentials({
         email: 'test@linchkit.com',
-        password: 'test-password'
+        password: 'password123'
       })
       
       expect(user).toBeDefined()
@@ -289,7 +289,7 @@ describe('AuthService Integration Tests', () => {
         provider: 'credentials',
         credentials: {
           email: 'test@linchkit.com',
-          password: 'test-password'
+          password: 'password123'
         }
       })
 

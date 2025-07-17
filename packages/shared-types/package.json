@@ -1,6 +1,6 @@
 {
   "name": "@linch-kit/shared-types",
-  "version": "1.0.0",
+  "version": "2.0.3",
   "description": "LinchKit shared types - prevents circular dependencies",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

@@ -13,6 +13,7 @@ import { logger } from '@linch-kit/core/server'
 import type { IAuthService } from '../types'
 
 import { MockAuthService } from './mock-auth.service'
+import { JWTAuthService, defaultJWTAuthServiceConfig } from './jwt-auth.service'
 
 /**
  * 认证服务类型
@@ -172,9 +173,14 @@ export class AuthServiceFactory {
         service = new MockAuthService()
         break
       
-      case 'jwt':
-        // TODO: 实现JWT认证服务
-        throw new Error('JWT认证服务尚未实现')
+      case 'jwt': {
+        const jwtConfig = {
+          ...defaultJWTAuthServiceConfig,
+          ...this.config.config
+        }
+        service = new JWTAuthService(jwtConfig)
+        break
+      }
       
       case 'nextauth':
         // TODO: 实现NextAuth认证服务

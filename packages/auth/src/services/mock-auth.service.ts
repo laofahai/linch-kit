@@ -59,7 +59,7 @@ export class MockAuthService implements IAuthService {
     }
 
     this.mockUsers.set(testUser.id, testUser)
-    this.mockCredentials.set(testUser.email, 'test-password')
+    this.mockCredentials.set(testUser.email, 'password123')
   }
 
   /**

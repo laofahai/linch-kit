@@ -28,17 +28,22 @@ function AuthPageContent() {
     setError(null)
 
     try {
-      // 使用AuthService接口进行认证
+      // 使用AuthService接口进行认证 - 现在支持JWT认证
       const authService = await getAuthService({
-        type: 'mock',
-        fallbackToMock: true
+        type: 'jwt',
+        fallbackToMock: true,
+        config: {
+          jwtSecret: process.env.NEXT_PUBLIC_JWT_SECRET || 'your-super-secret-jwt-key-with-at-least-32-characters',
+          accessTokenExpiry: '15m',
+          refreshTokenExpiry: '7d'
+        }
       })
 
       const result = await authService.authenticate({
         provider: 'credentials',
         credentials: {
-          email: 'test@linchkit.com',
-          password: 'test-password'
+          email: 'test@example.com',
+          password: 'password123'
         }
       })
 
@@ -90,7 +95,7 @@ function AuthPageContent() {
                 <p>正在使用 @linch-kit/auth AuthService</p>
                 <p className="mt-1">认证成功后将跳转到: {callbackUrl}</p>
                 <p className="mt-1 text-xs">
-                  功能开关: Mock认证 (可切换至JWT)
+                  功能开关: JWT认证 (可回退至Mock)
                 </p>
               </div>
             </CardContent>
