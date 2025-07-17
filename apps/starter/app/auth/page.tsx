@@ -1,6 +1,10 @@
 /**
- * 认证页面 - 使用@linch-kit/auth包
- * 这是正确的架构：starter应用负责认证，console扩展只负责管理功能
+ * 认证页面 - 使用@linch-kit/auth包的AuthService接口
+ * 
+ * 实现依赖反转原则：
+ * - 基于IAuthService接口进行认证
+ * - 支持功能开关（Mock/JWT实现切换）
+ * - 提供稳定的认证体验
  */
 
 'use client'
@@ -9,18 +13,50 @@ import { AuthProvider } from '@linch-kit/auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui/server'
 import { Button } from '@linch-kit/ui/client'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
+import { getAuthService } from '@linch-kit/auth'
 
 function AuthPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleLogin = async () => {
-    // 这里应该集成@linch-kit/auth的登录逻辑
-    // 暂时模拟登录成功
-    document.cookie = 'session=mock-session-token; path=/; max-age=86400'
-    router.push(callbackUrl)
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      // 使用AuthService接口进行认证
+      const authService = await getAuthService({
+        type: 'mock',
+        fallbackToMock: true
+      })
+
+      const result = await authService.authenticate({
+        provider: 'credentials',
+        credentials: {
+          email: 'test@linchkit.com',
+          password: 'test-password'
+        }
+      })
+
+      if (result.success && result.tokens) {
+        // 设置认证Cookie
+        document.cookie = `session=${result.tokens.accessToken}; path=/; max-age=3600`
+        
+        // 跳转到回调URL
+        router.push(callbackUrl)
+      } else {
+        setError(result.error || '认证失败')
+      }
+    } catch (err) {
+      console.error('认证过程中出错:', err)
+      setError('认证系统暂时不可用，请稍后再试')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -39,13 +75,23 @@ function AuthPageContent() {
                 className="w-full" 
                 size="lg" 
                 onClick={handleLogin}
+                disabled={isLoading}
               >
-                模拟登录
+                {isLoading ? '正在登录...' : '登录'}
               </Button>
               
+              {error && (
+                <div className="text-center text-sm text-red-600 dark:text-red-400">
+                  {error}
+                </div>
+              )}
+              
               <div className="text-center text-sm text-slate-600 dark:text-slate-400">
-                <p>正在使用 @linch-kit/auth 包</p>
+                <p>正在使用 @linch-kit/auth AuthService</p>
                 <p className="mt-1">认证成功后将跳转到: {callbackUrl}</p>
+                <p className="mt-1 text-xs">
+                  功能开关: Mock认证 (可切换至JWT)
+                </p>
               </div>
             </CardContent>
           </Card>
