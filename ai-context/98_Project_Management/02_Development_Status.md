@@ -1,6 +1,6 @@
 # LinchKit 开发状态记录
 
-**版本**: v2.0.6  
+**版本**: v2.0.3  
 **更新**: 2025-07-16  
 **当前分支**: feature/starter-extension-integration  
 **状态**: Extension刷新持久化问题完全解决，系统稳定运行

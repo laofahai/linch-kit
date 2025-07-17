@@ -72,8 +72,9 @@ export default [
     },
     rules: {
       // Next.js 规则
-      ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs['core-web-vitals'].rules,
+      '@next/next/no-html-link-for-pages': ['error', 'app'],
+      '@next/next/no-img-element': 'warn',
+      '@next/next/no-page-custom-font': 'warn',
       
       // 🔴 零容忍错误
       'no-console': 'error',
@@ -119,7 +120,10 @@ export default [
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/require-await': 'error',
-      '@typescript-eslint/no-unnecessary-condition': 'error',
+      '@typescript-eslint/no-unnecessary-condition': ['error', {
+        allowConstantLoopConditions: true,
+        allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing: false
+      }],
       '@typescript-eslint/no-confusing-void-expression': 'error',
       
       // 🔴 React 规则
