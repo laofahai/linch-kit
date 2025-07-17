@@ -43,6 +43,13 @@ export {
   type PackageI18nOptions,
 } from './i18n'
 
+// React 组件 (客户端安全)
+export {
+  PageLoadingProvider,
+  usePageLoading,
+  PerformanceMonitor,
+} from './react/performance-provider'
+
 // Note: Provider 组合系统已移至独立导出
 // 使用: import { LinchKitProvider, withTRPCProvider } from '@linch-kit/core/providers'
 

@@ -5,6 +5,7 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
+
 import { extractCommand } from './commands/extract.js'
 import { queryCommand } from './commands/query.js'
 import { generateCommand } from './commands/generate.js'

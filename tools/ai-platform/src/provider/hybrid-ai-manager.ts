@@ -3,8 +3,9 @@
  * 结合AI分析与规则引擎的智能决策系统
  */
 
-import { CLIBasedAIProvider, COMMON_CLI_PROVIDERS, CLIAIResponse } from './cli-based-provider'
 import { createLogger } from '@linch-kit/core'
+
+import { CLIBasedAIProvider, COMMON_CLI_PROVIDERS, CLIAIResponse } from './cli-based-provider'
 
 const logger = createLogger('hybrid-ai-manager')
 

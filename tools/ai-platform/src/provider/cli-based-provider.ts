@@ -4,6 +4,7 @@
  */
 
 import { execSync } from 'child_process'
+
 import { createLogger } from '@linch-kit/core'
 
 const logger = createLogger('cli-ai-provider')
@@ -94,7 +95,7 @@ export class CLIBasedAIProvider {
     try {
       execSync(`which ${this.config.command}`, { stdio: 'pipe' })
       return true
-    } catch (error) {
+    } catch {
       throw new Error(`CLI command '${this.config.command}' not found. Please install it first.`)
     }
   }

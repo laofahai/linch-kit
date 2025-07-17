@@ -222,15 +222,18 @@ export class ExtensionPerformanceMonitor {
    * 记录API调用
    */
   recordApiCall(extensionId: string) {
-    this.getOrCreateMetrics(extensionId).apiCalls++
-    this.getOrCreateMetrics(extensionId).lastActivity = Date.now()
+    const metrics = this.getOrCreateMetrics(extensionId)
+    metrics.apiCalls++
+    metrics.lastActivity = Date.now()
   }
   
   /**
    * 记录错误
    */
   recordError(extensionId: string) {
-    this.getOrCreateMetrics(extensionId).errors++
+    const metrics = this.getOrCreateMetrics(extensionId)
+    metrics.errors++
+    metrics.lastActivity = Date.now()
   }
   
   /**
@@ -238,7 +241,15 @@ export class ExtensionPerformanceMonitor {
    */
   getPerformanceReport(extensionId?: string) {
     if (extensionId) {
-      return this.metrics.get(extensionId) || null
+      const metrics = this.metrics.get(extensionId)
+      if (!metrics) return null
+      
+      return {
+        extensionId,
+        ...metrics,
+        timestamp: Date.now(),
+        healthStatus: this.getHealthStatus(metrics)
+      }
     }
     
     const report = {
@@ -279,6 +290,45 @@ export class ExtensionPerformanceMonitor {
     }
     
     return report
+  }
+  
+  /**
+   * 获取单个Extension的指标
+   */
+  getMetrics(extensionId: string) {
+    return this.metrics.get(extensionId) || null
+  }
+  
+  /**
+   * 获取所有Extension的指标
+   */
+  getAllMetrics() {
+    return Object.fromEntries(this.metrics.entries())
+  }
+  
+  
+  /**
+   * 清除Extension性能数据
+   */
+  clearMetrics(extensionId: string) {
+    this.metrics.delete(extensionId)
+  }
+  
+  /**
+   * 获取健康状态
+   */
+  private getHealthStatus(metrics: {
+    errors: number
+    loadTime: number
+  }) {
+    // 简单的健康检查逻辑
+    if (metrics.errors > 10 || metrics.loadTime > 5000) {
+      return 'unhealthy'
+    }
+    if (metrics.errors > 5 || metrics.loadTime > 2000) {
+      return 'warning'
+    }
+    return 'healthy'
   }
   
   /**

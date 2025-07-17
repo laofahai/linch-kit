@@ -243,6 +243,18 @@ export const zhCN = {
           apiKeyCreatedAt: 'API密钥创建时间',
           apiKeyLastUsedAt: 'API密钥最后使用时间',
         },
+        status: {
+          active: '活跃',
+          suspended: '已暂停',
+          deleted: '已删除',
+          pending: '待激活',
+        },
+        roles: {
+          system_admin: '系统管理员',
+          tenant_admin: '租户管理员',
+          manager: '管理员',
+          user: '普通用户',
+        },
       },
 
       // 用户活动实体

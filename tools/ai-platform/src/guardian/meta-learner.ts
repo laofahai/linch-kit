@@ -18,6 +18,7 @@ const logger = createLogger({ name: 'meta-learner' })
 import { ExtensionMetadata } from '@linch-kit/core'
 import { createLogger } from '@linch-kit/core'
 import type { EntityMetadata } from '@linch-kit/platform'
+
 import { promises as fs } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'

@@ -9,8 +9,9 @@
  */
 
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
-import { createLogger } from '@linch-kit/core';
 import { join, dirname } from 'path';
+
+import { createLogger } from '@linch-kit/core';
 
 const logger = createLogger({ name: 'qa-synthesizer' });
 

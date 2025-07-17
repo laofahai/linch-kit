@@ -15,6 +15,44 @@ const TenantDetailPage = lazy(() => import('../pages/tenants/TenantDetail'))
 const TenantCreatePage = lazy(() => import('../pages/tenants/TenantCreate'))
 const ExtensionManagerPage = lazy(() => import('../pages/ExtensionManager'))
 
+// 认证页面组件
+const AuthPageLazy = lazy(() => import('../pages/auth/AuthPage').then(m => ({ default: m.AuthPage })))
+const LoginPageLazy = lazy(() => import('../pages/auth/LoginPage').then(m => ({ default: m.LoginPage })))
+const RegisterPageLazy = lazy(() => import('../pages/auth/RegisterPage').then(m => ({ default: m.RegisterPage })))
+
+/**
+ * 认证路由配置 - 不需要认证保护的路由
+ */
+export const authRoutes: ConsoleRoute[] = [
+  {
+    path: '/auth',
+    component: AuthPageLazy,
+    meta: {
+      title: 'console.auth.title',
+      requireAuth: false,
+      hidden: true,
+    },
+  },
+  {
+    path: '/auth/login',
+    component: LoginPageLazy,
+    meta: {
+      title: 'console.auth.login',
+      requireAuth: false,
+      hidden: true,
+    },
+  },
+  {
+    path: '/auth/register',
+    component: RegisterPageLazy,
+    meta: {
+      title: 'console.auth.register',
+      requireAuth: false,
+      hidden: true,
+    },
+  },
+]
+
 /**
  * 默认路由配置 - 只包含已实现的功能
  */

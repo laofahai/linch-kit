@@ -25,6 +25,18 @@ export {
   permissionManager,
 } from './permission-manager'
 
+// 性能监控系统
+export {
+  ExtensionPerformanceMonitor,
+} from './performance-optimizations'
+export {
+  ExtensionPerformanceAnalyzer,
+  type PerformanceReport,
+  type SystemPerformanceSnapshot,
+  type PerformanceMonitoringConfig,
+  defaultPerformanceConfig,
+} from './performance-analytics'
+
 // 沙箱环境 (暂时禁用以修复构建问题)
 // export { ExtensionSandbox, createSandbox } from './sandbox'
 

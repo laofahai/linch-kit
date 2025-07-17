@@ -5,9 +5,9 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
+import { createLogger } from '@linch-kit/core/server'
 
 import type { CommandContext, CommandResult, CLICommand } from '../plugin.js'
-import { createLogger } from '@linch-kit/core/server'
 import { Neo4jService } from '../../graph/neo4j-service.js'
 import { loadNeo4jConfig } from '../../config/neo4j-config.js'
 import type { GraphNode, GraphRelationship, NodeType, RelationType } from '../../types/index.js'

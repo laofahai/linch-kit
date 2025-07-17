@@ -9,8 +9,9 @@
  */
 
 import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync, statSync } from 'fs';
-import { createLogger } from '@linch-kit/core';
 import { join, extname } from 'path';
+
+import { createLogger } from '@linch-kit/core';
 
 const logger = createLogger({ name: 'evolution-engine' });
 
@@ -627,7 +628,7 @@ export class EvolutionEngine {
               }
             }
           }
-        } catch (error) {
+        } catch {
           // 忽略文件读取错误
         }
       }
@@ -1056,7 +1057,7 @@ export class EvolutionEngine {
         if (packageJson.devDependencies && packageJson.devDependencies.husky) {
           score += 5;
         }
-      } catch (error) {
+      } catch {
         score -= 10;
       }
     }
@@ -1502,7 +1503,7 @@ export class EvolutionEngine {
           const assessment = JSON.parse(content);
           systemHealth = assessment.overallHealth;
           lastAssessment = assessment.assessmentTime;
-        } catch (error) {
+        } catch {
           // 忽略读取错误
         }
       }

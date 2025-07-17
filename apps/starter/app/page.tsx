@@ -21,22 +21,15 @@ export default function HomePage() {
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Button size="lg" asChild>
-              <div>
-                <Link href="/console">进入 Console </Link>123
-              </div>
+              <Link href="/auth">
+                开始使用
+              </Link>
             </Button>
-            <Button>Hello 123123123</Button>
-
-            {/* 测试tailwind-variants */}
-            <Button variant="default">TV Default</Button>
-            <Button variant="destructive" size="sm">
-              TV Destructive
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/console">
+                进入 Console
+              </Link>
             </Button>
-            <Button variant="outline" size="lg">
-              TV Outline
-            </Button>
-            <Button variant="secondary">TV Secondary</Button>
-            <Button variant="ghost">TV Ghost</Button>
           </div>
         </div>
 
