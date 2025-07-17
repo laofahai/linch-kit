@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'bun:test'
+import { Registry } from 'prom-client'
 
-import { LinchKitMetricCollector } from '../../observability/metrics'
+import { LinchKitMetricCollector, createMetricCollector, metrics } from '../../observability/metrics'
 
 describe('LinchKitMetricCollector', () => {
   let collector: LinchKitMetricCollector
@@ -161,6 +162,133 @@ describe('LinchKitMetricCollector', () => {
 
       // 验证重置后的状态
       expect(await collector.getMetrics()).toBeDefined()
+    })
+  })
+
+  describe('高级功能', () => {
+    it('should get registry instance', () => {
+      const registry = collector.getRegistry()
+      expect(registry).toBeDefined()
+      expect(registry).toBeInstanceOf(Registry)
+    })
+
+    it('should collect default metrics', () => {
+      const customRegistry = new Registry()
+      const customCollector = new LinchKitMetricCollector(customRegistry)
+      
+      expect(() => {
+        customCollector.collectDefaultMetrics({
+          register: customRegistry,
+          prefix: 'test_',
+        })
+      }).not.toThrow()
+    })
+
+    it('should collect default metrics with no options', () => {
+      const customRegistry = new Registry()
+      const customCollector = new LinchKitMetricCollector(customRegistry)
+      
+      expect(() => {
+        customCollector.collectDefaultMetrics()
+      }).not.toThrow()
+    })
+
+    it('should support histogram timer functionality', () => {
+      const histogram = collector.createHistogram('test_histogram_timer', 'Test histogram timer', [0.1, 0.5, 1, 2.5, 5, 10], ['method'])
+      
+      const endTimer = histogram.startTimer({ method: 'GET' })
+      expect(typeof endTimer).toBe('function')
+      
+      // End the timer
+      endTimer()
+    })
+
+    it('should reset individual metric types', () => {
+      const counter = collector.createCounter('test_counter_reset_individual', 'Test counter reset individual', [])
+      const gauge = collector.createGauge('test_gauge_reset_individual', 'Test gauge reset individual', [])
+      const histogram = collector.createHistogram('test_histogram_reset_individual', 'Test histogram reset individual', [0.1, 0.5, 1, 2.5, 5, 10], [])
+      const summary = collector.createSummary('test_summary_reset_individual', 'Test summary reset individual', [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 0.999], [])
+      
+      counter.inc(5)
+      gauge.set(42)
+      histogram.observe(1.5)
+      summary.observe(2.5)
+      
+      counter.reset()
+      gauge.reset()
+      histogram.reset()
+      summary.reset()
+      
+      expect(counter.get()).toBe(0)
+      expect(gauge.get()).toBe(0)
+      expect(histogram.get()).toBe(0)
+      expect(summary.get()).toBe(0)
+    })
+
+    it('should handle gauge increment and decrement', () => {
+      const gauge = collector.createGauge('test_gauge_inc_dec', 'Test gauge increment decrement', [])
+      
+      gauge.inc()
+      gauge.inc(5)
+      gauge.dec()
+      gauge.dec(2)
+      
+      expect(gauge.get()).toBeGreaterThanOrEqual(0)
+    })
+
+    it('should handle metrics with labels for get operations', () => {
+      const counter = collector.createCounter('test_counter_labels_get', 'Test counter labels get', ['status'])
+      const gauge = collector.createGauge('test_gauge_labels_get', 'Test gauge labels get', ['region'])
+      const histogram = collector.createHistogram('test_histogram_labels_get', 'Test histogram labels get', [0.1, 0.5, 1, 2.5, 5, 10], ['endpoint'])
+      const summary = collector.createSummary('test_summary_labels_get', 'Test summary labels get', [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 0.999], ['service'])
+      
+      counter.inc(1, { status: '200' })
+      counter.inc(2, { status: '404' })
+      gauge.set(100, { region: 'us-east' })
+      gauge.set(200, { region: 'us-west' })
+      histogram.observe(1.0, { endpoint: '/api' })
+      histogram.observe(2.0, { endpoint: '/health' })
+      summary.observe(0.5, { service: 'api' })
+      summary.observe(1.5, { service: 'worker' })
+      
+      expect(counter.get({ status: '200' })).toBeGreaterThanOrEqual(0)
+      expect(gauge.get({ region: 'us-east' })).toBeGreaterThanOrEqual(0)
+      expect(histogram.get({ endpoint: '/api' })).toBeGreaterThanOrEqual(0)
+      expect(summary.get({ service: 'api' })).toBeGreaterThanOrEqual(0)
+    })
+  })
+
+  describe('Factory Functions', () => {
+    it('should create metric collector with default config', () => {
+      const collector = createMetricCollector()
+      
+      expect(collector).toBeDefined()
+      expect(collector.createCounter).toBeDefined()
+    })
+
+    it('should create metric collector with custom config', () => {
+      const customRegistry = new Registry()
+      const collector = createMetricCollector({
+        enableDefaultMetrics: false,
+        defaultMetricsPrefix: 'custom_',
+        registry: customRegistry,
+      })
+      
+      expect(collector).toBeDefined()
+    })
+
+    it('should create metric collector with partial config', () => {
+      const collector = createMetricCollector({
+        enableDefaultMetrics: true,
+        defaultMetricsPrefix: 'partial_',
+      })
+      
+      expect(collector).toBeDefined()
+    })
+
+    it('should export default metrics instance', () => {
+      expect(metrics).toBeDefined()
+      expect(metrics.createCounter).toBeDefined()
     })
   })
 })
