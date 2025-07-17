@@ -1,8 +1,12 @@
-# 主计划：Linch-Kit 框架稳定化路线图 (v1.6)
+# 主计划：Linch-Kit 框架稳定化路线图 (v1.7)
 
-**版本**: 1.6 (Final Assessed)
+**版本**: 1.7 (Enhanced with Risk Management)
 **状态**: 已批准
 **负责人**: 项目架构组 (由 AI Agent 驱动)
+**相关文档**: 
+- [风险管理策略](./06_Risk_Management_Strategy.md)
+- [任务依赖关系图](./07_Task_Dependency_Graph.md)
+- [文档一致性报告](./08_Documentation_Consistency_Report.md)
 
 ---
 
@@ -56,8 +60,60 @@
 
 - **潜在风险与缓解措施**:
     - **风险：AI Agent 执行偏差**。
-        - **缓解**: 通过原子化指令、审计优先原则、测试驱动和人类监督来控制。
+        - **缓解**: 
+          - 通过原子化指令、审计优先原则、测试驱动和人类监督来控制
+          - 强制 Graph RAG 查询确保基于项目上下文
+          - 每日审计机制，检查 AI 生成代码的质量
+          - 自动化验证脚本，确保符合项目标准
     - **风险：范围蔓延（Scope Creep）**。
-        - **缓解**: 以本主计划为唯一标准，`v1.0` 稳定前不增加核心目标外的功能。
+        - **缓解**: 
+          - 以本主计划为唯一标准，`v1.0` 稳定前不增加核心目标外的功能
+          - 严格的任务优先级管理
+          - 变更控制流程，任何新需求必须评估对稳定化目标的影响
     - **风险：第三方依赖项变更**。
-        - **缓解**: 通过 `bun.lockb` 锁定版本，并通过适配器模式隔离第三方库的影响。
+        - **缓解**: 
+          - 通过 `bun.lockb` 锁定版本
+          - 通过适配器模式隔离第三方库的影响
+          - 定期依赖审计，提前识别潜在的不兼容更新
+          - 关键依赖的替代方案预案
+    - **风险：任务依赖关系混乱**。
+        - **缓解**: 
+          - 明确的任务依赖图（见附录）
+          - 任务执行前的依赖检查
+          - 并行任务的资源冲突检测
+    - **风险：质量标准下降**。
+        - **缓解**: 
+          - 强制的质量门禁（测试覆盖率、构建时间等）
+          - 自动化的代码质量检查
+          - 定期的架构审查和重构
+
+---
+
+## 7. 附录
+
+### 7.1 相关文档链接
+
+- [Essential_Rules.md](../00_Getting_Started/03_Essential_Rules.md) - 核心开发约束
+- [Development_Workflow.md](../02_Guides/01_Development_Workflow.md) - 详细开发流程
+- [Package_Architecture.md](../01_Concepts/03_Package_Architecture.md) - 包架构设计
+- [Strategic_Architecture_Evolution.md](../01_Concepts/07_Strategic_Architecture_Evolution.md) - 架构演进策略
+
+### 7.2 质量标准快速参考
+
+- **测试覆盖率**:
+  - 核心包 (@linch-kit/core): 98%+
+  - 关键包 (auth, schema, crud): 95%+
+  - UI组件包: 90%+
+  - 应用层: 85%+
+- **构建时间**: < 10秒
+- **包依赖顺序**: core → schema → auth → crud → trpc → ui → console
+
+### 7.3 更新日志
+
+- v1.7 (2025-07-17): 增加 AI 执行标准和任务模板，完善风险缓解措施
+- v1.6: Final Assessed 版本
+- v1.5: 完善风险评估和缓解措施
+- v1.4: 增加 Graph RAG 驱动开发原则
+- v1.3: 优化任务原子化要求
+- v1.2: 增加防御性编程原则
+- v1.1: 初始版本
