@@ -39,6 +39,7 @@ export default [
         location: 'readonly',
         document: 'readonly',
         navigator: 'readonly',
+        fetch: 'readonly',
       },
       parserOptions: {
         ecmaFeatures: {

@@ -5,7 +5,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthService } from '@linch-kit/auth/server'
 
 /**
  * 认证中间件配置
@@ -66,7 +65,7 @@ function getSessionToken(request: NextRequest): string | null {
 
   // 从Cookie获取
   const sessionCookie = request.cookies.get('session')
-  if (sessionCookie) {
+  if (sessionCookie?.value) {
     return sessionCookie.value
   }
 
@@ -118,22 +117,20 @@ export async function authMiddleware(
   }
 
   try {
-    // 验证JWT令牌
-    const authService = await getAuthService({
-      type: 'jwt',
-      fallbackToMock: true,
-      config: {
-        jwtSecret: process.env.NEXT_PUBLIC_JWT_SECRET || 'your-super-secret-jwt-key-with-at-least-32-characters'
-      }
+    // 调用API路由验证JWT令牌
+    const validateResponse = await fetch(new URL('/api/auth/validate', request.url).toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
     })
 
-    const session = await authService.validateSession(token)
-
-    if (!session) {
+    if (!validateResponse.ok) {
       if (isApiPath) {
         return NextResponse.json(
           { error: 'Unauthorized', message: 'Invalid or expired token' },
-          { status: 401 }
+          { status: validateResponse.status }
         )
       }
       
@@ -143,6 +140,8 @@ export async function authMiddleware(
       return NextResponse.redirect(loginUrl)
     }
 
+    const { session } = await validateResponse.json()
+
     // 添加用户信息到请求头
     const response = NextResponse.next()
     response.headers.set('X-User-ID', session.userId)
@@ -150,6 +149,8 @@ export async function authMiddleware(
 
     return response
   } catch (error) {
+    // 暂时使用console.error，后续根据项目logger规范进行替换
+    // eslint-disable-next-line no-console
     console.error('认证中间件错误:', error)
 
     if (isApiPath) {
@@ -177,8 +178,8 @@ export function createAuthMiddleware(config?: Partial<AuthMiddlewareConfig>) {
  * 从请求头获取用户信息
  */
 export function getUserFromRequest(request: NextRequest) {
-  const userId = request.headers.get('X-User-ID')
-  const sessionId = request.headers.get('X-Session-ID')
+  const userId = request.headers.get('X-User-ID') ?? null
+  const sessionId = request.headers.get('X-Session-ID') ?? null
 
   return userId ? { userId, sessionId } : null
 }
@@ -194,26 +195,29 @@ export async function validateApiAuth(request: NextRequest) {
   }
 
   try {
-    const authService = await getAuthService({
-      type: 'jwt',
-      fallbackToMock: true,
-      config: {
-        jwtSecret: process.env.NEXT_PUBLIC_JWT_SECRET || 'your-super-secret-jwt-key-with-at-least-32-characters'
-      }
+    const validateResponse = await fetch(new URL('/api/auth/validate', request.url).toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
     })
 
-    const session = await authService.validateSession(token)
-
-    if (!session) {
+    if (!validateResponse.ok) {
       return { valid: false, error: 'Invalid or expired token' }
     }
+
+    const { session, user } = await validateResponse.json()
 
     return { 
       valid: true, 
       session, 
-      user: await authService.getUser(session.userId) 
+      user
     }
   } catch (error) {
+    // 暂时使用console.error，后续根据项目logger规范进行替换
+    // eslint-disable-next-line no-console
+    console.error('Authentication validation failed:', error)
     return { valid: false, error: 'Authentication validation failed' }
   }
 }

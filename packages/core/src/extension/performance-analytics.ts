@@ -6,7 +6,7 @@
 import { Logger } from '../logger'
 
 import { ExtensionPerformanceMonitor } from './performance-optimizations'
-import type { ExtensionManager } from './types'
+import type { ExtensionManager, ExtensionInstance } from './types'
 
 export interface PerformanceReport {
   extensionId: string
@@ -129,7 +129,7 @@ export class ExtensionPerformanceAnalyzer {
    */
   async getSystemPerformanceSnapshot(): Promise<SystemPerformanceSnapshot> {
     const extensions = this.extensionManager.getAllExtensions()
-    const activeExtensions = extensions.filter((ext: any) => ext.isActive && ext.isActive())
+    const activeExtensions = extensions.filter((ext) => ext.running)
     
     const totalMemory = this.getTotalMemoryUsage()
     const extensionsMemory = this.getExtensionsMemoryUsage()
@@ -156,7 +156,7 @@ export class ExtensionPerformanceAnalyzer {
   /**
    * 计算 Extension 健康状态
    */
-  private calculateHealth(metrics: any): 'healthy' | 'warning' | 'critical' {
+  private calculateHealth(metrics: { memoryUsage: number; errors: number; loadTime: number; }): 'healthy' | 'warning' | 'critical' {
     let score = 1.0
 
     // 根据内存使用降低评分
@@ -186,7 +186,7 @@ export class ExtensionPerformanceAnalyzer {
   /**
    * 生成性能优化建议
    */
-  private generateRecommendations(metrics: any): string[] {
+  private generateRecommendations(metrics: { memoryUsage: number; loadTime: number; errors: number; apiCalls: number; }): string[] {
     const recommendations: string[] = []
 
     if (metrics.memoryUsage > this.config.memoryThreshold) {
@@ -221,7 +221,7 @@ export class ExtensionPerformanceAnalyzer {
   private getExtensionsMemoryUsage(): number {
     const allMetrics = this.performanceMonitor.getAllMetrics()
     
-    return Object.values(allMetrics).reduce((total: number, metrics: any) => {
+    return Object.values(allMetrics).reduce((total: number, metrics: { memoryUsage?: number }) => {
       return total + (metrics.memoryUsage || 0)
     }, 0)
   }
@@ -241,9 +241,9 @@ export class ExtensionPerformanceAnalyzer {
     const extensions = this.extensionManager.getAllExtensions()
     if (extensions.length === 0) return 100
 
-    const reports = extensions.map((ext: any) => {
+    const reports = extensions.map((ext: ExtensionInstance) => {
       try {
-        const metrics = this.performanceMonitor.getMetrics(ext.getId ? ext.getId() : ext.id)
+        const metrics = this.performanceMonitor.getMetrics(ext.metadata.id)
         return metrics ? this.calculateHealth(metrics) : 'healthy'
       } catch {
         return 'critical'
@@ -273,9 +273,9 @@ export class ExtensionPerformanceAnalyzer {
 
     // 检查 Extension 失败率
     const extensions = this.extensionManager.getAllExtensions()
-    const failedExtensions = extensions.filter((ext: any) => {
+    const failedExtensions = extensions.filter((ext: ExtensionInstance) => {
       try {
-        return !ext.isActive || !ext.isActive()
+        return !ext.running
       } catch {
         return true
       }

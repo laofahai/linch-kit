@@ -21,7 +21,6 @@ import type {
   LinchKitUser, 
   JWTPayload
 } from '../types'
-
 import { JWTBlacklistManager, type JWTBlacklistManagerConfig } from '../security/jwt-blacklist-manager'
 import { RateLimiter, type RateLimitConfig, rateLimitPresets } from '../security/rate-limiter'
 
@@ -182,7 +181,7 @@ export class EnhancedJWTAuthService implements IAuthService {
       const { accessToken, refreshToken } = await this.generateTokens(user, sessionId)
 
       // 创建会话
-      const session = await this.createSession(user, sessionId, accessToken, refreshToken, request.metadata)
+      await this.createSession(user, sessionId, accessToken, refreshToken, request.metadata)
 
       logger.info('增强JWT认证成功', {
         service: 'enhanced-jwt-auth-service',

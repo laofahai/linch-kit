@@ -10,15 +10,15 @@
 'use client'
 
 import { AuthProvider } from '@linch-kit/auth/client'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui/server'
 import { Button } from '@linch-kit/ui/client'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui/server'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
 
 function AuthPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard'
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -48,9 +48,11 @@ function AuthPageContent() {
         // 跳转到回调URL
         router.push(callbackUrl)
       } else {
-        setError(result.error || '认证失败')
+        setError(result.error ?? '认证失败')
       }
     } catch (err) {
+      // 暂时使用console.error，后续根据项目logger规范进行替换
+      // eslint-disable-next-line no-console
       console.error('认证过程中出错:', err)
       setError('认证系统暂时不可用，请稍后再试')
     } finally {

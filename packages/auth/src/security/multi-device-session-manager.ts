@@ -8,8 +8,10 @@
  * @since 0.2.0
  */
 
-import { randomUUID } from 'crypto'
+import { v4 as uuidv4 } from 'uuid'
+
 import { logger } from '@linch-kit/core/server'
+
 import type { Session } from '../types'
 
 /**
@@ -170,7 +172,7 @@ export class InMemoryDeviceSessionStorage implements DeviceSessionStorage {
   async getUserDeviceSessions(userId: string): Promise<DeviceSession[]> {
     const sessions: DeviceSession[] = []
     
-    for (const [sessionId, session] of this.deviceSessions.entries()) {
+    for (const [, session] of this.deviceSessions.entries()) {
       if (session.userId === userId) {
         sessions.push(session)
       }
@@ -334,7 +336,7 @@ export class MultiDeviceSessionManager {
     }
     
     const deviceSession: DeviceSession = {
-      id: options.sessionId,
+      id: uuidv4(),
       userId: options.userId,
       accessToken: options.accessToken,
       refreshToken: options.refreshToken,
@@ -646,9 +648,8 @@ export class MultiDeviceSessionManager {
   /**
    * 强制执行设备限制
    */
-  private async enforceDeviceLimits(userId: string, deviceId: string): Promise<void> {
-    const userSessions = await this.getUserDeviceSessions(userId)
-    const deviceSessions = await this.storage.getDeviceSessions(deviceId)
+  private async enforceDeviceLimits(userId: string, _deviceId: string): Promise<void> {
+    const deviceSessions = await this.storage.getDeviceSessions(_deviceId)
     
     // 检查每个设备的会话限制
     const activeDeviceSessions = deviceSessions.filter(s => s.status === 'active')
