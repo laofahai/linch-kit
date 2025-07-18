@@ -78,8 +78,36 @@ function getSessionToken(request: NextRequest): string | null {
 function validateJWTToken(token: string): Promise<Session | null> {
   return new Promise((resolve) => {
     try {
-      // 在实际项目中，这里应该使用Web Crypto API进行JWT验证
-      // 这里使用简化的验证逻辑作为演示
+      // 处理mock token（开发模式）
+      if (token.startsWith('mock-access-token-')) {
+        const timestamp = token.split('-').pop()
+        const tokenTimestamp = parseInt(timestamp ?? '0')
+        const now = Date.now()
+        
+        // 检查token是否过期（1小时）
+        if (now - tokenTimestamp > 3600000) {
+          resolve(null)
+          return
+        }
+        
+        // 返回模拟会话
+        resolve({
+          id: 'mock-session-id',
+          userId: 'test-user-123',
+          accessToken: token,
+          refreshToken: 'mock-refresh-token',
+          createdAt: new Date(tokenTimestamp),
+          expiresAt: new Date(tokenTimestamp + 3600000),
+          lastAccessedAt: new Date(),
+          metadata: {
+            userAgent: 'Mock-Client',
+            ipAddress: '127.0.0.1'
+          }
+        })
+        return
+      }
+      
+      // 处理实际JWT token
       const parts = token.split('.')
       if (parts.length !== 3) {
         resolve(null)
