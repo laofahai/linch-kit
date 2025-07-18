@@ -10,10 +10,14 @@
 'use client'
 
 import { AuthProvider } from '@linch-kit/auth/client'
+import { Logger } from '@linch-kit/core/client'
 import { Button } from '@linch-kit/ui/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui/server'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
+
+// 客户端日志实例  
+const logger = Logger.child({ component: 'auth-page' })
 
 function AuthPageContent() {
   const router = useRouter()
@@ -42,18 +46,31 @@ function AuthPageContent() {
       const result = await response.json()
 
       if (result.success && result.tokens) {
+        logger.info('用户登录成功', {
+          action: 'login',
+          userId: result.user?.id,
+          callbackUrl
+        })
+        
         // 设置认证Cookie
         document.cookie = `session=${result.tokens.accessToken}; path=/; max-age=3600`
         
         // 跳转到回调URL
         router.push(callbackUrl)
       } else {
+        logger.warn('用户登录失败', {
+          action: 'login',
+          error: result.error,
+          callbackUrl
+        })
         setError(result.error ?? '认证失败')
       }
     } catch (err) {
-      // 暂时使用console.error，后续根据项目logger规范进行替换
-      // eslint-disable-next-line no-console
-      console.error('认证过程中出错:', err)
+      logger.error('认证过程中出错', err instanceof Error ? err : undefined, {
+        action: 'login',
+        callbackUrl,
+        errorType: err instanceof Error ? err.constructor.name : 'Unknown'
+      })
       setError('认证系统暂时不可用，请稍后再试')
     } finally {
       setIsLoading(false)
@@ -75,7 +92,11 @@ function AuthPageContent() {
               <Button 
                 className="w-full" 
                 size="lg" 
-                onClick={handleLogin}
+                onClick={() => {
+                  handleLogin().catch(() => {
+                    // Error is handled within handleLogin
+                  })
+                }}
                 disabled={isLoading}
               >
                 {isLoading ? '正在登录...' : '登录'}

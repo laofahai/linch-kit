@@ -23,6 +23,11 @@
   "type": "module",
   "exports": {
     ".": {
+      "edge-light": {
+        "types": "./dist/edge.d.ts",
+        "import": "./dist/edge.js",
+        "require": "./dist/edge.cjs"
+      },
       "react-server": {
         "types": "./dist/server.d.ts",
         "import": "./dist/server.js",
@@ -37,15 +42,20 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./edge": {
+      "types": "./dist/edge.d.ts",
+      "import": "./dist/edge.js",
+      "require": "./dist/edge.cjs"
+    },
     "./client": {
       "types": "./dist/client.d.ts",
       "import": "./dist/client.js",
       "require": "./dist/client.cjs"
     },
     "./server": {
-      "types": "./dist/server.d.ts",
-      "import": "./dist/server.js",
-      "require": "./dist/server.cjs"
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.js",
+      "require": "./dist/server/index.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -77,11 +87,12 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@types/bun": "^1.2.18",
     "@types/react": "^19.1.8",
+    "@types/uuid": "^10.0.0",
     "react": "^19.1.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
-    "@types/bun": "^1.2.18"
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "@linch-kit/core": "workspace:*",

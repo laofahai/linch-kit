@@ -2,24 +2,36 @@
  * 登录API端点
  */
 
-import { getAuthService } from '@linch-kit/auth/server'
+import { createServerJWTAuthServiceFromEnv } from '@linch-kit/auth/server'
+import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
+
+// 创建认证服务实例（懒加载避免重复实例化）
+let authService: ReturnType<typeof createServerJWTAuthServiceFromEnv> | null = null
+
+function getAuthService() {
+  authService ??= createServerJWTAuthServiceFromEnv({
+    accessTokenExpiry: process.env['ACCESS_TOKEN_EXPIRY'] ?? '15m',
+    refreshTokenExpiry: process.env['REFRESH_TOKEN_EXPIRY'] ?? '7d',
+    algorithm: 'HS256',
+    issuer: 'linch-kit-starter',
+    audience: 'linch-kit-starter-app'
+  })
+  return authService
+}
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json()
 
-    const authService = await getAuthService({
-      type: 'jwt',
-      fallbackToMock: true,
-      config: {
-        jwtSecret: process.env['NEXT_PUBLIC_JWT_SECRET'] ?? 'your-super-secret-jwt-key-with-at-least-32-characters',
-        accessTokenExpiry: '15m',
-        refreshTokenExpiry: '7d'
-      }
+
+    logger.info('用户登录请求', {
+      service: 'login-api',
+      email: email?.toString().slice(0, 3) + '***', // 脱敏信息
+      hasPassword: !!password
     })
 
-    const result = await authService.authenticate({
+    const result = await getAuthService().authenticate({
       provider: 'credentials',
       credentials: {
         email,
@@ -27,15 +39,29 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    if (result.success) {
+      logger.info('用户登录成功', {
+        service: 'login-api',
+        userId: result.user?.id,
+        email: email?.toString().slice(0, 3) + '***'
+      })
+    } else {
+      logger.warn('用户登录失败', {
+        service: 'login-api',
+        email: email?.toString().slice(0, 3) + '***',
+        error: result.error
+      })
+    }
+
     return NextResponse.json(result)
   } catch (error) {
-    // 使用logger替代console.error
-    // 导入logger需要确保其在Next.js API路由环境中可用
-    // 暂时使用console.error，后续根据项目logger规范进行替换
-    // eslint-disable-next-line no-console
-    console.error('登录错误:', error)
+    logger.error('登录API发生错误', error instanceof Error ? error : undefined, {
+      service: 'login-api',
+      errorType: error instanceof Error ? error.constructor.name : 'Unknown'
+    })
+    
     return NextResponse.json(
-      { success: false, error: '登录失败' },
+      { success: false, error: '登录服务不可用，请稍后再试' },
       { status: 500 }
     )
   }

@@ -21,6 +21,10 @@ import type {
   LinchKitUser, 
   JWTPayload
 } from '../types'
+import { 
+  createAuthPerformanceMonitor as createNewAuthPerformanceMonitor,
+  type IAuthPerformanceMonitor as INewAuthPerformanceMonitor
+} from '../monitoring/auth-performance-monitor'
 
 /**
  * JWT认证服务配置
@@ -47,9 +51,11 @@ export class JWTAuthService implements IAuthService {
   private readonly config: JWTAuthServiceConfig
   private readonly activeSessions = new Map<string, Session>()
   private readonly refreshTokens = new Map<string, { userId: string; sessionId: string; expiresAt: Date }>()
+  private readonly performanceMonitor: INewAuthPerformanceMonitor
 
   constructor(config: JWTAuthServiceConfig) {
     this.config = config
+    this.performanceMonitor = createNewAuthPerformanceMonitor(logger)
     this.validateConfig()
   }
 
@@ -77,6 +83,11 @@ export class JWTAuthService implements IAuthService {
    * 用户认证
    */
   async authenticate(request: AuthRequest): Promise<AuthResult> {
+    const timer = this.performanceMonitor.startAuthTimer('login', {
+      provider: request.provider,
+      hasCredentials: !!request.credentials
+    })
+
     try {
       logger.info('JWT认证开始', {
         service: 'jwt-auth-service',
@@ -91,6 +102,13 @@ export class JWTAuthService implements IAuthService {
           service: 'jwt-auth-service',
           provider: request.provider
         })
+        
+        await timer.failure({
+          errorCode: 'INVALID_CREDENTIALS',
+          errorMessage: 'Invalid credentials',
+          authMethod: request.provider
+        })
+
         return {
           success: false,
           error: 'Invalid credentials'
@@ -110,6 +128,12 @@ export class JWTAuthService implements IAuthService {
         sessionId
       })
 
+      await timer.success({
+        userId: user.id,
+        sessionId,
+        authMethod: request.provider
+      })
+
       return {
         success: true,
         user,
@@ -125,6 +149,10 @@ export class JWTAuthService implements IAuthService {
         provider: request.provider
       })
 
+      await timer.error(error instanceof Error ? error : new Error('Authentication failed'), {
+        authMethod: request.provider
+      })
+
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Authentication failed'
@@ -136,6 +164,8 @@ export class JWTAuthService implements IAuthService {
    * 验证会话
    */
   async validateSession(token: string): Promise<Session | null> {
+    const timer = this.performanceMonitor.startAuthTimer('validate_token')
+
     try {
       // 验证JWT令牌
       const payload = verify(token, this.config.jwtSecret, {
@@ -150,6 +180,13 @@ export class JWTAuthService implements IAuthService {
           hasSubject: !!payload.sub,
           hasJti: !!payload.jti
         })
+        
+        await timer.failure({
+          errorCode: 'INVALID_TOKEN_PAYLOAD',
+          errorMessage: 'Invalid token payload',
+          authMethod: 'jwt'
+        })
+
         return null
       }
 
@@ -160,6 +197,13 @@ export class JWTAuthService implements IAuthService {
           service: 'jwt-auth-service',
           sessionId: payload.jti
         })
+        
+        await timer.failure({
+          errorCode: 'SESSION_NOT_FOUND',
+          errorMessage: 'Session not found',
+          authMethod: 'jwt'
+        })
+
         return null
       }
 
@@ -171,17 +215,35 @@ export class JWTAuthService implements IAuthService {
           expiresAt: session.expiresAt
         })
         this.activeSessions.delete(payload.jti)
+        
+        await timer.failure({
+          errorCode: 'SESSION_EXPIRED',
+          errorMessage: 'Session expired',
+          authMethod: 'jwt'
+        })
+
         return null
       }
 
       // 更新最后访问时间
       session.lastAccessedAt = new Date()
       
+      await timer.success({
+        userId: session.userId,
+        sessionId: payload.jti,
+        authMethod: 'jwt'
+      })
+      
       return session
     } catch (error) {
       logger.error('会话验证失败', error instanceof Error ? error : undefined, {
         service: 'jwt-auth-service'
       })
+      
+      await timer.error(error instanceof Error ? error : new Error('Session validation failed'), {
+        authMethod: 'jwt'
+      })
+      
       return null
     }
   }
@@ -190,6 +252,8 @@ export class JWTAuthService implements IAuthService {
    * 刷新令牌
    */
   async refreshToken(refreshToken: string): Promise<Session | null> {
+    const timer = this.performanceMonitor.startAuthTimer('refresh_token')
+
     try {
       // 验证刷新令牌
       const refreshData = this.refreshTokens.get(refreshToken)
@@ -197,6 +261,13 @@ export class JWTAuthService implements IAuthService {
         logger.warn('刷新令牌不存在', {
           service: 'jwt-auth-service'
         })
+        
+        await timer.failure({
+          errorCode: 'REFRESH_TOKEN_NOT_FOUND',
+          errorMessage: 'Refresh token not found',
+          authMethod: 'jwt'
+        })
+
         return null
       }
 
@@ -207,6 +278,13 @@ export class JWTAuthService implements IAuthService {
           expiresAt: refreshData.expiresAt
         })
         this.refreshTokens.delete(refreshToken)
+        
+        await timer.failure({
+          errorCode: 'REFRESH_TOKEN_EXPIRED',
+          errorMessage: 'Refresh token expired',
+          authMethod: 'jwt'
+        })
+
         return null
       }
 
@@ -217,6 +295,13 @@ export class JWTAuthService implements IAuthService {
           service: 'jwt-auth-service',
           userId: refreshData.userId
         })
+        
+        await timer.failure({
+          errorCode: 'USER_NOT_FOUND',
+          errorMessage: 'User not found',
+          authMethod: 'jwt'
+        })
+
         return null
       }
 
@@ -238,11 +323,22 @@ export class JWTAuthService implements IAuthService {
         newSessionId
       })
 
+      await timer.success({
+        userId: user.id,
+        sessionId: newSessionId,
+        authMethod: 'jwt'
+      })
+
       return newSession
     } catch (error) {
       logger.error('令牌刷新失败', error instanceof Error ? error : undefined, {
         service: 'jwt-auth-service'
       })
+      
+      await timer.error(error instanceof Error ? error : new Error('Token refresh failed'), {
+        authMethod: 'jwt'
+      })
+      
       return null
     }
   }
@@ -251,9 +347,16 @@ export class JWTAuthService implements IAuthService {
    * 注销会话
    */
   async revokeSession(sessionId: string): Promise<boolean> {
+    const timer = this.performanceMonitor.startAuthTimer('session_destroy')
+
     try {
       const session = this.activeSessions.get(sessionId)
       if (!session) {
+        await timer.failure({
+          errorCode: 'SESSION_NOT_FOUND',
+          errorMessage: 'Session not found',
+          authMethod: 'jwt'
+        })
         return false
       }
 
@@ -274,12 +377,23 @@ export class JWTAuthService implements IAuthService {
         userId: session.userId
       })
 
+      await timer.success({
+        userId: session.userId,
+        sessionId,
+        authMethod: 'jwt'
+      })
+
       return true
     } catch (error) {
       logger.error('会话注销失败', error instanceof Error ? error : undefined, {
         service: 'jwt-auth-service',
         sessionId
       })
+      
+      await timer.error(error instanceof Error ? error : new Error('Session revocation failed'), {
+        authMethod: 'jwt'
+      })
+      
       return false
     }
   }
@@ -505,9 +619,12 @@ export function createJWTAuthService(config: JWTAuthServiceConfig): JWTAuthServi
 
 /**
  * 默认JWT认证服务配置
+ * 
+ * ⚠️  安全警告：必须在生产环境中设置 JWT_SECRET 环境变量
+ * ⚠️  配置将通过 ConfigManager 强制验证环境变量
  */
 export const defaultJWTAuthServiceConfig: JWTAuthServiceConfig = {
-  jwtSecret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-with-at-least-32-characters',
+  jwtSecret: process.env.JWT_SECRET!, // 强制要求环境变量
   accessTokenExpiry: '15m',
   refreshTokenExpiry: '7d',
   algorithm: 'HS256',

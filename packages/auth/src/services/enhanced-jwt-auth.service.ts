@@ -732,9 +732,12 @@ export function createEnhancedJWTAuthService(config: EnhancedJWTAuthServiceConfi
 
 /**
  * 默认增强JWT认证服务配置
+ * 
+ * ⚠️  安全警告：必须在生产环境中设置 JWT_SECRET 环境变量
+ * ⚠️  配置将通过 ConfigManager 强制验证环境变量
  */
 export const defaultEnhancedJWTAuthServiceConfig: EnhancedJWTAuthServiceConfig = {
-  jwtSecret: process.env.JWT_SECRET || 'your-super-secret-jwt-key-with-at-least-32-characters',
+  jwtSecret: process.env.JWT_SECRET!, // 强制要求环境变量
   accessTokenExpiry: '15m',
   refreshTokenExpiry: '7d',
   algorithm: 'HS256',

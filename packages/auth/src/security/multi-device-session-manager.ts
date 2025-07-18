@@ -9,7 +9,6 @@
  */
 
 import { v4 as uuidv4 } from 'uuid'
-
 import { logger } from '@linch-kit/core/server'
 
 import type { Session } from '../types'

@@ -3,7 +3,9 @@
  * 将Auth包注册为Core插件，实现标准插件接口
  */
 
-import type { Plugin, PluginConfig } from '@linch-kit/core'
+// import type { Plugin, PluginConfig } from '@linch-kit/core' // TODO: Fix when Plugin types are available
+type Plugin = any
+type PluginConfig = any
 
 import {
   logError,

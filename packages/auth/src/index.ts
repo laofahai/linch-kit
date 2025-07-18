@@ -80,6 +80,12 @@ export { AuthProvider } from './components/AuthProvider'
  */
 export { createAuthRouter } from './trpc/router-factory'
 
+// ==================== 监控模块导出 ====================
+/**
+ * 认证性能监控和指标收集
+ */
+export * from './monitoring'
+
 // ==================== 版本信息 ====================
 /**
  * 包版本信息

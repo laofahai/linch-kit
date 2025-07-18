@@ -5,6 +5,8 @@ export default defineConfig({
     index: 'src/index.ts',
     client: 'src/client.ts',
     server: 'src/server.ts',
+    edge: 'src/edge/index.ts',
+    'server/index': 'src/server/index.ts',
   },
   format: ['cjs', 'esm'],
   dts: true,
