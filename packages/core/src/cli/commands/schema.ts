@@ -4,9 +4,10 @@
  * 集成@linch-kit/schema工具的CLI命令
  */
 
-import { glob } from 'glob'
 import { resolve, dirname } from 'path'
 import { mkdir, writeFile } from 'fs/promises'
+
+import { glob } from 'glob'
 import { createGenerator, PrismaGenerator } from '@linch-kit/schema'
 
 import { type CLIManager, type CLICommand } from '../index'

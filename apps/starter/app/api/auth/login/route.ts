@@ -1,19 +1,17 @@
 /**
- * 登录API端点 - 集成Supabase用户存储
+ * 登录API端点 - 使用LinchKit Auth服务
  */
 
-import { createServerJWTAuthServiceFromEnv, createSupabaseUserService } from '@linch-kit/auth/server'
+import { createJWTAuthService } from '@linch-kit/auth/server'
 import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
 
-import { supabase } from '../../../../lib/supabase'
-
 // 创建认证服务实例（懒加载避免重复实例化）
-let authService: ReturnType<typeof createServerJWTAuthServiceFromEnv> | null = null
-let supabaseUserService: ReturnType<typeof createSupabaseUserService> | null = null
+let authService: ReturnType<typeof createJWTAuthService> | null = null
 
 function getAuthService() {
-  authService ??= createServerJWTAuthServiceFromEnv({
+  authService ??= createJWTAuthService({
+    jwtSecret: process.env['JWT_SECRET'] ?? 'your-super-secret-jwt-key-must-be-at-least-32-characters-long-development-key',
     accessTokenExpiry: process.env['ACCESS_TOKEN_EXPIRY'] ?? '15m',
     refreshTokenExpiry: process.env['REFRESH_TOKEN_EXPIRY'] ?? '7d',
     algorithm: 'HS256',
@@ -21,11 +19,6 @@ function getAuthService() {
     audience: 'linch-kit-starter-app'
   })
   return authService
-}
-
-function getSupabaseUserService() {
-  supabaseUserService ??= createSupabaseUserService(supabase, logger)
-  return supabaseUserService
 }
 
 export async function POST(request: NextRequest) {
@@ -54,41 +47,13 @@ export async function POST(request: NextRequest) {
     const result = await authService.authenticate(authRequest)
 
     if (result.success && result.user) {
-      try {
-        // 认证成功后，将用户信息存储到Supabase
-        const userData = {
-          email: result.user.email,
-          name: result.user.name ?? 'User'
-        }
-        
-        const supabaseUser = await getSupabaseUserService().upsertUser(userData)
-        
-        logger.info('用户登录成功，已同步到Supabase', {
-          service: 'login-api',
-          userId: result.user.id,
-          supabaseUserId: supabaseUser['id'],
-          email: email?.toString().slice(0, 3) + '***'
-        })
-
-        // 返回成功结果，包含Supabase用户ID
-        return NextResponse.json({
-          ...result,
-          user: {
-            ...result.user,
-            supabaseId: supabaseUser['id']
-          }
-        })
-      } catch (supabaseError) {
-        logger.warn('用户认证成功但Supabase同步失败', {
-          service: 'login-api',
-          userId: result.user.id,
-          email: email?.toString().slice(0, 3) + '***',
-          error: supabaseError instanceof Error ? supabaseError.message : 'Unknown error'
-        })
-        
-        // 即使Supabase同步失败，也返回认证成功的结果
-        return NextResponse.json(result)
-      }
+      logger.info('用户登录成功', {
+        service: 'login-api',
+        userId: result.user.id,
+        email: email?.toString().slice(0, 3) + '***'
+      })
+      
+      return NextResponse.json(result)
     } else {
       logger.warn('用户登录失败', {
         service: 'login-api',

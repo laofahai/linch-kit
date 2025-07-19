@@ -3,8 +3,7 @@
  * 最小化示例页面，展示基本功能
  */
 
-import { Button } from '@linch-kit/ui/client'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui/server'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui/client'
 import Link from 'next/link'
 
 export default function HomePage() {

@@ -11,13 +11,13 @@ async function testJWTLogin() {
   console.log('\n=== 测试JWT登录 ===')
   
   try {
-    const response = await fetch('http://localhost:3000/api/auth/login', {
+    const response = await fetch('http://localhost:3001/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: 'test@linchkit.com',
+        email: 'test@example.com',
         password: 'password123'
       })
     })
@@ -46,7 +46,7 @@ async function testJWTValidation(token) {
   console.log('\n=== 测试JWT Token验证 ===')
   
   try {
-    const response = await fetch('http://localhost:3000/api/auth/validate', {
+    const response = await fetch('http://localhost:3001/api/auth/validate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ async function testInvalidToken() {
   console.log('\n=== 测试无效Token ===')
   
   try {
-    const response = await fetch('http://localhost:3000/api/auth/validate', {
+    const response = await fetch('http://localhost:3001/api/auth/validate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

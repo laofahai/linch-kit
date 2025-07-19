@@ -2,7 +2,8 @@
  * @fileoverview UI包基础设施 - 集成LinchKit Core功能
  */
 
-import { Logger, createPackageI18n, useTranslation as coreUseTranslation } from '@linch-kit/core/client'
+import { Logger, createPackageI18n } from '@linch-kit/core/client'
+import { useTranslation as coreUseTranslation } from '@linch-kit/core/react'
 
 /**
  * UI包专用日志记录器

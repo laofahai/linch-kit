@@ -3,8 +3,7 @@
  * @description Schema驱动的企业级React组件库，基于shadcn/ui和Radix UI构建
  */
 
-// 核心基础设施
-export * from './infrastructure'
+// 插件系统（服务端安全）
 export * from './plugin'
 
 // 基础组件
@@ -30,5 +29,4 @@ export * from './styles'
 export * from './types/theme'
 export * from './utils/theme'
 
-// Hooks
-export * from './hooks'
+// Hooks - 仅在客户端导出，服务端组件不应导入hooks

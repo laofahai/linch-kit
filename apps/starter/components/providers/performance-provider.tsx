@@ -5,7 +5,7 @@
  * 集成 @linch-kit/core 的性能监控功能
  */
 
-import { PageLoadingProvider, PerformanceMonitor } from '@linch-kit/core/client'
+import { PageLoadingProvider, PerformanceMonitor } from '@linch-kit/core/react'
 import type { ReactNode } from 'react'
 
 interface AppPerformanceProviderProps {
@@ -27,4 +27,4 @@ export function AppPerformanceProvider({
 }
 
 // 导出性能监控钩子，便于组件使用
-export { usePageLoading } from '@linch-kit/core/client'
+export { usePageLoading } from '@linch-kit/core/react'

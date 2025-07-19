@@ -1,1 +1,1 @@
-export { cn } from '@linch-kit/ui'
+export { cn } from '@linch-kit/ui/shared'

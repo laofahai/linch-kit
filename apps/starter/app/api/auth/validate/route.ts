@@ -2,15 +2,16 @@
  * JWT令牌验证API端点
  */
 
-import { createServerJWTAuthServiceFromEnv } from '@linch-kit/auth/server'
+import { createJWTAuthService } from '@linch-kit/auth/server'
 import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 // 创建认证服务实例（懒加载避免重复实例化）
-let authService: ReturnType<typeof createServerJWTAuthServiceFromEnv> | null = null
+let authService: ReturnType<typeof createJWTAuthService> | null = null
 
 function getAuthService() {
-  authService ??= createServerJWTAuthServiceFromEnv({
+  authService ??= createJWTAuthService({
+    jwtSecret: process.env['JWT_SECRET'] ?? 'your-super-secret-jwt-key-must-be-at-least-32-characters-long-development-key',
     accessTokenExpiry: process.env['ACCESS_TOKEN_EXPIRY'] ?? '15m',
     refreshTokenExpiry: process.env['REFRESH_TOKEN_EXPIRY'] ?? '7d',
     algorithm: 'HS256',
