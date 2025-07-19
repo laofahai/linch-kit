@@ -3,9 +3,10 @@
  * 测试各个Guardian智能体的核心功能
  */
 
-import { describe, it, expect, beforeEach, mock } from 'bun:test'
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
+
+import { describe, it, expect, beforeEach, mock } from 'bun:test'
 
 // 模拟文件系统操作
 const mockFs = {

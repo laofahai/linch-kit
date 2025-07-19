@@ -11,6 +11,7 @@
 
 import { execSync } from 'child_process'
 import { existsSync } from 'fs'
+
 import type { GuardianAgent } from './index.js'
 
 export interface PreCheckContext {

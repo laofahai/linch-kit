@@ -8,9 +8,9 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
+import { createLogger } from '@linch-kit/core/server'
 
 import { ContextQueryTool } from '../context/context-query-tool.js'
-import { createLogger } from '@linch-kit/core/server'
 
 const logger = createLogger({ name: 'claude-context-cli' })
 

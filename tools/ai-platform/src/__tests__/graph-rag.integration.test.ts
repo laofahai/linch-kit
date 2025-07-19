@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'bun:test'
+
 import { Neo4jService } from '../graph/neo4j-service'
 import { IntelligentQueryEngine } from '../query/intelligent-query-engine'
 import { loadNeo4jConfig } from '../config/neo4j-config'

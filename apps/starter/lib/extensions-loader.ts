@@ -119,6 +119,12 @@ export async function initializeExtensions(force = false) {
     }
   } catch (error) {
     Logger.error('Failed to initialize extensions:', error instanceof Error ? error : new Error(String(error)))
+    return {
+      success: false,
+      extensionsCount: 0,
+      extensions: [],
+      error: error instanceof Error ? error.message : String(error)
+    }
   }
 }
 

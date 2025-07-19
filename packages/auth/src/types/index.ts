@@ -512,3 +512,74 @@ export interface IAuditLogger {
     options?: { limit?: number; offset?: number }
   ): Promise<AuditLog[]>
 }
+
+/**
+ * 认证服务接口 - 实现依赖反转原则
+ * 
+ * 提供统一的认证服务接口，支持多种实现方式：
+ * - MockAuthService: 用于开发和测试
+ * - JWTAuthService: 生产环境的JWT认证
+ * - NextAuthService: 基于NextAuth.js的认证
+ */
+export interface IAuthService {
+  /**
+   * 用户认证
+   * @param request 认证请求
+   * @returns 认证结果
+   */
+  authenticate(request: AuthRequest): Promise<AuthResult>
+
+  /**
+   * 验证会话
+   * @param token 访问令牌
+   * @returns 会话信息，验证失败返回null
+   */
+  validateSession(token: string): Promise<Session | null>
+
+  /**
+   * 刷新令牌
+   * @param refreshToken 刷新令牌
+   * @returns 新的会话信息，失败返回null
+   */
+  refreshToken(refreshToken: string): Promise<Session | null>
+
+  /**
+   * 注销会话
+   * @param sessionId 会话ID
+   * @returns 操作结果
+   */
+  revokeSession(sessionId: string): Promise<boolean>
+
+  /**
+   * 注销用户的所有会话
+   * @param userId 用户ID
+   * @returns 注销的会话数量
+   */
+  revokeAllSessions(userId: string): Promise<number>
+
+  /**
+   * 获取用户信息
+   * @param userId 用户ID
+   * @returns 用户信息，不存在返回null
+   */
+  getUser(userId: string): Promise<LinchKitUser | null>
+
+  /**
+   * 验证用户凭据
+   * @param credentials 用户凭据
+   * @returns 验证结果
+   */
+  validateCredentials(credentials: Record<string, unknown>): Promise<LinchKitUser | null>
+
+  /**
+   * 检查服务健康状态
+   * @returns 服务是否健康
+   */
+  isHealthy(): Promise<boolean>
+
+  /**
+   * 获取服务实现类型
+   * @returns 服务类型标识
+   */
+  getServiceType(): 'mock' | 'jwt' | 'nextauth' | 'custom'
+}

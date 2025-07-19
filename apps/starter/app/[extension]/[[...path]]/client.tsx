@@ -31,7 +31,7 @@ const getExtensionConfig = (extensionName: string) => {
   
   if (registration?.metadata) {
     return {
-      displayName: registration.metadata.displayName ?? registration.metadata.name,
+      displayName: registration.metadata.displayName,
       icon: registration.metadata.icon ?? '📦',
       description: registration.metadata.description ?? 'Extension',
       color: registration.metadata.color ?? 'gray'
@@ -87,14 +87,12 @@ export function DynamicExtensionClient({
         }
         
         // 更新配置信息
-        if (registration.metadata) {
-          setConfig({
-            displayName: registration.metadata.displayName || registration.metadata.name,
-            icon: registration.metadata.icon || '📦',
-            description: registration.metadata.description || 'Extension',
-            color: registration.metadata.color || 'gray'
-          })
-        }
+        setConfig({
+          displayName: registration.metadata.displayName,
+          icon: registration.metadata.icon ?? '📦',
+          description: registration.metadata.description ?? 'Extension',
+          color: registration.metadata.color ?? 'gray'
+        })
 
         // 启动扩展
         if (registration.status !== 'running') {
@@ -138,10 +136,10 @@ export function DynamicExtensionClient({
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4 animate-bounce">{config?.icon ?? '📦'}</div>
+          <div className="text-6xl mb-4 animate-bounce">{config.icon}</div>
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 font-medium">
-            Loading {config?.displayName ?? extensionName}...
+            Loading {config.displayName}...
           </p>
         </div>
       </div>
@@ -158,7 +156,7 @@ export function DynamicExtensionClient({
               Extension Error
             </h2>
             <p className="text-gray-600 mb-4">
-              Failed to load {config?.displayName ?? extensionName}
+              Failed to load {config.displayName}
             </p>
             <p className="text-red-600 text-sm mb-6">{state.error}</p>
             
@@ -189,15 +187,15 @@ export function DynamicExtensionClient({
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              <div className={`bg-gradient-to-r from-${config?.color ?? 'gray'}-500 to-${config?.color ?? 'gray'}-600 text-white p-12`}>
+              <div className={`bg-gradient-to-r from-${config.color}-500 to-${config.color}-600 text-white p-12`}>
                 <div className="flex items-center gap-6">
-                  <div className="text-6xl drop-shadow-lg">{config?.icon ?? '📦'}</div>
+                  <div className="text-6xl drop-shadow-lg">{config.icon}</div>
                   <div>
                     <h1 className="text-4xl font-bold mb-2">
-                      {config?.displayName ?? extensionName}
+                      {config.displayName}
                     </h1>
                     <p className="text-lg opacity-90">
-                      {config?.description ?? 'Extension placeholder'}
+                      {config.description}
                     </p>
                   </div>
                 </div>
@@ -237,7 +235,7 @@ export function DynamicExtensionClient({
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {Array.from(unifiedExtensionManager.getExtensions().values()).map((reg) => {
                         const extConfig = {
-                          displayName: reg.metadata.displayName ?? reg.metadata.name,
+                          displayName: reg.metadata.displayName,
                           icon: reg.metadata.icon ?? '📦',
                           description: reg.metadata.description ?? 'Extension',
                           color: reg.metadata.color ?? 'gray'
@@ -293,12 +291,12 @@ export function DynamicExtensionClient({
         <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="flex items-center gap-4 mb-8 pb-6 border-b">
-              <div className="text-5xl">{config?.icon}</div>
+              <div className="text-5xl">{config.icon}</div>
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {config?.displayName ?? state.registration.metadata.displayName}
+                  {config.displayName}
                 </h1>
-                <p className="text-gray-600 mt-1">{config?.description}</p>
+                <p className="text-gray-600 mt-1">{config.description}</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">

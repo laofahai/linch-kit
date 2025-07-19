@@ -32,13 +32,13 @@ function createConsoleUserExtensions() {
   return {
     // Console 特定字段
     lastLoginAt: defineField
-      .datetime()
+      .date()
       .optional()
       .description('console.entities.user.fields.lastLoginAt')
       .build(),
 
     lastActiveAt: defineField
-      .datetime()
+      .date()
       .optional()
       .description('console.entities.user.fields.lastActiveAt')
       .build(),
@@ -93,13 +93,13 @@ function createConsoleUserExtensions() {
       .build(),
 
     apiKeyCreatedAt: defineField
-      .datetime()
+      .date()
       .optional()
       .description('console.entities.user.fields.apiKeyCreatedAt')
       .build(),
 
     apiKeyLastUsedAt: defineField
-      .datetime()
+      .date()
       .optional()
       .description('console.entities.user.fields.apiKeyLastUsedAt')
       .build(),
@@ -175,7 +175,7 @@ export const UserActivityEntity = defineEntity('UserActivity', {
 
   // 时间戳
   createdAt: defineField
-    .datetime()
+    .date()
     .default('now')
     .index()
     .description('console.entities.userActivity.fields.createdAt'),
@@ -228,7 +228,7 @@ export const UserNotificationEntity = defineEntity('UserNotification', {
     .description('console.entities.userNotification.fields.isRead'),
 
   readAt: defineField
-    .datetime()
+    .date()
     .optional()
     .description('console.entities.userNotification.fields.readAt'),
 
@@ -240,12 +240,12 @@ export const UserNotificationEntity = defineEntity('UserNotification', {
 
   // 时间戳
   createdAt: defineField
-    .datetime()
+    .date()
     .default('now')
     .description('console.entities.userNotification.fields.createdAt'),
 
   expiresAt: defineField
-    .datetime()
+    .date()
     .optional()
     .description('console.entities.userNotification.fields.expiresAt'),
 })

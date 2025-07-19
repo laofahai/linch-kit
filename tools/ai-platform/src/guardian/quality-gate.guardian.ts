@@ -11,7 +11,9 @@
 
 import { execSync } from 'child_process'
 import { readFileSync } from 'fs'
+
 import { glob } from 'glob'
+
 import type { GuardianAgent } from './index.js'
 
 export interface QualityMetrics {

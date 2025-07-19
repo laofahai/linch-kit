@@ -5,6 +5,9 @@
  * @description 包含所有需要在客户端渲染的交互式组件
  */
 
+// 基础设施（客户端专用）
+export * from './infrastructure'
+
 // 交互式UI组件
 export * from './client/accordion'
 export * from './client/button'
@@ -36,5 +39,8 @@ export * from './client/dashboard-layout'
 
 // Extension 管理组件
 export * from './client/extension-manager'
+
+// Hooks - 客户端专用
+export * from './hooks'
 
 // Note: Button is exported from server components, client button provides enhanced functionality

@@ -41,3 +41,15 @@ export {
   type HotReloadConfig,
   type HotReloadEvent
 } from './extension/hot-reload'
+
+// 性能监控系统 (服务端完整功能)
+export {
+  type IPerformanceMonitor,
+  type PerformanceTimer,
+  type PerformanceMetric,
+  type PerformanceStats,
+  type PerformanceMonitorConfig,
+  PrometheusPerformanceMonitor,
+  createPerformanceMonitor,
+  createConfiguredPerformanceMonitor
+} from './observability/performance-monitor'

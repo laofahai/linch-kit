@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig([
-  // 客户端安全入口
+  // 客户端安全入口 (不包含React组件)
   {
     entry: ['src/client.ts', 'src/extension-client.ts'],
     format: ['cjs', 'esm'],
@@ -56,6 +56,28 @@ export default defineConfig([
       '@godaddy/terminus',
     ],
   },
+  // React组件入口（客户端专用）
+  {
+    entry: ['src/react.ts'],
+    format: ['cjs', 'esm'],
+    dts: true,
+    clean: false,
+    splitting: false,
+    sourcemap: true,
+    treeshake: true,
+    minify: false,
+    target: 'esnext',
+    outDir: 'dist',
+    platform: 'browser',
+    banner: {
+      js: `'use client'`,
+    },
+    external: [
+      'react',
+      'react-dom',
+      'next',
+    ],
+  },
   // Providers入口（客户端组件）
   {
     entry: ['src/providers.ts'],
@@ -69,6 +91,9 @@ export default defineConfig([
     target: 'esnext',
     outDir: 'dist',
     platform: 'browser',
+    banner: {
+      js: `'use client'`,
+    },
     external: [
       'react',
       'react-dom',

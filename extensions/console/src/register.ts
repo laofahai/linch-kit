@@ -4,6 +4,7 @@
  */
 
 import { clientExtensionManager } from '@linch-kit/core/client'
+import { unifiedExtensionManager } from '@linch-kit/core/extension'
 import type { Extension, ExtensionConfig, OperationResult } from '@linch-kit/core/client'
 
 /**
@@ -53,24 +54,34 @@ const consoleExtension: Extension = {
  * 注册 Console 扩展
  */
 export async function registerConsoleExtension(): Promise<OperationResult> {
-  const result = await clientExtensionManager.register(consoleExtension)
+  // 同时注册到两个管理器以确保兼容性
+  const clientResult = await clientExtensionManager.register(consoleExtension)
   
-  if (!result.success) {
-    throw new Error(result.error?.message ?? 'Failed to register console extension')
+  if (!clientResult.success) {
+    throw new Error(clientResult.error?.message ?? 'Failed to register console extension to clientExtensionManager')
   }
   
-  return result
+  // 同时注册到unifiedExtensionManager
+  const unifiedResult = await unifiedExtensionManager.register(consoleExtension)
+  
+  if (!unifiedResult.success) {
+    throw new Error(unifiedResult.error?.message ?? 'Failed to register console extension to unifiedExtensionManager')
+  }
+  
+  return unifiedResult
 }
 
 /**
  * 注销 Console 扩展
  */
 export async function unregisterConsoleExtension(): Promise<OperationResult> {
-  const result = await clientExtensionManager.unregister('console')
+  // 从两个管理器中注销
+  const clientResult = await clientExtensionManager.unregister('console')
+  const unifiedResult = await unifiedExtensionManager.unregister('console')
   
-  if (!result.success) {
-    throw new Error(result.error?.message ?? 'Failed to unregister console extension')
+  if (!clientResult.success && !unifiedResult.success) {
+    throw new Error('Failed to unregister console extension from both managers')
   }
   
-  return result
+  return unifiedResult.success ? unifiedResult : clientResult
 }

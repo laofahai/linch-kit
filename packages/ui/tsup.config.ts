@@ -43,5 +43,31 @@ export default defineConfig({
   // CSS 将通过 build:css 脚本单独处理
   onSuccess: async () => {
     console.log('✅ TypeScript compilation completed')
+    
+    // 确保客户端构建产物保留 'use client' 指令
+    const { promises: fs } = await import('fs')
+    const { resolve } = await import('path')
+    
+    const clientFiles = [
+      'dist/client.js',
+      'dist/client.mjs'
+    ]
+    
+    for (const file of clientFiles) {
+      try {
+        const filePath = resolve(file)
+        const content = await fs.readFile(filePath, 'utf-8')
+        
+        // 检查是否已有 'use client' 指令
+        if (!content.trim().startsWith("'use client'") && !content.trim().startsWith('"use client"')) {
+          console.log(`📝 Adding 'use client' directive to ${file}`)
+          await fs.writeFile(filePath, `'use client';\n${content}`)
+        } else {
+          console.log(`✅ 'use client' directive already present in ${file}`)
+        }
+      } catch (error) {
+        console.log(`⚠️  Could not process ${file}: ${error.message}`)
+      }
+    }
   },
 })

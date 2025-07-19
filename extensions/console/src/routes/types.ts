@@ -102,6 +102,7 @@ export type ConsoleFeature =
   | 'monitoring'
   | 'schemas'
   | 'settings'
+  | 'auth-management'
 
 /**
  * 路由上下文接口

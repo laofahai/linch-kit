@@ -8,11 +8,13 @@
 export * from './tenant.service'
 export * from './plugin.service'
 export * from './user.service'
+export * from './auth.service'
 
 // 导入服务实例
 import { tenantService } from './tenant.service'
 import { pluginService } from './plugin.service'
 import { userService } from './user.service'
+import { consoleAuthService } from './auth.service'
 
 /**
  * Console 服务集合
@@ -22,6 +24,7 @@ export const consoleServices = {
   tenant: tenantService,
   plugin: pluginService,
   user: userService,
+  auth: consoleAuthService,
 } as const
 
 /**

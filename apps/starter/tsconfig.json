@@ -53,6 +53,11 @@
       "@/*": [
         "./*"
       ],
+      "@linch-kit/ui/client": ["../../packages/ui/dist/client"],
+      "@linch-kit/ui/server": ["../../packages/ui/dist/server"],
+      "@linch-kit/ui/shared": ["../../packages/ui/dist/shared"],
+      "@linch-kit/core/react": ["../../packages/core/dist/react"],
+      "@linch-kit/auth/client": ["../../packages/auth/dist/client"],
       "@linch-kit/*": [
         "../../packages/*/dist",
         "../../packages/*/src",
@@ -69,6 +74,14 @@
     "components/**/*.tsx",
     "lib/**/*.ts",
     "lib/**/*.tsx",
+    "lib/**/*.test.ts",
+    "lib/**/*.test.tsx",
+    "lib/**/*.spec.ts",
+    "lib/**/*.spec.tsx",
+    "lib/**/*.test.ts",
+    "lib/**/*.test.tsx",
+    "lib/**/*.spec.ts",
+    "lib/**/*.spec.tsx",
     "config/**/*.ts",
     "config/**/*.tsx",
     "next.config.ts",
@@ -80,10 +93,6 @@
     "dist",
     "build",
     "coverage",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx",
     "../../packages/*/src/**/*",
     "../../extensions/*/src/**/*",
     "../../tools/*/src/**/*"

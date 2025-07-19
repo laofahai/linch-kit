@@ -43,6 +43,8 @@ export {
   type PackageI18nOptions,
 } from './i18n'
 
+// React 组件移至 /react 入口
+
 // Note: Provider 组合系统已移至独立导出
 // 使用: import { LinchKitProvider, withTRPCProvider } from '@linch-kit/core/providers'
 

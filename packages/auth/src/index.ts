@@ -42,9 +42,10 @@ export {
 
 // ==================== 服务导出 ====================
 /**
- * 权限管理服务
+ * 认证和权限管理服务
  */
 export * from './services'
+export type { IAuthService } from './types'
 
 // ==================== 中间件导出 ====================
 /**
@@ -78,6 +79,12 @@ export { AuthProvider } from './components/AuthProvider'
  * tRPC路由工厂函数 - 避免循环依赖
  */
 export { createAuthRouter } from './trpc/router-factory'
+
+// ==================== 监控模块导出 ====================
+/**
+ * 认证性能监控和指标收集
+ */
+export * from './monitoring'
 
 // ==================== 版本信息 ====================
 /**

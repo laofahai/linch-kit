@@ -6,7 +6,8 @@
  * @module cli/commands
  */
 
-import type { CLICommand } from '@linch-kit/core'
+// import type { CLICommand } from '@linch-kit/core' // TODO: Fix when CLICommand is available
+type CLICommand = any // Temporary type until CLICommand is available
 
 import { useAuthTranslation, logInfo, logError } from '../infrastructure'
 

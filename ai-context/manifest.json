@@ -195,6 +195,18 @@
       "priority": "critical"
     },
     {
+      "path": "ai-context/02_Guides/14_Conditional_Exports_Guide.md",
+      "description": "LinchKit 条件导出使用指南 - 服务端和客户端代码完全分离实施方案",
+      "tags": ["conditional-exports", "client-server", "build-optimization", "guide"],
+      "priority": "high"
+    },
+    {
+      "path": "ai-context/02_Guides/15_Theme_System_Guide.md",
+      "description": "LinchKit UI 主题系统完整指南 - 包含类型安全的主题管理和自定义方案",
+      "tags": ["theme-system", "ui", "typescript", "customization", "guide"],
+      "priority": "high"
+    },
+    {
       "path": "ai-context/03_Reference/01_Packages_API/",
       "description": "包API文档",
       "tags": ["api", "reference", "packages"],
@@ -282,6 +294,12 @@
       "path": "ai-context/03_Reference/02_Package_Reports/ui-package-completeness.md",
       "description": "@linch-kit/ui包完整性评估报告",
       "tags": ["report", "ui", "completeness", "status"],
+      "priority": "medium"
+    },
+    {
+      "path": "ai-context/98_Project_Management/10_Infrastructure_Optimization_Progress.md",
+      "description": "基础设施优化进度报告和6周优化计划",
+      "tags": ["infrastructure", "optimization", "progress", "planning"],
       "priority": "medium"
     }
   ],
