@@ -53,6 +53,11 @@
       "@/*": [
         "./*"
       ],
+      "@linch-kit/ui/client": ["../../packages/ui/dist/client"],
+      "@linch-kit/ui/server": ["../../packages/ui/dist/server"],
+      "@linch-kit/ui/shared": ["../../packages/ui/dist/shared"],
+      "@linch-kit/core/react": ["../../packages/core/dist/react"],
+      "@linch-kit/auth/client": ["../../packages/auth/dist/client"],
       "@linch-kit/*": [
         "../../packages/*/dist",
         "../../packages/*/src",
