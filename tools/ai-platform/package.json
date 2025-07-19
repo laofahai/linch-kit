@@ -13,7 +13,10 @@
     "context": "bun run scripts/context-cli.js"
   },
   "dependencies": {
-    "@linch-kit/core": "workspace:*"
+    "@linch-kit/core": "workspace:*",
+    "dotenv": "^17.2.0",
+    "neo4j-driver": "^5.28.1",
+    "neogma": "^1.14.1"
   },
   "devDependencies": {
     "tsup": "^8.5.0",

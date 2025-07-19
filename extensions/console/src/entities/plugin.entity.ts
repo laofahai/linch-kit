@@ -47,19 +47,19 @@ export const PluginEntity = defineEntity('Plugin', {
     .required()
     .description('插件分类'),
 
-  tags: defineField.string().array().default([]).description('标签数组'),
+  tags: defineField.array(defineField.string()).default([]).description('标签数组'),
 
   // 链接信息
-  homepage: defineField.string().optional().url().description('插件主页URL'),
+  homepage: defineField.url().optional().description('插件主页URL'),
 
-  repository: defineField.string().optional().url().description('源码仓库URL'),
+  repository: defineField.url().optional().description('源码仓库URL'),
 
-  documentation: defineField.string().optional().url().description('文档URL'),
+  documentation: defineField.url().optional().description('文档URL'),
 
   license: defineField.string().optional().max(50).description('许可证类型'),
 
   // 安装和配置
-  downloadUrl: defineField.string().optional().url().description('下载URL'),
+  downloadUrl: defineField.url().optional().description('下载URL'),
 
   configSchema: defineField.json().optional().description('配置Schema(JSON Schema格式)'),
 
@@ -88,7 +88,7 @@ export const PluginEntity = defineEntity('Plugin', {
 
   weeklyDownloads: defineField.int().default(0).min(0).description('周下载次数'),
 
-  rating: defineField.float().optional().min(1).max(5).description('平均评分(1-5)'),
+  rating: defineField.number().optional().min(1).max(5).description('平均评分(1-5)'),
 
   ratingCount: defineField.int().default(0).min(0).description('评分总数'),
 
@@ -100,7 +100,7 @@ export const PluginEntity = defineEntity('Plugin', {
 
   reviewNotes: defineField.text().optional().description('审核备注'),
 
-  reviewedAt: defineField.datetime().optional().description('审核时间'),
+  reviewedAt: defineField.date().optional().description('审核时间'),
 
   reviewedBy: defineField.relation('User').optional().description('审核人员'),
 
@@ -112,11 +112,11 @@ export const PluginEntity = defineEntity('Plugin', {
   installations: defineField.relation('TenantPlugin').oneToMany().description('安装记录'),
 
   // 审计字段
-  createdAt: defineField.datetime().default('now').description('创建时间'),
+  createdAt: defineField.date().default('now').description('创建时间'),
 
-  updatedAt: defineField.datetime().updatedAt().description('更新时间'),
+  updatedAt: defineField.date().default('now').description('更新时间'),
 
-  publishedAt: defineField.datetime().optional().description('发布时间'),
+  publishedAt: defineField.date().optional().description('发布时间'),
 })
 
 /**
@@ -133,7 +133,7 @@ export const PluginVersionEntity = defineEntity('PluginVersion', {
 
   breakingChanges: defineField.text().optional().description('破坏性变更说明'),
 
-  downloadUrl: defineField.string().optional().url().description('该版本的下载URL'),
+  downloadUrl: defineField.url().optional().description('该版本的下载URL'),
 
   // 兼容性
   minLinchKitVersion: defineField.string().optional().max(20).description('最低LinchKit版本要求'),
@@ -147,7 +147,7 @@ export const PluginVersionEntity = defineEntity('PluginVersion', {
   downloads: defineField.int().default(0).min(0).description('该版本下载次数'),
 
   // 审计字段
-  createdAt: defineField.datetime().default('now').description('发布时间'),
+  createdAt: defineField.date().default('now').description('发布时间'),
 })
 
 /**
@@ -185,11 +185,11 @@ export const TenantPluginEntity = defineEntity('TenantPlugin', {
   errorCount: defineField.int().default(0).min(0).description('错误次数'),
 
   // 审计字段
-  installedAt: defineField.datetime().default('now').description('安装时间'),
+  installedAt: defineField.date().default('now').description('安装时间'),
 
-  updatedAt: defineField.datetime().updatedAt().description('更新时间'),
+  updatedAt: defineField.date().default('now').description('更新时间'),
 
-  lastUsedAt: defineField.datetime().optional().description('最后使用时间'),
+  lastUsedAt: defineField.date().optional().description('最后使用时间'),
 })
 
 // 导出类型

@@ -81,10 +81,10 @@ export const TenantEntity = defineEntity('Tenant', {
     .description('console.entities.tenant.fields.maxUsers'),
 
   maxStorage: defineField
-    .bigint()
+    .number()
     .required()
-    .default(1073741824n) // 1GB
-    .min(0n)
+    .default(1073741824) // 1GB
+    .min(0)
     .description('console.entities.tenant.fields.maxStorage'),
 
   // 扩展字段
@@ -106,17 +106,17 @@ export const TenantEntity = defineEntity('Tenant', {
 
   // 审计字段
   createdAt: defineField
-    .datetime()
+    .date()
     .default('now')
     .description('console.entities.tenant.fields.createdAt'),
 
   updatedAt: defineField
-    .datetime()
-    .updatedAt()
+    .date()
+    .default('now')
     .description('console.entities.tenant.fields.updatedAt'),
 
   deletedAt: defineField
-    .datetime()
+    .date()
     .optional()
     .description('console.entities.tenant.fields.deletedAt'),
 })
@@ -149,17 +149,17 @@ export const TenantQuotasEntity = defineEntity('TenantQuotas', {
 
   // 存储配额
   maxStorage: defineField
-    .bigint()
+    .number()
     .required()
-    .default(1073741824n) // 1GB
-    .min(0n)
+    .default(1073741824) // 1GB
+    .min(0)
     .description('console.entities.tenantQuotas.fields.maxStorage'),
 
   currentStorage: defineField
-    .bigint()
+    .number()
     .required()
-    .default(0n)
-    .min(0n)
+    .default(0)
+    .min(0)
     .description('console.entities.tenantQuotas.fields.currentStorage'),
 
   // API配额
@@ -178,7 +178,7 @@ export const TenantQuotasEntity = defineEntity('TenantQuotas', {
     .description('console.entities.tenantQuotas.fields.currentApiCalls'),
 
   apiResetAt: defineField
-    .datetime()
+    .date()
     .optional()
     .description('console.entities.tenantQuotas.fields.apiResetAt'),
 
@@ -214,13 +214,13 @@ export const TenantQuotasEntity = defineEntity('TenantQuotas', {
 
   // 时间戳
   createdAt: defineField
-    .datetime()
+    .date()
     .default('now')
     .description('console.entities.tenantQuotas.fields.createdAt'),
 
   updatedAt: defineField
-    .datetime()
-    .updatedAt()
+    .date()
+    .default('now')
     .description('console.entities.tenantQuotas.fields.updatedAt'),
 })
 

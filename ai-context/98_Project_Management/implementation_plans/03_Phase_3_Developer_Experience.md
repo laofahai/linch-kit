@@ -61,7 +61,7 @@
    - 解释扩展生命周期和事件处理
 
 5. **创建扩展开发指南**
-   - 创建 `docs/extension-development-guide.md`
+   - 创建 `ai-context/02_Guides/16_Extension_Development_Guide.md`
    - 包含以下内容：
      - 快速开始教程
      - 扩展架构和生命周期
@@ -72,7 +72,7 @@
 6. **确保所有示例使用 bun**
    ```bash
    # 检查和更新所有脚本命令
-   grep -r "npm\|yarn" extensions/ docs/ || echo "No npm/yarn found"
+   grep -r "npm\|yarn" extensions/ || echo "No npm/yarn found"
    ```
    - 将所有 `npm`/`yarn` 命令更新为 `bun`
    - 更新所有文档中的命令示例
@@ -96,7 +96,7 @@
 #### 失败处理
 - **回滚步骤**：
   1. `git stash` 保存当前更改
-  2. `git checkout -- extensions/ docs/`
+  2. `git checkout -- extensions/`
 - **补救措施**：
   - 如果扩展示例无法正常运行，优先修复核心功能
   - 如果文档过于复杂，优先保证基本使用指南的准确性
@@ -105,7 +105,7 @@
 - [ ] 更新的 `extensions/example-counter/README.md`
 - [ ] 更新的 `extensions/console/README.md`
 - [ ] 添加注释的扩展代码文件
-- [ ] 完整的 `docs/extension-development-guide.md`
+- [ ] 完整的 `ai-context/02_Guides/16_Extension_Development_Guide.md`
 - [ ] 扩展开发最佳实践文档
 - [ ] 扩展开发测试和验证报告
 

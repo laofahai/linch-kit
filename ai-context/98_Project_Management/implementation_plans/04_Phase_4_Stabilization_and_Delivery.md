@@ -237,7 +237,7 @@
    bun run docs:api
    
    # 验证文档生成
-   ls -la docs/api/
+   ls -la ai-context/03_Reference/01_Packages_API/
    ```
    成功标志：完整的 API 参考文档生成
 
@@ -262,7 +262,7 @@
 
 #### 输出物
 - [ ] 更新的所有 `.md` 指南文件
-- [ ] `docs/api/` 下的完整 API 参考
+- [ ] `ai-context/03_Reference/01_Packages_API/` 下的完整 API 参考
 - [ ] 文档质量检查报告
 
 ---

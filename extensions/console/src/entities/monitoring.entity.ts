@@ -69,13 +69,13 @@ export const SystemMetricEntity = defineEntity('SystemMetric', {
 
   // 时间戳
   timestamp: defineField
-    .datetime()
+    .date()
     .required()
     .default('now')
     .description('console.entities.systemMetric.fields.timestamp'),
 
   // 索引优化
-  createdAt: defineField.datetime().default('now').index(),
+  createdAt: defineField.date().default('now').index(),
 })
 
 /**
@@ -130,7 +130,7 @@ export const AuditLogEntity = defineEntity('AuditLog', {
 
   // 时间戳
   createdAt: defineField
-    .datetime()
+    .date()
     .default('now')
     .index()
     .description('console.entities.auditLog.fields.createdAt'),
@@ -165,7 +165,7 @@ export const AlertRuleEntity = defineEntity('AlertRule', {
     .description('console.entities.alertRule.fields.condition'),
 
   threshold: defineField
-    .float()
+    .number()
     .required()
     .description('console.entities.alertRule.fields.threshold'),
 
@@ -189,8 +189,7 @@ export const AlertRuleEntity = defineEntity('AlertRule', {
 
   // 通知配置
   notificationChannels: defineField
-    .string()
-    .array()
+    .array(defineField.string())
     .default([])
     .description('console.entities.alertRule.fields.notificationChannels'),
 
@@ -202,13 +201,13 @@ export const AlertRuleEntity = defineEntity('AlertRule', {
 
   // 时间戳
   createdAt: defineField
-    .datetime()
+    .date()
     .default('now')
     .description('console.entities.alertRule.fields.createdAt'),
 
   updatedAt: defineField
-    .datetime()
-    .updatedAt()
+    .date()
+    .default('now')
     .description('console.entities.alertRule.fields.updatedAt'),
 })
 
@@ -229,7 +228,7 @@ export const AlertEventEntity = defineEntity('AlertEvent', {
     .default('triggered')
     .description('console.entities.alertEvent.fields.status'),
 
-  value: defineField.float().required().description('console.entities.alertEvent.fields.value'),
+  value: defineField.number().required().description('console.entities.alertEvent.fields.value'),
 
   message: defineField.text().optional().description('console.entities.alertEvent.fields.message'),
 
@@ -240,7 +239,7 @@ export const AlertEventEntity = defineEntity('AlertEvent', {
     .description('console.entities.alertEvent.fields.acknowledgedBy'),
 
   acknowledgedAt: defineField
-    .datetime()
+    .date()
     .optional()
     .description('console.entities.alertEvent.fields.acknowledgedAt'),
 
@@ -250,13 +249,13 @@ export const AlertEventEntity = defineEntity('AlertEvent', {
     .description('console.entities.alertEvent.fields.resolvedBy'),
 
   resolvedAt: defineField
-    .datetime()
+    .date()
     .optional()
     .description('console.entities.alertEvent.fields.resolvedAt'),
 
   // 时间戳
   triggeredAt: defineField
-    .datetime()
+    .date()
     .default('now')
     .description('console.entities.alertEvent.fields.triggeredAt'),
 })

@@ -19,7 +19,7 @@ export const AuthSessionEntity = defineEntity('AuthSession', {
   // 基础信息
   id: defineField.string().required(),
   userId: defineField.string().required(),
-  userEmail: defineField.string().email().required(),
+  userEmail: defineField.email().required(),
   userRole: defineField.string().default('user'),
   
   // 会话信息
@@ -32,9 +32,9 @@ export const AuthSessionEntity = defineEntity('AuthSession', {
   status: defineField.enum(AuthSessionStatusEnum).default('active'),
   
   // 时间信息
-  issuedAt: defineField.datetime().default('now'),
-  expiresAt: defineField.datetime().required(),
-  lastAccessAt: defineField.datetime().default('now'),
+  issuedAt: defineField.date().default('now'),
+  expiresAt: defineField.date().required(),
+  lastAccessAt: defineField.date().default('now'),
   
   // 设备信息
   deviceInfo: defineField.json<{
@@ -59,15 +59,15 @@ export const AuthSessionEntity = defineEntity('AuthSession', {
   }>().optional(),
   
   // 审计信息
-  createdAt: defineField.datetime().default('now'),
-  updatedAt: defineField.datetime().updatedAt(),
-  revokedAt: defineField.datetime().optional(),
+  createdAt: defineField.date().default('now'),
+  updatedAt: defineField.date().default('now'),
+  revokedAt: defineField.date().optional(),
   revokedBy: defineField.string().optional(),
   revokedReason: defineField.string().optional(),
   
   // 关系
-  user: defineField.relation('User').belongsTo(),
-  auditLogs: defineField.relation('AuditLog').hasMany(),
+  user: defineField.relation('User').manyToOne(),
+  auditLogs: defineField.relation('AuditLog').oneToMany(),
 })
 
 /**
@@ -92,7 +92,7 @@ export const AuthMetricsEntity = defineEntity('AuthMetrics', {
   tags: defineField.json<Record<string, string>>().optional(),
   
   // 时间信息
-  timestamp: defineField.datetime().default('now'),
+  timestamp: defineField.date().default('now'),
   
   // 关联信息
   userId: defineField.string().optional(),
@@ -111,7 +111,7 @@ export const AuthMetricsEntity = defineEntity('AuthMetrics', {
   hourlyBucket: defineField.string().optional(), // 格式: YYYY-MM-DD-HH
   dailyBucket: defineField.string().optional(),  // 格式: YYYY-MM-DD
   
-  createdAt: defineField.datetime().default('now'),
+  createdAt: defineField.date().default('now'),
 })
 
 /**
@@ -143,11 +143,11 @@ export const AuthConfigEntity = defineEntity('AuthConfig', {
   version: defineField.number().default(1),
   
   // 时间信息
-  createdAt: defineField.datetime().default('now'),
-  updatedAt: defineField.datetime().updatedAt(),
+  createdAt: defineField.date().default('now'),
+  updatedAt: defineField.date().default('now'),
   
   // 关系
-  auditLogs: defineField.relation('AuditLog').hasMany(),
+  auditLogs: defineField.relation('AuditLog').oneToMany(),
 })
 
 /**

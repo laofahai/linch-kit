@@ -139,7 +139,7 @@ const customTheme = createTheme({
 - **圆角**: `rounded-theme`, `rounded-theme-lg`
 - **透明度**: `bg-primary/50`, `text-primary/70`
 
-详细文档请参考：[主题系统文档](../../docs/theme-system.md)
+详细文档请参考：[主题系统文档](../../ai-context/02_Guides/15_Theme_System_Guide.md)
 
 ## 🔌 插件集成
 
