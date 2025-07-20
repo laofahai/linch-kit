@@ -13,7 +13,7 @@ import { execSync } from 'child_process'
 import { existsSync, writeFileSync, mkdirSync } from 'fs'
 import { join } from 'path'
 import { createLogger } from '@linch-kit/core'
-import { createHybridAIManager } from '../src/provider/hybrid-ai-manager'
+import { createHybridAIManager } from '../src/providers/hybrid-ai-manager'
 
 const logger = createLogger('ai-guardian-validator')
 

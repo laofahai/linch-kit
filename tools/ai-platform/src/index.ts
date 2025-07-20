@@ -1,88 +1,40 @@
 /**
- * LinchKit AI Package
- *
- * L4 AI 集成层 - Graph RAG 知识图谱和 AI 工具
+ * LinchKit AI Platform - 统一导出
+ * 重构后的清晰模块结构
+ * @version v2.0.3
  */
 
-// 核心类型导出
-export type {
-  GraphNode,
-  GraphRelationship,
-  NodeType,
-  RelationType,
-  IExtractor,
-  IGraphService,
-  ExtractionResult,
-  Neo4jConfig,
-  QueryResult,
-  GraphStats,
-  AIToolConfig,
-} from './types/index.js'
+// 核心基础设施
+export * from './core/graph/index.js'
+export * from './core/config/neo4j-config.js'
+export * from './core/types/index.js'
 
-export {
-  NodeIdGenerator,
-  RelationshipIdGenerator,
-  GraphNodeSchema,
-  GraphRelationshipSchema,
-  Neo4jConfigSchema,
-  QueryResultSchema,
-} from './types/index.js'
+// AI Provider管理
+export * from './providers/hybrid-ai-manager.js'
+export * from './providers/cli-based-provider.js'
+export * from './providers/types.js'
 
 // 数据提取器
-export {
-  BaseExtractor,
-  PackageExtractor,
-  CorrelationAnalyzer,
-  createExtractor,
-  getAvailableExtractorTypes,
-  AVAILABLE_EXTRACTORS,
-  type ExtractorType,
-} from './extractors/index.js'
+export * from './extractors/index.js'
 
-// Graph 服务
-export { Neo4jService } from './graph/neo4j-service.js'
+// 智能查询引擎
+export * from './query/intelligent-query-engine.js'
 
-// 查询引擎
-export { IntelligentQueryEngine } from './query/intelligent-query-engine.js'
+// 上下文管理
+export * from './context/index.js'
 
-// 上下文查询工具
-export { ContextQueryTool } from './context/context-query-tool.js'
-export { EnhancedContextTool } from './context/enhanced-context-tool.js'
-export type {
-  ContextInfo,
-  EntityInfo,
-  RelationshipInfo,
-  DocReference,
-  Example,
-  BestPractice,
-  Pattern,
-  IContextQueryTool,
-} from './context/context-query-tool.js'
-export type {
-  EnhancedContextResponse,
-  DetectedAction,
-  FieldSuggestion,
-  ImplementationStep,
-} from './context/enhanced-context-tool.js'
+// Guardian智能体集群
+export * from './guardian/index.js'
 
-// 生成引擎 (将被废弃)
-export { VibeCodingEngine } from './generation/vibe-coding-engine.js'
-
-// 配置加载器
-export { loadNeo4jConfig, validateNeo4jConfig } from './config/neo4j-config.js'
-
-// AI Guardian 智能体集群
-export { ArchWarden } from './guardian/arch-warden.js'
-export { 
-  getAllGuardians, 
-  getGuardiansByPhase, 
-  getActiveGuardians,
-  ACTIVE_GUARDIANS,
-  PLANNED_GUARDIANS,
-  GUARDIAN_VERSION,
-  GUARDIAN_PHASE
-} from './guardian/index.js'
-export type { GuardianAgent } from './guardian/index.js'
-
-// 版本信息
-export const VERSION = '1.0.0'
+/**
+ * 快速开始函数
+ */
+export async function createAIPlatform() {
+  const { ContextManager } = await import('./context/context-manager.js')
+  const { HybridAIManager } = await import('./providers/hybrid-ai-manager.js')
+  
+  return {
+    context: new ContextManager(),
+    ai: new HybridAIManager()
+  }
+}
