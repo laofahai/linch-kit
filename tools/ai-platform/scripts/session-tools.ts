@@ -87,8 +87,8 @@ function queryContext(entity, includeRelated = true, debug = false) {
   
   try {
     let cmd = includeRelated 
-      ? `bun tools/ai-platform/scripts/context-cli.js --find-entity "${entity}" --include-related`
-      : `bun tools/ai-platform/scripts/context-cli.js --find-entity "${entity}"`;
+      ? `bun tools/ai-platform/scripts/context-cli.ts --find-entity "${entity}" --include-related`
+      : `bun tools/ai-platform/scripts/context-cli.ts --find-entity "${entity}"`;
     
     // 添加调试模式参数
     if (debug) {
@@ -188,7 +188,7 @@ async function queryRelations(entity) {
   log.header('🔗 查询实体关系');
   
   try {
-    let cmd = `bun tools/ai-platform/scripts/context-cli.js --find-entity "${entity}" --include-related --debug`;
+    let cmd = `bun tools/ai-platform/scripts/context-cli.ts --find-entity "${entity}" --include-related --debug`;
     
     // 使用静默模式执行命令，避免显示"查询结果:"
     log.info(`查询实体关系: ${entity}`);
@@ -260,7 +260,7 @@ function querySymbol(symbol) {
   log.header('🔍 查询符号定义');
   
   try {
-    const cmd = `bun tools/ai-platform/scripts/context-cli.js --find-symbol "${symbol}"`;
+    const cmd = `bun tools/ai-platform/scripts/context-cli.ts --find-symbol "${symbol}"`;
     const result = runCommand(cmd, `查询符号: ${symbol}`);
     
     // 显示查询结果
@@ -293,8 +293,8 @@ function queryPattern(pattern, forEntity = '') {
   
   try {
     const cmd = forEntity
-      ? `bun tools/ai-platform/scripts/context-cli.js --find-pattern "${pattern}" --for-entity "${forEntity}"`
-      : `bun tools/ai-platform/scripts/context-cli.js --find-pattern "${pattern}"`;
+      ? `bun tools/ai-platform/scripts/context-cli.ts --find-pattern "${pattern}" --for-entity "${forEntity}"`
+      : `bun tools/ai-platform/scripts/context-cli.ts --find-pattern "${pattern}"`;
     
     const result = runCommand(cmd, `查询模式: ${pattern}`);
     

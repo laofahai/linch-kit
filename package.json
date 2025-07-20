@@ -93,6 +93,7 @@
     "evolution:status": "bun tools/ai-platform/scripts/evolution-engine.ts status",
     "evolution:history": "bun tools/ai-platform/scripts/evolution-engine.ts history",
     "evolution:stats": "bun tools/ai-platform/scripts/evolution-engine.ts stats",
+    "ai:workflow": "bunx linch workflow",
     "ai:workflow:analyze": "bun tools/ai-platform/test-workflow-integration.ts",
     "ai:workflow:test": "bun tools/ai-platform/test-gemini-integration.ts",
     "ai:workflow:status": "bun tools/ai-platform/scripts/workflow-status.ts",

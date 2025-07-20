@@ -124,7 +124,7 @@ class AIGuardianValidator {
     
     try {
       // 使用ai-platform的session-tools进行查询
-      const { stdout: result } = await execAsync(`bun tools/ai-platform/scripts/session-tools.js query "${taskDescription}" --debug`)
+      const { stdout: result } = await execAsync(`bun tools/ai-platform/scripts/session-tools.ts query "${taskDescription}" --debug`)
       
       console.log('✅ Graph RAG查询完成')
       
@@ -142,7 +142,7 @@ class AIGuardianValidator {
   async checkArchitecture() {
     try {
       // 使用ai-platform的arch-check进行架构检查
-      await execAsync('bun tools/ai-platform/scripts/arch-check.js')
+      await execAsync('bun tools/ai-platform/scripts/arch-check.ts')
       
       console.log('✅ 架构合规性检查通过')
       
@@ -156,7 +156,7 @@ class AIGuardianValidator {
   async verifyContext() {
     try {
       // 使用ai-platform的context-verifier
-      await execAsync('bun tools/ai-platform/scripts/context-verifier.js --action=verify')
+      await execAsync('bun tools/ai-platform/scripts/context-verifier.ts --action=verify')
       
       console.log('✅ 上下文验证通过')
       

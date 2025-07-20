@@ -36,7 +36,7 @@ export * from './prompt/template-engine.js'
 export * from './feedback/user-feedback-collector.js'
 
 // 实现引擎
-export * from './implementation/index.js'
+export * from './implementation/index'
 
 /**
  * 快速开始函数

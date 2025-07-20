@@ -44,7 +44,7 @@ export default defineConfig({
   onSuccess: async () => {
     console.log('✅ TypeScript compilation completed')
     
-    // 确保客户端构建产物保留 'use client' 指令
+    // 修复客户端构建产物中的 'use client' 指令位置
     const { promises: fs } = await import('fs')
     const { resolve } = await import('path')
     
@@ -58,13 +58,16 @@ export default defineConfig({
         const filePath = resolve(file)
         const content = await fs.readFile(filePath, 'utf-8')
         
-        // 检查是否已有 'use client' 指令
-        if (!content.trim().startsWith("'use client'") && !content.trim().startsWith('"use client"')) {
-          console.log(`📝 Adding 'use client' directive to ${file}`)
-          await fs.writeFile(filePath, `'use client';\n${content}`)
-        } else {
-          console.log(`✅ 'use client' directive already present in ${file}`)
-        }
+        // 移除所有现有的 'use client' 指令
+        let cleanContent = content
+          .replace(/'use client';\s*/g, '')
+          .replace(/"use client";\s*/g, '')
+          .replace(/'use client'/g, '')
+          .replace(/"use client"/g, '')
+        
+        // 确保文件开头有唯一的 'use client' 指令
+        console.log(`📝 Adding 'use client' directive to start of ${file}`)
+        await fs.writeFile(filePath, `'use client';\n${cleanContent}`)
       } catch (error) {
         console.log(`⚠️  Could not process ${file}: ${error.message}`)
       }

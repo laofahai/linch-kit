@@ -73,6 +73,20 @@ export type CommandMiddleware = (
 /**
  * CLI命令定义
  */
+/**
+ * 命令参数定义
+ */
+export interface CommandArgument {
+  /** 参数名称 */
+  name: string
+  /** 参数描述 */
+  description: string
+  /** 是否必需 */
+  required?: boolean
+  /** 参数类型 */
+  type?: 'string' | 'number' | 'boolean'
+}
+
 export interface CLICommand {
   /** 命令名称 */
   name: string
@@ -92,8 +106,11 @@ export interface CLICommand {
     | 'auth'
     | 'crud'
     | 'ui'
+    | 'ai'
   /** 命令选项 */
   options?: CommandOption[]
+  /** 命令参数 */
+  arguments?: CommandArgument[]
   /** 命令执行器 */
   handler: CommandHandler
   /** 中间件 */
@@ -206,7 +223,20 @@ export class CLIManagerImpl extends EventEmitter implements CLIManager {
     this.commands.set(command.name, command)
 
     // 创建Commander命令
-    const cmd = this.program.command(command.name).description(command.description)
+    let cmdSignature = command.name
+    
+    // 添加参数到命令签名
+    if (command.arguments) {
+      command.arguments.forEach(arg => {
+        if (arg.required) {
+          cmdSignature += ` <${arg.name}>`
+        } else {
+          cmdSignature += ` [${arg.name}]`
+        }
+      })
+    }
+    
+    const cmd = this.program.command(cmdSignature).description(command.description)
 
     // 添加选项
     command.options?.forEach(option => {
