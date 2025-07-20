@@ -12,6 +12,8 @@ import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 import { createLogger } from '@linch-kit/core'
+import { HybridAIManager, createHybridAIManager } from '../providers/hybrid-ai-manager'
+import { IntelligentQueryEngine } from '../query/intelligent-query-engine'
 
 const logger = createLogger({ name: 'decision-council' });
 
@@ -221,11 +223,15 @@ export interface DecisionHistory {
 export class DecisionCouncil {
   private dataDir: string;
   private decisionHistory: Map<string, DecisionHistory> = new Map();
+  private aiManager: HybridAIManager;
+  private queryEngine: IntelligentQueryEngine;
 
   constructor() {
     this.dataDir = join(process.cwd(), '.claude', 'decision-council');
     this.ensureDataDir();
     this.loadDecisionHistory();
+    this.aiManager = createHybridAIManager();
+    this.queryEngine = new IntelligentQueryEngine();
   }
 
   /**
@@ -354,16 +360,72 @@ export class DecisionCouncil {
     const agents = this.selectRelevantAgents(input.type);
     const analyses: AgentAnalysis[] = [];
 
-    for (const agentRole of agents) {
+    // 并行执行Agent分析，提高效率
+    const analysisPromises = agents.map(async (agentRole) => {
       try {
-        const analysis = await this.getAgentAnalysis(agentRole, input);
-        analyses.push(analysis);
+        const analysis = await this.getAgentAnalysisWithRetry(agentRole, input);
+        return { success: true, analysis, role: agentRole };
       } catch (error) {
         logger.warn(`Agent ${agentRole} 分析失败`, { error: (error as Error).message });
+        return { success: false, error, role: agentRole };
       }
-    }
+    });
+
+    const results = await Promise.allSettled(analysisPromises);
+    
+    results.forEach((result, index) => {
+      const agentRole = agents[index];
+      if (result.status === 'fulfilled' && result.value.success) {
+        analyses.push(result.value.analysis);
+      } else {
+        logger.warn(`Agent ${agentRole} 最终分析失败，使用降级分析`);
+        const fallbackAnalysis = this.getFallbackAnalysis(agentRole, input);
+        fallbackAnalysis.confidence = Math.max(30, fallbackAnalysis.confidence - 30); // 标记为降级
+        analyses.push(fallbackAnalysis);
+      }
+    });
 
     return analyses;
+  }
+
+  /**
+   * 带重试机制的Agent分析
+   */
+  private async getAgentAnalysisWithRetry(role: AgentRole, input: DecisionInput, maxRetries: number = 2): Promise<AgentAnalysis> {
+    let lastError: Error | null = null;
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        // 每次重试增加超时时间
+        const timeoutMs = 30000 + (attempt * 15000); // 30s, 45s, 60s
+        
+        const analysis = await Promise.race([
+          this.getAgentAnalysis(role, input),
+          new Promise<never>((_, reject) => 
+            setTimeout(() => reject(new Error(`分析超时 (${timeoutMs}ms)`)), timeoutMs)
+          )
+        ]);
+        
+        logger.info(`Agent ${role} 分析成功`, { 
+          attempt: attempt + 1, 
+          confidence: analysis.confidence 
+        });
+        
+        return analysis;
+      } catch (error) {
+        lastError = error as Error;
+        logger.warn(`Agent ${role} 分析失败 (尝试 ${attempt + 1}/${maxRetries + 1})`, {
+          error: lastError.message
+        });
+        
+        if (attempt < maxRetries) {
+          // 等待一段时间后重试
+          await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+        }
+      }
+    }
+    
+    throw lastError || new Error('未知分析错误');
   }
 
   /**
@@ -400,94 +462,409 @@ export class DecisionCouncil {
    * 获取单个Agent的分析
    */
   private async getAgentAnalysis(role: AgentRole, input: DecisionInput): Promise<AgentAnalysis> {
-    // 模拟不同Agent的分析逻辑
-    // 在实际实现中，这里会调用不同的AI模型或专家系统
-    
     logger.debug(`正在获取 ${role} 的分析...`, { decisionId: input.id });
 
-    // 基于角色的分析策略
-    const analysis = this.simulateAgentAnalysis(role, input);
+    try {
+      // 使用真实AI进行分析
+      const analysis = await this.performRealAgentAnalysis(role, input);
+      return analysis;
+    } catch (error) {
+      logger.warn(`${role} AI分析失败，使用降级分析`, { error: (error as Error).message });
+      
+      // 降级到规则基础分析
+      return this.getFallbackAnalysis(role, input);
+    }
+  }
+
+  /**
+   * 执行真实的AI Agent分析
+   */
+  private async performRealAgentAnalysis(role: AgentRole, input: DecisionInput): Promise<AgentAnalysis> {
+    // 获取相关的项目上下文
+    const projectContext = await this.enrichWithProjectContext(input);
     
-    // 添加一些随机性以模拟真实的AI分析
-    await this.simulateAnalysisDelay();
+    const rolePrompt = this.buildRoleSpecificPrompt(role, input, projectContext);
+    
+    const aiResult = await this.aiManager.analyze({
+      prompt: rolePrompt,
+      context: {
+        project_name: 'LinchKit',
+        decision_id: input.id,
+        decision_type: input.type,
+        agent_role: role,
+        project_context: projectContext
+      },
+      expectedFormat: 'json',
+      enforceSchema: true,
+      requiresAI: true,
+      ruleBasedFallback: () => JSON.stringify(this.getFallbackAnalysis(role, input))
+    });
+
+    if (!aiResult.success || !aiResult.structured?.parsed) {
+      throw new Error(`AI分析失败: ${JSON.stringify(aiResult)}`);
+    }
+
+    // 解析AI返回的结构化结果
+    const aiAnalysis = aiResult.structured.parsed as any;
+    
+    // 验证和清理AI返回的数据
+    return this.validateAndCleanAIAnalysis(aiAnalysis, role, input);
+  }
+
+  /**
+   * 通过Graph RAG丰富项目上下文
+   */
+  private async enrichWithProjectContext(input: DecisionInput): Promise<Record<string, any>> {
+    try {
+      const contextQueries = this.generateContextQueries(input);
+      const contextResults: Record<string, any> = {};
+
+      // 并行查询相关上下文
+      const queryPromises = contextQueries.map(async (query) => {
+        try {
+          const result = await this.queryEngine.query(query.query, {
+            category: query.category,
+            maxResults: 5,
+            minRelevanceScore: 0.7
+          });
+          return { key: query.key, result };
+        } catch (error) {
+          logger.warn(`上下文查询失败: ${query.key}`, error);
+          return { key: query.key, result: null };
+        }
+      });
+
+      const results = await Promise.all(queryPromises);
+      results.forEach(({ key, result }) => {
+        if (result) {
+          contextResults[key] = result;
+        }
+      });
+
+      logger.info('项目上下文已丰富', { 
+        decisionId: input.id, 
+        contextKeys: Object.keys(contextResults) 
+      });
+
+      return contextResults;
+    } catch (error) {
+      logger.warn('项目上下文丰富失败', error);
+      return {};
+    }
+  }
+
+  /**
+   * 生成上下文查询
+   */
+  private generateContextQueries(input: DecisionInput): Array<{
+    key: string;
+    query: string;
+    category: string;
+  }> {
+    const queries = [];
+
+    // 基于决策类型生成查询
+    switch (input.type) {
+      case DecisionType.ARCHITECTURE:
+        queries.push(
+          { key: 'existing_architecture', query: 'architecture design patterns', category: 'architecture' },
+          { key: 'related_packages', query: 'package dependencies structure', category: 'packages' }
+        );
+        break;
+
+      case DecisionType.TECHNOLOGY:
+        queries.push(
+          { key: 'current_tech_stack', query: 'technology stack typescript', category: 'technology' },
+          { key: 'similar_implementations', query: 'implementation examples', category: 'code' }
+        );
+        break;
+
+      case DecisionType.INTEGRATION:
+        queries.push(
+          { key: 'integration_patterns', query: 'integration patterns api', category: 'integration' },
+          { key: 'existing_integrations', query: 'existing integrations', category: 'code' }
+        );
+        break;
+    }
+
+    // 基于上下文中的包和文件添加查询
+    if (input.context.packages) {
+      input.context.packages.forEach(pkg => {
+        queries.push({
+          key: `package_${pkg}`,
+          query: pkg,
+          category: 'packages'
+        });
+      });
+    }
+
+    if (input.context.files) {
+      input.context.files.forEach(file => {
+        const fileName = file.split('/').pop() || file;
+        queries.push({
+          key: `file_${fileName}`,
+          query: fileName,
+          category: 'files'
+        });
+      });
+    }
+
+    return queries;
+  }
+
+  /**
+   * 构建特定角色的分析提示词
+   */
+  private buildRoleSpecificPrompt(role: AgentRole, input: DecisionInput, projectContext?: Record<string, any>): string {
+    const optionsJson = JSON.stringify(input.options, null, 2);
+    const contextJson = JSON.stringify(input.context, null, 2);
+    
+    const roleContext = this.getRoleContext(role);
+    
+    // 构建项目上下文部分
+    let projectContextSection = '';
+    if (projectContext && Object.keys(projectContext).length > 0) {
+      projectContextSection = `
+
+## 项目相关上下文 (从LinchKit知识库获取)
+${Object.entries(projectContext).map(([key, value]) => {
+  if (value && typeof value === 'object' && 'results' in value) {
+    const results = (value as any).results;
+    if (Array.isArray(results) && results.length > 0) {
+      return `### ${key}
+${results.slice(0, 3).map((result: any) => 
+  `- ${result.content || result.description || result.name || JSON.stringify(result)}`
+).join('\n')}`;
+    }
+  }
+  return `### ${key}
+${JSON.stringify(value, null, 2)}`;
+}).join('\n')}`;
+    }
+    
+    return `你是一个专业的${roleContext.title}，需要对LinchKit项目中的以下技术决策进行分析。
+
+## LinchKit项目背景
+LinchKit是一个AI-First全栈开发框架，使用TypeScript构建，采用模块化架构设计。项目注重代码质量、类型安全和可扩展性。
+
+## 决策信息
+- **标题**: ${input.title}
+- **描述**: ${input.description}
+- **类型**: ${input.type}
+- **优先级**: ${input.priority}
+
+## 上下文信息
+${contextJson}
+${projectContextSection}
+
+## 可选方案
+${optionsJson}
+
+## 你的角色职责
+${roleContext.responsibilities.map(r => `- ${r}`).join('\n')}
+
+## 分析重点
+${roleContext.focusAreas.map(f => `- ${f}`).join('\n')}
+
+## 输出要求
+请以JSON格式输出分析结果，包含以下字段：
+{
+  "recommendedOption": "推荐的选项ID",
+  "confidence": 置信度(0-100),
+  "reasoning": ["推理过程1", "推理过程2"],
+  "concerns": ["关注点1", "关注点2"],
+  "suggestions": ["建议1", "建议2"],
+  "riskAssessment": {
+    "majorRisks": [
+      {
+        "description": "风险描述",
+        "level": 风险等级(1-5),
+        "impact": "影响范围",
+        "mitigation": "缓解措施"
+      }
+    ],
+    "riskScore": 风险评分(1-10)
+  },
+  "scoring": {
+    "${roleContext.criteria[0]}": 评分(1-10),
+    "${roleContext.criteria[1]}": 评分(1-10),
+    "${roleContext.criteria[2]}": 评分(1-10)
+  }
+}
+
+请基于你的专业知识和LinchKit项目特点，提供深入的分析和建议。`;
+  }
+
+  /**
+   * 获取角色上下文信息
+   */
+  private getRoleContext(role: AgentRole): {
+    title: string;
+    responsibilities: string[];
+    focusAreas: string[];
+    criteria: string[];
+  } {
+    switch (role) {
+      case AgentRole.ARCHITECT:
+        return {
+          title: '软件架构师',
+          responsibilities: [
+            '设计和维护系统整体架构',
+            '确保技术决策的长期可持续性',
+            '评估架构方案的可扩展性和灵活性'
+          ],
+          focusAreas: [
+            '系统模块化和解耦',
+            '架构演进能力',
+            '技术栈一致性',
+            '代码组织结构'
+          ],
+          criteria: ['scalability', 'maintainability', 'flexibility']
+        };
+
+      case AgentRole.SECURITY_EXPERT:
+        return {
+          title: '安全专家',
+          responsibilities: [
+            '识别和评估安全风险',
+            '确保数据和系统安全',
+            '设计安全防护策略'
+          ],
+          focusAreas: [
+            '数据保护和隐私',
+            '认证和授权机制',
+            '安全漏洞防护',
+            '合规性要求'
+          ],
+          criteria: ['security', 'compliance', 'vulnerability']
+        };
+
+      case AgentRole.PERFORMANCE_EXPERT:
+        return {
+          title: '性能专家',
+          responsibilities: [
+            '优化系统性能表现',
+            '识别性能瓶颈',
+            '设计高效的解决方案'
+          ],
+          focusAreas: [
+            '响应时间优化',
+            '资源利用效率',
+            '并发处理能力',
+            '缓存策略'
+          ],
+          criteria: ['performance', 'efficiency', 'optimization']
+        };
+
+      case AgentRole.BUSINESS_ANALYST:
+        return {
+          title: '业务分析师',
+          responsibilities: [
+            '理解业务需求和目标',
+            '评估方案的业务价值',
+            '分析用户体验影响'
+          ],
+          focusAreas: [
+            '业务目标匹配度',
+            '用户价值创造',
+            '市场竞争优势',
+            '投资回报率'
+          ],
+          criteria: ['business_value', 'user_experience', 'market_fit']
+        };
+
+      case AgentRole.DEVELOPER:
+        return {
+          title: '开发工程师',
+          responsibilities: [
+            '评估开发复杂度和可行性',
+            '关注代码质量和维护性',
+            '分析技术实现细节'
+          ],
+          focusAreas: [
+            '开发效率',
+            '代码质量',
+            '技术难度',
+            '测试复杂度'
+          ],
+          criteria: ['development_speed', 'code_quality', 'testing']
+        };
+
+      case AgentRole.QUALITY_ASSURANCE:
+        return {
+          title: '质量保证工程师',
+          responsibilities: [
+            '确保方案质量和可靠性',
+            '设计测试策略',
+            '评估质量风险'
+          ],
+          focusAreas: [
+            '测试覆盖率',
+            '缺陷预防',
+            '质量度量',
+            '自动化程度'
+          ],
+          criteria: ['testability', 'reliability', 'quality']
+        };
+
+      default:
+        return {
+          title: '通用分析师',
+          responsibilities: ['进行综合分析', '提供平衡建议'],
+          focusAreas: ['整体评估', '风险分析'],
+          criteria: ['overall_score', 'risk_level', 'feasibility']
+        };
+    }
+  }
+
+  /**
+   * 验证和清理AI分析结果
+   */
+  private validateAndCleanAIAnalysis(aiAnalysis: any, role: AgentRole, input: DecisionInput): AgentAnalysis {
+    // 确保所有必需字段存在
+    const analysis: AgentAnalysis = {
+      role,
+      recommendedOption: aiAnalysis.recommendedOption || input.options[0]?.id || '',
+      confidence: Math.max(0, Math.min(100, aiAnalysis.confidence || 70)),
+      reasoning: Array.isArray(aiAnalysis.reasoning) ? aiAnalysis.reasoning : ['AI分析完成'],
+      concerns: Array.isArray(aiAnalysis.concerns) ? aiAnalysis.concerns : [],
+      suggestions: Array.isArray(aiAnalysis.suggestions) ? aiAnalysis.suggestions : [],
+      riskAssessment: {
+        majorRisks: Array.isArray(aiAnalysis.riskAssessment?.majorRisks) 
+          ? aiAnalysis.riskAssessment.majorRisks.map(risk => ({
+              description: risk.description || '未知风险',
+              level: Math.max(1, Math.min(5, risk.level || 3)),
+              impact: risk.impact || '影响未知',
+              mitigation: risk.mitigation || ''
+            }))
+          : [],
+        riskScore: Math.max(1, Math.min(10, aiAnalysis.riskAssessment?.riskScore || 5))
+      },
+      scoring: aiAnalysis.scoring || {}
+    };
+
+    // 验证推荐选项是否存在
+    const validOption = input.options.find(opt => opt.id === analysis.recommendedOption);
+    if (!validOption) {
+      analysis.recommendedOption = input.options[0]?.id || '';
+      analysis.confidence = Math.max(0, analysis.confidence - 20);
+    }
 
     return analysis;
   }
 
   /**
-   * 模拟Agent分析 (实际实现中会替换为真实的AI分析)
+   * 降级分析方法 (当AI分析失败时使用)
    */
-  private simulateAgentAnalysis(role: AgentRole, input: DecisionInput): AgentAnalysis {
+  private getFallbackAnalysis(role: AgentRole, input: DecisionInput): AgentAnalysis {
+    const roleContext = this.getRoleContext(role);
     const options = input.options;
     
-    // 基于角色特点进行分析
-    let scoring: { [criterion: string]: number } = {};
-    let concerns: string[] = [];
-    let suggestions: string[] = [];
-    let riskScore = 5;
-
-    switch (role) {
-      case AgentRole.ARCHITECT:
-        scoring = {
-          scalability: this.scoreOptions(options, 'scalability'),
-          maintainability: this.scoreOptions(options, 'maintainability'),
-          flexibility: this.scoreOptions(options, 'flexibility')
-        };
-        concerns = ['系统架构的长期演进性', '模块间耦合度', '技术债务累积'];
-        suggestions = ['建议采用分层架构', '考虑微服务架构的适用性', '制定架构演进路线图'];
-        break;
-
-      case AgentRole.SECURITY_EXPERT:
-        scoring = {
-          security: this.scoreOptions(options, 'security'),
-          compliance: this.scoreOptions(options, 'compliance'),
-          vulnerability: this.scoreOptions(options, 'vulnerability')
-        };
-        concerns = ['数据安全和隐私保护', '认证授权机制', '安全漏洞风险'];
-        suggestions = ['实施多层安全防护', '定期安全审计', '建立应急响应流程'];
-        riskScore = Math.max(6, riskScore);
-        break;
-
-      case AgentRole.PERFORMANCE_EXPERT:
-        scoring = {
-          performance: this.scoreOptions(options, 'performance'),
-          efficiency: this.scoreOptions(options, 'efficiency'),
-          optimization: this.scoreOptions(options, 'optimization')
-        };
-        concerns = ['系统响应时间', '资源利用率', '性能瓶颈'];
-        suggestions = ['建立性能基准测试', '实施性能监控', '优化关键路径'];
-        break;
-
-      case AgentRole.BUSINESS_ANALYST:
-        scoring = {
-          business_value: this.scoreOptions(options, 'business_value'),
-          user_experience: this.scoreOptions(options, 'user_experience'),
-          market_fit: this.scoreOptions(options, 'market_fit')
-        };
-        concerns = ['业务价值实现', '用户体验影响', '市场竞争力'];
-        suggestions = ['明确业务目标', '收集用户反馈', '分析竞品方案'];
-        break;
-
-      case AgentRole.DEVELOPER:
-        scoring = {
-          development_speed: this.scoreOptions(options, 'development_speed'),
-          code_quality: this.scoreOptions(options, 'code_quality'),
-          testing: this.scoreOptions(options, 'testing')
-        };
-        concerns = ['开发复杂度', '代码可维护性', '测试覆盖率'];
-        suggestions = ['采用最佳实践', '建立代码规范', '完善测试策略'];
-        break;
-
-      case AgentRole.QUALITY_ASSURANCE:
-        scoring = {
-          testability: this.scoreOptions(options, 'testability'),
-          reliability: this.scoreOptions(options, 'reliability'),
-          quality: this.scoreOptions(options, 'quality')
-        };
-        concerns = ['质量保证流程', '测试自动化', '缺陷率控制'];
-        suggestions = ['建立质量门禁', '实施自动化测试', '制定质量指标'];
-        break;
-    }
+    // 基于角色特点进行简化分析
+    const scoring: { [criterion: string]: number } = {};
+    roleContext.criteria.forEach(criterion => {
+      scoring[criterion] = this.scoreOptions(options, criterion);
+    });
 
     // 计算推荐选项
     const recommendedOption = this.getTopScoredOption(options, scoring);
@@ -501,13 +878,13 @@ export class DecisionCouncil {
     return {
       role,
       recommendedOption,
-      confidence,
+      confidence: Math.max(40, confidence - 20), // 降级分析置信度较低
       reasoning: this.generateReasoning(role, scoring, recommendedOption, options),
-      concerns,
-      suggestions,
+      concerns: roleContext.focusAreas.slice(0, 3),
+      suggestions: roleContext.responsibilities.slice(0, 2),
       riskAssessment: {
         majorRisks,
-        riskScore
+        riskScore: 5
       },
       scoring
     };
@@ -656,13 +1033,6 @@ export class DecisionCouncil {
     return risks;
   }
 
-  /**
-   * 模拟分析延迟
-   */
-  private async simulateAnalysisDelay(): Promise<void> {
-    // 模拟AI分析时间
-    return new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
-  }
 
   /**
    * 计算共识级别

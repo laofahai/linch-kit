@@ -9,10 +9,13 @@
  * @author Claude Code
  */
 
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 import { readFileSync } from 'fs'
 import { glob } from 'glob'
 import { createLogger } from '@linch-kit/core'
+
+const execAsync = promisify(exec)
 
 const logger = createLogger('ai-quality-gate')
 
@@ -70,10 +73,7 @@ class AIQualityGate {
     logger.info('🔍 TypeScript严格检查...')
     
     try {
-      execSync('bunx tsc --noEmit --strict', { 
-        encoding: 'utf8',
-        stdio: 'pipe'
-      })
+      await execAsync('bunx tsc --noEmit --strict')
       logger.info('✅ TypeScript检查通过')
       this.metrics.typeScriptErrors = 0
     } catch (error: any) {
@@ -83,6 +83,7 @@ class AIQualityGate {
       
       if (this.metrics.typeScriptErrors > 0) {
         this.violations.push(`TypeScript编译错误: ${this.metrics.typeScriptErrors}个`)
+        logger.error(`TypeScript错误详情: ${error.message}`)
         
         if (errorOutput.includes('any')) {
           this.violations.push('检测到any类型使用，违反严格模式要求')
@@ -98,10 +99,7 @@ class AIQualityGate {
     logger.info('📏 ESLint规范检查...')
     
     try {
-      execSync('bunx eslint . --max-warnings=0', { 
-        encoding: 'utf8',
-        stdio: 'pipe'
-      })
+      await execAsync('bunx eslint . --max-warnings=0')
       
       logger.info('✅ ESLint检查通过')
       this.metrics.eslintViolations = 0
@@ -113,6 +111,7 @@ class AIQualityGate {
       
       if (errorCount > 0) {
         this.violations.push(`ESLint违规: ${errorCount}个`)
+        logger.error(`ESLint错误详情: ${error.message}`)
         
         if (errorOutput.includes('console.log')) {
           this.violations.push('检测到console.log使用，必须使用LinchKit logger')
@@ -125,16 +124,13 @@ class AIQualityGate {
     logger.info('🔨 构建检查...')
     
     try {
-      execSync('bun run build', { 
-        encoding: 'utf8',
-        stdio: 'pipe',
-        timeout: 120000
-      })
+      await execAsync('bun run build', { timeout: 120000 })
       logger.info('✅ 构建成功')
       this.metrics.buildSuccess = true
-    } catch {
+    } catch (error: any) {
       this.violations.push('构建失败，代码无法编译')
       this.metrics.buildSuccess = false
+      logger.error(`构建失败详情: ${error.message}`)
     }
   }
 
@@ -142,17 +138,14 @@ class AIQualityGate {
     logger.info('🧪 测试检查...')
     
     try {
-      execSync('bun test', { 
-        encoding: 'utf8',
-        stdio: 'pipe',
-        timeout: 180000
-      })
+      await execAsync('bun test', { timeout: 180000 })
       
       this.metrics.testsPassing = true
       logger.info('✅ 测试执行成功')
-    } catch {
+    } catch (error: any) {
       this.violations.push('测试执行失败')
       this.metrics.testsPassing = false
+      logger.error(`测试失败详情: ${error.message}`)
     }
   }
 
@@ -204,12 +197,11 @@ class AIQualityGate {
     logger.info('🏗️ 架构合规性检查...')
     
     try {
-      execSync('bun tools/ai-platform/scripts/arch-check.js', {
-        stdio: 'pipe'
-      })
+      await execAsync('bun tools/ai-platform/scripts/arch-check.js')
       logger.info('✅ 架构检查通过')
-    } catch {
+    } catch (error: any) {
       this.warnings.push('架构检查发现问题，建议查看详细报告')
+      logger.error(`架构检查错误: ${error.message}`)
     }
   }
 
@@ -217,12 +209,11 @@ class AIQualityGate {
     logger.info('🛡️ 安全检查...')
     
     try {
-      execSync('bun tools/ai-platform/scripts/security-sentinel.js', {
-        stdio: 'pipe'
-      })
+      await execAsync('bun tools/ai-platform/scripts/security-sentinel.js')
       logger.info('✅ 安全检查通过')
-    } catch {
+    } catch (error: any) {
       this.warnings.push('安全检查发现问题')
+      logger.error(`安全检查错误: ${error.message}`)
     }
   }
 

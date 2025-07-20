@@ -9,8 +9,11 @@
  * @author LinchKit AI Guardian System
  */
 
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 import { existsSync } from 'fs'
+
+const execAsync = promisify(exec)
 
 import type { GuardianAgent } from './index.js'
 
@@ -61,10 +64,11 @@ export class PreCheckGuardian implements GuardianAgent {
     this.violations = [] // 重置违规记录
     
     // 构建上下文
+    const currentBranch = await this.getCurrentBranch()
     const context: PreCheckContext = {
       featureDescription,
       workingDirectory: process.cwd(),
-      currentBranch: this.getCurrentBranch()
+      currentBranch
     }
     
     // 执行检查
@@ -85,10 +89,12 @@ export class PreCheckGuardian implements GuardianAgent {
     return result
   }
   
-  private getCurrentBranch(): string {
+  private async getCurrentBranch(): Promise<string> {
     try {
-      return execSync('git branch --show-current', { encoding: 'utf8' }).trim()
-    } catch {
+      const { stdout } = await execAsync('git branch --show-current')
+      return stdout.trim()
+    } catch (error) {
+      console.error('Git branch check failed:', error instanceof Error ? error : new Error(String(error)))
       return 'unknown'
     }
   }
@@ -98,18 +104,21 @@ export class PreCheckGuardian implements GuardianAgent {
     
     // Node.js版本检查
     try {
-      const nodeVersion = execSync('node --version', { encoding: 'utf8' }).trim()
+      const { stdout } = await execAsync('node --version')
+      const nodeVersion = stdout.trim()
       if (!nodeVersion.startsWith('v20')) {
         this.addWarning(`Node.js版本建议使用v20.x，当前: ${nodeVersion}`)
       }
-    } catch {
+    } catch (error) {
+      console.error('Node.js version check failed:', error instanceof Error ? error : new Error(String(error)))
       this.addViolation('Node.js未安装或无法访问')
     }
     
     // Bun检查
     try {
-      execSync('bun --version', { encoding: 'utf8' })
-    } catch {
+      await execAsync('bun --version')
+    } catch (error) {
+      console.error('Bun version check failed:', error instanceof Error ? error : new Error(String(error)))
       this.addViolation('Bun未安装或无法访问')
     }
     
@@ -135,11 +144,12 @@ export class PreCheckGuardian implements GuardianAgent {
     
     // 工作目录状态
     try {
-      const gitStatus = execSync('git status --porcelain', { encoding: 'utf8' })
-      if (gitStatus.trim()) {
+      const { stdout } = await execAsync('git status --porcelain')
+      if (stdout.trim()) {
         this.addWarning('工作目录有未提交的更改')
       }
-    } catch {
+    } catch (error) {
+      console.error('Git status check failed:', error instanceof Error ? error : new Error(String(error)))
       this.addViolation('Git仓库检查失败')
     }
   }
@@ -161,11 +171,9 @@ export class PreCheckGuardian implements GuardianAgent {
     logger.info('🔍 代码质量预检...')
     
     try {
-      execSync('bunx tsc --noEmit --skipLibCheck', { 
-        encoding: 'utf8', 
-        stdio: 'pipe' 
-      })
-    } catch {
+      await execAsync('bunx tsc --noEmit --skipLibCheck')
+    } catch (error) {
+      console.error('TypeScript check failed:', error instanceof Error ? error : new Error(String(error)))
       this.addViolation('TypeScript编译错误，需要先修复现有代码')
       this.addSuggestion('运行: bun run check-types 查看详细错误')
     }
@@ -176,14 +184,13 @@ export class PreCheckGuardian implements GuardianAgent {
     
     try {
       const keywords = this.extractKeywords(featureDescription)
-      const result = execSync(`bun run deps:check "${keywords.join(' ')}"`, { 
-        encoding: 'utf8' 
-      })
+      const { stdout } = await execAsync(`bun run deps:check "${keywords.join(' ')}"`)
       
-      if (result.includes('发现现有包实现')) {
+      if (stdout.includes('发现现有包实现')) {
         this.addSuggestion('发现可复用的现有实现，优先考虑扩展')
       }
-    } catch {
+    } catch (error) {
+      console.error('Package reuse check failed:', error instanceof Error ? error : new Error(String(error)))
       this.addWarning('包复用检查失败，请手动确认避免重复实现')
     }
   }
@@ -193,16 +200,15 @@ export class PreCheckGuardian implements GuardianAgent {
     
     try {
       const keywords = this.extractKeywords(featureDescription)
-      const result = execSync(`bun run ai:session query "${keywords[0]}" --debug`, { 
-        encoding: 'utf8' 
-      })
+      const { stdout } = await execAsync(`bun run ai:session query "${keywords[0]}" --debug`)
       
-      if (result.includes('"total_found": 0')) {
+      if (stdout.includes('"total_found": 0')) {
         this.addWarning('Graph RAG未找到相关上下文')
       } else {
         this.addSuggestion('已获取项目上下文，基于现有架构开发')
       }
-    } catch {
+    } catch (error) {
+      console.error('Graph RAG query failed:', error instanceof Error ? error : new Error(String(error)))
       this.addWarning('Graph RAG查询失败')
     }
   }

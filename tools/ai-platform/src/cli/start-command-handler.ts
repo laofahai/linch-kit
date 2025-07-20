@@ -112,12 +112,12 @@ export class StartCommandHandler {
 
       // 步骤4: 初始化工作流状态机（如果启用）
       if (options.enableWorkflowState) {
-        this.workflowStateMachine = new WorkflowStateMachine(sessionId)
-        await this.workflowStateMachine.initialize()
-        await this.workflowStateMachine.processAction('start_workflow' as WorkflowAction, {
+        this.workflowStateMachine = new WorkflowStateMachine(sessionId, options.taskDescription)
+        await this.workflowStateMachine.transition('START_ANALYSIS', {
           taskDescription: options.taskDescription,
           projectInfo,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          by: 'start-command'
         })
         logger.info('Workflow state machine initialized')
       }
@@ -150,19 +150,20 @@ export class StartCommandHandler {
       let workflowState
       if (this.workflowStateMachine) {
         const analysisAction = workflowResponse.approval?.required 
-          ? 'await_approval' as WorkflowAction
-          : 'approve_automatically' as WorkflowAction
+          ? 'REQUEST_APPROVAL' as WorkflowAction
+          : 'COMPLETE_ANALYSIS' as WorkflowAction
           
-        await this.workflowStateMachine.processAction(analysisAction, {
+        await this.workflowStateMachine.transition(analysisAction, {
           workflowAnalysis: workflowResponse.recommendations,
           insights: workflowResponse.insights,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          by: 'ai-workflow'
         })
 
-        const currentState = this.workflowStateMachine.getCurrentState()
+        const context = this.workflowStateMachine.getContext()
         workflowState = {
-          currentState: currentState.state,
-          availableActions: currentState.transitions.map(t => t.action),
+          currentState: context.currentState,
+          availableActions: this.workflowStateMachine.getAvailableActions(),
           requiresApproval: workflowResponse.approval?.required || false
         }
       }
@@ -189,9 +190,10 @@ export class StartCommandHandler {
       // 清理工作流状态机
       if (this.workflowStateMachine) {
         try {
-          await this.workflowStateMachine.processAction('handle_error' as WorkflowAction, {
+          await this.workflowStateMachine.transition('FAIL', {
             error: errorMessage,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            by: 'error-handler'
           })
         } catch (cleanupError) {
           logger.warn('Failed to update workflow state after error:', cleanupError)

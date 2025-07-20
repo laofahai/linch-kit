@@ -3,9 +3,12 @@
  * 通过调用本地安装的AI CLI工具来实现AI集成
  */
 
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 
 import { createLogger } from '@linch-kit/core'
+
+const execAsync = promisify(exec)
 
 const logger = createLogger('cli-ai-provider')
 
@@ -58,10 +61,8 @@ export class CLIBasedAIProvider {
       logger.info(`Executing: ${this.config.command} ${this.config.promptFlag} "<prompt>"`)
       
       // 执行命令
-      const output = execSync(command, {
-        encoding: 'utf8',
-        timeout: this.config.timeoutMs,
-        stdio: 'pipe'
+      const { stdout: output } = await execAsync(command, {
+        timeout: this.config.timeoutMs
       })
       
       const content = this.config.outputParser!(output)
@@ -93,9 +94,10 @@ export class CLIBasedAIProvider {
 
   async validateCLI(): Promise<boolean> {
     try {
-      execSync(`which ${this.config.command}`, { stdio: 'pipe' })
+      await execAsync(`which ${this.config.command}`)
       return true
-    } catch {
+    } catch (error) {
+      logger.error('CLI validation failed:', error instanceof Error ? error : new Error(String(error)))
       throw new Error(`CLI command '${this.config.command}' not found. Please install it first.`)
     }
   }

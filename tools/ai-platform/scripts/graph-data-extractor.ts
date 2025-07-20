@@ -5,10 +5,13 @@
  * 使用AI CLI工具提取项目数据到Neo4j图数据库
  */
 
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { createLogger } from '@linch-kit/core';
+
+const execAsync = promisify(exec);
 
 const logger = createLogger('graph-data-extractor');
 
@@ -30,19 +33,22 @@ const log = {
   header: (msg) => logger.info(`\n${colors.bold}${colors.blue}${msg}${colors.reset}\n`)
 };
 
-function runCommand(cmd, description) {
+async function runCommand(cmd, description) {
   try {
     log.info(description);
-    const result = execSync(cmd, { encoding: 'utf8', stdio: 'pipe' });
+    const { stdout } = await execAsync(cmd);
     log.success(`${description} - 完成`);
-    return result;
+    return stdout;
   } catch (error) {
     log.error(`${description} - 失败: ${error.message}`);
+    if (error.stderr) {
+      log.error(`错误详情: ${error.stderr}`);
+    }
     throw error;
   }
 }
 
-function checkEnvironment() {
+async function checkEnvironment() {
   log.header('🔍 环境检查');
   
   // 检查当前目录
@@ -60,7 +66,7 @@ function checkEnvironment() {
   if (!existsSync(cliPath)) {
     log.warn('LinchKit CLI工具不存在，尝试构建...');
     try {
-      runCommand('bun run build', '构建LinchKit CLI工具');
+      await runCommand('bun run build', '构建LinchKit CLI工具');
     } catch {
       log.error('构建失败，请手动运行 bun run build');
       process.exit(1);
@@ -147,22 +153,23 @@ async function extractToNeo4j() {
   }
 }
 
-function extractToJson() {
+async function extractToJson() {
   log.header('📄 提取数据到JSON文件');
   
   try {
     // 直接使用Node.js调用AI CLI模块
     const extractCmd = `bun tools/ai-platform/cli.ts extract --all --output json`;
     
-    runCommand(extractCmd, '提取项目数据到JSON文件');
+    await runCommand(extractCmd, '提取项目数据到JSON文件');
     
     log.success('JSON数据提取完成');
-  } catch {
+  } catch (error) {
     log.warn('JSON数据提取失败，但不影响主流程');
+    log.error(`提取错误: ${error.message}`);
   }
 }
 
-function validateExtraction() {
+async function validateExtraction() {
   log.header('✅ 验证数据提取');
   
   try {
@@ -179,15 +186,17 @@ function validateExtraction() {
     const contextCliPath = resolve('scripts/ai/context-cli.js');
     if (existsSync(contextCliPath)) {
       try {
-        runCommand(`bun ${contextCliPath} --find-entity "Package" --limit 1`, '测试Neo4j查询');
+        await runCommand(`bun ${contextCliPath} --find-entity "Package" --limit 1`, '测试Neo4j查询');
         log.success('Neo4j数据验证通过');
-      } catch {
+      } catch (error) {
         log.warn('Neo4j查询测试失败，但数据可能已成功提取');
+        log.error(`验证错误: ${error.message}`);
       }
     }
     
   } catch (error) {
     log.error('数据验证失败');
+    log.error(`验证失败详情: ${error.message}`);
     throw error;
   }
 }
@@ -219,11 +228,11 @@ async function main() {
   try {
     log.header('🚀 LinchKit 图谱数据提取器');
     
-    checkEnvironment();
+    await checkEnvironment();
     checkNeo4jConnection();
     await extractToNeo4j();
-    extractToJson();
-    validateExtraction();
+    await extractToJson();
+    await validateExtraction();
     printSummary();
     
   } catch (error) {

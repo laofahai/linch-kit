@@ -9,8 +9,11 @@
  * @author Claude Code
  */
 
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 import { existsSync, writeFileSync, mkdirSync } from 'fs'
+
+const execAsync = promisify(exec)
 import { join } from 'path'
 import { createLogger } from '@linch-kit/core'
 import { createHybridAIManager } from '../src/providers/hybrid-ai-manager'
@@ -64,7 +67,7 @@ class AIGuardianValidator {
     await this.performAIAnalysis(taskDescription)
     
     // 1. 分支检查 (零容忍)
-    this.checkBranch()
+    await this.checkBranch()
     
     // 2. 执行强制Graph RAG查询
     await this.executeGraphRAGQuery(taskDescription)
@@ -92,13 +95,14 @@ class AIGuardianValidator {
       timestamp: new Date().toISOString()
     }
     
-    this.printResults(result)
+    await this.printResults(result)
     return result
   }
   
-  checkBranch() {
+  async checkBranch() {
     try {
-      const currentBranch = execSync('git branch --show-current', { encoding: 'utf8' }).trim()
+      const { stdout } = await execAsync('git branch --show-current')
+      const currentBranch = stdout.trim()
       
       // 检查保护分支
       const protectedBranches = ['main', 'master', 'develop', 'release']
@@ -110,6 +114,7 @@ class AIGuardianValidator {
       console.log(`✅ 分支检查通过: ${currentBranch}`)
       
     } catch (error) {
+      logger.error('Git branch check failed:', error instanceof Error ? error : new Error(String(error)))
       this.violations.push('🚨 Git分支检查失败')
     }
   }
@@ -119,9 +124,7 @@ class AIGuardianValidator {
     
     try {
       // 使用ai-platform的session-tools进行查询
-      const result = execSync(`bun tools/ai-platform/scripts/session-tools.js query "${taskDescription}" --debug`, {
-        encoding: 'utf8'
-      })
+      const { stdout: result } = await execAsync(`bun tools/ai-platform/scripts/session-tools.js query "${taskDescription}" --debug`)
       
       console.log('✅ Graph RAG查询完成')
       
@@ -131,6 +134,7 @@ class AIGuardianValidator {
       }
       
     } catch (error) {
+      logger.error('Graph RAG query failed:', error instanceof Error ? error : new Error(String(error)))
       this.warnings.push('⚠️ Graph RAG查询失败，请手动确认项目上下文')
     }
   }
@@ -138,15 +142,13 @@ class AIGuardianValidator {
   async checkArchitecture() {
     try {
       // 使用ai-platform的arch-check进行架构检查
-      execSync('bun tools/ai-platform/scripts/arch-check.js', {
-        encoding: 'utf8',
-        stdio: 'pipe'
-      })
+      await execAsync('bun tools/ai-platform/scripts/arch-check.js')
       
       console.log('✅ 架构合规性检查通过')
       
     } catch (error) {
       // arch-check失败时添加警告而非阻断
+      logger.error('Architecture check failed:', error instanceof Error ? error : new Error(String(error)))
       this.warnings.push('⚠️ 架构合规性检查发现问题，建议查看详细报告')
     }
   }
@@ -154,14 +156,12 @@ class AIGuardianValidator {
   async verifyContext() {
     try {
       // 使用ai-platform的context-verifier
-      execSync('bun tools/ai-platform/scripts/context-verifier.js --action=verify', {
-        encoding: 'utf8',
-        stdio: 'pipe'
-      })
+      await execAsync('bun tools/ai-platform/scripts/context-verifier.js --action=verify')
       
       console.log('✅ 上下文验证通过')
       
     } catch (error) {
+      logger.error('Context verification failed:', error instanceof Error ? error : new Error(String(error)))
       this.warnings.push('⚠️ 上下文验证发现问题')
     }
   }
@@ -169,15 +169,14 @@ class AIGuardianValidator {
   async checkPackageReuse(taskDescription) {
     try {
       // 使用现有的deps-check脚本
-      const result = execSync(`bun run deps:check "${taskDescription}"`, {
-        encoding: 'utf8'
-      })
+      const { stdout: result } = await execAsync(`bun run deps:check "${taskDescription}"`)
       
       if (result.includes('发现现有包实现')) {
         this.warnings.push('💡 发现可复用的现有实现，建议优先扩展')
       }
       
     } catch (error) {
+      logger.error('Package reuse check failed:', error instanceof Error ? error : new Error(String(error)))
       this.warnings.push('⚠️ 包复用检查失败')
     }
   }
@@ -397,7 +396,7 @@ bun test --coverage
     console.log('📋 约束文件: .claude/session-constraints.md')
   }
   
-  printResults(result) {
+  async printResults(result) {
     if (result.violations.length > 0) {
       console.log('\n❌ 发现违规项:')
       result.violations.forEach(violation => console.log(`  ${violation}`))
@@ -416,7 +415,7 @@ bun test --coverage
     }
     
     console.log('\n⚠️ 注意事项：')
-    if (this.hasUncommittedChanges()) {
+    if (await this.hasUncommittedChanges()) {
       console.log('  ⚠️ 工作目录有未提交的更改')
     }
     if (!this.hasDesignDoc()) {
@@ -424,11 +423,12 @@ bun test --coverage
     }
   }
   
-  hasUncommittedChanges() {
+  async hasUncommittedChanges() {
     try {
-      const status = execSync('git status --porcelain', { encoding: 'utf8' })
+      const { stdout: status } = await execAsync('git status --porcelain')
       return status.trim().length > 0
-    } catch {
+    } catch (error) {
+      logger.error('Git status check failed:', error instanceof Error ? error : new Error(String(error)))
       return false
     }
   }

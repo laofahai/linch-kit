@@ -9,8 +9,11 @@
  * @author LinchKit AI Guardian System
  */
 
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 import { readFileSync } from 'fs'
+
+const execAsync = promisify(exec)
 
 import { glob } from 'glob'
 
@@ -111,10 +114,7 @@ export class QualityGateGuardian implements GuardianAgent {
     logger.info('🔍 TypeScript严格检查...')
     
     try {
-      execSync('bunx tsc --noEmit --strict', { 
-        encoding: 'utf8',
-        stdio: 'pipe'
-      })
+      await execAsync('bunx tsc --noEmit --strict')
       logger.info('✅ TypeScript检查通过')
     } catch (error: any) {
       const errorOutput = error.stdout || error.stderr || ''
@@ -139,10 +139,8 @@ export class QualityGateGuardian implements GuardianAgent {
     logger.info('📏 ESLint规范检查...')
     
     try {
-      const output = execSync('bunx eslint . --format=json --max-warnings=0', { 
-        encoding: 'utf8',
-        stdio: 'pipe'
-      })
+      const { stdout } = await execAsync('bunx eslint . --format=json --max-warnings=0')
+      const output = stdout
       
       const results = JSON.parse(output)
       let totalViolations = 0
@@ -173,14 +171,11 @@ export class QualityGateGuardian implements GuardianAgent {
     logger.info('🔨 构建检查...')
     
     try {
-      execSync('bun run build', { 
-        encoding: 'utf8',
-        stdio: 'pipe',
-        timeout: 120000 // 2分钟超时
-      })
+      await execAsync('bun run build', { timeout: 120000 })
       logger.info('✅ 构建成功')
       this.metrics.buildSuccess = true
-    } catch {
+    } catch (error) {
+      console.error('Build failed:', error instanceof Error ? error : new Error(String(error)))
       this.addCritical('build', '构建失败，代码无法编译')
       this.metrics.buildSuccess = false
     }
@@ -191,21 +186,14 @@ export class QualityGateGuardian implements GuardianAgent {
     
     try {
       // 运行测试
-      execSync('bun test', { 
-        encoding: 'utf8',
-        stdio: 'pipe',
-        timeout: 180000 // 3分钟超时
-      })
+      await execAsync('bun test', { timeout: 180000 })
       
       this.metrics.testsPassing = true
       logger.info('✅ 测试通过')
       
       // 检查覆盖率
       try {
-        const coverageOutput = execSync('bun test --coverage', { 
-          encoding: 'utf8',
-          stdio: 'pipe'
-        })
+        const { stdout: coverageOutput } = await execAsync('bun test --coverage')
         
         const coverageMatch = coverageOutput.match(/All files\s*\|\s*(\d+\.?\d*)/);
         if (coverageMatch) {
@@ -215,11 +203,13 @@ export class QualityGateGuardian implements GuardianAgent {
             this.addWarning('testing', `测试覆盖率偏低: ${this.metrics.testCoverage}%`)
           }
         }
-      } catch {
+      } catch (coverageError) {
+        console.error('Coverage check failed:', coverageError instanceof Error ? coverageError : new Error(String(coverageError)))
         this.addWarning('testing', '无法获取测试覆盖率')
       }
       
-    } catch {
+    } catch (testError) {
+      console.error('Tests failed:', testError instanceof Error ? testError : new Error(String(testError)))
       this.addCritical('testing', '测试执行失败')
       this.metrics.testsPassing = false
     }

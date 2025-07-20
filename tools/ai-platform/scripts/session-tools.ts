@@ -5,9 +5,12 @@
  * 自动化执行CLAUDE.md中的繁琐步骤
  */
 
-import { execSync } from 'child_process';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { existsSync } from 'fs';
 import { createLogger } from '@linch-kit/core';
+
+const execAsync = promisify(exec);
 
 const logger = createLogger('session-tools');
 
@@ -29,19 +32,22 @@ const log = {
   header: (msg) => logger.info(`\n${colors.bold}${colors.blue}${msg}${colors.reset}\n`)
 };
 
-function runCommand(cmd, description) {
+async function runCommand(cmd, description) {
   try {
     log.info(description);
-    const result = execSync(cmd, { encoding: 'utf8', stdio: 'pipe' });
+    const { stdout } = await execAsync(cmd);
     log.success(`${description} - 完成`);
-    return result;
+    return stdout;
   } catch (error) {
     log.error(`${description} - 失败: ${error.message}`);
+    if (error.stderr) {
+      log.error(`错误详情: ${error.stderr}`);
+    }
     throw error;
   }
 }
 
-function checkProjectStatus() {
+async function checkProjectStatus() {
   log.header('🔍 项目状态检查');
   
   // 检查当前目录
@@ -56,7 +62,7 @@ function checkProjectStatus() {
   
   // 检查当前分支
   try {
-    const branch = runCommand('git branch --show-current', '检查当前分支').trim();
+    const branch = (await runCommand('git branch --show-current', '检查当前分支')).trim();
     if (branch === 'main' || branch === 'master') {
       log.warn(`当前在主分支 (${branch})，建议创建功能分支`);
       return { needBranch: true, currentBranch: branch };
@@ -178,7 +184,7 @@ function queryContext(entity, includeRelated = true, debug = false) {
   }
 }
 
-function queryRelations(entity) {
+async function queryRelations(entity) {
   log.header('🔗 查询实体关系');
   
   try {
@@ -186,7 +192,7 @@ function queryRelations(entity) {
     
     // 使用静默模式执行命令，避免显示"查询结果:"
     log.info(`查询实体关系: ${entity}`);
-    const result = execSync(cmd + ' 2>/dev/null', { encoding: 'utf8', stdio: 'pipe' });
+    const { stdout: result } = await execAsync(cmd);
     log.success(`查询实体关系: ${entity} - 完成`);
     
     if (result && result.trim()) {
@@ -319,7 +325,7 @@ function queryPattern(pattern, forEntity = '') {
   }
 }
 
-function syncGraphData() {
+async function syncGraphData() {
   log.header('🔄 同步图谱数据');
   
   try {
@@ -329,12 +335,12 @@ function syncGraphData() {
       return;
     }
     
-    runCommand('bun tools/ai-platform/scripts/graph-data-extractor.ts', '提取并更新图谱数据');
+    await runCommand('bun tools/ai-platform/scripts/graph-data-extractor.ts', '提取并更新图谱数据');
     log.success('图谱数据同步完成');
     
     // 验证查询功能
     log.info('验证查询功能...');
-    queryContext('User', false);
+    await queryContext('User', false);
     
   } catch (error) {
     log.error('图谱数据同步失败');

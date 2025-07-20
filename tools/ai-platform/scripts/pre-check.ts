@@ -9,9 +9,12 @@
  * @author Claude Code
  */
 
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 import { existsSync } from 'fs'
 import { createLogger } from '@linch-kit/core'
+
+const execAsync = promisify(exec)
 
 const logger = createLogger('ai-pre-check')
 
@@ -25,10 +28,10 @@ class AIPreCheck {
     logger.info(`📋 功能描述: ${featureDescription}`)
     
     // 1. 环境基础检查
-    this.checkEnvironment()
+    await this.checkEnvironment()
     
     // 2. 分支状态检查
-    this.checkBranch()
+    await this.checkBranch()
     
     // 3. 依赖状态检查
     this.checkDependencies()
@@ -46,14 +49,15 @@ class AIPreCheck {
     return this.violations.length === 0
   }
 
-  private checkEnvironment(): void {
+  private async checkEnvironment(): Promise<void> {
     logger.info('🌍 环境检查...')
     
     // 检查bun
     try {
-      execSync('bun --version', { stdio: 'pipe' })
-    } catch {
+      await execAsync('bun --version')
+    } catch (error) {
       this.violations.push('Bun未安装或无法访问')
+      logger.error(`Bun检查失败: ${error.message}`)
     }
     
     // 检查配置文件
@@ -66,26 +70,28 @@ class AIPreCheck {
     }
   }
 
-  private checkBranch(): void {
+  private async checkBranch(): Promise<void> {
     logger.info('🔀 分支状态检查...')
     
     try {
-      const currentBranch = execSync('git branch --show-current', { encoding: 'utf8' }).trim()
+      const { stdout: currentBranch } = await execAsync('git branch --show-current')
+      const branch = currentBranch.trim()
       
       const protectedBranches = ['main', 'master', 'develop']
-      if (protectedBranches.some(branch => currentBranch.startsWith(branch))) {
-        this.violations.push(`禁止在保护分支工作: ${currentBranch}`)
+      if (protectedBranches.some(protectedBranch => branch.startsWith(protectedBranch))) {
+        this.violations.push(`禁止在保护分支工作: ${branch}`)
         this.suggestions.push('创建功能分支: git checkout -b feature/[feature-name]')
       } else {
-        logger.info(`✅ 当前分支: ${currentBranch}`)
+        logger.info(`✅ 当前分支: ${branch}`)
       }
       
-      const gitStatus = execSync('git status --porcelain', { encoding: 'utf8' })
+      const { stdout: gitStatus } = await execAsync('git status --porcelain')
       if (gitStatus.trim()) {
         this.warnings.push('工作目录有未提交的更改')
       }
-    } catch {
+    } catch (error) {
       this.violations.push('Git仓库检查失败')
+      logger.error(`Git检查失败: ${error.message}`)
     }
   }
 
@@ -109,9 +115,7 @@ class AIPreCheck {
     
     try {
       const keywords = this.extractKeywords(featureDescription)
-      const result = execSync(`bun tools/ai-platform/scripts/session-tools.js query "${keywords[0]}" --debug`, { 
-        encoding: 'utf8' 
-      })
+      const { stdout: result } = await execAsync(`bun tools/ai-platform/scripts/session-tools.js query "${keywords[0]}" --debug`)
       
       if (result.includes('"total_found": 0')) {
         this.warnings.push('Graph RAG未找到相关上下文，可能需要手动查询项目结构')
@@ -119,8 +123,9 @@ class AIPreCheck {
         logger.info('✅ Graph RAG上下文检查完成')
         this.suggestions.push('已获取项目上下文，基于现有架构进行开发')
       }
-    } catch {
+    } catch (error) {
       this.warnings.push('Graph RAG查询失败，需要手动确认项目上下文')
+      logger.error(`Graph RAG查询错误: ${error.message}`)
     }
   }
 
@@ -129,17 +134,16 @@ class AIPreCheck {
     
     try {
       const keywords = this.extractKeywords(featureDescription)
-      const result = execSync(`bun run deps:check "${keywords.join(' ')}"`, { 
-        encoding: 'utf8' 
-      })
+      const { stdout: result } = await execAsync(`bun run deps:check "${keywords.join(' ')}"`)
       
       if (result.includes('发现现有包实现')) {
         this.suggestions.push('发现可复用的现有实现，优先考虑扩展而非重新实现')
       }
       
       logger.info('✅ 包复用检查完成')
-    } catch {
+    } catch (error) {
       this.warnings.push('包复用检查失败，手动确认避免重复实现')
+      logger.error(`包复用检查错误: ${error.message}`)
     }
   }
 
@@ -147,12 +151,11 @@ class AIPreCheck {
     logger.info('🏗️ 架构预检查...')
     
     try {
-      execSync('bun tools/ai-platform/scripts/arch-check.js', {
-        stdio: 'pipe'
-      })
+      await execAsync('bun tools/ai-platform/scripts/arch-check.js')
       logger.info('✅ 架构检查通过')
-    } catch {
+    } catch (error) {
       this.warnings.push('架构检查发现问题，建议查看详细报告')
+      logger.error(`架构检查错误: ${error.message}`)
     }
   }
 
