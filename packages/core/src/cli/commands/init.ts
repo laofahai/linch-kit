@@ -6,8 +6,11 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { join as _join } from 'path'
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 import * as readline from 'readline'
+
+const execAsync = promisify(exec)
 
 import { Logger } from '../../logger-client'
 import { type CLIManager, type CLICommand } from '../index'
@@ -83,7 +86,13 @@ const initCommand: CLICommand = {
         const installDeps = await question('\n是否安装依赖包？(Y/n): ')
         if (installDeps.toLowerCase() !== 'n') {
           Logger.info('安装依赖包...')
-          execSync('pnpm install', { stdio: 'inherit' })
+          try {
+            await execAsync('pnpm install')
+            Logger.info('✓ 依赖包安装成功')
+          } catch (error) {
+            Logger.error('Dependencies installation failed:', error instanceof Error ? error : new Error(String(error)))
+            throw new Error('安装依赖包失败')
+          }
         }
       }
 
@@ -92,8 +101,15 @@ const initCommand: CLICommand = {
         const initDb = await question('\n是否初始化数据库？(Y/n): ')
         if (initDb.toLowerCase() !== 'n') {
           Logger.info('初始化数据库...')
-          execSync('pnpm db:generate', { stdio: 'inherit' })
-          execSync('pnpm db:push', { stdio: 'inherit' })
+          try {
+            await execAsync('pnpm db:generate')
+            Logger.info('✓ 数据库schema生成成功')
+            await execAsync('pnpm db:push')
+            Logger.info('✓ 数据库推送成功')
+          } catch (error) {
+            Logger.error('Database initialization failed:', error instanceof Error ? error : new Error(String(error)))
+            throw new Error('数据库初始化失败')
+          }
         }
       }
 

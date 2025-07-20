@@ -521,16 +521,23 @@ async function _createGenerateScript(): Promise<void> {
  * Schema code generation script
  */
 
-const { execSync } = require('child_process')
+const { exec } = require('child_process')
+const { promisify } = require('util')
 
-try {
-  console.log('🔄 Generating schema code...')
-  execSync('pnpm linch generate:schema', { stdio: 'inherit' })
-  console.log('✅ Schema generation completed!')
-} catch (error) {
-  console.error('❌ Schema generation failed:', error.message)
-  process.exit(1)
-}`
+const execAsync = promisify(exec)
+
+async function runGeneration() {
+  try {
+    console.log('🔄 Generating schema code...')
+    await execAsync('pnpm linch generate:schema')
+    console.log('✅ Schema generation completed!')
+  } catch (error) {
+    console.error('❌ Schema generation failed:', error.message)
+    process.exit(1)
+  }
+}
+
+runGeneration()`
 
   writeFileSync('scripts/generate-schema.js', script)
 }

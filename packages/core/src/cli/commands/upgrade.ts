@@ -5,7 +5,10 @@
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'fs'
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
+
+const execAsync = promisify(exec)
 
 import { type CLIManager, type CLICommand } from '../index'
 import { Logger } from '../../logger-client'
@@ -160,17 +163,18 @@ async function getTargetVersion(target: string): Promise<string> {
   try {
     if (target === 'latest') {
       // 获取最新版本
-      const result = execSync('npm view @linch-kit/core version', { encoding: 'utf-8' })
-      return result.trim()
+      const { stdout } = await execAsync('npm view @linch-kit/core version')
+      return stdout.trim()
     } else if (target === 'next') {
       // 获取预发布版本
-      const result = execSync('npm view @linch-kit/core version --tag next', { encoding: 'utf-8' })
-      return result.trim()
+      const { stdout } = await execAsync('npm view @linch-kit/core version --tag next')
+      return stdout.trim()
     } else {
       // 验证指定版本
       return target
     }
   } catch (error) {
+    Logger.error('Failed to get target version:', error instanceof Error ? error : new Error(String(error)))
     throw new Error(`无法获取目标版本信息: ${error}`)
   }
 }
@@ -190,7 +194,7 @@ async function checkCompatibility(
 
   // 检查包管理器
   try {
-    execSync('pnpm --version', { stdio: 'pipe' })
+    await execAsync('pnpm --version')
   } catch {
     issues.push('未找到pnpm包管理器，LinchKit需要pnpm')
   }

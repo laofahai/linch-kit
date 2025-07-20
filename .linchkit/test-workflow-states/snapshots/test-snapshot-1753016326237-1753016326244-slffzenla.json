@@ -1,0 +1,45 @@
+{
+  "id": "test-snapshot-1753016326237-1753016326244-slffzenla",
+  "timestamp": "2025-07-20T12:58:46.244Z",
+  "state": "ANALYZE",
+  "context": {
+    "sessionId": "test-snapshot-1753016326237",
+    "taskDescription": "Test snapshot functionality",
+    "currentState": "ANALYZE",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-20T12:58:46.237Z",
+      "lastUpdated": "2025-07-20T12:58:46.238Z",
+      "automationLevel": "semi_auto",
+      "priority": "medium"
+    },
+    "analysis": {
+      "approach": "",
+      "confidence": 0,
+      "estimatedHours": 0,
+      "complexity": 1,
+      "risks": [],
+      "dependencies": [],
+      "feasibilityScore": 0,
+      "resourceRequirements": {}
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-20T12:58:46.237Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-20T12:58:46.238Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      }
+    ]
+  },
+  "trigger": "manual",
+  "description": "Initial state snapshot"
+}

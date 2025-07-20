@@ -1,0 +1,45 @@
+{
+  "id": "test-rules-1753016588326-1753016618327-ocbd6g6x6",
+  "timestamp": "2025-07-20T13:03:38.327Z",
+  "state": "ANALYZE",
+  "context": {
+    "sessionId": "test-rules-1753016588326",
+    "taskDescription": "Test rules engine functionality",
+    "currentState": "ANALYZE",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-20T13:03:08.326Z",
+      "lastUpdated": "2025-07-20T13:03:08.326Z",
+      "automationLevel": "semi_auto",
+      "priority": "critical"
+    },
+    "analysis": {
+      "approach": "",
+      "confidence": 0,
+      "estimatedHours": 0,
+      "complexity": 1,
+      "risks": [],
+      "dependencies": [],
+      "feasibilityScore": 0,
+      "resourceRequirements": {}
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-20T13:03:08.326Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-20T13:03:08.326Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      }
+    ]
+  },
+  "trigger": "error",
+  "description": "State timeout: ANALYZE"
+}

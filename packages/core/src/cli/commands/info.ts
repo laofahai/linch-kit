@@ -5,7 +5,10 @@
  */
 
 import { existsSync, readFileSync } from 'fs'
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
+
+const execAsync = promisify(exec)
 
 import { type CLIManager, type CLICommand } from '../index'
 import { Logger } from '../../logger-client'
@@ -89,9 +92,10 @@ async function showSystemInfo(detailed?: boolean) {
 
     // npm/pnpm 版本
     try {
-      const pnpmVersion = execSync('pnpm --version', { encoding: 'utf-8' }).trim()
-      console.log(`pnpm:        ${pnpmVersion}`)
-    } catch {
+      const { stdout } = await execAsync('pnpm --version')
+      console.log(`pnpm:        ${stdout.trim()}`)
+    } catch (error) {
+      Logger.debug('pnpm version check failed:', error instanceof Error ? error : new Error(String(error)))
       console.log(`pnpm:        未安装`)
     }
 

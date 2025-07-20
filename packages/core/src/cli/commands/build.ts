@@ -4,8 +4,11 @@
  * 构建生产版本
  */
 
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 import { existsSync } from 'fs'
+
+const execAsync = promisify(exec)
 
 import { type CLIManager, type CLICommand } from '../index'
 import { Logger } from '../../logger-client'
@@ -34,20 +37,33 @@ const buildCommand: CLICommand = {
 
       // 1. 清理构建目录
       Logger.info('清理构建目录...')
-      execSync('rm -rf .next dist build out', { stdio: 'inherit' })
+      try {
+        await execAsync('rm -rf .next dist build out')
+        Logger.info('✓ 构建目录清理完成')
+      } catch (error) {
+        Logger.error('Clean directory failed:', error instanceof Error ? error : new Error(String(error)))
+        throw new Error('清理构建目录失败')
+      }
 
       // 2. 生成 Prisma 客户端（如果存在）
       if (existsSync('prisma/schema.prisma')) {
         Logger.info('生成 Prisma 客户端...')
-        execSync('prisma generate', { stdio: 'inherit' })
+        try {
+          await execAsync('prisma generate')
+          Logger.info('✓ Prisma 客户端生成完成')
+        } catch (error) {
+          Logger.error('Prisma generate failed:', error instanceof Error ? error : new Error(String(error)))
+          throw new Error('Prisma 客户端生成失败')
+        }
       }
 
       // 3. 类型检查
       Logger.info('运行类型检查...')
       try {
-        execSync('tsc --noEmit', { stdio: 'inherit' })
-      } catch {
-        // 忽略类型检查错误
+        await execAsync('tsc --noEmit')
+        Logger.info('✓ 类型检查通过')
+      } catch (error) {
+        Logger.error('Type check failed:', error instanceof Error ? error : new Error(String(error)))
         Logger.error('类型检查失败，继续构建...')
       }
 
@@ -72,23 +88,34 @@ const buildCommand: CLICommand = {
       const isViteApp = existsSync('vite.config.js') || existsSync('vite.config.ts')
 
       if (isNextApp) {
-        execSync('next build', { stdio: 'inherit', env })
-
-        // 显示构建信息
-        Logger.info('✅ Next.js 项目构建完成')
-        Logger.info('构建输出: .next/')
-
-        if (options.analyze) {
-          Logger.info('包分析报告已生成')
+        try {
+          await execAsync('next build', { env })
+          Logger.info('✅ Next.js 项目构建完成')
+          Logger.info('构建输出: .next/')
+          if (options.analyze) {
+            Logger.info('包分析报告已生成')
+          }
+        } catch (error) {
+          Logger.error('Next.js build failed:', error instanceof Error ? error : new Error(String(error)))
+          throw new Error('Next.js 构建失败')
         }
       } else if (isViteApp) {
-        execSync('vite build', { stdio: 'inherit', env })
-        Logger.info('✅ Vite 项目构建完成')
-        Logger.info('构建输出: dist/')
+        try {
+          await execAsync('vite build', { env })
+          Logger.info('✅ Vite 项目构建完成')
+          Logger.info('构建输出: dist/')
+        } catch (error) {
+          Logger.error('Vite build failed:', error instanceof Error ? error : new Error(String(error)))
+          throw new Error('Vite 构建失败')
+        }
       } else {
-        // 默认使用 package.json 中的 build 脚本
-        execSync('pnpm build', { stdio: 'inherit', env })
-        Logger.info('✅ 项目构建完成')
+        try {
+          await execAsync('pnpm build', { env })
+          Logger.info('✅ 项目构建完成')
+        } catch (error) {
+          Logger.error('Build failed:', error instanceof Error ? error : new Error(String(error)))
+          throw new Error('项目构建失败')
+        }
       }
 
       return { success: true }

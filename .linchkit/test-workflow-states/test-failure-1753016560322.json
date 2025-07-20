@@ -1,0 +1,76 @@
+{
+  "sessionId": "test-failure-1753016560322",
+  "taskDescription": "Test failure recovery functionality",
+  "currentState": "IMPLEMENT",
+  "metadata": {
+    "version": "3.0.0",
+    "startTime": "2025-07-20T13:02:40.322Z",
+    "lastUpdated": "2025-07-20T13:02:40.327Z",
+    "automationLevel": "semi_auto",
+    "priority": "high"
+  },
+  "snapshots": [],
+  "stateHistory": [
+    {
+      "state": "INIT",
+      "timestamp": "2025-07-20T13:02:40.322Z",
+      "action": "INITIALIZE",
+      "by": "system",
+      "automaticTransition": true
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-20T13:02:40.322Z",
+      "action": "START_ANALYSIS",
+      "by": "system",
+      "automaticTransition": true
+    },
+    {
+      "state": "PLAN",
+      "timestamp": "2025-07-20T13:02:40.326Z",
+      "action": "COMPLETE_ANALYSIS",
+      "by": "system",
+      "automaticTransition": true
+    },
+    {
+      "state": "IMPLEMENT",
+      "timestamp": "2025-07-20T13:02:40.327Z",
+      "action": "COMPLETE_PLANNING",
+      "by": "system",
+      "automaticTransition": false
+    }
+  ],
+  "analysis": {
+    "approach": "Test implementation approach",
+    "confidence": 85,
+    "estimatedHours": 10,
+    "complexity": 3,
+    "risks": [
+      "Implementation complexity"
+    ],
+    "dependencies": [
+      "external-api"
+    ]
+  },
+  "planning": {
+    "startedAt": "2025-07-20T13:02:40.326Z",
+    "milestones": [
+      {
+        "id": "impl-1",
+        "name": "实现核心功能",
+        "completed": false
+      }
+    ],
+    "resourceAllocation": {
+      "timeSlots": []
+    },
+    "riskMitigation": []
+  },
+  "implementation": {
+    "startedAt": "2025-07-20T13:02:40.327Z",
+    "progress": 0,
+    "currentMilestone": "impl-1",
+    "completedMilestones": [],
+    "errors": []
+  }
+}

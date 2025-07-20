@@ -1,0 +1,10 @@
+{
+  "start-1753012930243": {
+    "sessionId": "start-1753012930243",
+    "taskDescription": "测试/start命令集成功能",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-20T14:01:24.477Z",
+    "lastUpdated": "2025-07-20T14:01:24.479Z"
+  }
+}

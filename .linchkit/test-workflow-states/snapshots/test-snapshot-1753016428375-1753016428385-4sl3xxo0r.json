@@ -1,0 +1,45 @@
+{
+  "id": "test-snapshot-1753016428375-1753016428385-4sl3xxo0r",
+  "timestamp": "2025-07-20T13:00:28.385Z",
+  "state": "ANALYZE",
+  "context": {
+    "sessionId": "test-snapshot-1753016428375",
+    "taskDescription": "Test snapshot functionality",
+    "currentState": "ANALYZE",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-20T13:00:28.375Z",
+      "lastUpdated": "2025-07-20T13:00:28.375Z",
+      "automationLevel": "semi_auto",
+      "priority": "medium"
+    },
+    "analysis": {
+      "approach": "",
+      "confidence": 0,
+      "estimatedHours": 0,
+      "complexity": 1,
+      "risks": [],
+      "dependencies": [],
+      "feasibilityScore": 0,
+      "resourceRequirements": {}
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-20T13:00:28.375Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-20T13:00:28.375Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      }
+    ]
+  },
+  "trigger": "automatic",
+  "description": "Backup before restore from test-snapshot-1753016428375-1753016428381-k0wii07mm"
+}

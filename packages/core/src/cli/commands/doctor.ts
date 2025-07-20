@@ -5,8 +5,11 @@
  */
 
 import { existsSync, readFileSync, statSync } from 'fs'
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
 import { join as _join } from 'path'
+
+const execAsync = promisify(exec)
 
 import { Logger } from '../../logger-client'
 import { type CLIManager, type CLICommand } from '../index'
@@ -160,14 +163,16 @@ async function checkEnvironment(verbose?: boolean): Promise<DiagnosticCategory> 
 
   // pnpm检查
   try {
-    const pnpmVersion = execSync('pnpm --version', { encoding: 'utf-8' }).trim()
+    const { stdout } = await execAsync('pnpm --version')
+    const pnpmVersion = stdout.trim()
     if (verbose) {
       issues.push({
         level: 'info',
         message: `pnpm版本: ${pnpmVersion} ✓`,
       })
     }
-  } catch {
+  } catch (error) {
+    Logger.debug('pnpm version check failed:', error instanceof Error ? error : new Error(String(error)))
     issues.push({
       level: 'error',
       message: 'pnpm未安装',
@@ -585,11 +590,11 @@ async function autoFix(
       if (issue.fixable && issue.command) {
         try {
           console.log(`修复: ${issue.message}`)
-          execSync(issue.command, { stdio: 'pipe' })
+          await execAsync(issue.command)
           console.log(`✓ 已修复: ${issue.message}`)
           fixed++
-        } catch {
-          // 忽略修复错误
+        } catch (error) {
+          Logger.debug('Auto-fix command failed:', error instanceof Error ? error : new Error(String(error)))
           console.log(`✗ 修复失败: ${issue.message}`)
           failed++
         }

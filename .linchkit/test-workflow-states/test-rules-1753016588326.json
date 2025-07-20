@@ -1,0 +1,111 @@
+{
+  "sessionId": "test-rules-1753016588326",
+  "taskDescription": "Test rules engine functionality",
+  "currentState": "PAUSED",
+  "metadata": {
+    "version": "3.0.0",
+    "startTime": "2025-07-20T13:03:08.326Z",
+    "lastUpdated": "2025-07-20T13:03:38.329Z",
+    "automationLevel": "semi_auto",
+    "priority": "critical"
+  },
+  "snapshots": [
+    {
+      "id": "test-rules-1753016588326-1753016648327-cle5lgz1y",
+      "timestamp": "2025-07-20T13:04:08.327Z",
+      "state": "PAUSED",
+      "context": {
+        "sessionId": "test-rules-1753016588326",
+        "taskDescription": "Test rules engine functionality",
+        "currentState": "PAUSED",
+        "metadata": {
+          "version": "3.0.0",
+          "startTime": "2025-07-20T13:03:08.326Z",
+          "lastUpdated": "2025-07-20T13:03:38.329Z",
+          "automationLevel": "semi_auto",
+          "priority": "critical"
+        },
+        "analysis": {
+          "approach": "Complex implementation",
+          "confidence": 70,
+          "estimatedHours": 8,
+          "complexity": 5,
+          "risks": [
+            "High complexity"
+          ],
+          "dependencies": []
+        },
+        "stateHistory": [
+          {
+            "state": "INIT",
+            "timestamp": "2025-07-20T13:03:08.326Z",
+            "action": "INITIALIZE",
+            "by": "system",
+            "automaticTransition": true
+          },
+          {
+            "state": "ANALYZE",
+            "timestamp": "2025-07-20T13:03:08.326Z",
+            "action": "START_ANALYSIS",
+            "by": "system",
+            "automaticTransition": true
+          },
+          {
+            "state": "PAUSED",
+            "timestamp": "2025-07-20T13:03:38.329Z",
+            "action": "PAUSE",
+            "by": "system",
+            "metadata": {
+              "reason": "State timeout"
+            },
+            "automaticTransition": false
+          }
+        ]
+      },
+      "trigger": "automatic",
+      "description": "Auto snapshot at 2025-07-20T13:04:08.326Z"
+    }
+  ],
+  "stateHistory": [
+    {
+      "state": "INIT",
+      "timestamp": "2025-07-20T13:03:08.326Z",
+      "action": "INITIALIZE",
+      "by": "system",
+      "automaticTransition": true
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-20T13:03:08.326Z",
+      "action": "START_ANALYSIS",
+      "by": "system",
+      "automaticTransition": true
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-20T13:03:38.329Z",
+      "action": "PAUSE",
+      "by": "system",
+      "metadata": {
+        "reason": "State timeout"
+      },
+      "automaticTransition": false
+    }
+  ],
+  "analysis": {
+    "approach": "Complex implementation",
+    "confidence": 70,
+    "estimatedHours": 8,
+    "complexity": 5,
+    "risks": [
+      "High complexity"
+    ],
+    "dependencies": []
+  },
+  "pauseInfo": {
+    "pausedAt": "2025-07-20T13:03:38.329Z",
+    "pausedBy": "system",
+    "reason": "Manual pause",
+    "previousState": "ANALYZE"
+  }
+}

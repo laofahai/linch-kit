@@ -1,0 +1,39 @@
+{
+  "sessionId": "test-failure-1753016370857",
+  "taskDescription": "Test failure recovery functionality",
+  "currentState": "ANALYZE",
+  "metadata": {
+    "version": "3.0.0",
+    "startTime": "2025-07-20T12:59:30.857Z",
+    "lastUpdated": "2025-07-20T12:59:30.857Z",
+    "automationLevel": "semi_auto",
+    "priority": "high"
+  },
+  "snapshots": [],
+  "stateHistory": [
+    {
+      "state": "INIT",
+      "timestamp": "2025-07-20T12:59:30.857Z",
+      "action": "INITIALIZE",
+      "by": "system",
+      "automaticTransition": true
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-20T12:59:30.857Z",
+      "action": "START_ANALYSIS",
+      "by": "system",
+      "automaticTransition": true
+    }
+  ],
+  "analysis": {
+    "approach": "",
+    "confidence": 0,
+    "estimatedHours": 0,
+    "complexity": 1,
+    "risks": [],
+    "dependencies": [],
+    "feasibilityScore": 0,
+    "resourceRequirements": {}
+  }
+}

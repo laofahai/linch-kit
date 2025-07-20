@@ -21,10 +21,12 @@ async function main() {
       console.log('正在使用开发模式运行...');
       try {
         // 使用 tsx 运行 TypeScript 源文件
-        const { execSync } = require('child_process');
+        const { exec } = require('child_process');
+        const { promisify } = require('util');
         const path = require('path');
+        const execAsync = promisify(exec);
         const tsxPath = path.join(__dirname, '../src/cli/linch-cli.ts');
-        execSync(`tsx ${tsxPath}`, { stdio: 'inherit' });
+        await execAsync(`tsx ${tsxPath} ${process.argv.slice(2).join(' ')}`);
       } catch (devError) {
         console.error('错误：无法运行 LinchKit CLI');
         console.error('请确保已经构建项目：pnpm build');

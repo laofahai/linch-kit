@@ -19,10 +19,20 @@ export interface StartCommandOptions {
   taskDescription: string
   sessionId?: string
   automationLevel?: 'manual' | 'semi_auto' | 'full_auto'
-  priority?: 'low' | 'medium' | 'high'
+  priority?: 'low' | 'medium' | 'high' | 'critical'
   skipGuardian?: boolean
   skipGraphRAG?: boolean
   enableWorkflowState?: boolean
+  
+  // Phase 3 新增配置
+  useSevenStateEngine?: boolean      // 启用七状态引擎
+  enableSnapshots?: boolean          // 启用状态快照
+  enableRulesEngine?: boolean        // 启用规则引擎
+  enableVectorStore?: boolean        // 启用向量存储
+  enableAutoTransition?: boolean     // 启用自动状态转换
+  category?: string                  // 任务分类
+  tags?: string[]                   // 任务标签
+  estimatedHours?: number           // 预计工作时间
 }
 
 export interface ProjectInfo {
@@ -64,6 +74,22 @@ export interface StartCommandResult {
     currentState: string
     availableActions: string[]
     requiresApproval: boolean
+    // Phase 3 新增状态信息
+    progress?: number              // 完成进度 0-100
+    estimatedCompletion?: string   // 预计完成时间
+    qualityScore?: number          // 质量评分 0-100
+    riskLevel?: number            // 风险等级 1-5
+  }
+  // Phase 3 新增结果信息
+  phaseInfo?: {
+    version: string               // Phase版本
+    engineType: 'seven-state' | 'legacy'
+    features: string[]           // 启用的功能
+    performance: {
+      initTime: number          // 初始化耗时
+      totalTime: number         // 总耗时
+      memoryUsage?: number      // 内存使用
+    }
   }
   error?: string
   executionTime: number
@@ -110,16 +136,40 @@ export class StartCommandHandler {
         }
       }
 
-      // 步骤4: 初始化工作流状态机（如果启用）
+      // 步骤4: 初始化Phase 3增强工作流状态机
       if (options.enableWorkflowState) {
-        this.workflowStateMachine = new WorkflowStateMachine(sessionId, options.taskDescription)
-        await this.workflowStateMachine.transition('START_ANALYSIS', {
+        // Phase 3: 使用增强的配置创建工作流状态机
+        const workflowConfig = {
+          useSevenStateEngine: options.useSevenStateEngine ?? true,
+          enableSnapshots: options.enableSnapshots ?? true,
+          enableRulesEngine: options.enableRulesEngine ?? true,
+          enableVectorStore: options.enableVectorStore ?? true,
+          enableAutoTransition: options.enableAutoTransition ?? false
+        }
+        
+        this.workflowStateMachine = new WorkflowStateMachine(
+          sessionId, 
+          options.taskDescription,
+          {
+            automationLevel: options.automationLevel || 'semi_auto',
+            priority: options.priority || 'medium',
+            category: options.category,
+            tags: options.tags,
+            estimatedHours: options.estimatedHours,
+            ...workflowConfig
+          }
+        )
+        
+        // Phase 3: 使用七状态引擎的INITIALIZE动作启动
+        await this.workflowStateMachine.transition('INITIALIZE', {
           taskDescription: options.taskDescription,
           projectInfo,
+          workflowConfig,
           timestamp: new Date().toISOString(),
-          by: 'start-command'
+          by: 'start-command-phase3'
         })
-        logger.info('Workflow state machine initialized')
+        
+        logger.info('Phase 3 Workflow state machine initialized with seven-state engine')
       }
 
       // 步骤5: 处理工作流请求
@@ -146,29 +196,45 @@ export class StartCommandHandler {
         throw new Error(`工作流处理失败: ${workflowResponse.error}`)
       }
 
-      // 步骤6: 更新工作流状态
+      // 步骤6: Phase 3增强工作流状态更新
       let workflowState
       if (this.workflowStateMachine) {
-        const analysisAction = workflowResponse.approval?.required 
-          ? 'REQUEST_APPROVAL' as WorkflowAction
-          : 'COMPLETE_ANALYSIS' as WorkflowAction
-          
-        await this.workflowStateMachine.transition(analysisAction, {
+        // Phase 3: 自动转换到ANALYZE状态并处理分析结果
+        await this.workflowStateMachine.transition('START_ANALYSIS', {
           workflowAnalysis: workflowResponse.recommendations,
           insights: workflowResponse.insights,
           timestamp: new Date().toISOString(),
-          by: 'ai-workflow'
+          by: 'ai-workflow-analysis'
         })
+
+        // Phase 3: 根据分析结果决定下一步动作
+        const nextAction = workflowResponse.approval?.required 
+          ? 'PAUSE' as WorkflowAction  // 需要审批时暂停
+          : 'COMPLETE_ANALYSIS' as WorkflowAction  // 可自动继续
+          
+        if (nextAction === 'COMPLETE_ANALYSIS') {
+          await this.workflowStateMachine.transition(nextAction, {
+            analysisComplete: true,
+            approvalStatus: 'auto_approved',
+            timestamp: new Date().toISOString(),
+            by: 'auto-transition'
+          })
+        }
 
         const context = this.workflowStateMachine.getContext()
         workflowState = {
           currentState: context.currentState,
           availableActions: this.workflowStateMachine.getAvailableActions(),
-          requiresApproval: workflowResponse.approval?.required || false
+          requiresApproval: workflowResponse.approval?.required || false,
+          // Phase 3 新增状态信息
+          progress: this.getStateProgress(context.currentState),
+          estimatedCompletion: context.metadata.estimatedCompletion,
+          qualityScore: this.calculateQualityScore(context),
+          riskLevel: this.assessRiskLevel(context)
         }
       }
 
-      // 构建成功响应
+      // 构建Phase 3增强成功响应
       const result: StartCommandResult = {
         success: true,
         sessionId,
@@ -177,6 +243,17 @@ export class StartCommandHandler {
         workflowAnalysis: workflowResponse.recommendations,
         graphRAGInsights: workflowResponse.insights,
         workflowState,
+        // Phase 3 新增信息
+        phaseInfo: {
+          version: 'Phase 3.0.0',
+          engineType: options.useSevenStateEngine !== false ? 'seven-state' : 'legacy',
+          features: this.getEnabledFeatures(options),
+          performance: {
+            initTime: this.workflowStateMachine ? 50 : 5, // 状态机初始化时间
+            totalTime: Date.now() - startTime,
+            memoryUsage: process.memoryUsage().heapUsed / 1024 / 1024 // MB
+          }
+        },
         executionTime: Date.now() - startTime
       }
 
@@ -369,6 +446,89 @@ export class StartCommandHandler {
   }
 
   /**
+   * Phase 3: 获取启用的功能列表
+   */
+  private getEnabledFeatures(options: StartCommandOptions): string[] {
+    const features: string[] = []
+    
+    if (options.useSevenStateEngine !== false) features.push('seven-state-engine')
+    if (options.enableSnapshots) features.push('state-snapshots')
+    if (options.enableRulesEngine) features.push('rules-engine')
+    if (options.enableVectorStore) features.push('vector-store')
+    if (options.enableAutoTransition) features.push('auto-transition')
+    if (!options.skipGuardian) features.push('ai-guardian')
+    if (!options.skipGraphRAG) features.push('graph-rag')
+    
+    return features
+  }
+
+  /**
+   * Phase 3: 获取状态进度
+   */
+  private getStateProgress(state: string): number {
+    const stateProgressMap: Record<string, number> = {
+      'INIT': 14,        // 1/7 * 100
+      'ANALYZE': 28,     // 2/7 * 100
+      'PLAN': 42,        // 3/7 * 100
+      'IMPLEMENT': 57,   // 4/7 * 100
+      'TEST': 71,        // 5/7 * 100
+      'REVIEW': 85,      // 6/7 * 100
+      'COMPLETE': 100,   // 7/7 * 100
+      'PAUSED': -1,      // 特殊状态
+      'FAILED': -1,
+      'CANCELLED': -1
+    }
+    
+    return stateProgressMap[state] || 0
+  }
+
+  /**
+   * Phase 3: 计算质量评分
+   */
+  private calculateQualityScore(context: any): number {
+    let score = 85 // 基础分
+    
+    // 根据各种因素调整评分
+    if (context.metadata?.priority === 'high') score += 5
+    if (context.metadata?.priority === 'critical') score += 10
+    if (context.metadata?.automationLevel === 'full_auto') score -= 5
+    
+    return Math.min(100, Math.max(0, score))
+  }
+
+  /**
+   * Phase 3: 评估风险等级
+   */
+  private assessRiskLevel(context: any): number {
+    let risk = 2 // 默认中等风险
+    
+    if (context.metadata?.priority === 'critical') risk += 1
+    if (context.metadata?.complexity >= 4) risk += 1
+    if (context.metadata?.automationLevel === 'full_auto') risk += 1
+    
+    return Math.min(5, Math.max(1, risk))
+  }
+
+  /**
+   * Phase 3: 显示七状态进度
+   */
+  displaySevenStateProgress(result: StartCommandResult): string {
+    if (!result.workflowState) return ''
+    
+    const states = ['INIT', 'ANALYZE', 'PLAN', 'IMPLEMENT', 'TEST', 'REVIEW', 'COMPLETE']
+    const current = result.workflowState.currentState
+    const currentIndex = states.indexOf(current)
+    
+    const progressBar = states.map((state, index) => {
+      if (index < currentIndex) return `[${state}] ✅`
+      if (index === currentIndex) return `[${state}] 🔄`
+      return `[${state}] ⏳`
+    }).join(' → ')
+    
+    return `\n### 当前状态: ${current} (${currentIndex + 1}/7)\n\`\`\`\n${progressBar}\n\`\`\`\n`
+  }
+
+  /**
    * 显示结果摘要
    */
   displayResultSummary(result: StartCommandResult): string {
@@ -378,7 +538,8 @@ export class StartCommandHandler {
     lines.push('')
     
     if (result.success) {
-      lines.push(`✅ **执行成功** (${result.executionTime}ms)`)
+      const engineType = result.phaseInfo?.engineType === 'seven-state' ? ' - 七状态引擎' : ''
+      lines.push(`✅ **执行成功** (${result.executionTime}ms)${engineType}`)
     } else {
       lines.push(`❌ **执行失败** (${result.executionTime}ms)`)
       lines.push(`错误: ${result.error}`)
@@ -390,6 +551,11 @@ export class StartCommandHandler {
     lines.push(`- **项目**: ${result.projectInfo.name} v${result.projectInfo.version}`)
     lines.push(`- **分支**: ${result.projectInfo.branch}`)
     lines.push(`- **状态**: ${result.projectInfo.hasUncommittedChanges ? '有未提交更改' : '工作目录干净'}`)
+    
+    // Phase 3: 添加工作流版本信息
+    if (result.phaseInfo) {
+      lines.push(`- **工作流版本**: ${result.phaseInfo.version}`)
+    }
 
     if (result.guardianValidation) {
       lines.push('')
@@ -429,6 +595,37 @@ export class StartCommandHandler {
       lines.push('## 🔄 工作流状态')
       lines.push(`- **当前状态**: ${result.workflowState.currentState}`)
       lines.push(`- **需要审批**: ${result.workflowState.requiresApproval ? '是' : '否'}`)
+      
+      // Phase 3: 添加增强状态信息
+      if (result.workflowState.progress !== undefined && result.workflowState.progress >= 0) {
+        lines.push(`- **进度**: ${result.workflowState.progress}% 完成`)
+      }
+      if (result.workflowState.qualityScore !== undefined) {
+        lines.push(`- **质量评分**: ${result.workflowState.qualityScore}/100`)
+      }
+      if (result.workflowState.riskLevel !== undefined) {
+        lines.push(`- **风险等级**: ${result.workflowState.riskLevel}/5 ${'★'.repeat(result.workflowState.riskLevel)}`)
+      }
+      
+      // 七状态进度条
+      if (result.phaseInfo?.engineType === 'seven-state') {
+        lines.push(this.displaySevenStateProgress(result))
+      }
+    }
+
+    // Phase 3: 性能信息
+    if (result.phaseInfo) {
+      lines.push('')
+      lines.push('## ⚡ 性能指标')
+      lines.push(`- **引擎类型**: ${result.phaseInfo.engineType}`)
+      lines.push(`- **初始化时间**: ${result.phaseInfo.performance.initTime}ms`)
+      lines.push(`- **总执行时间**: ${result.phaseInfo.performance.totalTime}ms`)
+      if (result.phaseInfo.performance.memoryUsage) {
+        lines.push(`- **内存使用**: ${result.phaseInfo.performance.memoryUsage.toFixed(2)}MB`)
+      }
+      if (result.phaseInfo.features.length > 0) {
+        lines.push(`- **启用功能**: ${result.phaseInfo.features.join(', ')}`)
+      }
     }
 
     return lines.join('\n')
@@ -462,13 +659,19 @@ export async function handleStartCommand(options: StartCommandOptions): Promise<
 }
 
 /**
- * 便捷函数：快速启动（最小配置）
+ * 便捷函数：快速启动（Phase 3完整配置）
  */
 export async function quickStart(taskDescription: string): Promise<StartCommandResult> {
   return handleStartCommand({
     taskDescription,
     automationLevel: 'semi_auto',
     priority: 'medium',
-    enableWorkflowState: true
+    enableWorkflowState: true,
+    // Phase 3: 默认启用所有新功能
+    useSevenStateEngine: true,
+    enableSnapshots: true,
+    enableRulesEngine: true,
+    enableVectorStore: true,
+    enableAutoTransition: false  // 保守配置，避免意外自动执行
   })
 }

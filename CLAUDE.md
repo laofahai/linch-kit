@@ -160,6 +160,73 @@ bun run deps:check "[自动提取关键词]"
 - 查询失败时解释原因并重试
 - 发现现有实现时停止重复开发
 
+## 🚀 /start 命令定义 - Phase 3
+
+**一键式AI工作流启动命令 - 七状态工作流引擎**
+
+### 命令格式
+```
+/start "任务描述"
+```
+
+### Phase 3命令处理流程
+当用户使用/start命令时，Claude必须执行以下步骤：
+
+```typescript
+// 1. 调用Phase 3增强的start-command-handler
+import { handleStartCommand } from 'tools/ai-platform/src/cli/start-command-handler'
+
+// 2. 执行完整的七状态AI工作流
+const result = await handleStartCommand({
+  taskDescription: "用户提供的任务描述",
+  automationLevel: 'semi_auto',
+  priority: 'medium',
+  enableWorkflowState: true,
+  useSevenStateEngine: true,      // Phase 3: 七状态引擎
+  enableSnapshots: true,          // Phase 3: 状态快照
+  enableRulesEngine: true,        // Phase 3: 规则引擎
+  enableVectorStore: true,        // Phase 3: 向量存储
+  skipGuardian: false,
+  skipGraphRAG: false
+})
+
+// 3. 显示Phase 3结构化结果
+console.log(result.displaySevenStateProgress())
+```
+
+### Phase 3自动化处理
+/start命令将自动执行：
+- ✅ 项目信息收集和分支检查
+- ✅ AI Guardian验证系统
+- ✅ Graph RAG智能查询
+- ✅ **七状态工作流引擎初始化** (INIT→ANALYZE→PLAN→IMPLEMENT→TEST→REVIEW→COMPLETE)
+- ✅ **状态快照和版本控制**
+- ✅ **JSON Schema规则引擎验证**
+- ✅ **向量存储语义检索**
+- ✅ **智能失败恢复机制**
+- ✅ 实时状态跟踪和结构化输出
+
+### Phase 3示例用法
+```bash
+/start "实现用户认证中间件"
+/start "优化数据库查询性能" 
+/start "添加暗黑主题支持"
+/start "集成Qdrant向量数据库"
+```
+
+### Phase 3工作流进度可视化
+```
+[INIT] ✅ → [ANALYZE] 🔄 → [PLAN] ⏳ → [IMPLEMENT] ⏳ → [TEST] ⏳ → [REVIEW] ⏳ → [COMPLETE] ⏳
+```
+
+### 替代手动流程
+此命令完全替代了之前的手动流程，提供：
+- **一键式启动** - 自动执行所有验证和初始化
+- **七状态管理** - 清晰的工作流阶段划分
+- **智能决策** - AI+规则引擎混合决策
+- **状态恢复** - 跨会话工作流恢复能力
+- **质量保证** - 每个状态的质量门禁检查
+
 ---
 
 **核心原则**: 遵循Essential_Rules.md约束，Graph RAG查询优先，质量至上。  

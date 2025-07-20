@@ -1,0 +1,48 @@
+{
+  "sessionId": "workflow-1753012944086",
+  "taskDescription": "测试/start命令集成功能",
+  "currentState": "PENDING_APPROVAL",
+  "metadata": {
+    "startTime": "2025-07-20T12:02:24.086Z",
+    "lastUpdated": "2025-07-20T12:02:34.448Z",
+    "automationLevel": "semi_auto"
+  },
+  "stateHistory": [
+    {
+      "state": "INITIALIZED",
+      "timestamp": "2025-07-20T12:02:24.086Z",
+      "action": "START_ANALYSIS",
+      "by": "system"
+    },
+    {
+      "state": "ANALYZING",
+      "timestamp": "2025-07-20T12:02:27.069Z",
+      "action": "START_ANALYSIS",
+      "by": "system"
+    },
+    {
+      "state": "PENDING_APPROVAL",
+      "timestamp": "2025-07-20T12:02:34.448Z",
+      "action": "COMPLETE_ANALYSIS",
+      "by": "system"
+    }
+  ],
+  "analysis": {
+    "approach": "create_new",
+    "confidence": 0.7,
+    "estimatedHours": 6,
+    "complexity": 3,
+    "risks": [
+      "实现复杂度",
+      "集成风险"
+    ],
+    "dependencies": []
+  },
+  "approvalRequest": {
+    "requestedAt": "2025-07-20T12:02:34.448Z",
+    "requestedBy": "ai-workflow-system",
+    "reason": "任务复杂度较高，需要人工审批",
+    "urgency": "medium",
+    "autoApproveAfter": "2025-07-20T16:02:34.448Z"
+  }
+}
