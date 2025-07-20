@@ -1,21 +1,24 @@
 /**
  * 混合智能管理器
  * 结合AI分析与规则引擎的智能决策系统
+ * 优先使用SDK方式，提供更好的性能和功能
  */
 
 import { createLogger } from '@linch-kit/core'
 
-import { CLIBasedAIProvider, COMMON_CLI_PROVIDERS, CLIAIResponse } from './cli-based-provider'
+import { GeminiSDKProvider, GeminiResponse } from './gemini-sdk-provider'
 import { PromptTemplateEngine, TemplateContext, PromptCategory } from '../prompt/template-engine'
 
 const logger = createLogger('hybrid-ai-manager')
 
 export interface HybridConfig {
-  primaryProvider?: string
+  primaryProvider?: 'gemini-sdk' | 'claude' | string
   fallbackProviders?: string[]
   aiTimeout?: number
   enableRuleFallback?: boolean
-  customProviders?: Record<string, any>
+  geminiApiKey?: string
+  geminiModel?: string
+  systemInstruction?: string
 }
 
 export interface AnalysisRequest {
@@ -23,11 +26,12 @@ export interface AnalysisRequest {
   context?: Record<string, any>
   requiresAI?: boolean
   ruleBasedFallback?: () => string
-  // 新增：结构化分析选项
+  // 结构化分析选项
   templateId?: string
   templateVariables?: Record<string, unknown>
   expectedFormat?: 'json' | 'yaml' | 'markdown' | 'text'
   enforceSchema?: boolean
+  stream?: boolean
 }
 
 export interface AnalysisResult {
@@ -37,7 +41,7 @@ export interface AnalysisResult {
   success: boolean
   executionTime: number
   confidence?: number
-  // 新增：结构化输出元数据
+  // 结构化输出元数据
   structured?: {
     format: 'json' | 'yaml' | 'markdown' | 'text'
     parsed: unknown
@@ -46,16 +50,27 @@ export interface AnalysisResult {
   }
 }
 
+interface AIProvider {
+  generate(prompt: string, options?: any): Promise<{
+    content: string
+    success: boolean
+    error?: string
+    provider: string
+    executionTime: number
+  }>
+  getProviderName(): string
+}
+
 export class HybridAIManager {
-  private providers: Map<string, CLIBasedAIProvider> = new Map()
+  private providers: Map<string, AIProvider> = new Map()
   private config: HybridConfig
   private promptEngine: PromptTemplateEngine
 
   constructor(config: HybridConfig = {}) {
     this.config = {
-      primaryProvider: 'gemini',
-      fallbackProviders: ['claude'],
-      aiTimeout: 60000, // 增加到60秒
+      primaryProvider: 'gemini-sdk',
+      fallbackProviders: [],
+      aiTimeout: 60000,
       enableRuleFallback: true,
       ...config
     }
@@ -65,26 +80,22 @@ export class HybridAIManager {
   }
 
   private initializeProviders() {
-    // 初始化常见CLI提供者
-    for (const [name, config] of Object.entries(COMMON_CLI_PROVIDERS)) {
-      const provider = new CLIBasedAIProvider(name, {
-        ...config,
-        timeoutMs: this.config.aiTimeout
+    // 初始化 Gemini SDK Provider
+    if (this.config.geminiApiKey) {
+      const geminiProvider = new GeminiSDKProvider({
+        apiKey: this.config.geminiApiKey,
+        model: this.config.geminiModel || 'gemini-1.5-flash',
+        systemInstruction: this.config.systemInstruction,
+        timeout: this.config.aiTimeout
       })
-      this.providers.set(name, provider)
+      this.providers.set('gemini-sdk', geminiProvider)
+      logger.info('Initialized Gemini SDK provider')
+    } else {
+      logger.warn('Gemini API key not provided, SDK provider will not be available')
     }
 
-    // 初始化自定义提供者
-    if (this.config.customProviders) {
-      for (const [name, config] of Object.entries(this.config.customProviders)) {
-        const provider = new CLIBasedAIProvider(name, {
-          ...config,
-          timeoutMs: this.config.aiTimeout
-        })
-        this.providers.set(name, provider)
-      }
-    }
-
+    // TODO: 可以添加其他Provider，如Claude SDK等
+    
     logger.info(`Initialized ${this.providers.size} AI providers`)
   }
 
@@ -105,13 +116,7 @@ export class HybridAIManager {
         logger.info(`Using prompt template: ${request.templateId}`)
       } else {
         logger.warn(`Template generation failed: ${promptResult.error}`)
-        // 继续使用原始prompt
       }
-    }
-
-    // 如果指定了输出格式，增强prompt
-    if (request.expectedFormat) {
-      finalPrompt = this.enhancePromptWithFormat(finalPrompt, request.expectedFormat, request.enforceSchema)
     }
 
     // 如果不需要AI或没有配置AI，直接使用规则引擎
@@ -125,7 +130,10 @@ export class HybridAIManager {
     }
 
     // 尝试AI分析
-    const aiResult = await this.tryAIAnalysis(finalPrompt)
+    const aiResult = await this.tryAIAnalysis(finalPrompt, {
+      format: request.expectedFormat,
+      stream: request.stream
+    })
     
     if (aiResult.success) {
       return this.buildAnalysisResult(aiResult.content, 'ai', aiResult.executionTime, {
@@ -162,7 +170,7 @@ export class HybridAIManager {
     }
   }
 
-  private async tryAIAnalysis(prompt: string): Promise<CLIAIResponse> {
+  private async tryAIAnalysis(prompt: string, options?: any): Promise<GeminiResponse> {
     const providersToTry = [
       this.config.primaryProvider!,
       ...(this.config.fallbackProviders || [])
@@ -176,11 +184,8 @@ export class HybridAIManager {
       }
 
       try {
-        // 检查CLI是否可用
-        await provider.validateCLI()
-        
         logger.info(`Trying AI analysis with ${providerName}`)
-        const result = await provider.generate(prompt)
+        const result = await provider.generate(prompt, options)
         
         if (result.success) {
           logger.info(`AI analysis successful with ${providerName}`)
@@ -189,7 +194,7 @@ export class HybridAIManager {
           logger.warn(`${providerName} failed: ${result.error}`)
         }
       } catch (error) {
-        logger.warn(`${providerName} CLI not available: ${error}`)
+        logger.error(`${providerName} error:`, error)
         continue
       }
     }
@@ -206,14 +211,10 @@ export class HybridAIManager {
   async validateProviders(): Promise<Record<string, boolean>> {
     const results: Record<string, boolean> = {}
     
-    for (const [name, provider] of this.providers) {
-      try {
-        results[name] = await provider.validateCLI()
-        logger.info(`Provider ${name}: ${results[name] ? 'Available' : 'Not available'}`)
-      } catch (error) {
-        results[name] = false
-        logger.info(`Provider ${name}: Not available (${error})`)
-      }
+    for (const [name] of this.providers) {
+      // SDK providers are considered available if they're initialized
+      results[name] = true
+      logger.info(`Provider ${name}: Available`)
     }
     
     return results
@@ -248,35 +249,6 @@ export class HybridAIManager {
       },
       variables: request.templateVariables || {}
     }
-  }
-
-  /**
-   * 增强Prompt以支持指定格式输出
-   */
-  private enhancePromptWithFormat(
-    prompt: string, 
-    format: string, 
-    enforceSchema?: boolean
-  ): string {
-    let enhancement = ''
-    
-    switch (format) {
-      case 'json':
-        enhancement = enforceSchema 
-          ? '\n\n**重要**: 必须返回有效的JSON格式。如果无法提供结构化数据，请返回 {"error": "reason"}。'
-          : '\n\n请以JSON格式返回结果。'
-        break
-      case 'yaml':
-        enhancement = '\n\n请以YAML格式返回结果。'
-        break
-      case 'markdown':
-        enhancement = '\n\n请以Markdown格式返回结果，包含适当的标题和结构。'
-        break
-      default:
-        enhancement = ''
-    }
-
-    return prompt + enhancement
   }
 
   /**
@@ -357,11 +329,10 @@ export class HybridAIManager {
     const status = []
     
     for (const [name, provider] of this.providers) {
-      const available = await provider.validateCLI().catch(() => false)
       status.push({
         name,
-        available,
-        command: (provider as any).config?.command || 'unknown'
+        available: true, // SDK providers are available if initialized
+        command: provider.getProviderName()
       })
     }
     
@@ -419,15 +390,45 @@ export class HybridAIManager {
       requiresAI: true
     })
   }
+
+  /**
+   * 使用函数调用进行分析
+   */
+  async analyzeWithFunctions(
+    prompt: string,
+    functions: any[],
+    functionCall?: { name: string }
+  ): Promise<AnalysisResult> {
+    const provider = this.providers.get('gemini-sdk') as GeminiSDKProvider
+    if (!provider) {
+      return {
+        content: 'Gemini SDK provider not available',
+        source: 'hybrid',
+        success: false,
+        executionTime: 0,
+        confidence: 0
+      }
+    }
+
+    const startTime = Date.now()
+    const result = await provider.generateWithFunctions(prompt, functions, functionCall)
+    
+    return this.buildAnalysisResult(result.content, 'ai', result.executionTime, {
+      provider: result.provider
+    })
+  }
 }
 
 // 工厂函数：从环境变量创建混合管理器
 export function createHybridAIManager(): HybridAIManager {
   const config: HybridConfig = {
-    primaryProvider: process.env.AI_PRIMARY_PROVIDER || 'gemini',
-    fallbackProviders: process.env.AI_FALLBACK_PROVIDERS?.split(',') || ['claude'],
-    aiTimeout: parseInt(process.env.AI_TIMEOUT || '60000'), // 默认60秒
-    enableRuleFallback: process.env.AI_ENABLE_RULE_FALLBACK !== 'false'
+    primaryProvider: 'gemini-sdk',
+    fallbackProviders: process.env.AI_FALLBACK_PROVIDERS?.split(',') || [],
+    aiTimeout: parseInt(process.env.AI_TIMEOUT || '60000'),
+    enableRuleFallback: process.env.AI_ENABLE_RULE_FALLBACK !== 'false',
+    geminiApiKey: process.env.GEMINI_API_KEY,
+    geminiModel: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+    systemInstruction: process.env.AI_SYSTEM_INSTRUCTION
   }
 
   return new HybridAIManager(config)

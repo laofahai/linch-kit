@@ -19,7 +19,11 @@ const log = {
   info: (msg: string, meta?: unknown) => logger.info(`[Evolution-Engine] ${msg}`, meta || ''),
   warn: (msg: string, meta?: unknown) => logger.warn(`[Evolution-Engine] ${msg}`, meta || ''),
   error: (msg: string, meta?: unknown) => logger.error(`[Evolution-Engine] ${msg}`, meta || ''),
-  debug: (msg: string, meta?: unknown) => process.env.DEBUG && logger.info(`[DEBUG] ${msg}`, meta || '')
+  debug: (msg: string, meta?: unknown) => {
+    if (process.env.DEBUG) {
+      logger.info(`[DEBUG] ${msg}`, meta || '')
+    }
+  }
 };
 
 /**

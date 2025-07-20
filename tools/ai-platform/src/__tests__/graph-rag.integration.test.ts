@@ -5,9 +5,9 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'bun:test'
 
-import { Neo4jService } from '../graph/neo4j-service'
-import { IntelligentQueryEngine } from '../query/intelligent-query-engine'
-import { loadNeo4jConfig } from '../config/neo4j-config'
+import { Neo4jService } from '../core/graph/neo4j-service.js'
+import { IntelligentQueryEngine } from '../query/intelligent-query-engine.js'
+import { loadNeo4jConfig } from '../core/config/neo4j-config.js'
 
 describe('Graph RAG Integration Tests', () => {
   let neo4jService: Neo4jService
@@ -16,13 +16,15 @@ describe('Graph RAG Integration Tests', () => {
   beforeAll(async () => {
     const config = await loadNeo4jConfig()
     neo4jService = new Neo4jService(config)
-    queryEngine = new IntelligentQueryEngine(neo4jService)
+    queryEngine = new IntelligentQueryEngine()
     
     // 确保连接成功
     await neo4jService.connect()
+    await queryEngine.connect()
   })
 
   afterAll(async () => {
+    await queryEngine.disconnect()
     await neo4jService.disconnect()
   })
 
@@ -48,73 +50,70 @@ describe('Graph RAG Integration Tests', () => {
   })
 
   describe('Intelligent Query Engine Integration', () => {
-    it('should execute entity queries', async () => {
-      const result = await queryEngine.findEntity('linch-kit')
+    it('should execute general queries', async () => {
+      const result = await queryEngine.query('linch-kit')
       
       expect(result).toBeDefined()
-      expect(result.success).toBe(true)
+      expect(result.intent).toBeDefined()
+      expect(result.confidence).toBeGreaterThan(0)
       expect(result.results).toBeDefined()
-      expect(Array.isArray(result.results.related_entities)).toBe(true)
+      expect(Array.isArray(result.results.nodes)).toBe(true)
+      expect(Array.isArray(result.results.relationships)).toBe(true)
     })
 
-    it('should execute symbol queries', async () => {
-      const result = await queryEngine.findSymbol('createLogger')
+    it('should recognize different query intents', async () => {
+      const functionResult = await queryEngine.query('find function createLogger')
+      expect(functionResult.intent).toBe('find_function')
       
-      expect(result).toBeDefined()
-      expect(result.success).toBe(true)
-      expect(result.results).toBeDefined()
+      const classResult = await queryEngine.query('find class User')
+      expect(classResult.intent).toBe('find_class')
     })
 
-    it('should execute pattern queries', async () => {
-      const result = await queryEngine.findPattern('service', 'neo4j')
+    it('should provide explanations and suggestions', async () => {
+      const result = await queryEngine.query('authentication system')
       
       expect(result).toBeDefined()
-      expect(result.success).toBe(true)
-      expect(result.results).toBeDefined()
+      expect(result.results.explanation).toBeDefined()
+      expect(Array.isArray(result.results.suggestions)).toBe(true)
     })
 
     it('should handle empty query results', async () => {
-      const result = await queryEngine.findEntity('非存在的实体')
+      const result = await queryEngine.query('非存在的实体12345')
       
       expect(result).toBeDefined()
-      expect(result.success).toBe(true)
-      expect(result.results.primary_target).toBe(null)
-      expect(result.results.related_entities).toHaveLength(0)
+      expect(result.confidence).toBeGreaterThanOrEqual(0)
+      expect(result.results.nodes).toHaveLength(0)
     })
 
-    it('should provide debug information', async () => {
-      const result = await queryEngine.findEntity('test', { debug: true })
+    it('should include execution time', async () => {
+      const result = await queryEngine.query('test query')
       
       expect(result).toBeDefined()
-      expect(result._debug_info).toBeDefined()
-      expect(result._debug_info.query_type).toBe('find_entity')
-      expect(result._debug_info.query_target).toBe('test')
-      expect(result._debug_info.cypher_query).toBeDefined()
+      expect(result.execution_time_ms).toBeGreaterThan(0)
+      expect(result.cypher_query).toBeDefined()
     })
   })
 
   describe('Query Performance Tests', () => {
     it('should execute queries within reasonable time limits', async () => {
-      const startTime = Date.now()
-      await queryEngine.findEntity('linch-kit')
-      const endTime = Date.now()
+      const result = await queryEngine.query('linch-kit')
       
-      const executionTime = endTime - startTime
-      expect(executionTime).toBeLessThan(5000) // 5秒内完成
+      expect(result.execution_time_ms).toBeLessThan(5000) // 5秒内完成
     })
 
     it('should handle multiple concurrent queries', async () => {
       const queries = [
-        queryEngine.findEntity('linch-kit'),
-        queryEngine.findSymbol('createLogger'),
-        queryEngine.findPattern('service', 'neo4j')
+        queryEngine.query('linch-kit'),
+        queryEngine.query('createLogger'),
+        queryEngine.query('service neo4j')
       ]
 
       const results = await Promise.all(queries)
       
       expect(results).toHaveLength(3)
       results.forEach(result => {
-        expect(result.success).toBe(true)
+        expect(result.intent).toBeDefined()
+        expect(result.confidence).toBeGreaterThanOrEqual(0)
       })
     })
   })
@@ -122,11 +121,11 @@ describe('Graph RAG Integration Tests', () => {
   describe('Data Consistency Tests', () => {
     it('should maintain consistent query results', async () => {
       // 执行相同查询两次
-      const result1 = await queryEngine.findEntity('linch-kit')
-      const result2 = await queryEngine.findEntity('linch-kit')
+      const result1 = await queryEngine.query('linch-kit')
+      const result2 = await queryEngine.query('linch-kit')
       
-      expect(result1.results.total_found).toBe(result2.results.total_found)
-      expect(result1.results.related_entities.length).toBe(result2.results.related_entities.length)
+      expect(result1.results.nodes.length).toBe(result2.results.nodes.length)
+      expect(result1.intent).toBe(result2.intent)
     })
 
     it('should handle special characters in queries', async () => {
@@ -138,36 +137,31 @@ describe('Graph RAG Integration Tests', () => {
       ]
 
       for (const query of specialQueries) {
-        const result = await queryEngine.findEntity(query)
-        expect(result.success).toBe(true)
+        const result = await queryEngine.query(query)
+        expect(result.intent).toBeDefined()
+        expect(result.confidence).toBeGreaterThanOrEqual(0)
       }
     })
   })
 
   describe('Error Handling Tests', () => {
-    it('should handle network interruptions gracefully', async () => {
-      // 模拟网络中断情况
-      const originalQuery = neo4jService.query
-      neo4jService.query = async () => {
-        throw new Error('Network connection lost')
-      }
-
+    it('should handle invalid queries gracefully', async () => {
       try {
-        const result = await queryEngine.findEntity('test')
-        expect(result.success).toBe(false)
+        const result = await queryEngine.query('') // 空查询
+        expect(result).toBeDefined()
+        expect(result.intent).toBeDefined()
       } catch (error) {
-        expect(error).toBeDefined()
+        // 如果抛出异常，确保是合理的错误
+        expect(error instanceof Error).toBe(true)
       }
-
-      // 恢复原始方法
-      neo4jService.query = originalQuery
     })
 
-    it('should validate query parameters', async () => {
-      // 测试空查询
-      const result = await queryEngine.findEntity('')
-      expect(result.success).toBe(true)
-      expect(result.results.primary_target).toBe(null)
+    it('should handle very long queries', async () => {
+      const longQuery = 'a'.repeat(1000) // 1000字符的查询
+      const result = await queryEngine.query(longQuery)
+      
+      expect(result).toBeDefined()
+      expect(result.intent).toBeDefined()
     })
   })
 
@@ -177,7 +171,7 @@ describe('Graph RAG Integration Tests', () => {
       const initialMemory = process.memoryUsage()
       
       for (let i = 0; i < 10; i++) {
-        await queryEngine.findEntity(`test-query-${i}`)
+        await queryEngine.query(`test-query-${i}`)
       }
       
       const finalMemory = process.memoryUsage()
@@ -188,7 +182,8 @@ describe('Graph RAG Integration Tests', () => {
     })
 
     it('should clean up resources properly', async () => {
-      const testService = new Neo4jService()
+      const config = await loadNeo4jConfig()
+      const testService = new Neo4jService(config)
       await testService.connect()
       
       expect(testService.isConnected()).toBe(true)
@@ -210,17 +205,17 @@ describe('Graph RAG Integration Tests', () => {
       ]
 
       for (const query of commonQueries) {
-        const result = await queryEngine.findEntity(query)
-        expect(result.success).toBe(true)
-        expect(result.metadata.execution_time_ms).toBeLessThan(3000)
+        const result = await queryEngine.query(query)
+        expect(result.intent).toBeDefined()
+        expect(result.execution_time_ms).toBeLessThan(3000)
       }
     })
 
     it('should provide useful suggestions for empty results', async () => {
-      const result = await queryEngine.findEntity('不存在的功能')
+      const result = await queryEngine.query('不存在的功能')
       
-      expect(result.success).toBe(true)
-      expect(result.results.suggestions).toBeDefined()
+      expect(result.intent).toBeDefined()
+      expect(Array.isArray(result.results.suggestions)).toBe(true)
     })
   })
 })

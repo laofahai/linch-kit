@@ -307,13 +307,75 @@ export class PromptTemplateEngine {
   }
 
   /**
-   * 模板插值
+   * 模板插值（带安全防护）
    */
   private interpolateTemplate(template: string, variables: Record<string, unknown>): string {
     return template.replace(/\{\{(\w+(?:\.\w+)*)\}\}/g, (match, varPath) => {
+      // 安全检查：防止路径遍历和原型污染
+      if (!this.isValidVariablePath(varPath)) {
+        logger.warn(`Potentially unsafe variable path blocked: ${varPath}`)
+        return match
+      }
+      
       const value = this.getNestedValue(variables, varPath)
-      return value !== undefined ? String(value) : match
+      
+      if (value !== undefined) {
+        // 安全化变量值，防止模板注入
+        const sanitizedValue = this.sanitizeVariableValue(value)
+        return String(sanitizedValue)
+      }
+      
+      return match
     })
+  }
+
+  /**
+   * 验证变量路径是否安全
+   */
+  private isValidVariablePath(path: string): boolean {
+    // 防止原型污染和路径遍历攻击
+    const dangerousPatterns = [
+      '__proto__',
+      'constructor',
+      'prototype',
+      '..',
+      '//',
+      'eval',
+      'function'
+    ]
+    
+    const lowerPath = path.toLowerCase()
+    return !dangerousPatterns.some(pattern => lowerPath.includes(pattern))
+  }
+
+  /**
+   * 安全化变量值
+   */
+  private sanitizeVariableValue(value: unknown): unknown {
+    if (typeof value === 'string') {
+      // 移除潜在的脚本标签和危险字符
+      return value
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/javascript:/gi, '')
+        .replace(/on\w+\s*=/gi, '')
+        .trim()
+    }
+    
+    if (Array.isArray(value)) {
+      return value.map(item => this.sanitizeVariableValue(item))
+    }
+    
+    if (typeof value === 'object' && value !== null) {
+      const sanitized: Record<string, unknown> = {}
+      for (const [key, val] of Object.entries(value)) {
+        if (this.isValidVariablePath(key)) {
+          sanitized[key] = this.sanitizeVariableValue(val)
+        }
+      }
+      return sanitized
+    }
+    
+    return value
   }
 
   /**

@@ -6,7 +6,8 @@
  */
 
 import { createLogger } from '@linch-kit/core'
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs'
+import { writeFile, readFile, access, mkdir, readdir, unlink } from 'fs/promises'
+import { constants } from 'fs'
 import { join } from 'path'
 
 const logger = createLogger('workflow-state-machine')
@@ -296,6 +297,29 @@ export class WorkflowStateMachine {
   }
 
   /**
+   * 更新任务描述
+   */
+  updateTaskDescription(taskDescription: string): void {
+    this.context.taskDescription = taskDescription
+    this.context.metadata.lastUpdated = new Date().toISOString()
+    logger.info(`Updated task description: ${taskDescription}`)
+  }
+
+  /**
+   * 获取当前状态
+   */
+  getCurrentState(): WorkflowState {
+    return this.context.currentState
+  }
+
+  /**
+   * 获取完整上下文
+   */
+  getContext(): WorkflowContext {
+    return { ...this.context }
+  }
+
+  /**
    * 状态进入时的处理
    */
   private async onStateEnter(state: WorkflowState, metadata?: Record<string, unknown>): Promise<void> {
@@ -408,16 +432,6 @@ export class WorkflowStateMachine {
   /**
    * 更新分析结果
    */
-  updateAnalysis(analysis: Partial<WorkflowContext['analysis']>): void {
-    this.context.analysis = {
-      ...this.context.analysis,
-      ...analysis
-    } as WorkflowContext['analysis']
-  }
-
-  /**
-   * 更新分析结果
-   */
   updateAnalysis(analysis: {
     approach: string
     confidence: number
@@ -503,45 +517,59 @@ export class FileBasedPersistence implements WorkflowStatePersistence {
 
   constructor(stateDir = '.linchkit/workflow-states') {
     this.stateDir = stateDir
-    if (!existsSync(this.stateDir)) {
-      mkdirSync(this.stateDir, { recursive: true })
+    this.ensureDirectoryExists()
+  }
+
+  private async ensureDirectoryExists(): Promise<void> {
+    try {
+      await access(this.stateDir, constants.F_OK)
+    } catch {
+      await mkdir(this.stateDir, { recursive: true })
     }
   }
 
   async save(context: WorkflowContext): Promise<void> {
+    await this.ensureDirectoryExists()
     const filePath = join(this.stateDir, `${context.sessionId}.json`)
-    writeFileSync(filePath, JSON.stringify(context, null, 2))
+    await writeFile(filePath, JSON.stringify(context, null, 2), 'utf8')
   }
 
   async load(sessionId: string): Promise<WorkflowContext | null> {
     const filePath = join(this.stateDir, `${sessionId}.json`)
     
-    if (!existsSync(filePath)) {
-      return null
-    }
-
     try {
-      const content = readFileSync(filePath, 'utf8')
+      await access(filePath, constants.F_OK)
+      const content = await readFile(filePath, 'utf8')
       return JSON.parse(content)
     } catch (error) {
-      logger.error(`Failed to load workflow state: ${error}`)
+      if (error instanceof Error && error.code !== 'ENOENT') {
+        logger.error(`Failed to load workflow state: ${error.message}`)
+      }
       return null
     }
   }
 
   async list(): Promise<WorkflowContext[]> {
-    const files = require('fs').readdirSync(this.stateDir).filter((f: string) => f.endsWith('.json'))
-    const contexts: WorkflowContext[] = []
+    try {
+      const files = await readdir(this.stateDir)
+      const jsonFiles = files.filter(f => f.endsWith('.json'))
+      const contexts: WorkflowContext[] = []
 
-    for (const file of files) {
-      const sessionId = file.replace('.json', '')
-      const context = await this.load(sessionId)
-      if (context) {
-        contexts.push(context)
+      for (const file of jsonFiles) {
+        const sessionId = file.replace('.json', '')
+        const context = await this.load(sessionId)
+        if (context) {
+          contexts.push(context)
+        }
       }
-    }
 
-    return contexts
+      return contexts
+    } catch (error) {
+      if (error instanceof Error && error.code !== 'ENOENT') {
+        logger.error(`Failed to list workflow states: ${error.message}`)
+      }
+      return []
+    }
   }
 
   async cleanup(olderThan: Date): Promise<number> {
@@ -551,9 +579,13 @@ export class FileBasedPersistence implements WorkflowStatePersistence {
     for (const context of contexts) {
       const stateTime = new Date(context.metadata.lastUpdated)
       if (stateTime < olderThan) {
-        const filePath = join(this.stateDir, `${context.sessionId}.json`)
-        require('fs').unlinkSync(filePath)
-        cleaned++
+        try {
+          const filePath = join(this.stateDir, `${context.sessionId}.json`)
+          await unlink(filePath)
+          cleaned++
+        } catch (error) {
+          logger.warn(`Failed to cleanup workflow state ${context.sessionId}: ${error}`)
+        }
       }
     }
 

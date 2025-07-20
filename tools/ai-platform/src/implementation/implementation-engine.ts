@@ -6,9 +6,13 @@
  */
 
 import { createLogger } from '@linch-kit/core'
-import { execSync } from 'child_process'
-import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs'
+import { exec } from 'child_process'
+import { promisify } from 'util'
+import { writeFile, readFile, access, mkdir, unlink } from 'fs/promises'
+import { constants } from 'fs'
 import { join, dirname } from 'path'
+
+const execAsync = promisify(exec)
 
 const logger = createLogger('implementation-engine')
 
@@ -380,20 +384,32 @@ export class ImplementationEngine {
     const fullPath = join(this.projectRoot, task.targetPath)
     const directory = dirname(fullPath)
 
-    // 确保目录存在
-    if (!existsSync(directory)) {
-      mkdirSync(directory, { recursive: true })
-    }
+    try {
+      // 确保目录存在
+      await mkdir(directory, { recursive: true })
+      
+      // 检查文件是否已存在
+      let originalExists = false
+      try {
+        await access(fullPath, constants.F_OK)
+        originalExists = true
+      } catch {
+        // 文件不存在，这是预期的
+      }
 
-    // 保存回滚信息
-    task.rollbackData = {
-      type: 'delete_file',
-      originalExists: existsSync(fullPath)
-    }
+      // 保存回滚信息
+      task.rollbackData = {
+        type: 'delete_file',
+        originalExists
+      }
 
-    // 创建文件
-    writeFileSync(fullPath, task.content, 'utf8')
-    logger.info(`Created file: ${fullPath}`)
+      // 创建文件
+      await writeFile(fullPath, task.content, 'utf8')
+      logger.info(`Created file: ${fullPath}`)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      throw new Error(`Failed to create file ${fullPath}: ${errorMessage}`)
+    }
   }
 
   /**
@@ -406,22 +422,29 @@ export class ImplementationEngine {
 
     const fullPath = join(this.projectRoot, task.targetPath)
 
-    if (!existsSync(fullPath)) {
-      throw new Error(`Target file does not exist: ${fullPath}`)
-    }
+    try {
+      // 检查文件是否存在
+      await access(fullPath, constants.F_OK)
+      
+      // 保存原始内容用于回滚
+      const originalContent = await readFile(fullPath, 'utf8')
+      task.rollbackData = {
+        type: 'restore_content',
+        originalContent,
+        originalExists: true
+      }
 
-    // 保存原始内容用于回滚
-    const originalContent = readFileSync(fullPath, 'utf8')
-    task.rollbackData = {
-      type: 'restore_content',
-      originalContent,
-      originalExists: true
-    }
-
-    // 修改文件（这里需要具体的修改逻辑）
-    if (task.content) {
-      writeFileSync(fullPath, task.content, 'utf8')
-      logger.info(`Modified file: ${fullPath}`)
+      // 修改文件（这里需要具体的修改逻辑）
+      if (task.content) {
+        await writeFile(fullPath, task.content, 'utf8')
+        logger.info(`Modified file: ${fullPath}`)
+      }
+    } catch (error) {
+      if (error instanceof Error && error.code === 'ENOENT') {
+        throw new Error(`Target file does not exist: ${fullPath}`)
+      }
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      throw new Error(`Failed to modify file ${fullPath}: ${errorMessage}`)
     }
   }
 
@@ -435,18 +458,29 @@ export class ImplementationEngine {
 
     const fullPath = join(this.projectRoot, task.targetPath)
 
-    if (existsSync(fullPath)) {
-      // 保存原始内容用于回滚
-      const originalContent = readFileSync(fullPath, 'utf8')
+    try {
+      // 检查文件是否存在并保存原始内容用于回滚
+      const originalContent = await readFile(fullPath, 'utf8')
       task.rollbackData = {
         type: 'restore_content',
         originalContent,
         originalExists: true
       }
 
-      // 删除文件（在实际实现中可能需要移动到回收站）
-      require('fs').unlinkSync(fullPath)
+      // 删除文件
+      await unlink(fullPath)
       logger.info(`Deleted file: ${fullPath}`)
+    } catch (error) {
+      if (error instanceof Error && error.code === 'ENOENT') {
+        logger.warn(`File to delete does not exist: ${fullPath}`)
+        task.rollbackData = {
+          type: 'restore_content',
+          originalExists: false
+        }
+        return
+      }
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      throw new Error(`Failed to delete file ${fullPath}: ${errorMessage}`)
     }
   }
 
@@ -459,16 +493,47 @@ export class ImplementationEngine {
     }
 
     try {
-      const output = execSync(task.command, { 
+      // 安全的命令执行，避免命令注入
+      const sanitizedCommand = this.sanitizeCommand(task.command)
+      
+      const { stdout, stderr } = await execAsync(sanitizedCommand, { 
         cwd: this.projectRoot,
-        encoding: 'utf8',
-        timeout: 30000
+        timeout: 30000,
+        maxBuffer: 1024 * 1024 // 1MB buffer
       })
-      logger.info(`Command executed: ${task.command}`)
-      logger.debug(`Command output: ${output}`)
+      
+      logger.info(`Command executed: ${sanitizedCommand}`)
+      if (stdout) logger.debug(`Command output: ${stdout}`)
+      if (stderr) logger.warn(`Command stderr: ${stderr}`)
     } catch (error) {
-      throw new Error(`Command execution failed: ${task.command} - ${error}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      throw new Error(`Command execution failed: ${task.command} - ${errorMessage}`)
     }
+  }
+
+  /**
+   * 安全化命令，防止命令注入
+   */
+  private sanitizeCommand(command: string): string {
+    // 基本的命令注入防护
+    const dangerous = [';', '&&', '||', '|', '>', '<', '`', '$', '(', ')']
+    const containsDangerous = dangerous.some(char => command.includes(char))
+    
+    if (containsDangerous) {
+      // 只允许已知安全的命令模式
+      const safePatterns = [
+        /^bun\s+(add|install|run|build|test)\s+[\w\-@/\s\.\:]+$/,
+        /^git\s+(status|add|commit|push|pull|checkout)\s*[\w\-\s]*$/,
+        /^npm\s+(run|test)\s+[\w\-]+$/
+      ]
+      
+      const isSafe = safePatterns.some(pattern => pattern.test(command))
+      if (!isSafe) {
+        throw new Error(`Potentially unsafe command blocked: ${command}`)
+      }
+    }
+    
+    return command
   }
 
   /**
@@ -483,14 +548,18 @@ export class ImplementationEngine {
     const command = `bun add ${packages} --no-cache`
 
     try {
-      execSync(command, {
+      const { stdout, stderr } = await execAsync(command, {
         cwd: this.projectRoot,
-        encoding: 'utf8',
-        timeout: 120000 // 2分钟超时
+        timeout: 120000, // 2分钟超时
+        maxBuffer: 5 * 1024 * 1024 // 5MB buffer for package installation
       })
+      
       logger.info(`Packages installed: ${packages}`)
+      if (stdout) logger.debug(`Installation output: ${stdout}`)
+      if (stderr) logger.warn(`Installation warnings: ${stderr}`)
     } catch (error) {
-      throw new Error(`Package installation failed: ${packages} - ${error}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      throw new Error(`Package installation failed: ${packages} - ${errorMessage}`)
     }
   }
 

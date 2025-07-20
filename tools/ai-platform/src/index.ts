@@ -26,6 +26,18 @@ export * from './context/index.js'
 // Guardian智能体集群
 export * from './guardian/index.js'
 
+// Phase 1: AI工作流引擎 - Claude Code集成
+export * from './workflow/index.js'
+
+// Prompt模板引擎
+export * from './prompt/template-engine.js'
+
+// 用户反馈收集
+export * from './feedback/user-feedback-collector.js'
+
+// 实现引擎
+export * from './implementation/index.js'
+
 /**
  * 快速开始函数
  */
@@ -37,4 +49,16 @@ export async function createAIPlatform() {
     context: new ContextManager(),
     ai: new HybridAIManager()
   }
+}
+
+/**
+ * Claude Code集成快速启动
+ */
+export async function createClaudeCodePlatform(options?: {
+  geminiApiKey?: string
+  enableGraphRAG?: boolean
+  automationLevel?: 'manual' | 'semi_auto' | 'full_auto'
+}) {
+  const { initializeClaudeCodeIntegration } = await import('./workflow/index.js')
+  return initializeClaudeCodeIntegration(options)
 }

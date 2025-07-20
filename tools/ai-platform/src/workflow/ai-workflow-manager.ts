@@ -5,7 +5,10 @@
  * @version 1.0.0 - Phase 1 AI工作流集成
  */
 
-import { execSync } from 'child_process'
+import { exec } from 'child_process'
+import { promisify } from 'util'
+
+const execAsync = promisify(exec)
 import { createLogger } from '@linch-kit/core'
 import { HybridAIManager, AnalysisResult } from '../providers/hybrid-ai-manager'
 import { WorkflowStateMachine, createWorkflowStateMachine, WorkflowState } from './workflow-state-machine'
@@ -77,11 +80,16 @@ export interface AIWorkflowResult {
 export class AIWorkflowManager {
   private aiManager: HybridAIManager
   private sessionId: string
-  private stateMachine: WorkflowStateMachine | null = null
+  private stateMachine: WorkflowStateMachine
 
-  constructor(aiManager: HybridAIManager) {
+  constructor(aiManager: HybridAIManager, initialTaskDescription?: string) {
     this.aiManager = aiManager
     this.sessionId = `workflow-${Date.now()}`
+    // 立即初始化状态机，避免 null 引用问题
+    this.stateMachine = createWorkflowStateMachine(
+      this.sessionId, 
+      initialTaskDescription || 'Default workflow'
+    )
   }
 
   /**
@@ -92,8 +100,8 @@ export class AIWorkflowManager {
     logger.info(`Starting AI workflow analysis for: ${context.taskDescription}`)
 
     try {
-      // 0. 初始化状态机
-      this.stateMachine = createWorkflowStateMachine(this.sessionId, context.taskDescription)
+      // 0. 重置状态机为新任务
+      this.stateMachine.updateTaskDescription(context.taskDescription)
       await this.stateMachine.transition('START_ANALYSIS')
 
       // 1. 执行Graph RAG查询获取项目上下文
@@ -164,18 +172,22 @@ export class AIWorkflowManager {
       // 提取主要关键词用于查询 (session-tools只支持单个实体查询)
       const keywords = this.extractKeywords(taskDescription)
       const primaryKeyword = keywords[0] || taskDescription.split(' ')[0]
-      const queryCommand = `bun run ai:session query "${primaryKeyword}"`
       
-      const output = execSync(queryCommand, { 
-        encoding: 'utf8',
+      // 安全化关键词，防止命令注入
+      const sanitizedKeyword = this.sanitizeQueryKeyword(primaryKeyword)
+      const queryCommand = `bun run ai:session query "${sanitizedKeyword}"`
+      
+      // 确定正确的工作目录
+      const workingDir = this.getProjectRoot()
+      
+      const { stdout } = await execAsync(queryCommand, { 
         timeout: 30000,
-        cwd: process.cwd().includes('tools/ai-platform') 
-          ? process.cwd().replace('/tools/ai-platform', '') 
-          : process.cwd()
+        maxBuffer: 1024 * 1024, // 1MB buffer
+        cwd: workingDir
       })
 
       // 解析查询结果
-      const queryResult = this.parseGraphRAGOutput(output)
+      const queryResult = this.parseGraphRAGOutput(stdout)
       
       return {
         success: true,
@@ -210,6 +222,25 @@ export class AIWorkflowManager {
         }
       }
     }
+  }
+
+  /**
+   * 安全化查询关键词，防止命令注入
+   */
+  private sanitizeQueryKeyword(keyword: string): string {
+    // 只保留字母、数字、中文字符、连字符和下划线
+    return keyword.replace(/[^a-zA-Z0-9\u4e00-\u9fff\-_]/g, '').substring(0, 50)
+  }
+
+  /**
+   * 获取项目根目录
+   */
+  private getProjectRoot(): string {
+    const currentDir = process.cwd()
+    if (currentDir.includes('tools/ai-platform')) {
+      return currentDir.replace('/tools/ai-platform', '')
+    }
+    return currentDir
   }
 
   /**

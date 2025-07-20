@@ -13,7 +13,9 @@
     "context": "bun run scripts/context-cli.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@linch-kit/core": "workspace:*",
+    "@qdrant/js-client-rest": "^1.8.2",
     "dotenv": "^17.2.0",
     "neo4j-driver": "^5.28.1",
     "neogma": "^1.14.1"

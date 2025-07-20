@@ -99,19 +99,34 @@ class ServerLogger implements Logger {
     
     return {
       debug: (data: Record<string, unknown> | undefined, message: string) => {
-        if (this.shouldLog('debug', level)) console.debug(`[${name}] ${message}`, data)
+        if (this.shouldLog('debug', level)) {
+          if (data) console.debug(`[${name}] ${message}`, data)
+          else console.debug(`[${name}] ${message}`)
+        }
       },
       info: (data: Record<string, unknown> | undefined, message: string) => {
-        if (this.shouldLog('info', level)) console.info(`[${name}] ${message}`, data)
+        if (this.shouldLog('info', level)) {
+          if (data) console.info(`[${name}] ${message}`, data)
+          else console.info(`[${name}] ${message}`)
+        }
       },
       warn: (data: Record<string, unknown> | undefined, message: string) => {
-        if (this.shouldLog('warn', level)) console.warn(`[${name}] ${message}`, data)
+        if (this.shouldLog('warn', level)) {
+          if (data) console.warn(`[${name}] ${message}`, data)
+          else console.warn(`[${name}] ${message}`)
+        }
       },
       error: (data: Record<string, unknown> | undefined, message: string) => {
-        if (this.shouldLog('error', level)) console.error(`[${name}] ${message}`, data)
+        if (this.shouldLog('error', level)) {
+          if (data) console.error(`[${name}] ${message}`, data)
+          else console.error(`[${name}] ${message}`)
+        }
       },
       fatal: (data: Record<string, unknown> | undefined, message: string) => {
-        if (this.shouldLog('fatal', level)) console.error(`[${name}] FATAL: ${message}`, data)
+        if (this.shouldLog('fatal', level)) {
+          if (data) console.error(`[${name}] FATAL: ${message}`, data)
+          else console.error(`[${name}] FATAL: ${message}`)
+        }
       },
       level: level as LogLevel,
       bindings: { name }
