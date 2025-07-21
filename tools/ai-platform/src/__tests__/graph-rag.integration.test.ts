@@ -5,9 +5,9 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'bun:test'
 
-import { Neo4jService } from '../core/graph/neo4j-service.js'
-import { IntelligentQueryEngine } from '../query/intelligent-query-engine.js'
-import { loadNeo4jConfig } from '../core/config/neo4j-config.js'
+import { Neo4jService } from '../.*'
+import { IntelligentQueryEngine } from '../.*'
+import { loadNeo4jConfig } from '../.*'
 
 describe('Graph RAG Integration Tests', () => {
   let neo4jService: Neo4jService

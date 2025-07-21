@@ -13,7 +13,7 @@
  * @author LinchKit AI Guardian System
  */
 
-import { DependencyGraph } from '../../../dev/deps-graph.js'
+import { DependencyGraph } from '../.*'
 
 /**
  * LinchKit架构层级定义

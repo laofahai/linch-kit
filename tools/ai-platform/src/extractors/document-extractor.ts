@@ -8,9 +8,9 @@ import {
   RelationshipIdGenerator,
   type GraphNode,
   type GraphRelationship,
-} from '../types/index.js'
+} from '../types/index'
 
-import { BaseExtractor } from './base-extractor.js'
+import { BaseExtractor } from './base-extractor'
 
 interface DocumentFile {
   name: string
@@ -343,7 +343,7 @@ export class DocumentExtractor extends BaseExtractor {
     const title = this.extractDocumentTitle(doc.content) || doc.name
 
     return {
-      id: NodeIdGenerator.document(doc.relativePath),
+      id: NodeIdGenerator.generate(NodeType.DOCUMENT, doc.relativePath),
       type: NodeType.DOCUMENT,
       name: title,
       properties: {
@@ -418,14 +418,14 @@ export class DocumentExtractor extends BaseExtractor {
     for (const [docPath, referencedDocs] of Object.entries(analysis.references)) {
       for (const refDoc of referencedDocs) {
         const relationship: GraphRelationship = {
-          id: RelationshipIdGenerator.create(
+          id: RelationshipIdGenerator.generate(
             RelationType.REFERENCES,
-            NodeIdGenerator.document(docPath),
-            NodeIdGenerator.document(refDoc.relativePath)
+            NodeIdGenerator.generate(NodeType.DOCUMENT, docPath),
+            NodeIdGenerator.generate(NodeType.DOCUMENT, refDoc.relativePath)
           ),
           type: RelationType.REFERENCES,
-          source: NodeIdGenerator.document(docPath),
-          target: NodeIdGenerator.document(refDoc.relativePath),
+          source: NodeIdGenerator.generate(NodeType.DOCUMENT, docPath),
+          target: NodeIdGenerator.generate(NodeType.DOCUMENT, refDoc.relativePath),
           properties: {
             reference_type: 'document_link',
             link_path: refDoc.relativePath,

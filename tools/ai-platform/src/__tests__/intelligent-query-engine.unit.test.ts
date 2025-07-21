@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeEach, mock } from 'bun:test'
-import { IntelligentQueryEngine } from '../query/intelligent-query-engine.js'
+import { IntelligentQueryEngine } from '../.*'
 
 // Mock Neo4j服务
 const mockNeo4jService = {

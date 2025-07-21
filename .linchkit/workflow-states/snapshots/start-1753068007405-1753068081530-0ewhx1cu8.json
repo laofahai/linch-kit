@@ -1,0 +1,81 @@
+{
+  "id": "start-1753068007405-1753068081530-0ewhx1cu8",
+  "timestamp": "2025-07-21T03:21:21.530Z",
+  "state": "PAUSED",
+  "context": {
+    "sessionId": "start-1753068007405",
+    "taskDescription": "实现用户认证中间件透明度测试",
+    "currentState": "PAUSED",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-21T03:20:21.528Z",
+      "lastUpdated": "2025-07-21T03:21:01.504Z",
+      "automationLevel": "semi_auto",
+      "priority": "medium"
+    },
+    "analysis": {
+      "approach": "",
+      "confidence": 0,
+      "estimatedHours": 0,
+      "complexity": 1,
+      "risks": [],
+      "dependencies": [],
+      "feasibilityScore": 0,
+      "resourceRequirements": {}
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-21T03:20:21.528Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-21T03:20:31.501Z",
+        "action": "START_ANALYSIS",
+        "by": "ai-workflow-analysis",
+        "metadata": {
+          "workflowAnalysis": {
+            "approach": "create_new",
+            "nextSteps": [
+              "设计",
+              "实现",
+              "测试"
+            ],
+            "confidence": 0.7,
+            "estimatedHours": 6,
+            "complexity": 3,
+            "risks": [
+              "实现复杂度",
+              "集成风险"
+            ]
+          },
+          "insights": {
+            "existingImplementations": [],
+            "relatedComponents": [],
+            "suggestions": [
+              "复用现有组件"
+            ]
+          },
+          "timestamp": "2025-07-21T03:20:31.501Z",
+          "by": "ai-workflow-analysis"
+        },
+        "automaticTransition": true
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-21T03:21:01.504Z",
+        "action": "PAUSE",
+        "by": "system",
+        "metadata": {
+          "reason": "State timeout"
+        },
+        "automaticTransition": false
+      }
+    ]
+  },
+  "trigger": "automatic",
+  "description": "Auto snapshot at 2025-07-21T03:21:21.529Z"
+}

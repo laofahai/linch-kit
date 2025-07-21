@@ -156,13 +156,14 @@ class AIGuardianValidator {
   async verifyContext() {
     try {
       // 使用ai-platform的context-verifier
-      await execAsync('bun tools/ai-platform/scripts/context-verifier.ts --action=verify')
+      await execAsync('bun tools/ai-platform/scripts/context-verifier.ts verify')
       
       console.log('✅ 上下文验证通过')
       
     } catch (error) {
+      // 🚨 Context验证失败应该阻断流程
+      this.violations.push('🚨 上下文验证失败 - Context Verifier执行错误')
       logger.error('Context verification failed:', error instanceof Error ? error : new Error(String(error)))
-      this.warnings.push('⚠️ 上下文验证发现问题')
     }
   }
   
@@ -396,6 +397,42 @@ bun test --coverage
     console.log('📋 约束文件: .claude/session-constraints.md')
   }
   
+  /**
+   * 生成强制性Claude Code命令
+   */
+  generateClaudeCodeCommands(result) {
+    const commands = []
+
+    // 如果有严重违规，生成停止执行命令
+    if (result.violations.length > 0) {
+      const { ClaudeCodeCommandGenerator } = require('../src/cli/claude-code-commands.ts')
+      
+      commands.push(ClaudeCodeCommandGenerator.generateStopExecution(
+        `发现 ${result.violations.length} 个零容忍违规项`,
+        [
+          '修复所有违规项',
+          '重新运行AI Guardian验证',
+          '确保分支状态正确',
+          '修复Graph RAG连接问题'
+        ]
+      ))
+    }
+
+    // 如果Neo4j连接失败，强制修复
+    if (this.violations.some(v => v.includes('Graph RAG') || v.includes('Neo4j'))) {
+      const { CommonClaudeCodeCommands } = require('../src/cli/claude-code-commands.ts')
+      commands.push(CommonClaudeCodeCommands.forceFixNeo4j())
+    }
+
+    // 如果在保护分支，强制创建分支
+    if (this.violations.some(v => v.includes('保护分支'))) {
+      const { CommonClaudeCodeCommands } = require('../src/cli/claude-code-commands.ts')
+      commands.push(CommonClaudeCodeCommands.forceCreateBranch(this.taskDescription || '新功能开发'))
+    }
+
+    return commands
+  }
+
   async printResults(result) {
     if (result.violations.length > 0) {
       console.log('\n❌ 发现违规项:')
@@ -412,6 +449,17 @@ bun test --coverage
       console.log(`✅ AI Guardian已激活 (分析来源: ${this.analysisSource})`)
     } else {
       console.log('\n🚨 验证失败，请修复违规项后重试')
+      
+      // 🔴 生成强制性Claude Code命令
+      const commands = this.generateClaudeCodeCommands(result)
+      if (commands.length > 0) {
+        const { ClaudeCodeCommandGenerator } = require('../src/cli/claude-code-commands.ts')
+        const formattedCommands = ClaudeCodeCommandGenerator.formatForClaudeCode(commands)
+        
+        console.log('\n' + '='.repeat(60))
+        console.log(formattedCommands)
+        console.log('='.repeat(60))
+      }
     }
     
     console.log('\n⚠️ 注意事项：')

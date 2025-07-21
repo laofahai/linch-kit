@@ -9,6 +9,8 @@ import { createLogger } from '@linch-kit/core'
 import { claudeCodeAPI, type SimpleWorkflowRequest } from '../workflow/claude-code-api'
 import { WorkflowStateMachine } from '../workflow/workflow-state-machine'
 import type { WorkflowAction, WorkflowTransition } from '../workflow/workflow-state-machine'
+import { TransparentWorkflowVisualizer } from './transparent-workflow-visualizer'
+import { displayGraphRAGSync, displayWorkflowSummary, displayWarning, displayAIWorkflowStatus } from '../utils/display-helper'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 
@@ -100,6 +102,7 @@ export interface StartCommandResult {
  */
 export class StartCommandHandler {
   private workflowStateMachine: WorkflowStateMachine | null = null
+  private visualizer: TransparentWorkflowVisualizer | null = null
 
   constructor() {
     logger.info('StartCommandHandler initialized')
@@ -112,10 +115,19 @@ export class StartCommandHandler {
     const startTime = Date.now()
     const sessionId = options.sessionId || `start-${Date.now()}`
     
+    // 🔍 初始化透明工作流可视化器
+    this.visualizer = new TransparentWorkflowVisualizer(sessionId, options.taskDescription)
+    
+    // 显示初始状态
+    console.log(this.visualizer.renderStatus())
+    
     logger.info(`Processing /start command for session: ${sessionId}`)
     logger.info(`Task: ${options.taskDescription}`)
 
     try {
+      // 🔄 转换到分析阶段
+      this.visualizer.transitionToPhase('ANALYZE', '收集项目信息中...')
+
       // 步骤1: 收集项目信息
       const projectInfo = await this.collectProjectInfo()
       logger.info(`Project info collected: ${projectInfo.name} (${projectInfo.branch})`)
@@ -125,15 +137,25 @@ export class StartCommandHandler {
         throw new Error(`❌ 违规: 禁止在保护分支 '${projectInfo.branch}' 工作。请切换到功能分支。`)
       }
 
-      // 步骤3: 执行 AI Guardian 验证
+      // 步骤3: 系统组件状态检查
+      await this.checkSystemComponentsStatus()
+
+      // 步骤4: 执行 AI Guardian 验证
       let guardianValidation
       if (!options.skipGuardian) {
+        this.visualizer.transitionToPhase('PLAN', 'AI Guardian验证中...')
         guardianValidation = await this.executeGuardianValidation(options.taskDescription)
         logger.info(`Guardian validation completed: ${guardianValidation.passed ? 'PASSED' : 'FAILED'}`)
+        
+        this.visualizer.updateComponentStatus('AI Guardian', 
+          guardianValidation.passed ? 'connected' : 'degraded',
+          guardianValidation.passed ? '验证通过' : `验证失败: ${guardianValidation.violations.length} 个违规`)
         
         if (!guardianValidation.passed && guardianValidation.violations.length > 0) {
           throw new Error(`❌ AI Guardian 验证失败:\n${guardianValidation.violations.join('\n')}`)
         }
+      } else {
+        this.visualizer.updateComponentStatus('AI Guardian', 'degraded', '已跳过验证')
       }
 
       // 步骤4: 初始化Phase 3增强工作流状态机
@@ -257,6 +279,65 @@ export class StartCommandHandler {
         executionTime: Date.now() - startTime
       }
 
+      // 🔄 如果工作流已完成，执行Graph RAG同步检查和显示
+      if (result.success && result.workflowState?.currentState === 'COMPLETE') {
+        try {
+          logger.info('🔄 Verifying Graph RAG sync completion (Essential_Rules.md requirement)')
+          
+          // 检查是否已经同步
+          if (!result.workflowState.currentState || 
+              (!workflowResponse.metadata?.graphRagSynced && !workflowResponse.metadata?.graphRagSyncAttempted)) {
+            
+            displayGraphRAGSync('starting', 'Executing from start-command-handler')
+            await execAsync('bun run ai:session sync')
+            displayGraphRAGSync('success', 'Knowledge base updated with new implementations')
+            
+            // 更新结果信息
+            if (result.phaseInfo) {
+              result.phaseInfo.features.push('graph-rag-sync')
+            }
+            
+            // 添加成功消息到工作流分析
+            if (result.workflowAnalysis) {
+              result.workflowAnalysis.nextSteps.push('✅ Graph RAG knowledge base updated with new implementations')
+            }
+          } else {
+            logger.info('✅ Graph RAG sync already completed by workflow state machine')
+          }
+          
+        } catch (syncError) {
+          const errorMsg = syncError instanceof Error ? syncError.message : String(syncError)
+          logger.warn('⚠️ Graph RAG sync failed in start-command-handler:', syncError)
+          
+          displayGraphRAGSync('failed', errorMsg)
+          
+          // 添加警告但不影响工作流成功状态
+          if (!result.guardianValidation) {
+            result.guardianValidation = { passed: true, warnings: [], violations: [] }
+          }
+          result.guardianValidation.warnings.push(`Graph RAG sync failed: ${errorMsg}`)
+        }
+      }
+
+      // 显示完成摘要（解决Claude Code输出折叠问题）
+      if (result.success) {
+        displayWorkflowSummary(this.displayResultSummary(result))
+        
+        // 显示AI工作流状态信息
+        if (result.workflowState) {
+          displayAIWorkflowStatus(
+            sessionId,
+            options.taskDescription,
+            result.workflowState.currentState,
+            {
+              progress: result.workflowState.progress,
+              qualityScore: result.workflowState.qualityScore,
+              riskLevel: result.workflowState.riskLevel
+            }
+          )
+        }
+      }
+
       logger.info(`/start command completed successfully in ${result.executionTime}ms`)
       return result
 
@@ -292,6 +373,38 @@ export class StartCommandHandler {
         executionTime: Date.now() - startTime
       }
     }
+  }
+
+  /**
+   * 检查系统组件状态
+   */
+  private async checkSystemComponentsStatus(): Promise<void> {
+    if (!this.visualizer) return
+
+    // 检查Neo4j Graph RAG
+    try {
+      const { stdout } = await execAsync('bun tools/ai-platform/scripts/neo4j-stats.ts --quiet --json')
+      const stats = JSON.parse(stdout)
+      if (stats.totalNodes > 0) {
+        this.visualizer.updateComponentStatus('Neo4j Graph RAG', 'connected', 
+          `${stats.totalNodes.toLocaleString()} 节点, ${stats.totalRelationships.toLocaleString()} 关系`)
+      } else {
+        this.visualizer.updateComponentStatus('Neo4j Graph RAG', 'degraded', '无数据', true)
+      }
+    } catch (error) {
+      this.visualizer.updateComponentStatus('Neo4j Graph RAG', 'disconnected', '连接失败', true)
+    }
+
+    // 检查Gemini API
+    const geminiKey = process.env.GEMINI_API_KEY
+    if (geminiKey && geminiKey !== 'your-actual-gemini-key-here') {
+      this.visualizer.updateComponentStatus('Gemini AI Provider', 'connected', 'API密钥已配置')
+    } else {
+      this.visualizer.updateComponentStatus('Gemini AI Provider', 'disconnected', '缺少API密钥', true)
+    }
+
+    // 更新可视化
+    console.log(this.visualizer.renderStatus())
   }
 
   /**

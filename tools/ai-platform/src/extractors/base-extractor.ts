@@ -9,22 +9,22 @@ import { isAbsolute, normalize } from 'path'
 import { createLogger } from '@linch-kit/core/server'
 
 import type {
-  IExtractor,
-  ExtractionResult,
   GraphNode,
   GraphRelationship,
   NodeType,
   RelationType,
+  IExtractor,
+  ExtractionResult,
   Logger,
-} from '../types/index.js'
+} from '../types/index'
 
-import { ExtractorConfig } from './extractor-config.js'
+import { ExtractorConfig } from './extractor-config'
 
 /**
  * 抽象基础提取器
  */
-export abstract class BaseExtractor<T = unknown> implements IExtractor<T> {
-  protected logger: Logger
+export abstract class BaseExtractor<T = unknown> implements IExtractor {
+  protected logger: ReturnType<typeof createLogger>
   protected config: ExtractorConfig
 
   constructor(

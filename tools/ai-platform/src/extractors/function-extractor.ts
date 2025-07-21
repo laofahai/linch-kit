@@ -27,10 +27,9 @@ import {
   ExpressionWithTypeArguments,
 } from 'ts-morph'
 
-import { NodeType, RelationType, type GraphNode, type GraphRelationship } from '../types/index.js'
-import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index.js'
+import { NodeType, RelationType, type GraphNode, type GraphRelationship, NodeIdGenerator, RelationshipIdGenerator } from '../core/types/index'
 
-import { BaseExtractor } from './base-extractor.js'
+import { BaseExtractor } from './base-extractor'
 
 interface FunctionInfo {
   name: string

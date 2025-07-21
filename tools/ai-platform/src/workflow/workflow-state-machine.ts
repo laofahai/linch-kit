@@ -937,7 +937,76 @@ export class WorkflowStateMachine {
    */
   private async handleCompletion(): Promise<void> {
     this.context.metadata.totalDuration = Date.now() - new Date(this.context.metadata.startTime).getTime()
+    this.context.metadata.actualCompletion = new Date().toISOString()
+    
     logger.info(`Workflow completed in ${this.context.metadata.totalDuration}ms`)
+    
+    // 🔄 执行Graph RAG同步 - Essential_Rules.md强制要求
+    try {
+      logger.info('🔄 Executing mandatory Graph RAG sync (Essential_Rules.md requirement)')
+      
+      const { exec } = await import('child_process')
+      const { promisify } = await import('util')
+      const execAsync = promisify(exec)
+      
+      const { stdout, stderr } = await execAsync('bun run ai:session sync')
+      
+      logger.info('✅ Graph RAG sync completed successfully')
+      if (stdout) logger.debug(`Graph RAG sync output: ${stdout}`)
+      
+      // 标记已同步到元数据
+      this.context.metadata = {
+        ...this.context.metadata,
+        graphRagSynced: true,
+        graphRagSyncTime: new Date().toISOString()
+      }
+      
+      // 创建完成快照
+      if (this.persistence && typeof this.persistence.saveSnapshot === 'function') {
+        try {
+          await this.persistence.saveSnapshot(
+            this.context.sessionId,
+            'milestone',
+            'Workflow completion with Graph RAG sync'
+          )
+          logger.info('📸 Completion snapshot created')
+        } catch (snapshotError) {
+          logger.warn('Failed to create completion snapshot:', snapshotError)
+        }
+      }
+      
+    } catch (error) {
+      logger.error('❌ Graph RAG sync failed:', error)
+      
+      // 同步失败不应该阻塞工作流完成，但必须记录
+      if (!this.context.implementation) {
+        this.context.implementation = {
+          startedAt: new Date().toISOString(),
+          progress: 100,
+          completedMilestones: [],
+          errors: []
+        }
+      }
+      
+      this.context.implementation.errors.push({
+        id: `graph-rag-sync-failure-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        error: `Graph RAG sync failed: ${error instanceof Error ? error.message : String(error)}`,
+        severity: 'warning',
+        resolved: false
+      })
+      
+      // 标记同步失败但尝试过
+      this.context.metadata = {
+        ...this.context.metadata,
+        graphRagSynced: false,
+        graphRagSyncAttempted: true,
+        graphRagSyncError: error instanceof Error ? error.message : String(error),
+        graphRagSyncTime: new Date().toISOString()
+      }
+      
+      logger.warn('⚠️ Workflow marked as completed despite Graph RAG sync failure')
+    }
   }
 
   /**

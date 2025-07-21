@@ -998,7 +998,144 @@ export class WorkflowRulesEngine {
       }
     })
 
-    logger.info('Default rules registered')
+    // Graph RAG同步规则 - Essential_Rules.md强制要求
+    this.addRule({
+      id: 'auto-graph-rag-sync-on-completion',
+      name: 'Automatic Graph RAG Sync on Workflow Completion',
+      description: 'Automatically sync Graph RAG when workflow reaches COMPLETE state (Essential_Rules.md requirement)',
+      enabled: true,
+      priority: 9, // 高优先级，确保在其他规则之前执行
+      condition: (context) => {
+        // 检查是否已经到达COMPLETE状态且未执行过同步
+        return context.currentState === 'COMPLETE' && 
+               !context.metadata.graphRagSynced && 
+               !context.metadata.graphRagSyncAttempted
+      },
+      action: {
+        type: 'custom',
+        handler: async (context) => {
+          try {
+            logger.info('🔄 Rules engine executing Graph RAG sync (Essential_Rules.md)')
+            
+            const { exec } = await import('child_process')
+            const { promisify } = await import('util')
+            const execAsync = promisify(exec)
+            
+            const { stdout, stderr } = await execAsync('bun run ai:session sync')
+            
+            // 标记已同步
+            context.metadata = {
+              ...context.metadata,
+              graphRagSynced: true,
+              graphRagSyncTime: new Date().toISOString(),
+              graphRagSyncSource: 'rules-engine'
+            }
+            
+            logger.info('✅ Graph RAG sync completed via rules engine')
+            if (stdout) logger.debug(`Graph RAG sync output: ${stdout}`)
+            
+            return true
+          } catch (error) {
+            logger.error('❌ Graph RAG sync failed in rules engine:', error)
+            
+            // 标记尝试过但失败
+            context.metadata = {
+              ...context.metadata,
+              graphRagSynced: false,
+              graphRagSyncAttempted: true,
+              graphRagSyncError: error instanceof Error ? error.message : String(error),
+              graphRagSyncTime: new Date().toISOString(),
+              graphRagSyncSource: 'rules-engine'
+            }
+            
+            return false
+          }
+        },
+        description: 'Execute mandatory Graph RAG sync'
+      },
+      constraints: {
+        maxExecutions: 1, // 每个工作流只执行一次
+        requiredStates: ['COMPLETE']
+      },
+      metadata: {
+        category: 'automation',
+        tags: ['graph-rag', 'completion', 'essential-rules', 'mandatory']
+      }
+    })
+
+    // 质量检查规则 - 确保Essential_Rules.md其他要求
+    this.addRule({
+      id: 'quality-gate-validation',
+      name: 'Quality Gate Validation on Completion', 
+      description: 'Validate all Essential_Rules.md requirements are met',
+      enabled: true,
+      priority: 8,
+      condition: (context) => {
+        return context.currentState === 'COMPLETE'
+      },
+      action: {
+        type: 'custom',
+        handler: async (context) => {
+          const validations: string[] = []
+          const warnings: string[] = []
+          
+          // 检查Graph RAG同步
+          if (!context.metadata.graphRagSynced && !context.metadata.graphRagSyncAttempted) {
+            warnings.push('Graph RAG sync not executed')
+          }
+          
+          // 检查测试覆盖率（如果有实现数据）
+          if (context.implementation?.metrics?.testCoverage !== undefined) {
+            if (context.implementation.metrics.testCoverage < 85) {
+              warnings.push(`Test coverage ${context.implementation.metrics.testCoverage}% below minimum 85%`)
+            } else {
+              validations.push(`Test coverage: ${context.implementation.metrics.testCoverage}%`)
+            }
+          }
+          
+          // 检查质量门禁
+          if (context.implementation?.metrics?.qualityGate === 'failed') {
+            warnings.push('Quality gate validation failed')
+          } else if (context.implementation?.metrics?.qualityGate === 'passed') {
+            validations.push('Quality gate passed')
+          }
+          
+          // 记录验证结果
+          if (!context.review) {
+            context.review = {
+              startedAt: new Date().toISOString(),
+              reviewers: ['rules-engine'],
+              checklistItems: [],
+              approvalStatus: 'pending'
+            }
+          }
+          
+          // 添加质量检查项
+          context.review.checklistItems.push({
+            category: 'quality',
+            item: 'Essential Rules Compliance',
+            status: warnings.length === 0 ? 'approved' : 'rejected',
+            comment: warnings.length > 0 ? warnings.join('; ') : validations.join('; '),
+            reviewer: 'rules-engine'
+          })
+          
+          logger.info(`Quality gate validation: ${warnings.length === 0 ? 'PASSED' : 'WARNINGS'} - ${validations.length} checks passed, ${warnings.length} warnings`)
+          
+          return true
+        },
+        description: 'Validate Essential_Rules.md compliance'
+      },
+      constraints: {
+        maxExecutions: 1,
+        requiredStates: ['COMPLETE']
+      },
+      metadata: {
+        category: 'quality',
+        tags: ['validation', 'essential-rules', 'quality-gate']
+      }
+    })
+
+    logger.info('Default rules registered (including Graph RAG sync rule)')
   }
 
   // ========== 统计和监控 ==========

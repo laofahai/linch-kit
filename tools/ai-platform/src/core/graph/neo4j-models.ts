@@ -8,8 +8,8 @@
 import { Neogma } from 'neogma'
 import type { Record as Neo4jRecord } from 'neo4j-driver'
 
-import type { GraphNode, GraphRelationship } from '../types/index.js'
-import { NodeType as NodeTypeEnum, RelationType as RelationTypeEnum } from '../types/index.js'
+import type { GraphNode, GraphRelationship } from '../../types/index'
+import { NodeType as NodeTypeEnum, RelationType as RelationTypeEnum } from '../../types/index'
 
 // Neogma 实例
 let neogma: Neogma | null = null

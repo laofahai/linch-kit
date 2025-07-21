@@ -9,7 +9,7 @@ import { join } from 'path'
 
 import { createLogger } from '@linch-kit/core/server'
 
-import type { Neo4jConfig } from '../types/index.js'
+import type { Neo4jConfig } from '../../types/index'
 
 const logger = createLogger({ name: 'ai:neo4j-config' })
 

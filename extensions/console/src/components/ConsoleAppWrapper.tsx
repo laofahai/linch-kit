@@ -54,7 +54,7 @@ export function ConsoleAppWrapper(props: ConsoleAppWrapperProps) {
   return (
     <ConsoleProvider 
       config={defaultConfig}
-      tenantId={undefined}
+      tenantId=""
       permissions={['console:view', 'console:admin']}
       language="zh-CN"
     >

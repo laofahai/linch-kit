@@ -4,22 +4,22 @@
  * 统一的数据提取器导出
  */
 
-export { BaseExtractor } from './base-extractor.js'
-export { PackageExtractor } from './package-extractor.js'
-export { DocumentExtractor } from './document-extractor.js'
-export { SchemaExtractor } from './schema-extractor.js'
-export { FunctionExtractor } from './function-extractor.js'
-export { ImportExtractor } from './import-extractor.js'
-export { CorrelationAnalyzer } from './correlation-analyzer.js'
+export { BaseExtractor } from './base-extractor'
+export { PackageExtractor } from './package-extractor'
+export { DocumentExtractor } from './document-extractor'
+export { SchemaExtractor } from './schema-extractor'
+export { FunctionExtractor } from './function-extractor'
+export { ImportExtractor } from './import-extractor'
+export { CorrelationAnalyzer } from './correlation-analyzer'
 
 // 提取器注册表
-import type { IExtractor } from '../types/index.js'
+import type { IExtractor } from '../types/index'
 
-import { PackageExtractor } from './package-extractor.js'
-import { DocumentExtractor } from './document-extractor.js'
-import { SchemaExtractor } from './schema-extractor.js'
-import { FunctionExtractor } from './function-extractor.js'
-import { ImportExtractor } from './import-extractor.js'
+import { PackageExtractor } from './package-extractor'
+import { DocumentExtractor } from './document-extractor'
+import { SchemaExtractor } from './schema-extractor'
+import { FunctionExtractor } from './function-extractor'
+import { ImportExtractor } from './import-extractor'
 
 /**
  * 可用的提取器映射

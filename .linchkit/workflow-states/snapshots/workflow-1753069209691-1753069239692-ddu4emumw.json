@@ -1,0 +1,45 @@
+{
+  "id": "workflow-1753069209691-1753069239692-ddu4emumw",
+  "timestamp": "2025-07-21T03:40:39.692Z",
+  "state": "ANALYZE",
+  "context": {
+    "sessionId": "workflow-1753069209691",
+    "taskDescription": "修复拼写错误",
+    "currentState": "ANALYZE",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-21T03:40:09.691Z",
+      "lastUpdated": "2025-07-21T03:40:09.691Z",
+      "automationLevel": "semi_auto",
+      "priority": "medium"
+    },
+    "analysis": {
+      "approach": "",
+      "confidence": 0,
+      "estimatedHours": 0,
+      "complexity": 1,
+      "risks": [],
+      "dependencies": [],
+      "feasibilityScore": 0,
+      "resourceRequirements": {}
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-21T03:40:09.691Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-21T03:40:09.691Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      }
+    ]
+  },
+  "trigger": "error",
+  "description": "State timeout: ANALYZE"
+}

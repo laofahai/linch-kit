@@ -102,17 +102,19 @@ async function extractToNeo4j() {
   
   try {
     // 直接调用AI Platform的提取功能
-    const { PackageExtractor } = await import('../src/extractors/package-extractor.js');
-    const { SchemaExtractor } = await import('../src/extractors/schema-extractor.js');
-    const { DocumentExtractor } = await import('../src/extractors/document-extractor.js');
-    const { FunctionExtractor } = await import('../src/extractors/function-extractor.js');
-    const { ImportExtractor } = await import('../src/extractors/import-extractor.js');
-    const { Neo4jService } = await import('../src/graph/neo4j-service.js');
-    const { loadNeo4jConfig } = await import('../src/config/neo4j-config.js');
+    const { PackageExtractor } = await import('../src/extractors/package-extractor');
+    const { SchemaExtractor } = await import('../src/extractors/schema-extractor');
+    const { DocumentExtractor } = await import('../src/extractors/document-extractor');
+    const { FunctionExtractor } = await import('../src/extractors/function-extractor');
+    const { ImportExtractor } = await import('../src/extractors/import-extractor');
+    const { CorrelationAnalyzer } = await import('../src/extractors/correlation-analyzer');
+    const { Neo4jService } = await import('../src/core/graph/neo4j-service');
+    const { loadNeo4jConfig } = await import('../src/core/config/neo4j-config');
     
     const workingDir = process.cwd();
     let allNodes = [];
     let allRelationships = [];
+    const extractionResults = [];
     
     // 执行所有数据提取器
     const extractors = [
@@ -127,10 +129,26 @@ async function extractToNeo4j() {
       log.info(`执行 ${name} 数据提取...`);
       const extractor = new Extractor(workingDir);
       const result = await extractor.extract();
+      extractionResults.push(result);
       allNodes.push(...result.nodes);
       allRelationships.push(...result.relationships);
       log.success(`${name} 提取完成: ${result.nodes.length} 节点, ${result.relationships.length} 关系`);
     }
+
+    // 执行跨数据源关联分析
+    log.info('执行跨数据源关联分析...');
+    
+    // 检查是否配置了AI
+    const aiConfig = process.env.GEMINI_API_KEY ? {
+      apiKey: process.env.GEMINI_API_KEY
+    } : undefined;
+    
+    const correlationAnalyzer = new CorrelationAnalyzer(aiConfig);
+    const correlationResult = await correlationAnalyzer.analyzeCorrelations(extractionResults);
+    
+    // 添加关联关系
+    allRelationships.push(...correlationResult.relationships);
+    log.success(`关联分析完成: 发现 ${correlationResult.relationships.length} 个跨数据源关系`);
     
     // 导入到Neo4j
     const config = await loadNeo4jConfig();
@@ -138,8 +156,18 @@ async function extractToNeo4j() {
     
     await neo4jService.connect();
     
-    log.info('清空 Neo4j 数据库...');
-    await neo4jService.clearDatabase();
+    // 智能更新策略：检查是否需要清空数据库
+    const stats = await neo4jService.getStats().catch(() => null);
+    const hasExistingData = stats && stats.node_count > 0;
+    
+    if (hasExistingData) {
+      log.info(`数据库中已有 ${stats.node_count} 个节点，${stats.relationship_count} 个关系`);
+      log.info('使用增量更新模式...');
+      // 只删除过时的数据，而不是全部清空
+      await neo4jService.query('MATCH (n {updated_at: null}) DETACH DELETE n');
+    } else {
+      log.info('数据库为空，执行全量导入...');
+    }
     
     log.info('导入数据到 Neo4j...');
     await neo4jService.importData(allNodes, allRelationships);
@@ -211,6 +239,7 @@ ${colors.bold}图谱数据提取完成${colors.reset}
   • 环境检查和工具准备
   • Neo4j连接验证
   • 项目数据提取到Neo4j数据库
+  • 跨数据源关联分析和关系提取
   • JSON备份文件生成
   • 数据提取验证
 

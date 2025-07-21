@@ -1,0 +1,34 @@
+{
+  "workflow-1753068021534": {
+    "sessionId": "workflow-1753068021534",
+    "taskDescription": "实现用户认证中间件透明度测试",
+    "currentState": "PAUSED",
+    "priority": "medium",
+    "startTime": "2025-07-21T03:20:21.534Z",
+    "lastUpdated": "2025-07-21T03:20:55.036Z"
+  },
+  "start-1753068007405": {
+    "sessionId": "start-1753068007405",
+    "taskDescription": "实现用户认证中间件透明度测试",
+    "currentState": "PAUSED",
+    "priority": "medium",
+    "startTime": "2025-07-21T03:20:21.528Z",
+    "lastUpdated": "2025-07-21T03:21:01.504Z"
+  },
+  "workflow-1753069203318": {
+    "sessionId": "workflow-1753069203318",
+    "taskDescription": "添加简单的用户注册功能",
+    "currentState": "PAUSED",
+    "priority": "medium",
+    "startTime": "2025-07-21T03:40:03.318Z",
+    "lastUpdated": "2025-07-21T03:40:33.321Z"
+  },
+  "workflow-1753069209691": {
+    "sessionId": "workflow-1753069209691",
+    "taskDescription": "修复拼写错误",
+    "currentState": "PAUSED",
+    "priority": "medium",
+    "startTime": "2025-07-21T03:40:09.691Z",
+    "lastUpdated": "2025-07-21T03:40:39.692Z"
+  }
+}

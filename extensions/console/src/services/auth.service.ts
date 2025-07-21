@@ -200,9 +200,12 @@ export class ConsoleAuthService {
       
       if (sessionCookie) {
         try {
-          const sessionData = JSON.parse(sessionCookie.split('=')[1])
-          this.currentUser = sessionData
-          Logger.info('Console session restored:', { userId: sessionData.id })
+          const sessionValue = sessionCookie.split('=')[1]
+          if (sessionValue) {
+            const sessionData = JSON.parse(sessionValue)
+            this.currentUser = sessionData
+            Logger.info('Console session restored:', { userId: sessionData.id })
+          }
         } catch (error) {
           Logger.warn('Failed to restore session:', { 
             error: error instanceof Error ? error.message : String(error),

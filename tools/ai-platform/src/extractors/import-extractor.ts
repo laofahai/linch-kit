@@ -18,10 +18,10 @@ import {
   ExportSpecifier,
 } from 'ts-morph'
 
-import { NodeType, RelationType, type GraphNode, type GraphRelationship } from '../types/index.js'
-import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index.js'
+import { NodeType, RelationType, type GraphNode, type GraphRelationship } from '../types/index'
+import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index'
 
-import { BaseExtractor } from './base-extractor.js'
+import { BaseExtractor } from './base-extractor'
 
 interface ImportInfo {
   specifiers: Array<{
@@ -404,11 +404,10 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     // 创建导入节点
     for (const importInfo of rawData.imports) {
       for (const spec of importInfo.specifiers) {
-        const importId = NodeIdGenerator.import(
-          importInfo.packageName || 'unknown',
-          importInfo.source,
-          spec.imported,
-          importInfo.filePath
+        const importId = NodeIdGenerator.generate(
+          NodeType.IMPORT,
+          `${spec.imported}_from_${importInfo.source}`,
+          importInfo.packageName || 'unknown'
         )
 
         const importNode: GraphNode = {
@@ -430,11 +429,12 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
         nodes.push(importNode)
 
         // 创建文件导入关系
-        const fileNodeId = NodeIdGenerator.file(
-          importInfo.packageName || 'unknown',
-          importInfo.filePath
+        const fileNodeId = NodeIdGenerator.generate(
+          NodeType.FILE,
+          importInfo.filePath,
+          importInfo.packageName || 'unknown'
         )
-        const importRelId = RelationshipIdGenerator.create(
+        const importRelId = RelationshipIdGenerator.generate(
           RelationType.IMPORTS,
           fileNodeId,
           importId
@@ -456,10 +456,10 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
     // 创建导出节点
     for (const exportInfo of rawData.exports) {
       for (const spec of exportInfo.specifiers) {
-        const exportId = NodeIdGenerator.export(
-          exportInfo.packageName || 'unknown',
+        const exportId = NodeIdGenerator.generate(
+          NodeType.EXPORT,
           spec.exported,
-          exportInfo.filePath
+          exportInfo.packageName || 'unknown'
         )
 
         const exportNode: GraphNode = {
@@ -480,11 +480,12 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
         nodes.push(exportNode)
 
         // 创建文件导出关系
-        const fileNodeId = NodeIdGenerator.file(
-          exportInfo.packageName || 'unknown',
-          exportInfo.filePath
+        const fileNodeId = NodeIdGenerator.generate(
+          NodeType.FILE,
+          exportInfo.filePath,
+          exportInfo.packageName || 'unknown'
         )
-        const exportRelId = RelationshipIdGenerator.create(
+        const exportRelId = RelationshipIdGenerator.generate(
           RelationType.EXPORTS,
           fileNodeId,
           exportId
@@ -502,13 +503,13 @@ export class ImportExtractor extends BaseExtractor<DependencyAnalysis> {
 
     // 创建模块依赖关系
     for (const dependency of rawData.dependencies) {
-      const sourceFileId = NodeIdGenerator.file('unknown', dependency.from)
+      const sourceFileId = NodeIdGenerator.generate(NodeType.FILE, dependency.from, 'unknown')
       const targetFileId =
         dependency.dependencyType === 'internal'
-          ? NodeIdGenerator.file('unknown', dependency.to)
+          ? NodeIdGenerator.generate(NodeType.FILE, dependency.to, 'unknown')
           : `external:${dependency.to.replace(/[^a-zA-Z0-9-_]/g, '_')}`
 
-      const depRelId = RelationshipIdGenerator.create(
+      const depRelId = RelationshipIdGenerator.generate(
         RelationType.DEPENDS_ON,
         sourceFileId,
         targetFileId

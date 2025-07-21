@@ -11,10 +11,10 @@
 import { readdir, readFile } from 'fs/promises'
 import { join, relative } from 'path'
 
-import type { GraphNode, GraphRelationship } from '../types/index.js'
-import { NodeType as NodeTypeEnum, RelationType as RelationTypeEnum } from '../types/index.js'
+import type { GraphNode, GraphRelationship } from '../types/index'
+import { NodeType as NodeTypeEnum, RelationType as RelationTypeEnum } from '../types/index'
 
-import { BaseExtractor } from './base-extractor.js'
+import { BaseExtractor } from './base-extractor'
 
 interface SchemaInfo {
   name: string

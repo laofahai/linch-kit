@@ -4,7 +4,7 @@
  * @version v2.0.3
  */
 
-export { ContextManager } from './context-manager.js'
+export { ContextManager } from './.*'
 
 export type {
   ContextInfo,
@@ -14,9 +14,9 @@ export type {
   Example,
   ImplementationSuggestion,
   ContextQueryResult
-} from './context-manager.js'
+} from './.*'
 
-export { DetectedAction } from './context-manager.js'
+export { DetectedAction } from './.*'
 
 // 导出类型定义
-export * from './types.js'
+export * from './.*'

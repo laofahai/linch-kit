@@ -18,8 +18,8 @@
 
 import { createLogger } from '@linch-kit/core/server'
 import neo4j, { Driver, Session } from 'neo4j-driver'
-import { loadNeo4jConfig, validateNeo4jConfig } from '../src/config/neo4j-config.js'
-import type { Neo4jConfig } from '../src/types/index.js'
+import { loadNeo4jConfig, validateNeo4jConfig } from '../src/core/config/neo4j-config.js'
+import type { Neo4jConfig } from '../src/core/types/index.js'
 
 const logger = createLogger({ name: 'neo4j-stats' })
 

@@ -13,25 +13,25 @@
  */
 
 // Phase 1: 基础防护体系
-export { ArchWarden } from './arch-warden.js'
+export { ArchWarden } from './.*'
 
 // Phase 1 - Meta-Learner (元学习者) ✅ 实现完成
-export { MetaLearner } from './meta-learner.js'
+export { MetaLearner } from './.*'
 
 // Phase 1 - AI开发流程Guardian (新增)
-export { PreCheckGuardian, preCheckGuardian } from './pre-check.guardian.js'
-export { QualityGateGuardian, qualityGateGuardian } from './quality-gate.guardian.js'
+export { PreCheckGuardian, preCheckGuardian } from './.*'
+export { QualityGateGuardian, qualityGateGuardian } from './.*'
 
 // Phase 2 - 智能验证系统
-export { ContextVerifier } from './context-verifier.js'
-export { SecuritySentinel } from './security-sentinel.js'
+export { ContextVerifier } from './.*'
+export { SecuritySentinel } from './.*'
 
 // TODO: Phase 3 - 完整智能体集群
-// export { QASynthesizer } from './qa-synthesizer.js'
-// export { DecisionCouncil } from './decision-council.js'
+// export { QASynthesizer } from './.*'
+// export { DecisionCouncil } from './.*'
 
 // TODO: Phase 4 - 进化引擎
-// export { EvolutionEngine } from './evolution-engine.js'
+// export { EvolutionEngine } from './.*'
 
 /**
  * Guardian 智能体类型定义

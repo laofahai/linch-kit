@@ -8,11 +8,11 @@
 import { readdir, readFile, access, stat } from 'fs/promises'
 import { join, relative, extname } from 'path'
 
-import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index.js'
-import type { GraphNode, GraphRelationship, PackageNode } from '../types/index.js'
-import { NodeType, RelationType } from '../types/index.js'
+import { NodeIdGenerator, RelationshipIdGenerator } from '../types/index'
+import type { GraphNode, GraphRelationship, PackageNode } from '../types/index'
+import { NodeType, RelationType } from '../types/index'
 
-import { BaseExtractor } from './base-extractor.js'
+import { BaseExtractor } from './base-extractor'
 
 interface PackageInfo {
   name: string
@@ -227,7 +227,7 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
    */
   private createPackageNode(pkg: PackageInfo): PackageNode {
     return {
-      id: NodeIdGenerator.package(pkg.name),
+      id: NodeIdGenerator.generate(NodeType.PACKAGE, pkg.name),
       type: NodeType.PACKAGE,
       name: pkg.name,
       properties: {
@@ -272,7 +272,7 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
 
         // 创建文件节点
         const fileNode: GraphNode = {
-          id: NodeIdGenerator.file(pkg.name, fileName),
+          id: NodeIdGenerator.generate(NodeType.FILE, fileName, pkg.name),
           type: NodeType.FILE,
           name: fileName,
           properties: {
@@ -288,13 +288,13 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
 
         // 创建包含关系
         const containsRelationship: GraphRelationship = {
-          id: RelationshipIdGenerator.create(
+          id: RelationshipIdGenerator.generate(
             RelationType.CONTAINS,
-            NodeIdGenerator.package(pkg.name),
+            NodeIdGenerator.generate(NodeType.PACKAGE, pkg.name),
             fileNode.id
           ),
           type: RelationType.CONTAINS,
-          source: NodeIdGenerator.package(pkg.name),
+          source: NodeIdGenerator.generate(NodeType.PACKAGE, pkg.name),
           target: fileNode.id,
           properties: {
             file_type: fileNode.properties?.file_type,
@@ -320,14 +320,14 @@ export class PackageExtractor extends BaseExtractor<PackageExtractionData> {
     targetPackage: string
   ): GraphRelationship {
     return {
-      id: RelationshipIdGenerator.create(
+      id: RelationshipIdGenerator.generate(
         RelationType.DEPENDS_ON,
-        NodeIdGenerator.package(sourcePackage),
-        NodeIdGenerator.package(targetPackage)
+        NodeIdGenerator.generate(NodeType.PACKAGE, sourcePackage),
+        NodeIdGenerator.generate(NodeType.PACKAGE, targetPackage)
       ),
       type: RelationType.DEPENDS_ON,
-      source: NodeIdGenerator.package(sourcePackage),
-      target: NodeIdGenerator.package(targetPackage),
+      source: NodeIdGenerator.generate(NodeType.PACKAGE, sourcePackage),
+      target: NodeIdGenerator.generate(NodeType.PACKAGE, targetPackage),
       properties: {
         dependency_type: 'package',
         is_internal: true,

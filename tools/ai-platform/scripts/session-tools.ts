@@ -82,7 +82,7 @@ function checkTodos() {
   log.info('建议在开发前检查是否有未完成的任务');
 }
 
-function queryContext(entity, includeRelated = true, debug = false) {
+async function queryContext(entity, includeRelated = true, debug = false) {
   log.header('🎯 查询项目上下文');
   
   try {
@@ -95,7 +95,14 @@ function queryContext(entity, includeRelated = true, debug = false) {
       cmd += ' --debug';
     }
     
-    const result = runCommand(cmd, `查询实体: ${entity}`);
+    const result = await runCommand(cmd, `查询实体: ${entity}`);
+    
+    // 检查是否连接失败
+    if (result.includes('上下文查询失败') || result.includes('Neo4j连接')) {
+      log.error('🚨 Graph RAG查询失败 - 这是强制性要求！');
+      log.error('必须修复Neo4j连接才能继续');
+      throw new Error('Graph RAG查询失败：Neo4j连接问题');
+    }
     
     // 显示查询结果
     if (result && result.trim()) {
@@ -329,21 +336,24 @@ async function syncGraphData() {
   log.header('🔄 同步图谱数据');
   
   try {
-    // 检查是否存在 graph-data-extractor.ts
+    // 执行完整版Graph RAG同步 - 不接受任何简化版回退
     if (!existsSync('tools/ai-platform/scripts/graph-data-extractor.ts')) {
-      log.warn('graph-data-extractor.ts 不存在，跳过图谱同步');
-      return;
+      log.error('❌ 核心文件graph-data-extractor.ts不存在！');
+      throw new Error('核心功能缺失：graph-data-extractor.ts未找到');
     }
-    
+
+    log.info('执行完整版Graph RAG数据提取...');
     await runCommand('bun tools/ai-platform/scripts/graph-data-extractor.ts', '提取并更新图谱数据');
-    log.success('图谱数据同步完成');
+    
+    log.success('✅ 完整版图谱数据同步完成');
     
     // 验证查询功能
     log.info('验证查询功能...');
     await queryContext('User', false);
     
   } catch (error) {
-    log.error('图谱数据同步失败');
+    log.error('❌ 图谱数据同步失败 - 核心功能必须完整可用');
+    log.error('请修复graph-data-extractor.ts后重试');
     throw error;
   }
 }

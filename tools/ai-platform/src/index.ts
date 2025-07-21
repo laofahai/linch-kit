@@ -5,20 +5,17 @@
  */
 
 // 核心基础设施
-export * from './core/graph/index.js'
-export * from './core/config/neo4j-config.js'
-export * from './core/types/index.js'
+export * from './types/index.js'
+export * from './core/index.js'
 
 // AI Provider管理
-export * from './providers/hybrid-ai-manager.js'
-export * from './providers/cli-based-provider.js'
-export * from './providers/types.js'
+export * from './providers/index.js'
 
 // 数据提取器
 export * from './extractors/index.js'
 
-// 智能查询引擎
-export * from './query/intelligent-query-engine.js'
+// 智能查询引擎  
+export * from './query/index.js'
 
 // 上下文管理
 export * from './context/index.js'
@@ -26,14 +23,8 @@ export * from './context/index.js'
 // Guardian智能体集群
 export * from './guardian/index.js'
 
-// Phase 1: AI工作流引擎 - Claude Code集成
+// 工作流引擎
 export * from './workflow/index.js'
-
-// Prompt模板引擎
-export * from './prompt/template-engine.js'
-
-// 用户反馈收集
-export * from './feedback/user-feedback-collector.js'
 
 // 实现引擎
 export * from './implementation/index'

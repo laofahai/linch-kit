@@ -18,9 +18,9 @@ import type {
   NodeType,
   RelationType,
   Logger,
-} from '../types/index.js'
+} from '../../types/index'
 
-import { initializeNeogma, getNeogma, GraphQueryService } from './neo4j-models.js'
+import { initializeNeogma, getNeogma, GraphQueryService } from './neo4j-models'
 
 /**
  * Neo4j 图数据库服务
@@ -45,15 +45,24 @@ export class Neo4jService implements IGraphService {
         username: this.config.username,
       })
 
+      const driverConfig = {
+        maxTransactionRetryTime: 30000, // 增加到30秒
+        maxConnectionPoolSize: 10, // 减少连接池大小避免AuraDB限制
+        connectionAcquisitionTimeout: 120000, // 增加到2分钟
+        maxConnectionLifetime: 10 * 60 * 1000, // 减少到10分钟，避免长连接超时
+        connectionTimeout: 30000, // 连接超时30秒
+        disableLosslessIntegers: true, // 避免BigInt问题
+      }
+
+      // 只对非secure URL添加加密配置
+      if (!this.config.connectionUri.includes('+s://')) {
+        Object.assign(driverConfig, { encrypted: true })
+      }
+
       this.driver = neo4j.driver(
         this.config.connectionUri,
         neo4j.auth.basic(this.config.username, this.config.password),
-        {
-          maxTransactionRetryTime: 15000,
-          maxConnectionPoolSize: 50,
-          connectionAcquisitionTimeout: 60000,
-          maxConnectionLifetime: 30 * 60 * 1000, // 30分钟
-        }
+        driverConfig
       )
 
       // 验证连接
@@ -172,36 +181,75 @@ export class Neo4jService implements IGraphService {
       throw new Error('Neo4j 连接未建立。请先调用 connect()')
     }
 
-    const session = this.driver.session({ database: this.config.database })
-    const startTime = Date.now()
+    const maxRetries = 3
+    const baseDelay = 2000 // 2秒
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      const session = this.driver.session({ database: this.config.database })
+      const startTime = Date.now()
 
-    try {
-      this.logger.info('开始批量导入图数据', {
-        nodeCount: nodes.length,
-        relationshipCount: relationships.length,
-      })
+      try {
+        this.logger.info(`开始批量导入图数据 (尝试 ${attempt}/${maxRetries})`, {
+          nodeCount: nodes.length,
+          relationshipCount: relationships.length,
+        })
 
-      await session.executeWrite(async tx => {
-        // 批量创建节点
-        await this.batchCreateNodes(tx, nodes)
+        // 分批处理以避免内存和连接压力 - 针对AuraDB优化
+        const nodesBatchSize = 2000  // 减少节点批次大小
+        const relsBatchSize = 3000   // 大幅减少关系批次大小
 
-        // 批量创建关系
-        await this.batchCreateRelationships(tx, relationships)
-      })
+        // 分批创建节点
+        for (let i = 0; i < nodes.length; i += nodesBatchSize) {
+          const nodeBatch = nodes.slice(i, i + nodesBatchSize)
+          this.logger.debug(`导入节点批次 ${Math.floor(i / nodesBatchSize) + 1}: ${nodeBatch.length} 个节点`)
+          
+          await session.executeWrite(async tx => {
+            await this.batchCreateNodes(tx, nodeBatch)
+          })
+        }
 
-      const duration = Date.now() - startTime
-      this.logger.info('图数据导入完成', {
-        duration,
-        nodeCount: nodes.length,
-        relationshipCount: relationships.length,
-      })
-    } catch (error) {
-      this.logger.error('图数据导入失败', error instanceof Error ? error : undefined, {
-        originalError: error,
-      })
-      throw error
-    } finally {
-      await session.close()
+        // 分批创建关系
+        for (let i = 0; i < relationships.length; i += relsBatchSize) {
+          const relBatch = relationships.slice(i, i + relsBatchSize)
+          this.logger.debug(`导入关系批次 ${Math.floor(i / relsBatchSize) + 1}: ${relBatch.length} 个关系`)
+          
+          await session.executeWrite(async tx => {
+            await this.batchCreateRelationships(tx, relBatch)
+          })
+        }
+
+        const duration = Date.now() - startTime
+        this.logger.info('图数据导入完成', {
+          duration,
+          nodeCount: nodes.length,
+          relationshipCount: relationships.length,
+          attempt
+        })
+        
+        await session.close()
+        return // 成功，退出重试循环
+        
+      } catch (error) {
+        await session.close()
+        
+        const isRetryableError = this.isRetryableError(error)
+        
+        this.logger.error(`图数据导入失败 (尝试 ${attempt}/${maxRetries})`, 
+          error instanceof Error ? error : undefined, {
+            originalError: error,
+            isRetryable: isRetryableError
+          }
+        )
+
+        if (attempt === maxRetries || !isRetryableError) {
+          throw error
+        }
+
+        // 指数退避延迟
+        const delay = baseDelay * Math.pow(2, attempt - 1)
+        this.logger.info(`等待 ${delay}ms 后重试...`)
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
     }
   }
 
@@ -235,9 +283,53 @@ export class Neo4jService implements IGraphService {
   async clearDatabase(): Promise<void> {
     this.logger.warn('清空 Neo4j 数据库...')
 
-    await this.query('MATCH (n) DETACH DELETE n')
-
-    this.logger.info('数据库已清空')
+    const maxRetries = 3
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        // 分批删除以避免超时，先删除关系再删除节点
+        this.logger.info(`清空数据库 (尝试 ${attempt}/${maxRetries})`)
+        
+        // 首先删除所有关系
+        await this.query('MATCH ()-[r]-() DELETE r')
+        this.logger.debug('已删除所有关系')
+        
+        // 然后分批删除节点
+        let deletedCount = 0
+        let batchSize = 10000
+        
+        while (true) {
+          const result = await this.query(
+            `MATCH (n) WITH n LIMIT ${batchSize} DELETE n RETURN count(n) as deleted`
+          )
+          
+          const deleted = result.records[0]?.deleted || 0
+          if (typeof deleted === 'number' && deleted > 0) {
+            deletedCount += deleted
+            this.logger.debug(`已删除 ${deleted} 个节点，总计 ${deletedCount} 个`)
+          } else {
+            break // 没有更多节点需要删除
+          }
+        }
+        
+        this.logger.info(`数据库已清空，共删除 ${deletedCount} 个节点`)
+        return // 成功，退出重试循环
+        
+      } catch (error) {
+        this.logger.error(`清空数据库失败 (尝试 ${attempt}/${maxRetries})`, 
+          error instanceof Error ? error : undefined)
+        
+        if (attempt === maxRetries) {
+          throw error
+        }
+        
+        // 重新连接
+        await this.disconnect()
+        await this.connect()
+        
+        // 等待重试
+        await new Promise(resolve => setTimeout(resolve, 2000 * attempt))
+      }
+    }
   }
 
   /**
@@ -851,5 +943,44 @@ export class Neo4jService implements IGraphService {
       throw new Error('Neogma query service 未初始化')
     }
     return this.queryService
+  }
+
+  /**
+   * 判断错误是否可重试
+   */
+  private isRetryableError(error: unknown): boolean {
+    if (!error || typeof error !== 'object') return false
+    
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorCode = 'code' in error ? (error as { code: string }).code : ''
+    
+    // Neo4j 可重试错误类型
+    const retryableErrors = [
+      'ServiceUnavailable',
+      'TransientError',
+      'DatabaseUnavailable',
+      'ForbiddenOnReadOnlyDatabase',
+    ]
+    
+    const retryableMessages = [
+      'routing servers available',
+      'connection failed',
+      'connection timeout',
+      'network error',
+      'disconnected',
+      'server closed',
+    ]
+    
+    // 检查错误代码
+    if (retryableErrors.some(code => errorCode.includes(code))) {
+      return true
+    }
+    
+    // 检查错误消息
+    if (retryableMessages.some(msg => errorMessage.toLowerCase().includes(msg))) {
+      return true
+    }
+    
+    return false
   }
 }

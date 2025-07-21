@@ -1,0 +1,56 @@
+{
+  "id": "workflow-1753069203318-1753069263319-qmgkiyaun",
+  "timestamp": "2025-07-21T03:41:03.319Z",
+  "state": "PAUSED",
+  "context": {
+    "sessionId": "workflow-1753069203318",
+    "taskDescription": "添加简单的用户注册功能",
+    "currentState": "PAUSED",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-21T03:40:03.318Z",
+      "lastUpdated": "2025-07-21T03:40:33.321Z",
+      "automationLevel": "semi_auto",
+      "priority": "medium"
+    },
+    "analysis": {
+      "approach": "create_new",
+      "confidence": 0.7,
+      "estimatedHours": 6,
+      "complexity": 3,
+      "risks": [
+        "实现复杂度",
+        "集成风险"
+      ],
+      "dependencies": []
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-21T03:40:03.318Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-21T03:40:03.319Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-21T03:40:33.321Z",
+        "action": "PAUSE",
+        "by": "system",
+        "metadata": {
+          "reason": "State timeout"
+        },
+        "automaticTransition": false
+      }
+    ]
+  },
+  "trigger": "automatic",
+  "description": "Auto snapshot at 2025-07-21T03:41:03.319Z"
+}

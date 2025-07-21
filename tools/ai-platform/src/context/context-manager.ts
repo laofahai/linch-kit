@@ -6,8 +6,8 @@
 
 import { createLogger } from '@linch-kit/core/server'
 
-import { IntelligentQueryEngine } from '../query/intelligent-query-engine.js'
-import type { GraphNode, GraphRelationship } from '../core/types/index.js'
+import { IntelligentQueryEngine } from '../.*'
+import type { GraphNode, GraphRelationship } from '../.*'
 
 const logger = createLogger({ name: 'ai:context-manager' })
 
