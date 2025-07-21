@@ -84,6 +84,10 @@
     "lib/**/*.spec.tsx",
     "config/**/*.ts",
     "config/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
     "next.config.ts",
     "tailwind.config.ts",
     ".next/types/**/*.ts"

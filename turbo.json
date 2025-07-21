@@ -55,8 +55,7 @@
         "__tests__/**",
         "**/*.test.ts",
         "**/*.spec.ts",
-        "jest.config.*",
-        "vitest.config.*",
+        "bunfig.toml",
         "package.json"
       ],
       "outputs": ["coverage/**"]

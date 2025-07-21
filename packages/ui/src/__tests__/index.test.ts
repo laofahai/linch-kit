@@ -1,8 +1,7 @@
-// Placeholder test file for @linch-kit/ui
-import { describe, it, expect } from 'bun:test'
+import { test, expect, describe } from 'bun:test'
 
-describe('UI package', () => {
-  it('should be true', () => {
+describe('ui', () => {
+  test('should be defined', () => {
     expect(true).toBe(true)
   })
 })

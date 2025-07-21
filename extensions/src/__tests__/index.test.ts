@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'bun:test'
 
-describe('ai-platform', () => {
+describe('extensions', () => {
   test('should be defined', () => {
     expect(true).toBe(true)
   })

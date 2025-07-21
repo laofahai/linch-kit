@@ -1,0 +1,8 @@
+[test]
+include = ["**/*.test.{ts,tsx,js,jsx}", "**/*.spec.{ts,tsx,js,jsx}", "**/__tests__/**/*.{ts,tsx,js,jsx}"]
+exclude = ["node_modules/**", "dist/**", ".next/**"]
+coverage = true
+coverage-dir = "coverage"
+coverage-threshold = 80
+environment = "happy-dom"
+concurrency = 4
