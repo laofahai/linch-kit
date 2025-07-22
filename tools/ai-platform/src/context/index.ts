@@ -4,19 +4,5 @@
  * @version v2.0.3
  */
 
-export { ContextManager } from './.*'
-
-export type {
-  ContextInfo,
-  EntityInfo,
-  RelationshipInfo,
-  DocReference,
-  Example,
-  ImplementationSuggestion,
-  ContextQueryResult
-} from './.*'
-
-export { DetectedAction } from './.*'
-
-// 导出类型定义
-export * from './.*'
+export { ContextManager } from './context-manager'
+export * from './types'

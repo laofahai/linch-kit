@@ -11,6 +11,8 @@ import { WorkflowStateMachine } from '../workflow/workflow-state-machine'
 import type { WorkflowAction, WorkflowTransition } from '../workflow/workflow-state-machine'
 import { TransparentWorkflowVisualizer } from './transparent-workflow-visualizer'
 import { displayGraphRAGSync, displayWorkflowSummary, displayWarning, displayAIWorkflowStatus } from '../utils/display-helper'
+import { TestWorkflowManager } from '../workflow/test-workflow-manager'
+import type { TestWorkflowContext } from '../workflow/test-workflow-manager'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 
@@ -103,6 +105,7 @@ export interface StartCommandResult {
 export class StartCommandHandler {
   private workflowStateMachine: WorkflowStateMachine | null = null
   private visualizer: TransparentWorkflowVisualizer | null = null
+  private testWorkflowManager: TestWorkflowManager | null = null
 
   constructor() {
     logger.info('StartCommandHandler initialized')
@@ -241,6 +244,9 @@ export class StartCommandHandler {
             timestamp: new Date().toISOString(),
             by: 'auto-transition'
           })
+          
+          // 🧪 在编码完成后自动触发测试生成
+          await this.handlePostImplementationTesting(options, workflowResponse)
         }
 
         const context = this.workflowStateMachine.getContext()
@@ -742,6 +748,173 @@ export class StartCommandHandler {
     }
 
     return lines.join('\n')
+  }
+
+  /**
+   * 🧪 编码后自动测试处理
+   * 在编码完成后立即触发 AI 测试生成
+   */
+  private async handlePostImplementationTesting(
+    options: StartCommandOptions, 
+    workflowResponse: any
+  ): Promise<void> {
+    logger.info('🧪 开始编码后自动测试生成')
+    
+    try {
+      // 检查是否包含测试相关关键词
+      const testKeywords = ['test', '测试', 'unit', 'integration', 'e2e', 'coverage', 'tdd', 'bdd']
+      const isTestRelated = testKeywords.some(keyword => 
+        options.taskDescription.toLowerCase().includes(keyword)
+      )
+
+      // 检查是否是代码相关任务
+      const codeKeywords = ['implement', '实现', 'create', '创建', 'build', '构建', 'develop', '开发', 'code', '代码']
+      const isCodeRelated = codeKeywords.some(keyword => 
+        options.taskDescription.toLowerCase().includes(keyword)
+      )
+
+      // 如果是代码相关任务，自动生成测试
+      if (isCodeRelated || isTestRelated) {
+        await this.initializeTestWorkflow(options)
+        
+        // 检测任务类型并执行相应的测试工作流
+        const testType = this.detectTestType(options.taskDescription)
+        const testContext: TestWorkflowContext = {
+          taskDescription: `为 "${options.taskDescription}" 自动生成测试`,
+          testType,
+          coverageThreshold: {
+            lines: 80,
+            functions: 80,
+            branches: 70,
+            statements: 80
+          },
+          testStrategy: 'tdd', // 默认 TDD
+          aiPreferences: {
+            generateMissingTests: true,
+            optimizeExistingTests: true,
+            suggestEdgeCases: true,
+            mockingStrategy: 'auto'
+          }
+        }
+
+        if (this.visualizer) {
+          this.visualizer.transitionToPhase('TEST', '🧪 AI 自动生成测试中...')
+        }
+
+        // 执行测试工作流分析
+        const testAnalysis = await this.testWorkflowManager!.executeTestWorkflow(testContext)
+
+        // 如果检测到测试缺口，自动生成测试
+        if (testAnalysis.analysis.testGaps.length > 0) {
+          logger.info(`检测到 ${testAnalysis.analysis.testGaps.length} 个测试缺口，开始自动生成测试`)
+          
+          for (const gap of testAnalysis.analysis.testGaps) {
+            if (gap.suggestedTests.length > 0) {
+              try {
+                const testGenRequest = {
+                  sourceFile: gap.file,
+                  testType: testType as 'unit' | 'integration' | 'e2e',
+                  testFramework: 'bun' as const,
+                  mockingNeeds: [],
+                  edgeCases: gap.suggestedTests,
+                  businessRules: []
+                }
+
+                const generatedTest = await this.testWorkflowManager!.generateTests(testGenRequest)
+                
+                logger.info(`✅ 为 ${gap.file} 生成测试: ${generatedTest.testFile}`)
+                
+                if (this.visualizer) {
+                  this.visualizer.logProgress(`✅ 自动生成测试: ${generatedTest.testFile}`)
+                }
+              } catch (error) {
+                logger.warn(`为 ${gap.file} 生成测试失败:`, error.message)
+              }
+            }
+          }
+        }
+
+        // 运行智能测试验证
+        if (options.enableVectorStore !== false) { // 默认启用
+          const testResults = await this.testWorkflowManager!.runIntelligentTests({
+            testType: 'all',
+            coverage: true,
+            aiAnalysis: true
+          })
+
+          logger.info('🎯 自动测试运行完成', {
+            success: testResults.results.success,
+            recommendations: testResults.recommendations.length
+          })
+
+          if (this.visualizer) {
+            const status = testResults.results.success ? '✅ 测试通过' : '❌ 测试失败'
+            this.visualizer.logProgress(`🎯 ${status} - ${testResults.recommendations.length} 条建议`)
+          }
+        }
+
+        // 更新工作流状态到 TEST 完成
+        if (this.workflowStateMachine) {
+          await this.workflowStateMachine.transition('COMPLETE_TESTING' as WorkflowAction, {
+            testGeneration: 'completed',
+            testResults: true,
+            timestamp: new Date().toISOString(),
+            by: 'ai-test-generator'
+          })
+        }
+
+        logger.info('🧪 编码后自动测试生成完成')
+      } else {
+        logger.debug('任务不涉及编码，跳过自动测试生成')
+      }
+    } catch (error) {
+      logger.error('编码后自动测试处理失败:', error.message)
+      
+      if (this.visualizer) {
+        this.visualizer.logProgress(`⚠️ 自动测试生成失败: ${error.message}`)
+      }
+    }
+  }
+
+  /**
+   * 初始化测试工作流管理器
+   */
+  private async initializeTestWorkflow(options: StartCommandOptions): Promise<void> {
+    if (!this.testWorkflowManager) {
+      // 这里需要获取 AI Provider 实例
+      // 暂时使用模拟实现，实际应该从依赖注入或配置中获取
+      const mockAIProvider = {
+        async generateResponse(request: any) {
+          return {
+            data: {
+              testContent: '// AI 生成的测试代码',
+              testCases: [],
+              coverage: { expectedLines: 0, expectedFunctions: 0, expectedBranches: 0 }
+            }
+          }
+        }
+      } as any
+
+      this.testWorkflowManager = new TestWorkflowManager(mockAIProvider)
+      logger.info('测试工作流管理器已初始化')
+    }
+  }
+
+  /**
+   * 检测测试类型
+   */
+  private detectTestType(taskDescription: string): 'unit' | 'integration' | 'e2e' | 'coverage' | 'ai-generate' {
+    const lower = taskDescription.toLowerCase()
+    
+    if (lower.includes('e2e') || lower.includes('end-to-end') || lower.includes('端到端')) {
+      return 'e2e'
+    } else if (lower.includes('integration') || lower.includes('集成')) {
+      return 'integration'
+    } else if (lower.includes('coverage') || lower.includes('覆盖率')) {
+      return 'coverage'
+    } else {
+      return 'unit' // 默认单元测试
+    }
   }
 
   /**

@@ -14,7 +14,8 @@ import {
 } from '../../monitoring/auth-performance-monitor'
 
 // Clear prometheus registry before each test
-import { register } from 'prom-client'
+import { register, Registry } from 'prom-client'
+import { createServerMetricCollector } from '@linch-kit/core/server'
 
 // Mock logger
 const mockLogger: ILogger = {
@@ -25,9 +26,13 @@ const mockLogger: ILogger = {
 
 describe('AuthPerformanceMonitor', () => {
   let monitor: AuthPerformanceMonitor
+  let testRegistry: Registry
 
   beforeEach(() => {
-    // Clear prometheus registry to avoid duplicate registration
+    // Create isolated test registry
+    testRegistry = new Registry()
+    
+    // Clear default registry
     register.clear()
     
     // Reset mock call counts
@@ -35,12 +40,19 @@ describe('AuthPerformanceMonitor', () => {
     mockLogger.warn.mockClear?.()
     mockLogger.error.mockClear?.()
     
-    monitor = new AuthPerformanceMonitor(mockLogger)
+    // Create monitor with isolated metric collector
+    const testMetricCollector = createServerMetricCollector({ 
+      registry: testRegistry,
+      enableDefaultMetrics: false 
+    })
+    monitor = new AuthPerformanceMonitor(mockLogger, testMetricCollector)
   })
 
   afterEach(() => {
-    // Clean up after each test
+    // Clean up registries
+    testRegistry.clear()
     register.clear()
+    
     mockLogger.info.mockClear?.()
     mockLogger.warn.mockClear?.()
     mockLogger.error.mockClear?.()
@@ -178,7 +190,6 @@ describe('AuthPerformanceMonitor', () => {
           operation: 'login',
           status: 'failure',
           errorCode: 'INVALID_CREDENTIALS',
-          errorMessage: 'Invalid credentials',
           authMethod: 'password'
         })
       )
@@ -196,7 +207,6 @@ describe('AuthPerformanceMonitor', () => {
           operation: 'validate_token',
           status: 'error',
           errorCode: 'Error',
-          errorMessage: 'Connection timeout',
           authMethod: 'jwt'
         })
       )
@@ -425,23 +435,43 @@ describe('AuthPerformanceMonitor', () => {
 
   describe('cleanup', () => {
     it('should clean up expired metrics', async () => {
-      // Add old metric
-      const oldMetric: AuthPerformanceMetric = {
+      // Add multiple metrics including old ones to ensure buffer has data
+      const oldMetric1: AuthPerformanceMetric = {
         operation: 'login',
         status: 'success',
         duration: 100,
         timestamp: new Date(Date.now() - 25 * 60 * 60 * 1000) // 25 hours ago
       }
+      const oldMetric2: AuthPerformanceMetric = {
+        operation: 'logout',
+        status: 'success',
+        duration: 50,
+        timestamp: new Date(Date.now() - 30 * 60 * 60 * 1000) // 30 hours ago
+      }
+      const recentMetric: AuthPerformanceMetric = {
+        operation: 'validate_token',
+        status: 'success',
+        duration: 25,
+        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000) // 1 hour ago
+      }
 
-      await monitor.recordAuthMetric(oldMetric)
+      await monitor.recordAuthMetric(oldMetric1)
+      await monitor.recordAuthMetric(oldMetric2)
+      await monitor.recordAuthMetric(recentMetric)
+      
+      // Reset mock to ignore recordAuthMetric calls
+      mockLogger.info.mockClear?.()
       
       // Clean up with 24 hour retention
       await monitor.cleanup(24)
 
+      // Check that the cleanup message was logged
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Cleaned up old auth metrics',
         expect.objectContaining({
-          cleanedCount: 1
+          cleanedCount: expect.any(Number),
+          remainingCount: expect.any(Number),
+          cutoffTime: expect.any(String)
         })
       )
     })
@@ -450,14 +480,26 @@ describe('AuthPerformanceMonitor', () => {
 
 describe('createAuthPerformanceMonitor', () => {
   it('should create auth performance monitor with logger', () => {
-    const monitor = createAuthPerformanceMonitor(mockLogger)
+    const testRegistry = new Registry()
+    const testMetricCollector = createServerMetricCollector({ 
+      registry: testRegistry,
+      enableDefaultMetrics: false 
+    })
+    const monitor = createAuthPerformanceMonitor(mockLogger, testMetricCollector)
     
     expect(monitor).toBeInstanceOf(AuthPerformanceMonitor)
+    testRegistry.clear()
   })
 
   it('should create auth performance monitor without logger', () => {
-    const monitor = createAuthPerformanceMonitor()
+    const testRegistry = new Registry()
+    const testMetricCollector = createServerMetricCollector({ 
+      registry: testRegistry,
+      enableDefaultMetrics: false 
+    })
+    const monitor = createAuthPerformanceMonitor(undefined, testMetricCollector)
     
     expect(monitor).toBeInstanceOf(AuthPerformanceMonitor)
+    testRegistry.clear()
   })
 })

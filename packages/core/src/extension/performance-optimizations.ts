@@ -239,6 +239,33 @@ export class ExtensionPerformanceMonitor {
   /**
    * 获取Extension性能报告
    */
+  getPerformanceReport(extensionId: string): {
+    extensionId: string
+    loadTime: number
+    activationTime: number
+    memoryUsage: number
+    apiCalls: number
+    errors: number
+    lastActivity: number
+    timestamp: number
+    healthStatus: string
+  } | null
+  getPerformanceReport(): {
+    totalExtensions: number
+    averageLoadTime: number
+    averageActivationTime: number
+    totalApiCalls: number
+    totalErrors: number
+    extensions: Array<{
+      id: string
+      loadTime: number
+      activationTime: number
+      memoryUsage: number
+      apiCalls: number
+      errors: number
+      lastActivity: number
+    }>
+  }
   getPerformanceReport(extensionId?: string) {
     if (extensionId) {
       const metrics = this.metrics.get(extensionId)

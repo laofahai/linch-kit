@@ -713,7 +713,7 @@ export class UnifiedExtensionManager extends EventEmitter implements IExtensionM
   /**
    * 获取依赖于指定Extension的Extension列表
    */
-  private getDependents(extensionId: string): string[] {
+  getDependents(extensionId: string): string[] {
     const dependents: string[] = []
 
     for (const [id, registration] of this.extensions) {
@@ -795,7 +795,7 @@ export class UnifiedExtensionManager extends EventEmitter implements IExtensionM
   private async validateExtension(manifest: ExtensionMetadata): Promise<ExtensionLoadResult> {
     // 检查权限
     for (const permission of manifest.permissions) {
-      if (!permissionManager.hasPermission(permission)) {
+      if (!permissionManager.hasPermissionPolicy(permission)) {
         return {
           success: false,
           error: {

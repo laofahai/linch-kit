@@ -47,12 +47,13 @@
       },
     },
     "apps/starter": {
-      "name": "@linch-kit/starter",
+      "name": "@linch-kit/starter-app",
       "version": "1.0.0",
       "dependencies": {
         "@linch-kit/configs": "workspace:*",
         "@linch-kit/console": "workspace:*",
         "@linch-kit/core": "workspace:*",
+        "@linch-kit/starter": "workspace:*",
         "@linch-kit/ui": "workspace:*",
         "@radix-ui/react-slot": "^1.2.3",
         "@supabase/supabase-js": "^2.52.0",
@@ -277,6 +278,29 @@
         "@types/node": "^20.0.0",
         "tsup": "^8.0.0",
         "typescript": "^5.8.3",
+      },
+    },
+    "packages/starter": {
+      "name": "@linch-kit/starter",
+      "version": "2.0.3",
+      "dependencies": {
+        "@linch-kit/auth": "workspace:*",
+        "@linch-kit/console": "workspace:*",
+        "@linch-kit/core": "workspace:*",
+        "@linch-kit/platform": "workspace:*",
+        "@linch-kit/ui": "workspace:*",
+        "zod": "^3.25.67",
+      },
+      "devDependencies": {
+        "@types/node": "^20",
+        "eslint": "^9.30.0",
+        "tsup": "^8.5.0",
+        "typescript": "^5.8.3",
+      },
+      "peerDependencies": {
+        "next": ">=15.0.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
       },
     },
     "packages/ui": {
@@ -684,7 +708,9 @@
 
     "@linch-kit/shared-types": ["@linch-kit/shared-types@workspace:packages/shared-types"],
 
-    "@linch-kit/starter": ["@linch-kit/starter@workspace:apps/starter"],
+    "@linch-kit/starter": ["@linch-kit/starter@workspace:packages/starter"],
+
+    "@linch-kit/starter-app": ["@linch-kit/starter-app@workspace:apps/starter"],
 
     "@linch-kit/ui": ["@linch-kit/ui@workspace:packages/ui"],
 
@@ -2546,6 +2572,8 @@
 
     "@linch-kit/starter/@types/node": ["@types/node@20.19.9", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-cuVNgarYWZqxRJDQHEB58GEONhOK79QVR/qYx4S7kcUObQvUwvFnYxJuuHUKm2aieN9X3yZB4LZsuYNU1Qphsw=="],
 
+    "@linch-kit/starter-app/@types/node": ["@types/node@20.19.9", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-cuVNgarYWZqxRJDQHEB58GEONhOK79QVR/qYx4S7kcUObQvUwvFnYxJuuHUKm2aieN9X3yZB4LZsuYNU1Qphsw=="],
+
     "@manypkg/find-root/@types/node": ["@types/node@12.20.55", "", {}, "sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ=="],
 
     "@manypkg/find-root/find-up": ["find-up@4.1.0", "", { "dependencies": { "locate-path": "^5.0.0", "path-exists": "^4.0.0" } }, "sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw=="],
@@ -2755,6 +2783,8 @@
     "@linch-kit/platform/@types/node/undici-types": ["undici-types@6.21.0", "", {}, "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="],
 
     "@linch-kit/shared-types/@types/node/undici-types": ["undici-types@6.21.0", "", {}, "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="],
+
+    "@linch-kit/starter-app/@types/node/undici-types": ["undici-types@6.21.0", "", {}, "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="],
 
     "@linch-kit/starter/@types/node/undici-types": ["undici-types@6.21.0", "", {}, "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="],
 

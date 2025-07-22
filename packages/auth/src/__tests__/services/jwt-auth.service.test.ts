@@ -2,17 +2,47 @@
  * @linch-kit/auth JWT认证服务测试
  */
 
-import { describe, it, expect, beforeEach } from 'bun:test'
+import { describe, it, expect, beforeEach, afterEach } from 'bun:test'
 import { sign, verify } from 'jsonwebtoken'
+import { register, Registry } from 'prom-client'
+import { createServerMetricCollector } from '@linch-kit/core/server'
 
 import { JWTAuthService, defaultJWTAuthServiceConfig } from '../../services/jwt-auth.service'
+import { createAuthPerformanceMonitor } from '../../monitoring/auth-performance-monitor'
 import type { AuthRequest } from '../../types'
 
 describe('JWTAuthService', () => {
   let jwtService: JWTAuthService
+  let testRegistry: Registry
   
   beforeEach(() => {
-    jwtService = new JWTAuthService(defaultJWTAuthServiceConfig)
+    // Create isolated test registry
+    testRegistry = new Registry()
+    
+    // Clear default registry
+    register.clear()
+    
+    // Create isolated metric collector
+    const testMetricCollector = createServerMetricCollector({ 
+      registry: testRegistry,
+      enableDefaultMetrics: false 
+    })
+    
+    // Create performance monitor with isolated metric collector
+    const performanceMonitor = createAuthPerformanceMonitor(undefined, testMetricCollector)
+    
+    // Create JWT service with isolated performance monitor and test config
+    const testConfig = {
+      ...defaultJWTAuthServiceConfig,
+      jwtSecret: 'test-secret-key-for-unit-tests-at-least-32-chars' // Override undefined env var, must be 32+ chars
+    }
+    jwtService = new JWTAuthService(testConfig, performanceMonitor)
+  })
+
+  afterEach(() => {
+    // Clean up registries
+    testRegistry.clear()
+    register.clear()
   })
 
   describe('构造函数', () => {
@@ -22,21 +52,41 @@ describe('JWTAuthService', () => {
     })
 
     it('应该拒绝空的JWT secret', () => {
+      // Create isolated performance monitor for this test
+      const isolatedRegistry = new Registry()
+      const isolatedMetricCollector = createServerMetricCollector({ 
+        registry: isolatedRegistry,
+        enableDefaultMetrics: false 
+      })
+      const isolatedPerfMonitor = createAuthPerformanceMonitor(undefined, isolatedMetricCollector)
+      
       expect(() => {
         new JWTAuthService({
           ...defaultJWTAuthServiceConfig,
           jwtSecret: ''
-        })
+        }, isolatedPerfMonitor)
       }).toThrow('JWT secret is required')
+      
+      isolatedRegistry.clear()
     })
 
     it('应该拒绝过短的JWT secret', () => {
+      // Create isolated performance monitor for this test
+      const isolatedRegistry = new Registry()
+      const isolatedMetricCollector = createServerMetricCollector({ 
+        registry: isolatedRegistry,
+        enableDefaultMetrics: false 
+      })
+      const isolatedPerfMonitor = createAuthPerformanceMonitor(undefined, isolatedMetricCollector)
+      
       expect(() => {
         new JWTAuthService({
           ...defaultJWTAuthServiceConfig,
           jwtSecret: 'too-short'
-        })
+        }, isolatedPerfMonitor)
       }).toThrow('JWT secret must be at least 32 characters long')
+      
+      isolatedRegistry.clear()
     })
   })
 
@@ -281,10 +331,18 @@ describe('JWTAuthService', () => {
     })
 
     it('应该检测到不健康状态（无效secret）', async () => {
+      // Create isolated performance monitor for this test
+      const isolatedRegistry = new Registry()
+      const isolatedMetricCollector = createServerMetricCollector({ 
+        registry: isolatedRegistry,
+        enableDefaultMetrics: false 
+      })
+      const isolatedPerfMonitor = createAuthPerformanceMonitor(undefined, isolatedMetricCollector)
+      
       const unhealthyService = new JWTAuthService({
         ...defaultJWTAuthServiceConfig,
         jwtSecret: 'invalid-secret-that-will-cause-issues'
-      })
+      }, isolatedPerfMonitor)
       
       // 模拟无效secret的情况
       const originalSign = sign
@@ -298,6 +356,9 @@ describe('JWTAuthService', () => {
       // 这里我们直接测试正常情况，因为模拟错误比较复杂
       const isHealthy = await unhealthyService.isHealthy()
       expect(isHealthy).toBe(true) // 正常情况下应该健康
+      
+      // Clean up
+      isolatedRegistry.clear()
     })
   })
 
@@ -311,10 +372,18 @@ describe('JWTAuthService', () => {
       ]
 
       for (const config of configs) {
+        // Create isolated performance monitor for each service
+        const isolatedRegistry = new Registry()
+        const isolatedMetricCollector = createServerMetricCollector({ 
+          registry: isolatedRegistry,
+          enableDefaultMetrics: false 
+        })
+        const isolatedPerfMonitor = createAuthPerformanceMonitor(undefined, isolatedMetricCollector)
+        
         const service = new JWTAuthService({
           ...defaultJWTAuthServiceConfig,
           accessTokenExpiry: config.expiry
-        })
+        }, isolatedPerfMonitor)
 
         const authResult = await service.authenticate({
           provider: 'credentials',
@@ -326,16 +395,30 @@ describe('JWTAuthService', () => {
 
         expect(authResult.success).toBe(true)
         expect(authResult.tokens?.expiresIn).toBe(config.expected)
+        
+        // Clean up
+        isolatedRegistry.clear()
       }
     })
 
     it('应该拒绝无效的过期时间格式', () => {
+      // Create isolated performance monitor for this test
+      const isolatedRegistry = new Registry()
+      const isolatedMetricCollector = createServerMetricCollector({ 
+        registry: isolatedRegistry,
+        enableDefaultMetrics: false 
+      })
+      const isolatedPerfMonitor = createAuthPerformanceMonitor(undefined, isolatedMetricCollector)
+      
       expect(() => {
         new JWTAuthService({
           ...defaultJWTAuthServiceConfig,
           accessTokenExpiry: 'invalid-format'
-        })
+        }, isolatedPerfMonitor)
       }).toThrow('Invalid expiry format')
+      
+      // Clean up
+      isolatedRegistry.clear()
     })
   })
 

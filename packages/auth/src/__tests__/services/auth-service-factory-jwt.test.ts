@@ -3,14 +3,22 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'bun:test'
+import { Registry } from 'prom-client'
 
 import { AuthServiceFactory } from '../../services/auth-service-factory'
 import { JWTAuthService } from '../../services/jwt-auth.service'
 import type { AuthRequest } from '../../types'
 
 describe('AuthServiceFactory JWT集成', () => {
+  let registry: Registry
+
+  beforeEach(() => {
+    registry = new Registry()
+  })
+
   afterEach(() => {
     AuthServiceFactory.reset()
+    registry.clear()
   })
 
   describe('JWT服务创建', () => {
@@ -22,7 +30,8 @@ describe('AuthServiceFactory JWT集成', () => {
           jwtSecret: 'test-jwt-secret-with-at-least-32-chars',
           accessTokenExpiry: '15m',
           refreshTokenExpiry: '7d'
-        }
+        },
+        performanceRegistry: registry
       })
 
       const service = await factory.getAuthService()
@@ -34,7 +43,8 @@ describe('AuthServiceFactory JWT集成', () => {
     it('应该使用默认配置创建JWT服务', async () => {
       const factory = AuthServiceFactory.getInstance({
         type: 'jwt',
-        fallbackToMock: false
+        fallbackToMock: false,
+        performanceRegistry: registry
       })
 
       const service = await factory.getAuthService()
@@ -49,7 +59,8 @@ describe('AuthServiceFactory JWT集成', () => {
         fallbackToMock: false,
         config: {
           jwtSecret: 'test-jwt-secret-with-at-least-32-chars'
-        }
+        },
+        performanceRegistry: registry
       })
 
       const health = await factory.getHealthStatus()
@@ -71,7 +82,8 @@ describe('AuthServiceFactory JWT集成', () => {
           jwtSecret: 'test-jwt-secret-with-at-least-32-chars',
           accessTokenExpiry: '15m',
           refreshTokenExpiry: '7d'
-        }
+        },
+        performanceRegistry: registry
       })
     })
 
@@ -141,7 +153,8 @@ describe('AuthServiceFactory JWT集成', () => {
       // 先创建Mock服务
       const factory = AuthServiceFactory.getInstance({
         type: 'mock',
-        fallbackToMock: true
+        fallbackToMock: true,
+        performanceRegistry: registry
       })
 
       let service = await factory.getAuthService()
@@ -163,7 +176,8 @@ describe('AuthServiceFactory JWT集成', () => {
         fallbackToMock: true,
         config: {
           jwtSecret: 'test-jwt-secret-with-at-least-32-chars'
-        }
+        },
+        performanceRegistry: registry
       })
 
       let service = await factory.getAuthService()
@@ -186,7 +200,8 @@ describe('AuthServiceFactory JWT集成', () => {
         fallbackToMock: false,
         config: {
           jwtSecret: 'too-short' // 无效的JWT secret
-        }
+        },
+        performanceRegistry: registry
       })
 
       await expect(factory.getAuthService()).rejects.toThrow('JWT secret must be at least 32 characters long')
@@ -198,7 +213,8 @@ describe('AuthServiceFactory JWT集成', () => {
         fallbackToMock: true,
         config: {
           jwtSecret: 'too-short' // 无效的JWT secret
-        }
+        },
+        performanceRegistry: registry
       })
 
       const service = await factory.getAuthService()
@@ -217,7 +233,8 @@ describe('AuthServiceFactory JWT集成', () => {
         config: {
           jwtSecret: 'test-jwt-secret-with-at-least-32-chars',
           accessTokenExpiry: '15m'
-        }
+        },
+        performanceRegistry: registry
       })
 
       // 更新配置
@@ -238,7 +255,8 @@ describe('AuthServiceFactory JWT集成', () => {
     it('应该在配置更新时重新创建服务', async () => {
       const factory = AuthServiceFactory.getInstance({
         type: 'mock',
-        fallbackToMock: false
+        fallbackToMock: false,
+        performanceRegistry: registry
       })
 
       // 获取Mock服务
@@ -266,7 +284,8 @@ describe('AuthServiceFactory JWT集成', () => {
         fallbackToMock: false,
         config: {
           jwtSecret: 'test-jwt-secret-with-at-least-32-chars'
-        }
+        },
+        performanceRegistry: registry
       })
 
       const service1 = await factory.getAuthService()
@@ -279,7 +298,8 @@ describe('AuthServiceFactory JWT集成', () => {
     it('应该在服务切换时使用缓存', async () => {
       const factory = AuthServiceFactory.getInstance({
         type: 'mock',
-        fallbackToMock: false
+        fallbackToMock: false,
+        performanceRegistry: registry
       })
 
       // 获取Mock服务

@@ -335,7 +335,7 @@ export class MultiDeviceSessionManager {
     }
     
     const deviceSession: DeviceSession = {
-      id: uuidv4(),
+      id: options.sessionId,
       userId: options.userId,
       accessToken: options.accessToken,
       refreshToken: options.refreshToken,

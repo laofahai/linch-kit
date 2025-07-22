@@ -1,7 +1,5 @@
-/**
- * @vitest-environment jsdom
- */
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test'
+import { describe, it, expect, beforeEach, afterEach, mock, spyOn } from 'bun:test'
+import { Window } from 'happy-dom'
 import { render, screen, act, renderHook } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
@@ -9,13 +7,13 @@ import { PageLoadingProvider, usePageLoading, PerformanceMonitor } from '../../r
 
 // Mock Logger
 const mockLogger = {
-  info: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  debug: jest.fn(),
+  info: mock(),
+  error: mock(),
+  warn: mock(),
+  debug: mock(),
 }
 
-jest.mock('../../logger-client', () => ({
+mock.module('../../logger-client', () => ({
   Logger: mockLogger,
 }))
 
@@ -37,12 +35,20 @@ const TestComponent = () => {
   )
 }
 
+// Setup DOM environment
+const window = new Window({ url: 'https://localhost' })
+const document = window.document
+global.window = window as any
+global.document = document as any
+global.navigator = window.navigator as any
+global.location = window.location as any
+
 describe('PageLoadingProvider', () => {
   beforeEach(() => {
     // Mock performance API
     Object.defineProperty(window, 'performance', {
       value: {
-        getEntriesByType: jest.fn(() => [
+        getEntriesByType: mock(() => [
           {
             loadEventEnd: 1000,
             loadEventStart: 500,
@@ -62,11 +68,10 @@ describe('PageLoadingProvider', () => {
     })
 
     // Clear mock calls
-    jest.clearAllMocks()
-  })
-
-  afterEach(() => {
-    jest.restoreAllMocks()
+    mockLogger.info.mockClear()
+    mockLogger.error.mockClear()
+    mockLogger.warn.mockClear()
+    mockLogger.debug.mockClear()
   })
 
   it('应该提供性能指标上下文', () => {
@@ -197,8 +202,8 @@ describe('PageLoadingProvider', () => {
       configurable: true,
     })
 
-    const mockAddEventListener = jest.fn()
-    const mockRemoveEventListener = jest.fn()
+    const mockAddEventListener = mock()
+    const mockRemoveEventListener = mock()
 
     Object.defineProperty(window, 'addEventListener', {
       value: mockAddEventListener,

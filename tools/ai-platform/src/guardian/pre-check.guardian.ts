@@ -15,7 +15,7 @@ import { existsSync } from 'fs'
 
 const execAsync = promisify(exec)
 
-import type { GuardianAgent } from './.*'
+import type { GuardianAgent } from './index'
 
 export interface PreCheckContext {
   featureDescription: string

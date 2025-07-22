@@ -315,15 +315,15 @@
     "result": {
       "decisionId": "test-decision-001",
       "recommendedOption": "option-a",
-      "confidence": 60.472108144109924,
+      "confidence": 55.69214880843465,
       "agentAnalyses": [
         {
           "role": "architect",
           "recommendedOption": "option-a",
-          "confidence": 43.941837702462664,
+          "confidence": 43.025425477011396,
           "reasoning": [
             "从architect角度分析，推荐选择\"使用Gemini SDK\"",
-            "在flexibility方面表现出色 (评分: 7.8)",
+            "在scalability方面表现出色 (评分: 7.1)",
             "实施复杂度适中，风险可控",
             "开发成本合理，投入产出比良好"
           ],
@@ -348,20 +348,19 @@
             "riskScore": 5
           },
           "scoring": {
-            "scalability": 6.436710050643073,
-            "maintainability": 6.673008866588079,
-            "flexibility": 7.822043334794604
+            "scalability": 7.137993297149119,
+            "maintainability": 6.641136864574827,
+            "flexibility": 6.453576170122899
           }
         },
         {
           "role": "developer",
           "recommendedOption": "option-a",
-          "confidence": 55.739313646454974,
+          "confidence": 45.58330891633281,
           "reasoning": [
             "从developer角度分析，推荐选择\"使用Gemini SDK\"",
-            "在development_speed方面表现出色 (评分: 9.9)",
-            "在code_quality方面表现出色 (评分: 7.7)",
-            "在testing方面表现出色 (评分: 7.8)",
+            "在development_speed方面表现出色 (评分: 10.0)",
+            "在code_quality方面表现出色 (评分: 7.2)",
             "实施复杂度适中，风险可控",
             "开发成本合理，投入产出比良好"
           ],
@@ -379,18 +378,18 @@
             "riskScore": 5
           },
           "scoring": {
-            "development_speed": 9.949201992587712,
-            "code_quality": 7.7096222929548635,
-            "testing": 7.841935694666413
+            "development_speed": 10,
+            "code_quality": 7.214821027467314,
+            "testing": 6.749762502532255
           }
         },
         {
           "role": "business",
           "recommendedOption": "option-a",
-          "confidence": 44.37005784475119,
+          "confidence": 41.38135614747563,
           "reasoning": [
             "从business角度分析，推荐选择\"使用Gemini SDK\"",
-            "在business_value方面表现出色 (评分: 7.3)",
+            "在user_experience方面表现出色 (评分: 7.5)",
             "实施复杂度适中，风险可控",
             "开发成本合理，投入产出比良好"
           ],
@@ -408,18 +407,18 @@
             "riskScore": 5
           },
           "scoring": {
-            "business_value": 7.253923868515573,
-            "user_experience": 6.959229539410384,
-            "market_fit": 6.459251690210829
+            "business_value": 6.496691000103642,
+            "user_experience": 7.47403559950336,
+            "market_fit": 6.127684925635047
           }
         },
         {
           "role": "qa",
           "recommendedOption": "option-a",
-          "confidence": 45.83722338277086,
+          "confidence": 40.77850469291877,
           "reasoning": [
             "从qa角度分析，推荐选择\"使用Gemini SDK\"",
-            "在quality方面表现出色 (评分: 7.4)",
+            "在reliability方面表现出色 (评分: 7.1)",
             "实施复杂度适中，风险可控",
             "开发成本合理，投入产出比良好"
           ],
@@ -437,9 +436,9 @@
             "riskScore": 5
           },
           "scoring": {
-            "testability": 6.913991837868149,
-            "reliability": 6.734075767451951,
-            "quality": 7.436044030674372
+            "testability": 6.43174895441679,
+            "reliability": 7.1472404212133025,
+            "quality": 6.12827930349664
           }
         }
       ],
@@ -498,7 +497,7 @@
           "设置回退后的恢复计划"
         ]
       },
-      "decidedAt": "2025-07-21T10:39:37.991Z",
+      "decidedAt": "2025-07-21T15:34:33.765Z",
       "requiresHumanReview": true
     },
     "implementationStatus": "in_progress"

@@ -30,9 +30,9 @@ mock.module('pino', () => {
     },
   }
   // Attach functions to the default export too
-  mockPino.stdTimeFunctions = pinoModule.stdTimeFunctions
-  mockPino.destination = mockPinoDestination
-  mockPino.transport = mockPinoTransport
+  ;(mockPino as any).stdTimeFunctions = pinoModule.stdTimeFunctions
+  ;(mockPino as any).destination = mockPinoDestination
+  ;(mockPino as any).transport = mockPinoTransport
   return pinoModule
 })
 

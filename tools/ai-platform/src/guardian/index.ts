@@ -13,18 +13,18 @@
  */
 
 // Phase 1: 基础防护体系
-export { ArchWarden } from './.*'
+export { ArchWarden } from './arch-warden'
 
 // Phase 1 - Meta-Learner (元学习者) ✅ 实现完成
-export { MetaLearner } from './.*'
+export { MetaLearner } from './meta-learner'
 
 // Phase 1 - AI开发流程Guardian (新增)
-export { PreCheckGuardian, preCheckGuardian } from './.*'
-export { QualityGateGuardian, qualityGateGuardian } from './.*'
+export { PreCheckGuardian, preCheckGuardian } from './pre-check.guardian'
+export { QualityGateGuardian, qualityGateGuardian } from './quality-gate.guardian'
 
 // Phase 2 - 智能验证系统
-export { ContextVerifier } from './.*'
-export { SecuritySentinel } from './.*'
+export { ContextVerifier } from './context-verifier'
+export { SecuritySentinel } from './security-sentinel'
 
 // TODO: Phase 3 - 完整智能体集群
 // export { QASynthesizer } from './.*'

@@ -1,0 +1,75 @@
+{
+  "name": "@linch-kit/starter",
+  "version": "2.0.3",
+  "description": "LinchKit Starter Package - Next.js应用模板和集成工具",
+  "keywords": [
+    "linchkit",
+    "starter",
+    "template",
+    "nextjs",
+    "integration"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "require": "./dist/client.js",
+      "import": "./dist/client.mjs"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "require": "./dist/server.js",
+      "import": "./dist/server.mjs"
+    },
+    "./templates": {
+      "types": "./dist/templates.d.ts",
+      "require": "./dist/templates.js",
+      "import": "./dist/templates.mjs"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "templates/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "build:packages": "bun run build",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage"
+  },
+  "dependencies": {
+    "@linch-kit/core": "workspace:*",
+    "@linch-kit/ui": "workspace:*",
+    "@linch-kit/console": "workspace:*",
+    "@linch-kit/auth": "workspace:*",
+    "@linch-kit/platform": "workspace:*",
+    "zod": "^3.25.67"
+  },
+  "peerDependencies": {
+    "next": ">=15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "eslint": "^9.30.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

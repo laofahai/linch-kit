@@ -425,3 +425,39 @@ export class RelationshipIdGenerator {
     return `${type.toLowerCase()}:${source}_${target}`
   }
 }
+
+/**
+ * Dependency Graph for Architecture Analysis
+ */
+export class DependencyGraph {
+  private nodes: Map<string, GraphNode> = new Map()
+  private relationships: Map<string, GraphRelationship> = new Map()
+
+  addNode(node: GraphNode): void {
+    this.nodes.set(node.id, node)
+  }
+
+  addRelationship(relationship: GraphRelationship): void {
+    this.relationships.set(relationship.id, relationship)
+  }
+
+  getNodes(): GraphNode[] {
+    return Array.from(this.nodes.values())
+  }
+
+  getRelationships(): GraphRelationship[] {
+    return Array.from(this.relationships.values())
+  }
+
+  findNode(id: string): GraphNode | undefined {
+    return this.nodes.get(id)
+  }
+
+  getOutgoingRelationships(nodeId: string): GraphRelationship[] {
+    return Array.from(this.relationships.values()).filter(rel => rel.source === nodeId)
+  }
+
+  getIncomingRelationships(nodeId: string): GraphRelationship[] {
+    return Array.from(this.relationships.values()).filter(rel => rel.target === nodeId)
+  }
+}

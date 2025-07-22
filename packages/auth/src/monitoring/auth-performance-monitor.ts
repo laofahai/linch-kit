@@ -10,7 +10,8 @@
 
 import {
   type IPerformanceMonitor,
-  createPerformanceMonitor
+  createPerformanceMonitor,
+  type MetricCollector
 } from '@linch-kit/core/server'
 
 import type { ILogger } from '../core/core-jwt-auth.service'
@@ -196,9 +197,9 @@ export class AuthPerformanceMonitor implements IAuthPerformanceMonitor {
   private readonly metricsBuffer: AuthPerformanceMetric[] = []
   private readonly logger?: ILogger
 
-  constructor(logger?: ILogger) {
+  constructor(logger?: ILogger, metricCollector?: MetricCollector) {
     this.logger = logger
-    this.coreMonitor = createPerformanceMonitor('linchkit_auth')
+    this.coreMonitor = createPerformanceMonitor('linchkit_auth', metricCollector)
   }
 
   async recordAuthMetric(metric: AuthPerformanceMetric): Promise<void> {
@@ -224,7 +225,7 @@ export class AuthPerformanceMonitor implements IAuthPerformanceMonitor {
     // 本地缓存用于增强统计
     this.metricsBuffer.push({
       ...metric,
-      timestamp: new Date()
+      timestamp: metric.timestamp || new Date()
     })
 
     // 记录日志
@@ -464,8 +465,8 @@ class AuthPerformanceTimerImpl implements AuthPerformanceTimer {
 /**
  * 创建认证性能监控器
  */
-export function createAuthPerformanceMonitor(logger?: ILogger): IAuthPerformanceMonitor {
-  return new AuthPerformanceMonitor(logger)
+export function createAuthPerformanceMonitor(logger?: ILogger, metricCollector?: MetricCollector): IAuthPerformanceMonitor {
+  return new AuthPerformanceMonitor(logger, metricCollector)
 }
 
 /**

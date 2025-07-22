@@ -99,8 +99,8 @@ describe('ExtensionPermissionManager', () => {
     it('应该成功授权权限', async () => {
       await permissionManager.grantPermission('extension-1', 'ui:render')
       
-      const grants = permissionManager.getExtensionPermissions('extension-1')
-      expect(grants.find(g => g.permission === 'ui:render')).toBeDefined()
+      const permissions = permissionManager.getExtensionPermissions('extension-1')
+      expect(permissions).toContain('ui:render')
     })
 
     it('应该支持临时权限授权', () => {
@@ -463,9 +463,9 @@ describe('ExtensionPermissionManager', () => {
 
   describe('权限查询', () => {
     beforeEach(() => {
-      permissionManager.grantPermission('query-extension', 'database:read')
-      permissionManager.grantPermission('query-extension', 'api:read')
-      permissionManager.grantPermission('query-extension', 'ui:render')
+      permissionManager.grantPermission('query-extension', 'database:read', { permanent: true })
+      permissionManager.grantPermission('query-extension', 'api:read', { permanent: true })
+      permissionManager.grantPermission('query-extension', 'ui:render', { permanent: true })
     })
 
     it('应该返回Extension的所有权限授权', () => {
@@ -526,11 +526,9 @@ describe('ExtensionPermissionManager', () => {
       expect(hasPermission).toBe(false)
     })
 
-    it('应该处理重复权限授权', () => {
-      permissionManager.grantPermission('dup-extension', 'database:read')
-      const result = permissionManager.grantPermission('dup-extension', 'database:read')
-      
-      expect(result).toBe(true) // 应该成功（覆盖原有授权）
+    it('应该处理重复权限授权', async () => {
+      await permissionManager.grantPermission('dup-extension', 'database:read')
+      await permissionManager.grantPermission('dup-extension', 'database:read')
       
       const grants = permissionManager.getExtensionGrants('dup-extension')
       expect(grants.filter(g => g.permission === 'database:read')).toHaveLength(1)

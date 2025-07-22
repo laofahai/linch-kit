@@ -17,7 +17,7 @@ const execAsync = promisify(exec)
 
 import { glob } from 'glob'
 
-import type { GuardianAgent } from './.*'
+import type { GuardianAgent } from './index'
 
 export interface QualityMetrics {
   typeScriptErrors: number

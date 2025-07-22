@@ -6,7 +6,7 @@ import { ExtensionPerformanceMonitor } from '../../extension/performance-optimiz
 // Mock Extension Manager
 class MockExtensionManager {
   private performanceMonitor: ExtensionPerformanceMonitor
-  private extensions: Array<{ getId: () => string; isActive: () => boolean }> = []
+  private extensions: Array<{ metadata: { id: string }; running: boolean; getId?: () => string; isActive?: () => boolean }> = []
 
   constructor() {
     this.performanceMonitor = new ExtensionPerformanceMonitor()
@@ -20,10 +20,12 @@ class MockExtensionManager {
     return this.extensions
   }
 
-  addMockExtension(id: string, isActive = true) {
+  addMockExtension(id: string, isRunning = true) {
     this.extensions.push({
+      metadata: { id },
+      running: isRunning,
       getId: () => id,
-      isActive: () => isActive,
+      isActive: () => isRunning,
     })
   }
 }
@@ -34,7 +36,17 @@ describe('ExtensionPerformanceAnalyzer', () => {
 
   beforeEach(() => {
     mockExtensionManager = new MockExtensionManager()
-    analyzer = new ExtensionPerformanceAnalyzer(mockExtensionManager as any)
+    // 使用更严格的阈值以便测试触发建议
+    analyzer = new ExtensionPerformanceAnalyzer(mockExtensionManager as any, {
+      memoryThreshold: 50, // 50MB，低于测试中的80MB
+      responseTimeThreshold: 1000, // 1秒
+      cpuThreshold: 80,
+      healthThresholds: {
+        healthy: 0.8, // 80%
+        warning: 0.3, // 30% - 降低warning阈值
+        critical: 0.1, // 10%
+      },
+    })
   })
 
   describe('generatePerformanceReport', () => {

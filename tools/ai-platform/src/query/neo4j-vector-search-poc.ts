@@ -6,8 +6,8 @@
  */
 
 import { createLogger } from '@linch-kit/core'
-import { Neo4jService } from '../.*'
-import { loadNeo4jConfig } from '../.*'
+import { Neo4jService } from '../core/graph/neo4j-service'
+import { loadNeo4jConfig } from '../core/config/neo4j-config'
 
 const logger = createLogger('neo4j-vector-poc')
 

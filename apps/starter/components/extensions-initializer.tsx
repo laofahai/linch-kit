@@ -1,11 +1,13 @@
 'use client'
 
 import { Logger } from '@linch-kit/core/client'
+import { ExtensionInitializer } from '@linch-kit/starter/client'
 import { useEffect } from 'react'
 
 import { initializeExtensions } from '../lib/extensions-loader'
 
 export function ExtensionsInitializer() {
+  // Legacy initialization (existing functionality)
   useEffect(() => {
     // 每次组件挂载都重新初始化扩展，确保页面刷新后UI组件重新注册
     const init = async () => {
@@ -24,6 +26,17 @@ export function ExtensionsInitializer() {
     })
   }, []) // 每次组件挂载都执行
   
-  // This component doesn't render anything visible
-  return null
+  return (
+    <>
+      {/* New LinchKit Starter Extension Initializer */}
+      <ExtensionInitializer
+        onExtensionsLoaded={(extensions) => {
+          Logger.info(`LinchKit Starter: Extensions loaded: ${extensions.map(e => e.name).join(', ')}`)
+        }}
+        onError={(error) => {
+          Logger.error('LinchKit Starter: Extension error:', error)
+        }}
+      />
+    </>
+  )
 }

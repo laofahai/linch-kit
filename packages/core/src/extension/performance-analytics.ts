@@ -19,7 +19,8 @@ export interface PerformanceReport {
     errors: number
     cpuUsage: number
   }
-  healthStatus: 'healthy' | 'warning' | 'critical'
+  health: 'healthy' | 'warning' | 'critical'
+  issues: string[]
   recommendations: string[]
 }
 
@@ -75,10 +76,13 @@ export class ExtensionPerformanceAnalyzer {
 
   constructor(
     private extensionManager: ExtensionManager,
-    config: Partial<PerformanceMonitoringConfig> = {}
+    config: Partial<PerformanceMonitoringConfig> = {},
+    performanceMonitor?: ExtensionPerformanceMonitor
   ) {
     this.config = { ...defaultPerformanceConfig, ...config }
-    this.performanceMonitor = new ExtensionPerformanceMonitor()
+    this.performanceMonitor = performanceMonitor || 
+      (extensionManager as any).getPerformanceMonitor?.() || 
+      new ExtensionPerformanceMonitor()
   }
 
   /**
@@ -89,24 +93,12 @@ export class ExtensionPerformanceAnalyzer {
     const timestamp = Date.now()
     
     if (!metrics) {
-      return {
-        extensionId,
-        timestamp,
-        metrics: {
-          loadTime: 0,
-          activationTime: 0,
-          memoryUsage: 0,
-          apiCalls: 0,
-          errors: 0,
-          cpuUsage: 0,
-        },
-        healthStatus: 'critical',
-        recommendations: ['Extension监控数据不可用'],
-      }
+      throw new Error(`Extension ${extensionId} metrics not found`)
     }
 
     const healthStatus = this.calculateHealth(metrics)
     const recommendations = this.generateRecommendations(metrics)
+    const issues = this.generateIssues(metrics)
 
     return {
       extensionId,
@@ -119,9 +111,17 @@ export class ExtensionPerformanceAnalyzer {
         errors: metrics.errors,
         cpuUsage: 0, // CPU监控需要额外实现
       },
-      healthStatus,
+      health: healthStatus,
+      issues,
       recommendations,
     }
+  }
+
+  /**
+   * 生成Extension性能报告（别名方法）
+   */
+  async generatePerformanceReport(extensionId: string): Promise<PerformanceReport> {
+    return this.generateReport(extensionId)
   }
 
   /**
@@ -156,17 +156,25 @@ export class ExtensionPerformanceAnalyzer {
   /**
    * 计算 Extension 健康状态
    */
-  private calculateHealth(metrics: { memoryUsage: number; errors: number; loadTime: number; }): 'healthy' | 'warning' | 'critical' {
+  private calculateHealth(metrics: { memoryUsage: number; errors: number; loadTime: number; apiCalls?: number; }): 'healthy' | 'warning' | 'critical' {
     let score = 1.0
 
-    // 根据内存使用降低评分
-    if (metrics.memoryUsage > this.config.memoryThreshold) {
+    // 根据内存使用降低评分 (阈值单位为MB，需要转换)
+    const memoryThresholdBytes = this.config.memoryThreshold * 1024 * 1024
+    if (metrics.memoryUsage > memoryThresholdBytes) {
       score -= 0.3
     }
 
     // 根据错误率降低评分
     if (metrics.errors > 0) {
-      score -= 0.2
+      const apiCalls = metrics.apiCalls || 1
+      const errorRate = (metrics.errors / apiCalls) * 100
+      
+      if (errorRate > this.config.errorRateThreshold) {
+        score -= 0.4 // 高错误率影响更大
+      } else if (metrics.errors > 0) {
+        score -= 0.1 // 有错误但错误率不高
+      }
     }
 
     // 根据响应时间降低评分
@@ -184,21 +192,59 @@ export class ExtensionPerformanceAnalyzer {
   }
 
   /**
-   * 生成性能优化建议
+   * 生成性能问题列表
    */
-  private generateRecommendations(metrics: { memoryUsage: number; loadTime: number; errors: number; apiCalls: number; }): string[] {
-    const recommendations: string[] = []
+  private generateIssues(metrics: { memoryUsage: number; loadTime: number; errors: number; apiCalls: number; }): string[] {
+    const issues: string[] = []
+    const memoryThresholdBytes = this.config.memoryThreshold * 1024 * 1024
 
-    if (metrics.memoryUsage > this.config.memoryThreshold) {
-      recommendations.push('内存使用过高，建议优化内存管理')
+    if (metrics.memoryUsage > memoryThresholdBytes) {
+      issues.push(`内存使用过高: ${Math.round(metrics.memoryUsage / 1024 / 1024)}MB`)
     }
 
     if (metrics.loadTime > this.config.responseTimeThreshold) {
-      recommendations.push('加载时间过长，建议优化初始化逻辑')
+      issues.push(`加载时间过长: ${metrics.loadTime}ms`)
     }
 
     if (metrics.errors > 0) {
-      recommendations.push('存在错误，建议检查错误处理逻辑')
+      const apiCalls = metrics.apiCalls || 1
+      const errorRate = (metrics.errors / apiCalls) * 100
+      
+      if (errorRate > this.config.errorRateThreshold) {
+        issues.push(`错误率过高: ${errorRate.toFixed(1)}% (${metrics.errors}/${apiCalls})`)
+      } else {
+        issues.push(`存在错误: ${metrics.errors}个`)
+      }
+    }
+
+    return issues
+  }
+
+  /**
+   * 生成性能优化建议
+   */
+  private generateRecommendations(metrics: { memoryUsage: number; loadTime: number; errors: number; apiCalls: number; activationTime?: number; }): string[] {
+    const recommendations: string[] = []
+    const memoryThresholdBytes = this.config.memoryThreshold * 1024 * 1024
+
+    if (metrics.memoryUsage > memoryThresholdBytes) {
+      recommendations.push('检查内存泄漏并优化数据结构')
+      recommendations.push('考虑实现对象池和缓存回收机制')
+    }
+
+    if (metrics.loadTime > this.config.responseTimeThreshold) {
+      recommendations.push('建议使用延迟加载减少初始加载时间')
+      recommendations.push('优化初始化逻辑，减少同步初始化操作')
+    }
+
+    // 处理激活时间（假设阈值为500ms）
+    if (metrics.activationTime && metrics.activationTime > 500) {
+      recommendations.push('使用异步激活策略提高响应性能')
+      recommendations.push('考虑分阶段激活，减少阻塞时间')
+    }
+
+    if (metrics.errors > 0) {
+      recommendations.push('完善错误处理逻辑，增加容错机制')
     }
 
     if (metrics.apiCalls > 1000) {
@@ -230,8 +276,33 @@ export class ExtensionPerformanceAnalyzer {
    * 获取系统 CPU 使用率
    */
   private async getSystemCpuUsage(): Promise<number> {
-    // 简化的CPU监控实现
-    return 0
+    try {
+      // 简化的CPU监控实现 - 返回基于性能监控数据的估算
+      const allMetrics = this.performanceMonitor.getAllMetrics()
+      const activeExtensions = Object.keys(allMetrics)
+      
+      if (activeExtensions.length === 0) return 0
+      
+      // 基于Extension数量和性能指标估算CPU使用率
+      let cpuEstimate = 0
+      
+      for (const extensionId of activeExtensions) {
+        const metrics = allMetrics[extensionId]
+        if (metrics) {
+          // 基于API调用频率、错误率等估算CPU占用
+          const apiCallsCpuWeight = (metrics.apiCalls || 0) * 0.1
+          const errorsCpuWeight = (metrics.errors || 0) * 0.5
+          const memoryWeight = (metrics.memoryUsage || 0) / (1024 * 1024) * 0.01
+          
+          cpuEstimate += apiCallsCpuWeight + errorsCpuWeight + memoryWeight
+        }
+      }
+      
+      // 限制在合理范围内
+      return Math.min(Math.max(cpuEstimate, 0), 100)
+    } catch (error) {
+      return 0
+    }
   }
 
   /**

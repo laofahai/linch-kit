@@ -135,7 +135,7 @@ class AIGuardianValidator {
       
     } catch (error) {
       logger.error('Graph RAG query failed:', error instanceof Error ? error : new Error(String(error)))
-      this.warnings.push('⚠️ Graph RAG查询失败，请手动确认项目上下文')
+      this.violations.push('🚨 Graph RAG查询失败 - 违反Essential_Rules.md强制约束，必须修复')
     }
   }
   

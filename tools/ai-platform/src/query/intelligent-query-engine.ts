@@ -7,9 +7,9 @@
 
 import { createLogger } from '@linch-kit/core/server'
 
-import type { GraphNode, GraphRelationship, QueryResult, Logger } from '../.*'
-import { Neo4jService } from '../.*'
-import { loadNeo4jConfig } from '../.*'
+import type { GraphNode, GraphRelationship, QueryResult, Logger } from '../core/types'
+import { Neo4jService } from '../core/graph/neo4j-service'
+import { loadNeo4jConfig } from '../core/config/neo4j-config'
 
 /**
  * 查询意图类型

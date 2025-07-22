@@ -162,6 +162,26 @@ export class ExtensionPermissionManager extends EventEmitter {
     const cacheKey = `${extensionName}:${permission}:${JSON.stringify(context)}`
     const cached = this.cache.get(cacheKey)
     if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
+      // 即使从缓存获取结果，也要检查使用次数限制
+      if (cached.result) {
+        const grantKey = `${extensionName}:${permission}`
+        const grant = this.grants.get(grantKey)
+        
+        // 检查使用次数限制（考虑即将增加的使用次数）
+        if (grant && grant.usageLimit && grant.usageCount >= grant.usageLimit) {
+          this.emit('permissionCheck', {
+            type: 'usage_exceeded',
+            extensionName,
+            permission,
+            context: fullContext,
+            timestamp: Date.now(),
+            reason: 'Usage limit exceeded',
+          } as PermissionEvent)
+          return false
+        }
+        
+        this.updateUsageCount(extensionName, permission)
+      }
       return cached.result
     }
 
@@ -173,6 +193,11 @@ export class ExtensionPermissionManager extends EventEmitter {
         result,
         timestamp: Date.now(),
       })
+
+      // 更新使用次数（如果权限检查成功）
+      if (result) {
+        this.updateUsageCount(extensionName, permission)
+      }
 
       // 记录权限事件
       this.emit('permissionCheck', {
@@ -222,7 +247,7 @@ export class ExtensionPermissionManager extends EventEmitter {
       return false
     }
 
-    // 检查使用次数限制
+    // 检查使用次数限制（考虑即将增加的使用次数）
     if (grant.usageLimit && grant.usageCount >= grant.usageLimit) {
       this.emit('permissionCheck', {
         type: 'usage_exceeded',
@@ -255,10 +280,6 @@ export class ExtensionPermissionManager extends EventEmitter {
         return false
       }
     }
-
-    // 更新使用次数
-    grant.usageCount++
-    this.grants.set(grantKey, grant)
 
     return true
   }
@@ -314,7 +335,7 @@ export class ExtensionPermissionManager extends EventEmitter {
   /**
    * 撤销权限
    */
-  revokePermission(extensionName: string, permission: ExtensionPermission): void {
+  revokePermission(extensionName: string, permission: ExtensionPermission): boolean {
     const grantKey = `${extensionName}:${permission}`
     const grant = this.grants.get(grantKey)
 
@@ -333,13 +354,57 @@ export class ExtensionPermissionManager extends EventEmitter {
         },
         timestamp: Date.now(),
       } as PermissionEvent)
+
+      return true
     }
+
+    return false
   }
 
   /**
-   * 获取Extension的所有权限
+   * 撤销Extension的所有权限
    */
-  getExtensionPermissions(extensionName: string): PermissionGrant[] {
+  revokeAllPermissions(extensionName: string): number {
+    let revokedCount = 0
+    const grantKeysToRevoke: string[] = []
+
+    // 收集要撤销的权限授权
+    for (const [grantKey, grant] of this.grants) {
+      if (grant.extensionName === extensionName) {
+        grantKeysToRevoke.push(grantKey)
+      }
+    }
+
+    // 撤销所有权限授权
+    for (const grantKey of grantKeysToRevoke) {
+      const grant = this.grants.get(grantKey)
+      if (grant) {
+        this.grants.delete(grantKey)
+        this.clearCache(grant.extensionName, grant.permission)
+        
+        this.emit('permissionRevoked', {
+          type: 'revoked',
+          extensionName: grant.extensionName,
+          permission: grant.permission,
+          context: {
+            extensionName: grant.extensionName,
+            permission: grant.permission,
+            operation: 'revokeAll',
+          },
+          timestamp: Date.now(),
+        } as PermissionEvent)
+        
+        revokedCount++
+      }
+    }
+
+    return revokedCount
+  }
+
+  /**
+   * 获取Extension的所有权限授权（废弃，使用getExtensionGrants）
+   */
+  private getExtensionPermissionGrants(extensionName: string): PermissionGrant[] {
     return Array.from(this.grants.values()).filter(grant => grant.extensionName === extensionName)
   }
 
@@ -396,7 +461,7 @@ export class ExtensionPermissionManager extends EventEmitter {
   /**
    * 简单权限检查（兼容旧接口）
    */
-  hasPermission(permission: ExtensionPermission): boolean {
+  hasPermissionPolicy(permission: ExtensionPermission): boolean {
     // 简化的权限检查，适用于静态权限验证
     return this.policies.has(permission)
   }
@@ -499,6 +564,54 @@ export class ExtensionPermissionManager extends EventEmitter {
   }
 
   /**
+   * 获取Extension的所有权限授权
+   */
+  getExtensionGrants(extensionName: string): PermissionGrant[] {
+    return Array.from(this.grants.values()).filter(
+      grant => grant.extensionName === extensionName
+    )
+  }
+
+  /**
+   * 获取Extension的权限列表
+   */
+  getExtensionPermissions(extensionName: string): ExtensionPermission[] {
+    return this.getExtensionGrants(extensionName).map(grant => grant.permission)
+  }
+
+  /**
+   * 获取特定权限的详细信息
+   */
+  getPermissionGrant(extensionName: string, permission: ExtensionPermission): PermissionGrant | undefined {
+    const key = `${extensionName}:${permission}`
+    return this.grants.get(key)
+  }
+
+  /**
+   * 检查Extension是否具有特定权限
+   */
+  hasPermission(extensionName: string, permission: ExtensionPermission): boolean {
+    const key = `${extensionName}:${permission}`
+    const grant = this.grants.get(key)
+    
+    if (!grant) {
+      return false
+    }
+
+    // 检查是否过期
+    if (grant.expiresAt && Date.now() > grant.expiresAt) {
+      return false
+    }
+
+    // 检查使用次数限制
+    if (grant.usageLimit && grant.usageCount >= grant.usageLimit) {
+      return false
+    }
+
+    return true
+  }
+
+  /**
    * 导出权限配置
    */
   exportPermissions(): {
@@ -530,6 +643,19 @@ export class ExtensionPermissionManager extends EventEmitter {
 
     // 清除所有缓存
     this.cache.clear()
+  }
+
+  /**
+   * 更新使用次数
+   */
+  private updateUsageCount(extensionName: string, permission: ExtensionPermission): void {
+    const grantKey = `${extensionName}:${permission}`
+    const grant = this.grants.get(grantKey)
+    
+    if (grant) {
+      grant.usageCount++
+      this.grants.set(grantKey, grant)
+    }
   }
 }
 

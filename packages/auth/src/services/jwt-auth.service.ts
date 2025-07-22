@@ -53,9 +53,9 @@ export class JWTAuthService implements IAuthService {
   private readonly refreshTokens = new Map<string, { userId: string; sessionId: string; expiresAt: Date }>()
   private readonly performanceMonitor: INewAuthPerformanceMonitor
 
-  constructor(config: JWTAuthServiceConfig) {
+  constructor(config: JWTAuthServiceConfig, performanceMonitor?: INewAuthPerformanceMonitor) {
     this.config = config
-    this.performanceMonitor = createNewAuthPerformanceMonitor(logger)
+    this.performanceMonitor = performanceMonitor || createNewAuthPerformanceMonitor(logger)
     this.validateConfig()
   }
 
@@ -613,8 +613,8 @@ export class JWTAuthService implements IAuthService {
 /**
  * 创建JWT认证服务实例
  */
-export function createJWTAuthService(config: JWTAuthServiceConfig): JWTAuthService {
-  return new JWTAuthService(config)
+export function createJWTAuthService(config: JWTAuthServiceConfig, performanceMonitor?: INewAuthPerformanceMonitor): JWTAuthService {
+  return new JWTAuthService(config, performanceMonitor)
 }
 
 /**

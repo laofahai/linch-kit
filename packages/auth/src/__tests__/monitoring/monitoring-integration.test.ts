@@ -9,11 +9,12 @@
 
 import { describe, it, expect, beforeEach, mock } from 'bun:test'
 import { JWTAuthService } from '../../services/jwt-auth.service'
-import { createAuthPerformanceMonitor } from '../../monitoring/auth-performance-monitor'
+import { createAuthPerformanceMonitor, type IAuthPerformanceMonitor } from '../../monitoring/auth-performance-monitor'
 import type { AuthRequest, ILogger } from '../../types'
 
 // Clear prometheus registry before each test
-import { register } from 'prom-client'
+import { register, Registry } from 'prom-client'
+import { createServerMetricCollector } from '@linch-kit/core/server'
 
 // Mock logger
 const mockLogger: ILogger = {
@@ -24,10 +25,14 @@ const mockLogger: ILogger = {
 
 describe('Monitoring Integration Tests', () => {
   let authService: JWTAuthService
-  let performanceMonitor: ReturnType<typeof createAuthPerformanceMonitor>
+  let performanceMonitor: IAuthPerformanceMonitor
+  let testRegistry: Registry
 
   beforeEach(() => {
-    // Clear prometheus registry to avoid duplicate registration
+    // Create isolated test registry
+    testRegistry = new Registry()
+    
+    // Clear default registry
     register.clear()
     
     // Reset mock call counts
@@ -35,7 +40,16 @@ describe('Monitoring Integration Tests', () => {
     mockLogger.warn.mockClear?.()
     mockLogger.error.mockClear?.()
     
-    // Create JWT auth service with test config
+    // Create isolated metric collector
+    const testMetricCollector = createServerMetricCollector({ 
+      registry: testRegistry,
+      enableDefaultMetrics: false 
+    })
+    
+    // Create performance monitor with isolated metric collector
+    performanceMonitor = createAuthPerformanceMonitor(mockLogger, testMetricCollector)
+    
+    // Create JWT auth service with test config and isolated performance monitor
     authService = new JWTAuthService({
       jwtSecret: 'test-secret-key-that-is-at-least-32-characters-long',
       accessTokenExpiry: '15m',
@@ -43,10 +57,13 @@ describe('Monitoring Integration Tests', () => {
       algorithm: 'HS256',
       issuer: 'test-issuer',
       audience: 'test-audience'
-    })
+    }, performanceMonitor)
+  })
 
-    // Create performance monitor
-    performanceMonitor = createAuthPerformanceMonitor(mockLogger)
+  afterEach(() => {
+    // Clean up registries
+    testRegistry.clear()
+    register.clear()
   })
 
   describe('JWT Authentication with Monitoring', () => {

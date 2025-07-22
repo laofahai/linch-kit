@@ -32,6 +32,7 @@ export interface MetricCollector {
   createSummary(name: string, help: string, percentiles?: number[], labels?: string[]): Summary
   getMetrics(): Promise<string>
   getRegistry?(): unknown
+  reset?(): void
 }
 
 /**
@@ -61,6 +62,7 @@ export interface Histogram {
   observe(value: number, labels?: Record<string, string>): void
   get(labels?: Record<string, string>): number
   reset(): void
+  startTimer?(labels?: Record<string, string>): () => void
 }
 
 /**

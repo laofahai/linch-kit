@@ -7,6 +7,9 @@ import { EventEmitter } from 'eventemitter3'
 
 import type { ExtensionRegistration } from './types'
 
+// Re-export ExtensionRegistration for tests
+export type { ExtensionRegistration }
+
 export interface ExtensionState {
   /** Extension名称 */
   name: string

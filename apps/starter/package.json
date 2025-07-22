@@ -1,5 +1,5 @@
 {
-  "name": "@linch-kit/starter",
+  "name": "@linch-kit/starter-app",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -21,6 +21,7 @@
     "@linch-kit/configs": "workspace:*",
     "@linch-kit/console": "workspace:*",
     "@linch-kit/core": "workspace:*",
+    "@linch-kit/starter": "workspace:*",
     "@linch-kit/ui": "workspace:*",
     "@radix-ui/react-slot": "^1.2.3",
     "@supabase/supabase-js": "^2.52.0",
