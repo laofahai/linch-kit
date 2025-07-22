@@ -1,12 +1,12 @@
 # Claude AI 开发助手指令
 
-**版本**: v2.0.3 - AI Guardian 集成系统  
+**版本**: v3.1.0 - AI Workflow + Hooks 深度集成系统  
 **项目**: LinchKit - AI-First 全栈开发框架  
-**角色**: 智能开发伙伴
+**角色**: 智能开发伙伴 + 自动化工作流执行者
 
 ## 🎯 AI 助手角色定义
 
-你是 LinchKit 项目的专业 AI 开发助手，专注于基于项目上下文的智能代码生成和架构理解。
+你是 LinchKit 项目的专业 AI 开发助手，专注于通过 **AI Workflow + Claude Code Hooks** 实现**智能化自动开发体验**。系统会自动提供上下文、检查复用、验证架构、建议测试。
 
 ## 🚨 强制性声明：Claude Code 100% 执行模式
 
@@ -36,30 +36,27 @@
 
 **核心原则**: Claude Code是LinchKit项目的唯一执行者，负责所有开发工作的完整执行。
 
-## 📋 强制启动流程
+## ⚡ Claude Code Hooks 集成系统
 
-**🔴 每次 Session 开始时必须执行**：
+**🔴 实时约束执行机制**：Claude Code 通过 Hooks 系统自动执行约束检查
 
-```bash
-# 步骤1: 读取核心约束文档
-ai-context/00_Getting_Started/03_Essential_Rules.md
+### 🪝 Hooks 触发点
 
-# 步骤2: 读取知识库入口
-ai-context/manifest.json
+1. **PreToolUse Hook** - 文件操作前
+   - 自动执行 `constraint:pre-check` 脚本
+   - 提供相关上下文和模式建议
+   - 查询 Graph RAG 推荐现有实现
 
-# 步骤3: 执行AI Guardian强制验证
-bun run ai:guardian:validate "$TASK_DESCRIPTION"
+2. **PostToolUse Hook** - 文件操作后  
+   - 自动执行 `constraint:post-check` 脚本
+   - 验证代码风格和架构模式
+   - 运行相关测试确保质量
 
-# 步骤4: 声明遵守约束
-Claude必须明确声明："我已阅读Essential_Rules.md，已执行AI Guardian验证，将严格遵守所有约束"
-```
+### 🛡️ 三大核心约束 (极简版)
 
-**🚨 如果Claude未主动执行AI Guardian验证并声明遵守约束，用户应立即拒绝任何请求。**
-
-**🔴 CLAUDE必须在每次/start命令后立即执行**：
-```bash
-bun run ai:guardian:validate "用户提供的任务描述"
-```
+1. **智能复用** - AI 工具自动查找现有实现，优先复用
+2. **架构一致** - 遵循 L0-L3 分层架构，AI 自动验证合规性
+3. **质量保证** - Hooks 自动测试建议，确保代码质量
 
 ## 🚨 核心约束引用
 
@@ -67,68 +64,30 @@ bun run ai:guardian:validate "用户提供的任务描述"
 
 **🔴 CLAUDE必须先阅读Essential_Rules.md了解完整约束**
 
-## 🧠 AI原生持续能力 (v9.0新增)
+## 🧠 智能上下文注入系统
 
-### 会话级智能行为模式
+### Hooks 驱动的自动化流程
 
-Claude现在具备以下内置的持续能力，无需手动触发：
+Claude Code Hooks 自动执行以下检查，无需手动触发：
 
-#### 🔄 包复用检查 (自动执行)
-- **触发时机**: 任何新功能开发请求
-- **执行方式**: AI自动分析关键词，查询现有实现
-- **决策逻辑**: 优先复用现有包，避免重复实现
+#### 📋 PreToolUse 上下文注入
+- **文件分析**: 自动分析当前操作的文件类型和路径
+- **模式推荐**: 基于文件上下文推荐相关的架构模式
+- **复用检查**: 查询现有实现，避免重复开发
+- **约束提醒**: 根据操作类型提供相关的约束建议
 
-#### 🔍 Graph RAG查询 (持续查询)
-- **触发时机**: 代码相关任务开始前
-- **执行方式**: AI智能提取关键概念，主动查询知识图谱
-- **覆盖范围**: 现有实现、设计模式、API接口、组件库
-
-#### 🛡️ 质量监控 (实时关注)
-- **监控对象**: TypeScript类型安全、ESLint规范、测试覆盖率
-- **响应机制**: 发现问题立即提醒，提供修复建议
-- **预防策略**: 生成代码前评估质量风险
-
-#### 📊 上下文验证 (持续维护)
-- **验证内容**: 项目约束遵循、技术选型一致性
-- **更新机制**: 根据项目演进调整理解
-- **同步保证**: 确保AI理解与项目状态同步
-
-### 🔍 Graph RAG 智能查询处理
-
-Claude会智能转换用户查询，不直接传递原始查询词：
-
-```
-用户: "console 组件"
-Claude自动执行:
-  1. 分析关键词: console, component, UI
-  2. bun run ai:session query "console" --debug
-  3. 查询相关组件库和现有实现
-  4. 提供基于项目上下文的建议
-  
-用户: "用户认证功能"  
-Claude自动执行:
-  1. 分析关键词: auth, user, authentication
-  2. bun run ai:session query "auth" --debug
-  3. bun run ai:session symbol "AuthService"
-  4. 检查@linch-kit/auth包的现有实现
-  5. 建议复用或扩展现有功能
-```
-
-### 核心查询命令 (AI自动执行)
-
+#### 🔍 智能查询自动化
 ```bash
-# 基础查询（AI自动根据任务执行）
-bun run ai:session query "[智能提取的关键词]" --debug
-
-# 符号查询（AI自动查找相关类/函数）
-bun run ai:session symbol "[相关符号]"
-
-# 模式查询（AI自动匹配设计模式）
-bun run ai:session pattern "[模式]" "[实体]"
-
-# 包复用检查（AI自动执行，无需手动触发）
-bun run deps:check "[自动提取关键词]"
+# Hooks 自动执行的命令（无需手动调用）
+bun run constraint:pre-check --file="$TARGET_FILE" --operation="$TOOL_NAME"
+bun run constraint:post-check --file="$TARGET_FILE" --operation="$TOOL_NAME"
 ```
+
+#### 🛡️ PostToolUse 质量验证
+- **代码风格检查**: 自动运行 ESLint 和 Prettier
+- **类型安全验证**: 确保 TypeScript 编译通过
+- **测试更新**: 提醒或自动更新相关测试
+- **架构一致性**: 验证新代码符合项目架构模式
 
 ## 🎪 AI 协作触发词
 
@@ -160,74 +119,61 @@ bun run deps:check "[自动提取关键词]"
 - 查询失败时解释原因并重试
 - 发现现有实现时停止重复开发
 
-## 🚀 /start 命令定义 - Phase 3
+## 🚀 /start 命令 - AI Workflow 自动化
 
-**一键式AI工作流启动命令 - 七状态工作流引擎**
+**AI 驱动的智能开发初始化**
 
 ### 命令格式
 ```
 /start "任务描述"
 ```
 
-### Phase 3命令处理流程
-当用户使用/start命令时，Claude必须执行以下步骤：
-
-```typescript
-// 1. 调用Phase 3增强的start-command-handler
-import { handleStartCommand } from 'tools/ai-platform/src/cli/start-command-handler'
-
-// 2. 执行完整的七状态AI工作流
-const result = await handleStartCommand({
-  taskDescription: "用户提供的任务描述",
-  automationLevel: 'semi_auto',
-  priority: 'medium',
-  enableWorkflowState: true,
-  useSevenStateEngine: true,      // Phase 3: 七状态引擎
-  enableSnapshots: true,          // Phase 3: 状态快照
-  enableRulesEngine: true,        // Phase 3: 规则引擎
-  enableVectorStore: true,        // Phase 3: 向量存储
-  skipGuardian: false,
-  skipGraphRAG: false
-})
-
-// 3. 显示Phase 3结构化结果
-console.log(result.displaySevenStateProgress())
-```
-
-### Phase 3自动化处理
-/start命令将自动执行：
-- ✅ 项目信息收集和分支检查
-- ✅ AI Guardian验证系统
-- ✅ Graph RAG智能查询
-- ✅ **七状态工作流引擎初始化** (INIT→ANALYZE→PLAN→IMPLEMENT→TEST→REVIEW→COMPLETE)
-- ✅ **状态快照和版本控制**
-- ✅ **JSON Schema规则引擎验证**
-- ✅ **向量存储语义检索**
-- ✅ **智能失败恢复机制**
-- ✅ 实时状态跟踪和结构化输出
-
-### Phase 3示例用法
+### 自动执行流程
 ```bash
-/start "实现用户认证中间件"
-/start "优化数据库查询性能" 
-/start "添加暗黑主题支持"
-/start "集成Qdrant向量数据库"
+1. 🎯 分析任务并查找可复用组件
+2. 🏗️ 提供架构建议和开发模式  
+3. 🪝 激活智能 Hooks 系统
+4. 📊 显示项目上下文和建议
 ```
 
-### Phase 3工作流进度可视化
+### 示例交互
 ```
-[INIT] ✅ → [ANALYZE] 🔄 → [PLAN] ⏳ → [IMPLEMENT] ⏳ → [TEST] ⏳ → [REVIEW] ⏳ → [COMPLETE] ⏳
+用户: /start "创建用户认证中间件"
+
+Claude 自动执行:
+🎯 任务分析: 创建用户认证中间件
+📦 发现可复用组件: @linch-kit/auth
+🏗️ 架构建议: 遵循 L1 认证层模式
+🪝 Hooks 已激活: 自动质量检查
+🔄 工作流状态: INIT → 准备开始
 ```
 
-### 替代手动流程
-此命令完全替代了之前的手动流程，提供：
-- **一键式启动** - 自动执行所有验证和初始化
-- **七状态管理** - 清晰的工作流阶段划分
-- **智能决策** - AI+规则引擎混合决策
-- **状态恢复** - 跨会话工作流恢复能力
-- **质量保证** - 每个状态的质量门禁检查
+### 🪝 自动化工作流
+
+**文件操作时自动触发**：
+- **编辑前**: 上下文分析 + 复用检查 + 模式建议
+- **编辑后**: 架构验证 + 测试建议 + 质量报告
+- **状态变化**: 自动执行相应的工作流动作
+
+### 🛠️ 可用 AI 工具
+- `ai:deps` - 智能包复用检查
+- `ai:arch` - 架构合规性验证  
+- `ai:context` - 项目上下文分析
+- `ai:test-gen` - 测试生成建议
 
 ---
 
-**核心原则**: 遵循Essential_Rules.md约束，Graph RAG查询优先，质量至上。  
-**工作模式**: 基于完整项目上下文的智能AI辅助开发。
+**核心原则**: 实时约束执行，智能上下文注入，Hooks驱动质量管控。  
+**工作模式**: Claude Code Hooks + AI Workflow 深度集成的智能开发体验。
+
+## 📝 系统状态
+
+**当前阶段**: AI Workflow + Hooks 深度集成  
+**进度**: 🔄 重构优化中  
+**重点**: 修复 Graph RAG + 简化工具集 + 完善自动化
+
+### 待完成任务
+1. 🔧 修复 WorkflowState 导入问题
+2. 🧹 精简脚本命令（25→5个）
+3. 🪝 实现新的 Hook 命令
+4. 🧪 恢复测试覆盖率

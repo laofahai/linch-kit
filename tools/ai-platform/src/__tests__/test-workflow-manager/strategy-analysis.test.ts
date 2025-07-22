@@ -3,13 +3,7 @@
  */
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 import { TestWorkflowManager, type TestWorkflowContext } from '../../workflow/test-workflow-manager'
-
-const mockAIProvider = {
-  getName: mock(() => 'test-ai-provider'),
-  getId: mock(() => 'test-ai-id'),
-  isAvailable: mock(() => Promise.resolve(true)),
-  generateResponse: mock(() => Promise.resolve({ data: {} }))
-}
+import { createMockAIProvider, cleanupMocks, cleanupTestWorkflowManager } from './shared-mocks'
 
 const mockStrategyEngine = {
   analyzeTestStrategy: mock(() => Promise.resolve({
@@ -28,13 +22,10 @@ const mockStrategyEngine = {
 
 describe('TestWorkflowManager - AI驱动的测试策略分析', () => {
   let workflowManager: TestWorkflowManager
+  let mockAIProvider: ReturnType<typeof createMockAIProvider>
 
   beforeEach(() => {
-    Object.values(mockAIProvider).forEach(mockFn => {
-      if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
-        mockFn.mockClear()
-      }
-    })
+    mockAIProvider = createMockAIProvider()
     Object.values(mockStrategyEngine).forEach(mockFn => {
       if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
         mockFn.mockClear()
@@ -50,25 +41,10 @@ describe('TestWorkflowManager - AI驱动的测试策略分析', () => {
   })
 
   afterEach(async () => {
-    // 清理所有mock和资源
-    [mockAIProvider, mockStrategyEngine].forEach(mockObj => {
-      Object.values(mockObj).forEach(mockFn => {
-        if (typeof mockFn === 'function' && 'mockRestore' in mockFn) {
-          mockFn.mockRestore()
-        }
-      })
-    })
-    
-    if (workflowManager && typeof workflowManager === 'object') {
-      Object.keys(workflowManager).forEach(key => {
-        ;(workflowManager as any)[key] = null
-      })
-    }
+    await cleanupTestWorkflowManager(workflowManager)
+    cleanupMocks(mockAIProvider, mockStrategyEngine)
     workflowManager = null as any
-    
-    delete process.env.GEMINI_API_KEY
-    if (global.gc) global.gc()
-    await new Promise(resolve => setTimeout(resolve, 10))
+    mockAIProvider = null as any
   })
 
   const context: TestWorkflowContext = {

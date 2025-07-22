@@ -91,7 +91,7 @@ export const defaultPlatformConfig: PlatformIntegrationConfig = {
  */
 export class PlatformIntegration {
   private config: PlatformIntegrationConfig
-  private platformManager: any = null
+  private platformManager: unknown = null
 
   constructor(config: Partial<PlatformIntegrationConfig> = {}) {
     this.config = { ...defaultPlatformConfig, ...config }
@@ -179,7 +179,7 @@ export class PlatformIntegration {
   /**
    * 创建实体Schema
    */
-  createEntitySchema(name: string, fields: any[]) {
+  createEntitySchema(name: string, fields: unknown[]) {
     return {
       name,
       fields,
@@ -294,9 +294,9 @@ export const CRUDUtils = {
   /**
    * 创建标准过滤参数
    */
-  createFilterParams: (filters: Record<string, any> = {}) => ({
+  createFilterParams: (filters: Record<string, unknown> = {}) => ({
     where: filters,
-    search: filters._search || undefined
+    search: filters._search ?? undefined
   })
 }
 

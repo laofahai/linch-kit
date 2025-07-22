@@ -3,25 +3,14 @@
  */
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 import { TestWorkflowManager } from '../../workflow/test-workflow-manager'
-
-const mockAIProvider = {
-  getName: mock(() => 'test-ai-provider'),
-  getId: mock(() => 'test-ai-id'),
-  isAvailable: mock(() => Promise.resolve(true)),
-  generateResponse: mock(() => Promise.resolve({
-    data: { testContent: 'mock test content' }
-  }))
-}
+import { createMockAIProvider, cleanupMocks, cleanupTestWorkflowManager } from './shared-mocks'
 
 describe('TestWorkflowManager - 初始化和配置', () => {
   let workflowManager: TestWorkflowManager
+  let mockAIProvider: ReturnType<typeof createMockAIProvider>
 
   beforeEach(() => {
-    Object.values(mockAIProvider).forEach(mockFn => {
-      if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
-        mockFn.mockClear()
-      }
-    })
+    mockAIProvider = createMockAIProvider()
 
     try {
       workflowManager = new TestWorkflowManager(mockAIProvider as any)
@@ -31,22 +20,10 @@ describe('TestWorkflowManager - 初始化和配置', () => {
   })
 
   afterEach(async () => {
-    Object.values(mockAIProvider).forEach(mockFn => {
-      if (typeof mockFn === 'function' && 'mockRestore' in mockFn) {
-        mockFn.mockRestore()
-      }
-    })
-    
-    if (workflowManager) {
-      Object.keys(workflowManager).forEach(key => {
-        ;(workflowManager as any)[key] = null
-      })
-    }
+    await cleanupTestWorkflowManager(workflowManager)
+    cleanupMocks(mockAIProvider)
     workflowManager = null as any
-    
-    delete process.env.GEMINI_API_KEY
-    if (global.gc) global.gc()
-    await new Promise(resolve => setTimeout(resolve, 10))
+    mockAIProvider = null as any
   })
 
   it('应该成功初始化并使用提供的AI Provider', () => {

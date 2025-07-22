@@ -1,23 +1,38 @@
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 
-import { Logger } from '../../logger'
 import { UnifiedExtensionManager } from '../../extension/unified-manager'
-import type { Extension, ExtensionConfig, ExtensionMetadata } from '../../extension/types'
+import type { 
+  Extension, 
+  ExtensionConfig, 
+  ExtensionMetadata,
+  ExtensionInstance,
+  ExtensionContext
+} from '../../extension/types'
 
-// Mock dependencies
-mock.module('../../extension/permission-manager', () => ({
-  permissionManager: {
-    checkPermission: mock(() => true),
-    grantPermission: mock(() => true),
-    revokePermission: mock(() => true),
-  },
+// Mock依赖项
+const mockPermissionManager = {
+  checkPermission: mock(() => true),
+  grantPermission: mock(() => {}),
+  revokePermission: mock(() => {}),
+  hasPermission: mock(() => true),
+  getAllPermissions: mock(() => [])
+}
+
+const mockSandbox = {
+  executeCode: mock(() => Promise.resolve({ success: true, data: {} })),
+  destroy: mock(() => Promise.resolve())
+}
+
+const mockCreateSandbox = mock(() => Promise.resolve(mockSandbox))
+
+// Mock sandbox模块
+mock.module('../../extension/sandbox', () => ({
+  createSandbox: mockCreateSandbox
 }))
 
-mock.module('../../extension/sandbox', () => ({
-  createSandbox: mock(() => ({
-    execute: mock(() => Promise.resolve()),
-    destroy: mock(() => Promise.resolve()),
-  })),
+// Mock permission-manager模块
+mock.module('../../extension/permission-manager', () => ({
+  permissionManager: mockPermissionManager
 }))
 
 describe('UnifiedExtensionManager', () => {

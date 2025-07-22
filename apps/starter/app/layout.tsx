@@ -3,9 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 
 import { ExtensionsInitializer } from '@/components/extensions-initializer'
-import { AuthProvider } from '@/components/providers/auth-provider'
 import { AppPerformanceProvider } from '@/components/providers/performance-provider'
-import { ThemeProvider } from '@/components/providers/theme-provider'
 import { TRPCLinchKitProvider } from '@/components/providers/trpc-linchkit-provider'
 import './globals.css'
 

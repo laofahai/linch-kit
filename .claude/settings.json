@@ -1,0 +1,61 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🔍 PreToolUse Hook 触发 - 文件: ${tool_params.file_path}, 操作: ${tool_name}'"
+          },
+          {
+            "type": "command",
+            "command": "bun run deps:check '测试'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command", 
+            "command": "echo '✅ PostToolUse Hook 触发 - 文件: ${tool_params.file_path}, 操作: ${tool_name}'"
+          },
+          {
+            "type": "command",
+            "command": "echo '🧪 建议为此文件添加测试'"
+          }
+        ]
+      }
+    ],
+    "WorkflowStateChange": [
+      {
+        "matcher": "IMPLEMENT",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🔄 进入实施阶段 - 建议先运行相关测试'"
+          }
+        ]
+      },
+      {
+        "matcher": "TEST", 
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run ai:test-gen create --auto --context=\"${workflow_context}\""
+          }
+        ]
+      }
+    ]
+  },
+  "ai_workflow": {
+    "enabled": true,
+    "mode": "hooks_driven",
+    "fallback_strategy": "local_analysis",
+    "auto_test_generation": true,
+    "quality_gates": ["arch_check", "test_coverage", "type_safety"]
+  }
+}

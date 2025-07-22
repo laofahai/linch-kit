@@ -2,24 +2,8 @@
  * 用户信息API端点 - 使用LinchKit Auth服务
  */
 
-import { createJWTAuthService } from '@linch-kit/auth/server'
 import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
-
-// 创建认证服务实例（懒加载避免重复实例化）
-let authService: ReturnType<typeof createJWTAuthService> | null = null
-
-function getAuthService() {
-  authService ??= createJWTAuthService({
-    jwtSecret: process.env['JWT_SECRET'] ?? 'your-super-secret-jwt-key-must-be-at-least-32-characters-long-development-key',
-    accessTokenExpiry: process.env['ACCESS_TOKEN_EXPIRY'] ?? '15m',
-    refreshTokenExpiry: process.env['REFRESH_TOKEN_EXPIRY'] ?? '7d',
-    algorithm: 'HS256',
-    issuer: 'linch-kit-starter',
-    audience: 'linch-kit-starter-app'
-  })
-  return authService
-}
 
 function getUserFromToken(token: string) {
   // 简化的用户提取逻辑，在实际应用中应该验证JWT
@@ -37,17 +21,17 @@ function getUserFromToken(token: string) {
     
     // 返回模拟用户数据
     return {
-      id: payload.sub || 'user-123',
-      email: payload.email || 'user@example.com',
-      name: payload.name || 'Test User',
-      avatar: payload.avatar || null
+      id: payload.sub ?? 'user-123',
+      email: payload.email ?? 'user@example.com',
+      name: payload.name ?? 'Test User',
+      avatar: payload.avatar ?? null
     }
   } catch {
     return null
   }
 }
 
-export async function GET(request: NextRequest) {
+export function GET(request: NextRequest) {
   try {
     // 从Authorization头获取token
     const authHeader = request.headers.get('Authorization')

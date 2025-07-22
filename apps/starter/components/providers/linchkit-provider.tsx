@@ -34,7 +34,7 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
   })
 
   useEffect(() => {
-    const initLinchKit = async () => {
+    const initLinchKit = () => {
       try {
         // 设置日志级别
         if (process.env.NODE_ENV === 'development') {

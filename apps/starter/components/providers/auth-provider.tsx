@@ -6,7 +6,7 @@
 'use client'
 
 import { Logger } from '@linch-kit/core/client'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
 
 interface User {
   id: string
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         Logger.debug('[Auth] Initializing authentication state')
         
         // 从localStorage或cookie恢复会话
-        const savedSession = localStorage.getItem('auth-session')
+        const savedSession = typeof window !== 'undefined' ? window.localStorage.getItem('auth-session') : null
         if (savedSession) {
           try {
             const sessionData = JSON.parse(savedSession)
@@ -84,11 +84,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
               await loadUserFromSession(session)
             } else {
               Logger.info('[Auth] Saved session expired, clearing')
-              localStorage.removeItem('auth-session')
+              if (typeof window !== 'undefined') window.localStorage.removeItem('auth-session')
             }
           } catch (error) {
             Logger.error('[Auth] Failed to parse saved session:', error)
-            localStorage.removeItem('auth-session')
+            if (typeof window !== 'undefined') window.localStorage.removeItem('auth-session')
           }
         }
       } catch (error) {
@@ -98,11 +98,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     }
 
-    initAuth()
-  }, [])
+    initAuth().catch(error => {
+      Logger.error('[Auth] Failed to initialize:', error)
+    })
+  }, [loadUserFromSession])
 
   // 从会话加载用户信息
-  const loadUserFromSession = async (session: Session) => {
+  const loadUserFromSession = useCallback(async (session: Session) => {
     try {
       Logger.debug('[Auth] Loading user from session')
       
@@ -121,13 +123,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         Logger.warn('[Auth] Failed to load user, status:', response.status)
         if (response.status === 401) {
           // Token无效，清除会话
-          await clearSession()
+          clearSession()
         }
       }
     } catch (error) {
       Logger.error('[Auth] Failed to load user from session:', error)
     }
-  }
+  }, [])
 
   // 登录
   const login = async (email: string, password: string) => {
@@ -147,7 +149,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       if (result.success && result.user && result.tokens) {
         const sessionData = {
-          id: result.sessionId || 'session-' + Date.now(),
+          id: result.sessionId ?? 'session-' + Date.now(),
           userId: result.user.id,
           accessToken: result.tokens.accessToken,
           refreshToken: result.tokens.refreshToken,
@@ -158,13 +160,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setSession(sessionData)
         
         // 保存到localStorage
-        localStorage.setItem('auth-session', JSON.stringify(sessionData))
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('auth-session', JSON.stringify(sessionData))
+        }
         
         Logger.info('[Auth] Login successful for user:', result.user.id)
         return { success: true }
       } else {
         Logger.warn('[Auth] Login failed:', result.error)
-        return { success: false, error: result.error || 'Login failed' }
+        return { success: false, error: result.error ?? 'Login failed' }
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
@@ -195,7 +199,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       }
       
-      await clearSession()
+      clearSession()
       Logger.info('[Auth] Logout completed')
     } catch (error) {
       Logger.error('[Auth] Logout error:', error)
@@ -203,14 +207,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   // 清除会话
-  const clearSession = async () => {
+  const clearSession = () => {
     setUser(null)
     setSession(null)
-    localStorage.removeItem('auth-session')
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('auth-session')
+    }
   }
 
   // 刷新Token
-  const refreshToken = async () => {
+  const refreshToken = useCallback(async () => {
     try {
       if (!session?.refreshToken) {
         return { success: false, error: 'No refresh token available' }
@@ -237,22 +243,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
         
         setSession(updatedSession)
-        localStorage.setItem('auth-session', JSON.stringify(updatedSession))
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('auth-session', JSON.stringify(updatedSession))
+        }
         
         Logger.info('[Auth] Token refreshed successfully')
         return { success: true }
       } else {
         Logger.warn('[Auth] Token refresh failed:', result.error)
-        await clearSession()
-        return { success: false, error: result.error || 'Token refresh failed' }
+        clearSession()
+        return { success: false, error: result.error ?? 'Token refresh failed' }
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       Logger.error('[Auth] Token refresh error:', error)
-      await clearSession()
+      clearSession()
       return { success: false, error: errorMessage }
     }
-  }
+  }, [session])
 
   // 获取认证头
   const getAuthHeaders = () => {
@@ -273,13 +281,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const timeUntilExpiry = session.expiresAt.getTime() - Date.now()
     const refreshTime = Math.max(timeUntilExpiry - 5 * 60 * 1000, 30 * 1000) // 提前5分钟或最少30秒
 
-    const timeoutId = setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       Logger.debug('[Auth] Auto-refreshing token')
-      refreshToken()
+      refreshToken().catch(error => {
+        Logger.error('[Auth] Auto-refresh failed:', error)
+      })
     }, refreshTime)
 
-    return () => { clearTimeout(timeoutId); }
-  }, [session])
+    return () => { window.clearTimeout(timeoutId); }
+  }, [session, refreshToken])
 
   const contextValue: AuthContextValue = {
     user,

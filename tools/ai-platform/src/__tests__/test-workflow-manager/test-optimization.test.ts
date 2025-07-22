@@ -3,13 +3,7 @@
  */
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 import { TestWorkflowManager } from '../../workflow/test-workflow-manager'
-
-const mockAIProvider = {
-  getName: mock(() => 'test-ai-provider'),
-  getId: mock(() => 'test-ai-id'),
-  isAvailable: mock(() => Promise.resolve(true)),
-  generateResponse: mock(() => Promise.resolve({ data: {} }))
-}
+import { createMockAIProvider, cleanupMocks, cleanupTestWorkflowManager } from './shared-mocks'
 
 const mockFs = {
   readFileSync: mock(() => 'mock test file content'),
@@ -18,13 +12,10 @@ const mockFs = {
 
 describe('TestWorkflowManager - 测试优化建议', () => {
   let workflowManager: TestWorkflowManager
+  let mockAIProvider: ReturnType<typeof createMockAIProvider>
 
   beforeEach(() => {
-    Object.values(mockAIProvider).forEach(mockFn => {
-      if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
-        mockFn.mockClear()
-      }
-    })
+    mockAIProvider = createMockAIProvider()
     Object.values(mockFs).forEach(mockFn => {
       if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
         mockFn.mockClear()
@@ -40,9 +31,11 @@ describe('TestWorkflowManager - 测试优化建议', () => {
     }
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    await cleanupTestWorkflowManager(workflowManager)
+    cleanupMocks(mockAIProvider, mockFs)
     workflowManager = null as any
-    if (global.gc) global.gc()
+    mockAIProvider = null as any
   })
 
   const testFiles = [

@@ -48,19 +48,7 @@ export {
   getProjectConstraints
 } from './claude-code-api'
 
-// 类型定义
-export type {
-  WorkflowContext,
-  WorkflowDecision,
-  GraphRAGQueryResult,
-  AIWorkflowResult
-} from './ai-workflow-manager'
-
-export type {
-  WorkflowState,
-  WorkflowAction,
-  WorkflowStateTransition
-} from './workflow-state-machine'
+// 类型定义 - 已经在上面导出了，这里不需要重复导出类型
 
 export type {
   TrustedEnvironmentContext

@@ -3,46 +3,16 @@
  */
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 import { TestWorkflowManager } from '../../workflow/test-workflow-manager'
-
-const mockAIProvider = {
-  getName: mock(() => 'test-ai-provider'),
-  getId: mock(() => 'test-ai-id'),
-  isAvailable: mock(() => Promise.resolve(true)),
-  generateResponse: mock(() => Promise.resolve({
-    data: {
-      testContent: 'mock test content',
-      coverage: { expectedLines: 90, expectedFunctions: 10, expectedBranches: 8 },
-      testCases: [
-        { name: 'test case 1', description: 'test description', type: 'unit' }
-      ]
-    }
-  }))
-}
-
-const mockQueryEngine = {
-  searchRelated: mock(() => Promise.resolve({
-    relatedItems: [
-      { type: 'test', file: 'example.test.ts', description: 'Example test' }
-    ],
-    patterns: ['pattern1', 'pattern2'],
-    suggestions: ['suggestion1']
-  }))
-}
+import { createMockAIProvider, createMockQueryEngine, cleanupMocks, cleanupTestWorkflowManager } from './shared-mocks'
 
 describe('TestWorkflowManager - AI测试生成', () => {
   let workflowManager: TestWorkflowManager
+  let mockAIProvider: ReturnType<typeof createMockAIProvider>
+  let mockQueryEngine: ReturnType<typeof createMockQueryEngine>
 
   beforeEach(() => {
-    Object.values(mockAIProvider).forEach(mockFn => {
-      if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
-        mockFn.mockClear()
-      }
-    })
-    Object.values(mockQueryEngine).forEach(mockFn => {
-      if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
-        mockFn.mockClear()
-      }
-    })
+    mockAIProvider = createMockAIProvider()
+    mockQueryEngine = createMockQueryEngine()
 
     try {
       workflowManager = new TestWorkflowManager(mockAIProvider as any)
@@ -52,9 +22,12 @@ describe('TestWorkflowManager - AI测试生成', () => {
     }
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    await cleanupTestWorkflowManager(workflowManager)
+    cleanupMocks(mockAIProvider, mockQueryEngine)
     workflowManager = null as any
-    if (global.gc) global.gc()
+    mockAIProvider = null as any
+    mockQueryEngine = null as any
   })
 
   const request = {

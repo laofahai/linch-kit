@@ -3,23 +3,16 @@
  */
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 import { TestWorkflowManager } from '../../workflow/test-workflow-manager'
-
-const mockAIProvider = {
-  getName: mock(() => 'test-ai-provider'),
-  getId: mock(() => 'test-ai-id'),
-  isAvailable: mock(() => Promise.resolve(false)), // Test unavailable case
-  generateResponse: mock(() => Promise.resolve({ data: {} }))
-}
+import { createMockAIProvider, cleanupMocks, cleanupTestWorkflowManager } from './shared-mocks'
 
 describe('TestWorkflowManager - 智能测试运行', () => {
   let workflowManager: TestWorkflowManager
+  let mockAIProvider: ReturnType<typeof createMockAIProvider>
 
   beforeEach(() => {
-    Object.values(mockAIProvider).forEach(mockFn => {
-      if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
-        mockFn.mockClear()
-      }
-    })
+    mockAIProvider = createMockAIProvider()
+    // Override isAvailable to test unavailable case
+    mockAIProvider.isAvailable = mock(() => Promise.resolve(false))
 
     try {
       workflowManager = new TestWorkflowManager(mockAIProvider as any)
@@ -35,9 +28,11 @@ describe('TestWorkflowManager - 智能测试运行', () => {
     }
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    await cleanupTestWorkflowManager(workflowManager)
+    cleanupMocks(mockAIProvider)
     workflowManager = null as any
-    if (global.gc) global.gc()
+    mockAIProvider = null as any
   })
 
   it('应该执行基本测试运行', async () => {

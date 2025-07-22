@@ -1,56 +1,27 @@
 /**
  * Test Workflow Manager - 测试工作流执行测试
  */
-import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
+import { describe, it, expect, beforeEach, afterEach } from 'bun:test'
 import { TestWorkflowManager, type TestWorkflowContext } from '../../workflow/test-workflow-manager'
-
-const mockAIProvider = {
-  getName: mock(() => 'test-ai-provider'),
-  getId: mock(() => 'test-ai-id'),
-  isAvailable: mock(() => Promise.resolve(true)),
-  generateResponse: mock(() => Promise.resolve({ data: {} }))
-}
-
-const mockCoverageAnalyzer = {
-  analyzeTestTiming: mock(() => Promise.resolve({
-    score: 6,
-    recommendation: { mode: 'traditional', generateAt: 'completion' }
-  })),
-  analyzeCoverage: mock(() => Promise.resolve({
-    overall: { 
-      lines: { total: 100, covered: 70, percentage: 70 },
-      functions: { total: 20, covered: 15, percentage: 75 },
-      branches: { total: 50, covered: 35, percentage: 70 },
-      statements: { total: 120, covered: 84, percentage: 70 }
-    },
-    files: [],
-    gapAnalysis: { totalGaps: 5, criticalGaps: 2 },
-    recommendations: ['Improve error handling tests'],
-    trends: { coverageChange: 5, qualityScore: 80 },
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
-  }))
-}
-
-const mockQueryEngine = {
-  searchRelated: mock(() => Promise.resolve({
-    relatedItems: [],
-    patterns: [],
-    suggestions: []
-  }))
-}
+import { 
+  createMockAIProvider, 
+  createMockCoverageAnalyzer, 
+  createMockQueryEngine,
+  cleanupMocks,
+  cleanupTestWorkflowManager
+} from './shared-mocks'
 
 describe('TestWorkflowManager - 测试工作流执行', () => {
   let workflowManager: TestWorkflowManager
+  let mockAIProvider: ReturnType<typeof createMockAIProvider>
+  let mockCoverageAnalyzer: ReturnType<typeof createMockCoverageAnalyzer>
+  let mockQueryEngine: ReturnType<typeof createMockQueryEngine>
 
   beforeEach(() => {
-    [mockAIProvider, mockCoverageAnalyzer, mockQueryEngine].forEach(mockObj => {
-      Object.values(mockObj).forEach(mockFn => {
-        if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
-          mockFn.mockClear()
-        }
-      })
-    })
+    // Create fresh mocks for each test
+    mockAIProvider = createMockAIProvider()
+    mockCoverageAnalyzer = createMockCoverageAnalyzer()
+    mockQueryEngine = createMockQueryEngine()
 
     try {
       workflowManager = new TestWorkflowManager(mockAIProvider as any)
@@ -61,15 +32,21 @@ describe('TestWorkflowManager - 测试工作流执行', () => {
     }
   })
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Comprehensive cleanup
+    cleanupMocks(mockAIProvider, mockCoverageAnalyzer, mockQueryEngine)
+    await cleanupTestWorkflowManager(workflowManager)
     workflowManager = null as any
-    if (global.gc) global.gc()
+    mockAIProvider = null as any
+    mockCoverageAnalyzer = null as any
+    mockQueryEngine = null as any
   })
 
   const context: TestWorkflowContext = {
     taskDescription: 'User management API',
     testType: 'unit',
-    coverageThreshold: { lines: 85, functions: 90, branches: 80, statements: 85 }
+    coverageThreshold: { lines: 85, functions: 90, branches: 80, statements: 85 },
+    targetFiles: [] // Empty array to prevent file system reads
   }
 
   it('应该执行完整的测试工作流', async () => {
