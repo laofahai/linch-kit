@@ -15,14 +15,11 @@
  */
 
 import { createLogger } from '@linch-kit/core'
-
-const logger = createLogger({ name: 'context-verifier' })
-
 import { promises as fs } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
-import { createLogger } from '@linch-kit/core'
+const logger = createLogger({ name: 'context-verifier' })
 
 /**
  * AI理解快照接口

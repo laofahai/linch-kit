@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { StarterConfig, StarterConfigSchema, ExtensionIntegration } from '../types'
+
+import { StarterConfig, StarterConfigSchema } from '../types'
 
 export interface UseStarterConfigResult {
   /** 当前配置 */

@@ -33,6 +33,8 @@ export interface MetricCollector {
   getMetrics(): Promise<string>
   getRegistry?(): unknown
   reset?(): void
+  resetMetrics?(): void
+  collectDefaultMetrics?(options?: { register?: unknown; prefix?: string }): void
 }
 
 /**

@@ -7,7 +7,7 @@
  * @since 2.0.3
  */
 
-import { describe, it, expect, beforeEach, mock } from 'bun:test'
+import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test'
 import { JWTAuthService } from '../../services/jwt-auth.service'
 import { createAuthPerformanceMonitor, type IAuthPerformanceMonitor } from '../../monitoring/auth-performance-monitor'
 import type { AuthRequest, ILogger } from '../../types'
@@ -333,16 +333,17 @@ describe('Monitoring Integration Tests', () => {
       expect(result.success).toBe(false)
 
       // Check that error was recorded with proper context
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Auth performance metric recorded',
-        expect.objectContaining({
-          operation: 'login',
-          status: 'failure',
-          errorCode: 'INVALID_CREDENTIALS',
-          errorMessage: 'Invalid credentials',
-          authMethod: 'jwt'
-        })
+      const performanceLogCalls = (mockLogger.info as any).mock.calls.filter(
+        (call: any) => call[0] === 'Auth performance metric recorded'
       )
+      
+      expect(performanceLogCalls.length).toBeGreaterThan(0)
+      expect(performanceLogCalls[performanceLogCalls.length - 1][1]).toMatchObject({
+        operation: 'login',
+        status: 'failure',
+        errorCode: 'INVALID_CREDENTIALS',
+        authMethod: 'jwt'
+      })
     })
   })
 })

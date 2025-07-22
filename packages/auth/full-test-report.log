@@ -1,0 +1,582 @@
+turbo 2.5.4
+
+• Packages in scope: @linch-kit/auth
+• Running test in 1 packages
+• Remote caching disabled
+@linch-kit/core:build:packages: cache hit, replaying logs ad96cd82443afad4
+@linch-kit/core:build:packages: $ tsup
+@linch-kit/core:build:packages: CLI Building entry: src/client.ts, src/extension-client.ts
+@linch-kit/core:build:packages: CLI Using tsconfig: tsconfig.json
+@linch-kit/core:build:packages: CLI tsup v8.5.0
+@linch-kit/core:build:packages: CLI Using tsup config: /home/laofahai/workspace/linch-kit/packages/core/tsup.config.ts
+@linch-kit/core:build:packages: CLI Building entry: src/react.ts
+@linch-kit/core:build:packages: CLI Using tsconfig: tsconfig.json
+@linch-kit/core:build:packages: CLI tsup v8.5.0
+@linch-kit/core:build:packages: CLI Using tsup config: /home/laofahai/workspace/linch-kit/packages/core/tsup.config.ts
+@linch-kit/core:build:packages: CLI Building entry: src/providers.ts
+@linch-kit/core:build:packages: CLI Using tsconfig: tsconfig.json
+@linch-kit/core:build:packages: CLI tsup v8.5.0
+@linch-kit/core:build:packages: CLI Using tsup config: /home/laofahai/workspace/linch-kit/packages/core/tsup.config.ts
+@linch-kit/core:build:packages: CLI Building entry: src/cli.ts, src/index.ts, src/server.ts
+@linch-kit/core:build:packages: CLI Using tsconfig: tsconfig.json
+@linch-kit/core:build:packages: CLI tsup v8.5.0
+@linch-kit/core:build:packages: CLI Using tsup config: /home/laofahai/workspace/linch-kit/packages/core/tsup.config.ts
+@linch-kit/core:build:packages: CLI Target: esnext
+@linch-kit/core:build:packages: CJS Build start
+@linch-kit/core:build:packages: ESM Build start
+@linch-kit/core:build:packages: CLI Target: esnext
+@linch-kit/core:build:packages: CJS Build start
+@linch-kit/core:build:packages: ESM Build start
+@linch-kit/core:build:packages: CLI Target: node18
+@linch-kit/core:build:packages: CJS Build start
+@linch-kit/core:build:packages: ESM Build start
+@linch-kit/core:build:packages: CLI Target: esnext
+@linch-kit/core:build:packages: CJS Build start
+@linch-kit/core:build:packages: ESM Build start
+@linch-kit/core:build:packages: dist/providers.js (1:0): Module level directives cause errors when bundled, "use client" in "dist/providers.js" was ignored.
+@linch-kit/core:build:packages: dist/providers.js (2:0): Module level directives cause errors when bundled, "use client" in "dist/providers.js" was ignored.
+@linch-kit/core:build:packages: dist/providers.mjs (1:0): Module level directives cause errors when bundled, "use client" in "dist/providers.mjs" was ignored.
+@linch-kit/core:build:packages: dist/providers.mjs (2:0): Module level directives cause errors when bundled, "use client" in "dist/providers.mjs" was ignored.
+@linch-kit/core:build:packages: dist/react.mjs (1:0): Module level directives cause errors when bundled, "use client" in "dist/react.mjs" was ignored.
+@linch-kit/core:build:packages: dist/react.mjs (2:0): Module level directives cause errors when bundled, "use client" in "dist/react.mjs" was ignored.
+@linch-kit/core:build:packages: dist/react.js (1:0): Module level directives cause errors when bundled, "use client" in "dist/react.js" was ignored.
+@linch-kit/core:build:packages: dist/react.js (2:0): Module level directives cause errors when bundled, "use client" in "dist/react.js" was ignored.
+@linch-kit/core:build:packages: CJS dist/providers.js     5.33 KB
+@linch-kit/core:build:packages: CJS dist/providers.js.map 12.34 KB
+@linch-kit/core:build:packages: CJS ⚡️ Build success in 191ms
+@linch-kit/core:build:packages: ESM dist/react.mjs     11.69 KB
+@linch-kit/core:build:packages: ESM dist/react.mjs.map 22.19 KB
+@linch-kit/core:build:packages: ESM ⚡️ Build success in 188ms
+@linch-kit/core:build:packages: ESM dist/providers.mjs     4.98 KB
+@linch-kit/core:build:packages: ESM dist/providers.mjs.map 12.25 KB
+@linch-kit/core:build:packages: ESM ⚡️ Build success in 191ms
+@linch-kit/core:build:packages: CJS dist/react.js     12.06 KB
+@linch-kit/core:build:packages: CJS dist/react.js.map 22.27 KB
+@linch-kit/core:build:packages: CJS ⚡️ Build success in 189ms
+@linch-kit/core:build:packages: ESM dist/client.mjs               15.37 KB
+@linch-kit/core:build:packages: ESM dist/extension-client.mjs     7.14 KB
+@linch-kit/core:build:packages: ESM dist/extension-client.mjs.map 15.80 KB
+@linch-kit/core:build:packages: ESM dist/client.mjs.map           33.75 KB
+@linch-kit/core:build:packages: ESM ⚡️ Build success in 194ms
+@linch-kit/core:build:packages: CJS dist/client.js               15.56 KB
+@linch-kit/core:build:packages: CJS dist/extension-client.js     7.20 KB
+@linch-kit/core:build:packages: CJS dist/client.js.map           33.76 KB
+@linch-kit/core:build:packages: CJS dist/extension-client.js.map 15.82 KB
+@linch-kit/core:build:packages: CJS ⚡️ Build success in 194ms
+@linch-kit/core:build:packages: DTS Build start
+@linch-kit/core:build:packages: DTS Build start
+@linch-kit/core:build:packages: DTS Build start
+@linch-kit/core:build:packages: DTS Build start
+@linch-kit/core:build:packages: ESM dist/cli.mjs        24.98 KB
+@linch-kit/core:build:packages: ESM dist/server.mjs     99.63 KB
+@linch-kit/core:build:packages: ESM dist/index.mjs      142.61 KB
+@linch-kit/core:build:packages: ESM dist/cli.mjs.map    52.54 KB
+@linch-kit/core:build:packages: ESM dist/server.mjs.map 236.37 KB
+@linch-kit/core:build:packages: ESM dist/index.mjs.map  344.43 KB
+@linch-kit/core:build:packages: ESM ⚡️ Build success in 913ms
+@linch-kit/core:build:packages: CJS dist/cli.js        25.15 KB
+@linch-kit/core:build:packages: CJS dist/server.js     100.99 KB
+@linch-kit/core:build:packages: CJS dist/index.js      144.42 KB
+@linch-kit/core:build:packages: CJS dist/cli.js.map    52.62 KB
+@linch-kit/core:build:packages: CJS dist/server.js.map 236.79 KB
+@linch-kit/core:build:packages: CJS dist/index.js.map  344.55 KB
+@linch-kit/core:build:packages: CJS ⚡️ Build success in 913ms
+@linch-kit/core:build:packages: DTS ⚡️ Build success in 1535ms
+@linch-kit/core:build:packages: DTS dist/providers.d.ts  1.73 KB
+@linch-kit/core:build:packages: DTS dist/providers.d.mts 1.73 KB
+@linch-kit/core:build:packages: DTS ⚡️ Build success in 1605ms
+@linch-kit/core:build:packages: DTS dist/react.d.ts  3.40 KB
+@linch-kit/core:build:packages: DTS dist/react.d.mts 3.40 KB
+@linch-kit/core:build:packages: DTS ⚡️ Build success in 2307ms
+@linch-kit/core:build:packages: DTS dist/client.d.ts                     6.86 KB
+@linch-kit/core:build:packages: DTS dist/extension-client.d.ts           311.00 B
+@linch-kit/core:build:packages: DTS dist/extension-client-Ce2DWbQk.d.ts  5.63 KB
+@linch-kit/core:build:packages: DTS dist/client.d.mts                    6.87 KB
+@linch-kit/core:build:packages: DTS dist/extension-client.d.mts          312.00 B
+@linch-kit/core:build:packages: DTS dist/extension-client-Ce2DWbQk.d.mts 5.63 KB
+@linch-kit/core:build:packages: DTS ⚡️ Build success in 3150ms
+@linch-kit/core:build:packages: DTS dist/server.d.ts          19.66 KB
+@linch-kit/core:build:packages: DTS dist/index.d.ts           36.86 KB
+@linch-kit/core:build:packages: DTS dist/cli.d.ts             6.28 KB
+@linch-kit/core:build:packages: DTS dist/index-CdY8GAqO.d.ts  2.69 KB
+@linch-kit/core:build:packages: DTS dist/types-DNBYl0fg.d.ts  26.60 KB
+@linch-kit/core:build:packages: DTS dist/server.d.mts         19.66 KB
+@linch-kit/core:build:packages: DTS dist/index.d.mts          36.86 KB
+@linch-kit/core:build:packages: DTS dist/cli.d.mts            6.28 KB
+@linch-kit/core:build:packages: DTS dist/index-CdY8GAqO.d.mts 2.69 KB
+@linch-kit/core:build:packages: DTS dist/types-DNBYl0fg.d.mts 26.60 KB
+@linch-kit/auth:test: cache hit, replaying logs 8948450999c91fba
+@linch-kit/auth:test: $ bun test
+@linch-kit/auth:test: bun test v1.2.18 (0d4089ea)
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/index.test.ts:
+@linch-kit/auth:test: (pass) auth > should be defined
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/auth-service-integration.test.ts:
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.063Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should authenticate with valid credentials [103.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.166Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should reject invalid credentials [101.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.267Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should validate session with valid token [101.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.369Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should reject invalid session token
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.369Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should refresh token successfully [101.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.471Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should revoke session successfully [101.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.572Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should revoke all user sessions [202.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.775Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.775Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.775Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should get user by ID [1.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.775Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should validate credentials directly
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should be healthy
+@linch-kit/auth:test: (pass) AuthService Integration Tests > MockAuthService > should return correct service type
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.776Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.776Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.776Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > AuthServiceFactory > should create singleton instance
+@linch-kit/auth:test: (pass) AuthService Integration Tests > AuthServiceFactory > should get auth service instance
+@linch-kit/auth:test: (pass) AuthService Integration Tests > AuthServiceFactory > should get health status
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.776Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.776Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > AuthServiceFactory > should update config
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.776Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > AuthServiceFactory > should handle unsupported service type with fallback
+@linch-kit/auth:test: (pass) AuthService Integration Tests > Convenience Functions > should get auth service via convenience function [1.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.776Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > Convenience Functions > should use default config
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.776Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > Error Handling > should handle authentication errors gracefully
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.776Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: (pass) AuthService Integration Tests > Error Handling > should handle expired sessions [101.00ms]
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/trpc/router-factory.test.ts:
+@linch-kit/auth:test: (pass) tRPC Router Factory > 模块导入测试 > should import router factory module [4.00ms]
+@linch-kit/auth:test: (pass) tRPC Router Factory > 模块导入测试 > should have router factory exports
+@linch-kit/auth:test: (pass) tRPC Router Factory > 路由工厂结构 > should validate router factory structure
+@linch-kit/auth:test: (pass) tRPC Router Factory > 路由工厂结构 > should handle router configuration
+@linch-kit/auth:test: (pass) tRPC Router Factory > 认证路由 > should create auth procedures
+@linch-kit/auth:test: (pass) tRPC Router Factory > 认证路由 > should handle auth procedure execution
+@linch-kit/auth:test: (pass) tRPC Router Factory > 权限路由 > should create permission procedures
+@linch-kit/auth:test: (pass) tRPC Router Factory > 权限路由 > should handle permission procedure execution [1.00ms]
+@linch-kit/auth:test: (pass) tRPC Router Factory > 中间件集成 > should handle auth middleware
+@linch-kit/auth:test: (pass) tRPC Router Factory > 中间件集成 > should handle permission middleware
+@linch-kit/auth:test: (pass) tRPC Router Factory > 错误处理 > should handle router creation errors
+@linch-kit/auth:test: (pass) tRPC Router Factory > 错误处理 > should handle procedure errors
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/permissions/casl-engine.test.ts:
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Basic Permission Checking > should check basic user permissions [2.00ms]
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Basic Permission Checking > should grant admin users all permissions
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Basic Permission Checking > should deny unauthorized actions [1.00ms]
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Configuration Tests > should create permission engine with configuration
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Configuration Tests > should handle default configuration
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Basic Permission Operations > should perform basic permission checks
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Basic Permission Operations > should check permissions for different roles
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Error Handling > should handle invalid user objects
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Error Handling > should handle invalid permission actions
+@linch-kit/auth:test: (pass) CASLPermissionEngine > Error Handling > should handle permission check exceptions
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/permissions/enhanced-permission-engine.test.ts:
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/security/jwt-blacklist-manager.test.ts:
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.896Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"test-token-123","reason":"logout","userId":"user-123","msg":"JWT令牌已添加到黑名单"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:04.896Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"test-token-123","msg":"检测到黑名单令牌访问"}
+@linch-kit/auth:test: (pass) JWTBlacklistManager > blacklistToken > 应该成功将令牌添加到黑名单
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.896Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"test-token-456","reason":"security","userId":"user-456","msg":"JWT令牌已添加到黑名单"}
+@linch-kit/auth:test: (pass) JWTBlacklistManager > blacklistToken > 应该记录正确的令牌信息
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.896Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"blacklisted-token","reason":"logout","msg":"JWT令牌已添加到黑名单"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:04.896Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"blacklisted-token","msg":"检测到黑名单令牌访问"}
+@linch-kit/auth:test: (pass) JWTBlacklistManager > isTokenBlacklisted > 应该正确识别黑名单令牌 [1.00ms]
+@linch-kit/auth:test: (pass) JWTBlacklistManager > isTokenBlacklisted > 应该正确识别非黑名单令牌
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.896Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"removable-token","reason":"logout","msg":"JWT令牌已添加到黑名单"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:04.896Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"removable-token","msg":"检测到黑名单令牌访问"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.896Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"removable-token","msg":"JWT令牌已从黑名单移除"}
+@linch-kit/auth:test: (pass) JWTBlacklistManager > removeFromBlacklist > 应该成功从黑名单中移除令牌
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.897Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"expired-token","reason":"logout","msg":"JWT令牌已添加到黑名单"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.897Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"valid-token","reason":"logout","msg":"JWT令牌已添加到黑名单"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.897Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","cleanedCount":1,"msg":"黑名单清理完成"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:04.897Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"valid-token","msg":"检测到黑名单令牌访问"}
+@linch-kit/auth:test: (pass) JWTBlacklistManager > cleanup > 应该清理过期的黑名单条目
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.897Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","jti":"auto-expired-token","reason":"logout","msg":"JWT令牌已添加到黑名单"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:04.949Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-blacklist-manager","cleanedCount":1,"msg":"黑名单清理完成"}
+@linch-kit/auth:test: (pass) JWTBlacklistManager > 自动清理 > 应该自动清理过期的令牌 [101.00ms]
+@linch-kit/auth:test: (pass) InMemoryBlacklistStorage > add and isBlacklisted > 应该正确存储和检索黑名单令牌
+@linch-kit/auth:test: (pass) InMemoryBlacklistStorage > remove > 应该成功移除令牌
+@linch-kit/auth:test: (pass) InMemoryBlacklistStorage > cleanup > 应该清理过期的令牌
+@linch-kit/auth:test: (pass) InMemoryBlacklistStorage > size > 应该返回正确的存储大小 [1.00ms]
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/security/multi-device-session-manager.test.ts:
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.002Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-456","deviceId":"ZGV2aWNlLWZpbmdlcnByaW50LTEyMw","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > createDeviceSession > 应该成功创建设备会话 [1.00ms]
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > createDeviceSession > 应该正确识别移动设备
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.002Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-456","deviceId":"TW96aWxsYS81LjAgKGlQaG9uZTsgQ1BV","deviceType":"mobile","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.003Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-456","deviceId":"TW96aWxsYS81LjAgKGlQYWQ7IENQVSBP","deviceType":"tablet","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > createDeviceSession > 应该正确识别平板设备
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.003Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-1","deviceId":"c2FtZS1kZXZpY2UtZmluZ2VycHJpbnQ","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.003Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-2","deviceId":"c2FtZS1kZXZpY2UtZmluZ2VycHJpbnQ","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > createDeviceSession > 应该为相同设备复用设备ID
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.003Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-1","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.003Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-2","deviceId":"U2FmYXJpIE1vYmlsZToxOTIuMTY4LjEu","deviceType":"mobile","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > getUserDeviceSessions > 应该返回用户的所有设备会话
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.003Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-1","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.005Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-2","deviceId":"U2FmYXJpIE1vYmlsZToxOTIuMTY4LjEu","deviceType":"mobile","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > getUserDeviceSessions > 应该按最后访问时间排序 [3.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.005Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-1","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.005Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-2","deviceId":"U2FmYXJpIE1vYmlsZToxOTIuMTY4LjEu","deviceType":"mobile","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > getUserDevices > 应该返回用户的设备列表
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.006Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-1","deviceId":"c2FtZS1kZXZpY2U","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.006Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-2","deviceId":"c2FtZS1kZXZpY2U","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > getUserDevices > 应该去重相同设备
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.006Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-456","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > revokeDeviceSession > 应该成功撤销设备会话
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.006Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","sessionId":"session-456","userId":"user-123","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","reason":"user_request","msg":"设备会话已撤销"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > revokeDeviceSession > 应该在会话不存在时返回false
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.006Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-1","deviceId":"ZGV2aWNlLTEyMw","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.006Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-2","deviceId":"ZGV2aWNlLTEyMw","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.006Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","sessionId":"session-1","userId":"user-123","deviceId":"ZGV2aWNlLTEyMw","reason":"security","msg":"设备会话已撤销"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.006Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","sessionId":"session-2","userId":"user-123","deviceId":"ZGV2aWNlLTEyMw","reason":"security","msg":"设备会话已撤销"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.006Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","deviceId":"ZGV2aWNlLTEyMw","revokedCount":2,"reason":"security","msg":"设备所有会话已撤销"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > revokeDeviceSessions > 应该撤销设备的所有会话 [1.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.007Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-1","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.007Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-2","deviceId":"U2FmYXJpIE1vYmlsZToxOTIuMTY4LjEu","deviceType":"mobile","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.007Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","sessionId":"session-1","userId":"user-123","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","reason":"security","msg":"设备会话已撤销"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.007Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","sessionId":"session-2","userId":"user-123","deviceId":"U2FmYXJpIE1vYmlsZToxOTIuMTY4LjEu","reason":"security","msg":"设备会话已撤销"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > revokeAllUserSessions > 应该撤销用户的所有设备会话
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.007Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","revokedCount":2,"reason":"security","msg":"用户所有设备会话已撤销"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.007Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-456","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > updateSessionActivity > 应该更新会话活动状态 [2.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.008Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-456","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.008Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","msg":"设备已标记为可信"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > markDeviceAsTrusted > 应该标记设备为可信
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-456","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","msg":"设备已标记为可信"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","msg":"设备信任已取消"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > untrustDevice > 应该取消设备信任
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-1","deviceId":"bGltaXRlZC1kZXZpY2U","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-2","deviceId":"bGltaXRlZC1kZXZpY2U","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","sessionId":"session-1","userId":"user-123","deviceId":"bGltaXRlZC1kZXZpY2U","reason":"device_limit_exceeded","msg":"设备会话已撤销"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-3","deviceId":"bGltaXRlZC1kZXZpY2U","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > 设备和会话限制 > 应该强制执行每个设备的会话限制
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-1","deviceId":"ZGV2aWNlLTE","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-2","deviceId":"ZGV2aWNlLTI","deviceType":"mobile","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-3","deviceId":"ZGV2aWNlLTM","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","sessionId":"session-1","userId":"user-123","deviceId":"ZGV2aWNlLTE","reason":"user_device_limit_exceeded","msg":"设备会话已撤销"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","deviceId":"ZGV2aWNlLTE","revokedCount":1,"reason":"user_device_limit_exceeded","msg":"设备所有会话已撤销"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"session-4","deviceId":"ZGV2aWNlLTQ","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > 设备和会话限制 > 应该强制执行每个用户的设备限制 [1.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"expired-session","deviceId":"Q2hyb21lIERlc2t0b3A6MTkyLjE2OC4x","deviceType":"desktop","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.009Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","userId":"user-123","sessionId":"valid-session","deviceId":"U2FmYXJpIE1vYmlsZToxOTIuMTY4LjEu","deviceType":"mobile","msg":"设备会话创建成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.010Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"multi-device-session-manager","cleanedCount":1,"msg":"设备会话清理完成"}
+@linch-kit/auth:test: (pass) MultiDeviceSessionManager > cleanupExpiredSessions > 应该清理过期的会话
+@linch-kit/auth:test: (pass) InMemoryDeviceSessionStorage > 基本存储操作 > 应该保存和获取设备会话
+@linch-kit/auth:test: (pass) InMemoryDeviceSessionStorage > 基本存储操作 > 应该获取用户的所有设备会话
+@linch-kit/auth:test: (pass) InMemoryDeviceSessionStorage > 基本存储操作 > 应该删除设备会话
+@linch-kit/auth:test: (pass) InMemoryDeviceSessionStorage > 设备信息管理 > 应该保存和获取设备信息
+@linch-kit/auth:test: (pass) InMemoryDeviceSessionStorage > 设备信息管理 > 应该更新设备信息
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/security/rate-limiter.test.ts:
+@linch-kit/auth:test: (pass) RateLimiter > checkLimit > 应该允许在限制内的访问
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.014Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.2","type":"login","remainingAttempts":2,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.014Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.2","type":"login","remainingAttempts":1,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.014Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.2","type":"login","lockedUntil":"2025-07-22T03:37:05.014Z","msg":"用户因频繁失败尝试被锁定"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.014Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.2","type":"login","remainingAttempts":0,"msg":"认证尝试失败"}
+@linch-kit/auth:test: (pass) RateLimiter > checkLimit > 应该正确跟踪尝试次数
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.014Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.3","type":"login","remainingAttempts":2,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.014Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.3","type":"login","remainingAttempts":1,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.014Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.3","type":"login","lockedUntil":"2025-07-22T03:37:05.014Z","msg":"用户因频繁失败尝试被锁定"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.014Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.3","type":"login","remainingAttempts":0,"msg":"认证尝试失败"}
+@linch-kit/auth:test: (pass) RateLimiter > checkLimit > 应该在锁定期间拒绝访问 [1.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.014Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.4","type":"login","msg":"认证尝试成功"}
+@linch-kit/auth:test: (pass) RateLimiter > recordAttempt > 应该正确记录成功的尝试
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.5","type":"login","remainingAttempts":2,"msg":"认证尝试失败"}
+@linch-kit/auth:test: (pass) RateLimiter > recordAttempt > 应该正确记录失败的尝试
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.6","type":"login","remainingAttempts":2,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.6","type":"login","remainingAttempts":1,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.6","type":"login","lockedUntil":"2025-07-22T03:37:05.015Z","msg":"用户因频繁失败尝试被锁定"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.6","type":"login","remainingAttempts":0,"msg":"认证尝试失败"}
+@linch-kit/auth:test: (pass) RateLimiter > recordAttempt > 应该在达到限制时触发锁定
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.7","type":"login","remainingAttempts":2,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.7","type":"login","remainingAttempts":1,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.7","type":"login","msg":"认证尝试成功"}
+@linch-kit/auth:test: (pass) RateLimiter > recordAttempt > 应该在成功后重置计数
+@linch-kit/auth:test: (pass) RateLimiter > getProgressiveDelay > 应该返回正确的渐进式延迟
+@linch-kit/auth:test: (pass) RateLimiter > getProgressiveDelay > 应该在禁用时返回0
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.8","type":"login","remainingAttempts":2,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.8","type":"login","remainingAttempts":1,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.8","type":"login","lockedUntil":"2025-07-22T03:37:05.015Z","msg":"用户因频繁失败尝试被锁定"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.8","type":"login","remainingAttempts":0,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.8","type":"login","msg":"速率限制已清除"}
+@linch-kit/auth:test: (pass) RateLimiter > clearLimit > 应该清除指定标识符的限制
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.9","type":"login","remainingAttempts":2,"msg":"认证尝试失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.015Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"rate-limiter","identifier":"192.168.1.9","type":"password_reset","remainingAttempts":2,"msg":"认证尝试失败"}
+@linch-kit/auth:test: (pass) RateLimiter > 不同类型的限制 > 应该独立跟踪不同类型的尝试 [1.00ms]
+@linch-kit/auth:test: (pass) InMemoryRateLimitStorage > recordAttempt and getAttempts > 应该正确存储和检索尝试记录
+@linch-kit/auth:test: (pass) InMemoryRateLimitStorage > recordAttempt and getAttempts > 应该只返回时间窗口内的尝试
+@linch-kit/auth:test: (pass) InMemoryRateLimitStorage > setLockout and getLockout > 应该正确设置和获取锁定状态
+@linch-kit/auth:test: (pass) InMemoryRateLimitStorage > setLockout and getLockout > 应该在锁定过期时返回null
+@linch-kit/auth:test: (pass) InMemoryRateLimitStorage > clearLockout > 应该清除锁定状态
+@linch-kit/auth:test: (pass) InMemoryRateLimitStorage > cleanup > 应该清理过期的尝试记录
+@linch-kit/auth:test: (pass) rateLimitPresets > 应该包含预设的配置
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/adapters/nextauth-adapter.test.ts:
+@linch-kit/auth:test: (pass) NextAuth Adapter > createLinchKitAuthConfig > should create basic NextAuth config
+@linch-kit/auth:test: (pass) NextAuth Adapter > createLinchKitAuthConfig > should configure custom providers
+@linch-kit/auth:test: (pass) NextAuth Adapter > createLinchKitAuthConfig > should configure session settings
+@linch-kit/auth:test: (pass) NextAuth Adapter > createLinchKitAuthConfig > should configure custom callbacks
+@linch-kit/auth:test: (pass) NextAuth Adapter > createLinchKitAuthConfig > should configure debug mode based on environment
+@linch-kit/auth:test: (pass) NextAuth Adapter > createDefaultLinchKitAuthConfig > should create default configuration
+@linch-kit/auth:test: (pass) NextAuth Adapter > createDefaultLinchKitAuthConfig > should include default credentials provider
+@linch-kit/auth:test: (pass) NextAuth Adapter > createDefaultLinchKitAuthConfig > should enable debug in development environment
+@linch-kit/auth:test: (pass) NextAuth Adapter > createDefaultLinchKitAuthConfig > should disable debug in production environment
+@linch-kit/auth:test: (pass) NextAuth Adapter > Error Handling > should handle invalid configuration gracefully
+@linch-kit/auth:test: (pass) NextAuth Adapter > Error Handling > should handle missing environment variables
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/middleware/permission.middleware.test.ts:
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/extensions/mfa.test.ts:
+@linch-kit/auth:test: Saving TOTP secret for user user-123
+@linch-kit/auth:test: Saving backup codes for user user-123
+@linch-kit/auth:test: (pass) MFAManager > TOTP Management > should generate TOTP secret for user
+@linch-kit/auth:test: Getting TOTP secret for user user-123
+@linch-kit/auth:test: (pass) MFAManager > TOTP Management > should verify TOTP token [1.00ms]
+@linch-kit/auth:test: Getting TOTP secret for user user-123
+@linch-kit/auth:test: (pass) MFAManager > TOTP Management > should reject invalid TOTP token
+@linch-kit/auth:test: (pass) MFAManager > Basic Functionality > should check if MFA is enabled
+@linch-kit/auth:test: (pass) MFAManager > Basic Functionality > should get MFA configuration
+@linch-kit/auth:test: (pass) MFAManager > Configuration Tests > should create MFA manager with different configurations
+@linch-kit/auth:test: (pass) MFAManager > Configuration Tests > should handle default configuration
+@linch-kit/auth:test: (pass) MFAManager > Error Handling > should handle invalid user objects
+@linch-kit/auth:test: (pass) MFAManager > Error Handling > should handle basic errors gracefully
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/extensions/enterprise.test.ts:
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > Configuration > should create instance with default configuration
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > Configuration > should create instance with custom configuration
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > User Access Control > should check user access permissions [1.00ms]
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > User Access Control > should check admin access permissions
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > User Access Control > should validate tenant isolation
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > User Access Control > should deny cross-tenant access
+@linch-kit/auth:test: Verifying MFA for user user-123 with code 123456
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > MFA Integration > should verify MFA
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > MFA Integration > should pass verification when MFA is disabled
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > Configuration Tests > should create enterprise extensions with different configurations
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > Configuration Tests > should handle default configuration
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > Error Handling > should handle invalid user objects
+@linch-kit/auth:test: Verifying MFA for user user-123 with code 123456
+@linch-kit/auth:test: (pass) EnterpriseAuthExtensions > Error Handling > should handle basic errors gracefully
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/services/permission.service.test.ts:
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/services/jwt-auth.service.test.ts:
+@linch-kit/auth:test: (pass) JWTAuthService > 构造函数 > 应该使用有效配置创建实例
+@linch-kit/auth:test: (pass) JWTAuthService > 构造函数 > 应该拒绝空的JWT secret
+@linch-kit/auth:test: (pass) JWTAuthService > 构造函数 > 应该拒绝过短的JWT secret
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.026Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.028Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"ad1cedb1-ee26-483f-80a7-44d32e6805aa","msg":"JWT认证成功"}
+@linch-kit/auth:test: (pass) JWTAuthService > 认证功能 > 应该成功认证有效凭据 [2.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.028Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.028Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","msg":"用户凭据验证失败"}
+@linch-kit/auth:test: (pass) JWTAuthService > 认证功能 > 应该拒绝无效凭据
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.029Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.029Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"2ccf6f0a-c6dc-4097-b6e6-1726d1c6c1e8","msg":"JWT认证成功"}
+@linch-kit/auth:test: (pass) JWTAuthService > 认证功能 > 应该生成有效的JWT访问令牌 [1.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.030Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.030Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"8a5b68d6-2e26-4701-939c-b1e0cc418143","msg":"JWT认证成功"}
+@linch-kit/auth:test: (pass) JWTAuthService > 会话管理 > 应该验证有效的会话令牌
+@linch-kit/auth:test: {"level":"error","time":"2025-07-22T03:32:05.030Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","error":{"message":"invalid token","stack":"Error\n    at <anonymous> (/home/laofahai/workspace/linch-kit/node_modules/jsonwebtoken/verify.js:82:21)\n    at validateSession (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:171:23)\n    at validateSession (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:166:25)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/services/jwt-auth.service.test.ts:181:40)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/services/jwt-auth.service.test.ts:178:22)"},"msg":"会话验证失败"}
+@linch-kit/auth:test: (pass) JWTAuthService > 会话管理 > 应该拒绝无效的会话令牌 [1.00ms]
+@linch-kit/auth:test: {"level":"error","time":"2025-07-22T03:32:05.042Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","error":{"message":"jwt expired","stack":"Error\n    at <anonymous> (/home/laofahai/workspace/linch-kit/node_modules/jsonwebtoken/verify.js:190:25)\n    at getSecret (/home/laofahai/workspace/linch-kit/node_modules/jsonwebtoken/verify.js:97:14)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/node_modules/jsonwebtoken/verify.js:101:10)\n    at validateSession (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:171:23)\n    at validateSession (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:166:25)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/services/jwt-auth.service.test.ts:197:40)\n    at processTicksAndRejections (native:7:39)"},"msg":"会话验证失败"}
+@linch-kit/auth:test: (pass) JWTAuthService > 会话管理 > 应该拒绝过期的会话令牌 [12.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.042Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.043Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"21f104ec-6f18-4f8e-9d1a-76fe6df66279","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.043Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","oldSessionId":"21f104ec-6f18-4f8e-9d1a-76fe6df66279","newSessionId":"b9d8d011-392d-4173-93ac-b158e6056e8f","msg":"令牌刷新成功"}
+@linch-kit/auth:test: (pass) JWTAuthService > 会话管理 > 应该成功刷新有效的令牌
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.043Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","msg":"刷新令牌不存在"}
+@linch-kit/auth:test: (pass) JWTAuthService > 会话管理 > 应该拒绝无效的刷新令牌
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.043Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.043Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"9990b48a-561d-459b-a522-f260b9089cc5","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.044Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","sessionId":"9990b48a-561d-459b-a522-f260b9089cc5","userId":"test-user-id","msg":"会话注销成功"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.044Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","sessionId":"9990b48a-561d-459b-a522-f260b9089cc5","msg":"会话不存在"}
+@linch-kit/auth:test: (pass) JWTAuthService > 会话管理 > 应该成功注销单个会话
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.044Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.044Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"8681b731-67a9-4942-ac74-5562a4eeabab","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.044Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.044Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"f9f0815a-e9f7-42b5-b759-391d88c69d33","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.044Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","revokedCount":2,"msg":"用户所有会话注销成功"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.044Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","sessionId":"8681b731-67a9-4942-ac74-5562a4eeabab","msg":"会话不存在"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.045Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","sessionId":"f9f0815a-e9f7-42b5-b759-391d88c69d33","msg":"会话不存在"}
+@linch-kit/auth:test: (pass) JWTAuthService > 会话管理 > 应该成功注销用户的所有会话 [1.00ms]
+@linch-kit/auth:test: (pass) JWTAuthService > 用户管理 > 应该返回存在的用户信息
+@linch-kit/auth:test: (pass) JWTAuthService > 用户管理 > 应该返回null对于不存在的用户
+@linch-kit/auth:test: (pass) JWTAuthService > 用户管理 > 应该验证正确的凭据
+@linch-kit/auth:test: (pass) JWTAuthService > 用户管理 > 应该拒绝错误的凭据
+@linch-kit/auth:test: (pass) JWTAuthService > 健康检查 > 应该返回健康状态 [1.00ms]
+@linch-kit/auth:test: (pass) JWTAuthService > 健康检查 > 应该检测到不健康状态（无效secret）
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.046Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.046Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"6ddac4c3-73f5-4759-b1ec-d7f5e33445b3","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.046Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.046Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"fc3a8da8-2bc4-4d81-bce7-9bc07d1eeb12","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.046Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.046Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"022af174-5c12-4974-a3c3-0053639b91bb","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.046Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.046Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"576c4927-33b1-4e10-aeb4-d754615e447e","msg":"JWT认证成功"}
+@linch-kit/auth:test: (pass) JWTAuthService > 令牌解析 > 应该正确解析过期时间字符串 [1.00ms]
+@linch-kit/auth:test: (pass) JWTAuthService > 令牌解析 > 应该拒绝无效的过期时间格式
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"04f1634b-7893-4d97-aa87-44960bf605e3","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"34d9e5bd-5182-4ec8-a821-7440bc477fac","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"ea2f91a8-5ab5-454a-981c-2dd3379a44d5","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"f04ed6e2-60a0-4437-93f4-5c70a7d33dd1","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"51bd3034-063f-4931-a1c5-ec6c8f80ab1a","msg":"JWT认证成功"}
+@linch-kit/auth:test: (pass) JWTAuthService > 边界情况 > 应该处理并发会话操作
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","msg":"用户凭据验证失败"}
+@linch-kit/auth:test: (pass) JWTAuthService > 边界情况 > 应该处理空的凭据对象
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.047Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","msg":"用户凭据验证失败"}
+@linch-kit/auth:test: (pass) JWTAuthService > 边界情况 > 应该处理未定义的凭据
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/services/auth-service-factory-jwt.test.ts:
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.049Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","fallbackEnabled":false,"msg":"认证服务已启动: jwt"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > JWT服务创建 > 应该创建JWT认证服务
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.049Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","fallbackEnabled":false,"msg":"认证服务已启动: jwt"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > JWT服务创建 > 应该使用默认配置创建JWT服务
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.050Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","fallbackEnabled":false,"msg":"认证服务已启动: jwt"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > JWT服务创建 > 应该进行JWT服务健康检查
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.050Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","fallbackEnabled":false,"msg":"认证服务已启动: jwt"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.050Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.050Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"6d83af7a-a7f0-49eb-a03b-b1f5bea3526a","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.050Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","operation":"login","status":"success","duration":0,"userId":"test-user-id","sessionId":"6d83af7a-a7f0-49eb-a03b-b1f5bea3526a","authMethod":"credentials","msg":"Auth performance metric recorded"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > JWT服务功能 > 应该通过工厂进行JWT认证 [1.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.050Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","fallbackEnabled":false,"msg":"认证服务已启动: jwt"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.050Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.050Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"e6379aff-5093-4dd9-b00e-398933b38db1","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.050Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","operation":"login","status":"success","duration":0,"userId":"test-user-id","sessionId":"e6379aff-5093-4dd9-b00e-398933b38db1","authMethod":"credentials","msg":"Auth performance metric recorded"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.051Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","operation":"validate_token","status":"success","duration":1,"userId":"test-user-id","sessionId":"e6379aff-5093-4dd9-b00e-398933b38db1","authMethod":"jwt","msg":"Auth performance metric recorded"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > JWT服务功能 > 应该进行JWT会话验证
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.051Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","fallbackEnabled":false,"msg":"认证服务已启动: jwt"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.051Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"credentials","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.051Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"1c93d371-343d-4b63-90b8-2db216253256","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.051Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","operation":"login","status":"success","duration":0,"userId":"test-user-id","sessionId":"1c93d371-343d-4b63-90b8-2db216253256","authMethod":"credentials","msg":"Auth performance metric recorded"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.051Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","oldSessionId":"1c93d371-343d-4b63-90b8-2db216253256","newSessionId":"ccad2e7b-7cc8-4e5e-a876-cdfc4ce03b66","msg":"令牌刷新成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.051Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","operation":"refresh_token","status":"success","duration":0,"userId":"test-user-id","sessionId":"ccad2e7b-7cc8-4e5e-a876-cdfc4ce03b66","authMethod":"jwt","msg":"Auth performance metric recorded"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > JWT服务功能 > 应该进行JWT令牌刷新
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.051Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.051Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","oldType":"jwt","newType":"jwt","msg":"正在切换认证服务: jwt -> jwt"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.052Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","newType":"jwt","msg":"认证服务切换成功: jwt"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > 服务切换 > 应该从Mock切换到JWT服务 [1.00ms]
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.052Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","fallbackEnabled":true,"msg":"认证服务已启动: jwt"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.052Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","oldType":"jwt","newType":"mock","msg":"正在切换认证服务: jwt -> mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.052Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","newType":"mock","msg":"认证服务切换成功: mock"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > 服务切换 > 应该从JWT切换到Mock服务
+@linch-kit/auth:test: {"level":"error","time":"2025-07-22T03:32:05.052Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","error":{"message":"JWT secret must be at least 32 characters long","stack":"Error: JWT secret must be at least 32 characters long\n    at validateConfig (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:70:17)\n    at new JWTAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:59:10)\n    at createAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:239:23)\n    at createAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:168:35)\n    at getAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:79:40)\n    at getAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:73:49)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/services/auth-service-factory-jwt.test.ts:216:28)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/services/auth-service-factory-jwt.test.ts:206:22)"},"msg":"认证服务启动失败"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > 错误处理 > 应该处理JWT配置错误
+@linch-kit/auth:test: {"level":"error","time":"2025-07-22T03:32:05.052Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","error":{"message":"JWT secret must be at least 32 characters long","stack":"Error: JWT secret must be at least 32 characters long\n    at validateConfig (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:70:17)\n    at new JWTAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:59:10)\n    at createAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:239:23)\n    at createAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:168:35)\n    at getAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:79:40)\n    at getAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:73:49)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/services/auth-service-factory-jwt.test.ts:229:37)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/services/auth-service-factory-jwt.test.ts:219:29)"},"msg":"认证服务启动失败"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.052Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","originalType":"jwt","fallbackType":"mock","msg":"启用认证服务回退机制，使用Mock实现"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > 错误处理 > 应该在JWT失败时回退到Mock服务 [1.00ms]
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > 配置管理 > 应该更新JWT配置
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.052Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":true,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.052Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","oldType":"jwt","newType":"jwt","msg":"正在切换认证服务: jwt -> jwt"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.053Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","newType":"jwt","msg":"认证服务切换成功: jwt"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > 配置管理 > 应该在配置更新时重新创建服务
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.053Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"jwt","fallbackEnabled":false,"msg":"认证服务已启动: jwt"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > 服务缓存 > 应该缓存JWT服务实例
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.053Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","serviceType":"mock","fallbackEnabled":false,"msg":"认证服务已启动: mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.053Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","oldType":"mock","newType":"jwt","msg":"正在切换认证服务: mock -> jwt"}
+@linch-kit/auth:test: {"level":"error","time":"2025-07-22T03:32:05.053Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","targetType":"jwt","error":{"message":"JWT secret is required","stack":"Error: JWT secret is required\n    at validateConfig (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:67:17)\n    at new JWTAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:59:10)\n    at createAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:239:23)\n    at createAuthService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:168:35)\n    at switchService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:118:37)\n    at switchService (/home/laofahai/workspace/linch-kit/packages/auth/src/services/auth-service-factory.ts:110:23)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/services/auth-service-factory-jwt.test.ts:318:21)\n    at processTicksAndRejections (native:7:39)"},"msg":"认证服务切换失败: jwt"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.053Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","currentType":"mock","msg":"保持当前认证服务不变"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.053Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","oldType":"mock","newType":"mock","msg":"正在切换认证服务: mock -> mock"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.053Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"auth-service-factory","newType":"mock","msg":"认证服务切换成功: mock"}
+@linch-kit/auth:test: (pass) AuthServiceFactory JWT集成 > 服务缓存 > 应该在服务切换时使用缓存
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/monitoring/auth-performance-monitor.test.ts:
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > recordAuthMetric > should record auth metric with all required fields
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > recordAuthMetric > should record auth metric with error status
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > recordAuthMetric > should handle minimal metric data
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > startAuthTimer > should create auth timer with operation and metadata
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > startAuthTimer > should create auth timer without metadata
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > AuthPerformanceTimer > should complete timer with success [11.00ms]
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > AuthPerformanceTimer > should complete timer with failure
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > AuthPerformanceTimer > should complete timer with error
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > getAuthPerformanceStats > should return auth performance statistics [1.00ms]
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > getAuthPerformanceStats > should calculate operation statistics correctly [1.00ms]
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > getTopErrors > should return top errors by count
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > getTopErrors > should limit results to specified count
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > getSlowOperations > should return slow operations above threshold [1.00ms]
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > getSlowOperations > should sort by average duration descending
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > cleanup > should clean up expired metrics
+@linch-kit/auth:test: (pass) createAuthPerformanceMonitor > should create auth performance monitor with logger
+@linch-kit/auth:test: (pass) createAuthPerformanceMonitor > should create auth performance monitor without logger
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/__tests__/monitoring/monitoring-integration.test.ts:
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.072Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.072Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"74ed4d48-c7ce-4843-bc03-1090009e9b55","msg":"JWT认证成功"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > JWT Authentication with Monitoring > should record successful login metrics
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.072Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.072Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","msg":"用户凭据验证失败"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > JWT Authentication with Monitoring > should record failed login metrics
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.072Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.072Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"82cd2309-0c8a-473c-b652-f76830a3db89","msg":"JWT认证成功"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > JWT Authentication with Monitoring > should record token validation metrics
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.073Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.073Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"1a144f87-4b0a-4efd-b088-2bef81a4523c","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.073Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","oldSessionId":"1a144f87-4b0a-4efd-b088-2bef81a4523c","newSessionId":"1e8eed1b-78d7-4ed3-b70b-02766f39d926","msg":"令牌刷新成功"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > JWT Authentication with Monitoring > should record token refresh metrics
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.073Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.073Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"6d271fd1-70a9-4c60-8f67-8a8a8c621ffd","msg":"JWT认证成功"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.073Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","sessionId":"6d271fd1-70a9-4c60-8f67-8a8a8c621ffd","userId":"test-user-id","msg":"会话注销成功"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > JWT Authentication with Monitoring > should record session revocation metrics [1.00ms]
+@linch-kit/auth:test: {"level":"error","time":"2025-07-22T03:32:05.073Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","error":{"message":"invalid token","stack":"Error\n    at <anonymous> (/home/laofahai/workspace/linch-kit/node_modules/jsonwebtoken/verify.js:82:21)\n    at validateSession (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:171:23)\n    at validateSession (/home/laofahai/workspace/linch-kit/packages/auth/src/services/jwt-auth.service.ts:166:25)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/monitoring/monitoring-integration.test.ts:228:41)\n    at <anonymous> (/home/laofahai/workspace/linch-kit/packages/auth/src/__tests__/monitoring/monitoring-integration.test.ts:225:62)"},"msg":"会话验证失败"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > JWT Authentication with Monitoring > should record metrics for invalid token validation
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.074Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","msg":"刷新令牌不存在"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > JWT Authentication with Monitoring > should record metrics for invalid refresh token
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.074Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.074Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"adc59a5e-31a7-4b32-9f07-12060a684536","msg":"JWT认证成功"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > Performance Metrics Collection > should collect timing data for authentication operations
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.074Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.074Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","userId":"test-user-id","sessionId":"e5b5385e-f87b-4d28-9cb3-7093133f8d27","msg":"JWT认证成功"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > Performance Metrics Collection > should include user and session context in metrics
+@linch-kit/auth:test: {"level":"info","time":"2025-07-22T03:32:05.074Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","hasCredentials":true,"msg":"JWT认证开始"}
+@linch-kit/auth:test: {"level":"warn","time":"2025-07-22T03:32:05.074Z","pid":814997,"hostname":"ian-ser","name":"linchkit-core","service":"jwt-auth-service","provider":"jwt","msg":"用户凭据验证失败"}
+@linch-kit/auth:test: (pass) Monitoring Integration Tests > Performance Metrics Collection > should handle authentication errors gracefully [1.00ms]
+@linch-kit/auth:test: 
+@linch-kit/auth:test: src/monitoring/__tests__/auth-performance-monitor.test.ts:
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should create monitor with logger
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should record auth metric
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should record error metric
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should get auth performance stats
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should start auth timer
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should cleanup old metrics
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should get top errors
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should get slow operations
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should handle cleanup errors gracefully [1.00ms]
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should calculate operation stats correctly
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor > should calculate auth method stats correctly
+@linch-kit/auth:test: (pass) AuthPerformanceTimer > should create timer with correct properties
+@linch-kit/auth:test: (pass) AuthPerformanceTimer > should record success metric
+@linch-kit/auth:test: (pass) AuthPerformanceTimer > should record failure metric
+@linch-kit/auth:test: (pass) AuthPerformanceTimer > should record error metric
+@linch-kit/auth:test: (pass) AuthPerformanceTimer > should calculate duration correctly [11.00ms]
+@linch-kit/auth:test: (pass) createAuthPerformanceMonitor > should create monitor instance
+@linch-kit/auth:test: (pass) createAuthPerformanceMonitor > should create monitor without logger
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor edge cases > should handle empty metrics buffer
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor edge cases > should handle metrics without auth method [1.00ms]
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor edge cases > should handle zero duration metrics
+@linch-kit/auth:test: (pass) AuthPerformanceMonitor edge cases > should handle cleanup of empty buffer
+@linch-kit/auth:test: 
+@linch-kit/auth:test:  214 pass
+@linch-kit/auth:test:  0 fail
+@linch-kit/auth:test:  506 expect() calls
+@linch-kit/auth:test: Ran 214 tests across 18 files. [1175.00ms]
+
+ Tasks:    2 successful, 2 total
+Cached:    2 cached, 2 total
+  Time:    168ms >>> FULL TURBO
+

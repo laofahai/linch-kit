@@ -81,7 +81,7 @@ export class ExtensionPerformanceAnalyzer {
   ) {
     this.config = { ...defaultPerformanceConfig, ...config }
     this.performanceMonitor = performanceMonitor || 
-      (extensionManager as any).getPerformanceMonitor?.() || 
+      (extensionManager as unknown as { getPerformanceMonitor?: () => ExtensionPerformanceMonitor }).getPerformanceMonitor?.() || 
       new ExtensionPerformanceMonitor()
   }
 
@@ -300,7 +300,7 @@ export class ExtensionPerformanceAnalyzer {
       
       // 限制在合理范围内
       return Math.min(Math.max(cpuEstimate, 0), 100)
-    } catch (error) {
+    } catch {
       return 0
     }
   }

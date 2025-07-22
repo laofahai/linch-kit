@@ -1,0 +1,65 @@
+{
+  "id": "test-session-001-1753175816898-xyxxetw34",
+  "timestamp": "2025-07-22T09:16:56.898Z",
+  "state": "ANALYZE",
+  "context": {
+    "sessionId": "test-session-001",
+    "taskDescription": "Test task implementation",
+    "currentState": "ANALYZE",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-22T09:16:56.895Z",
+      "lastUpdated": "2025-07-22T09:16:56.896Z",
+      "automationLevel": "semi_auto",
+      "priority": "high",
+      "category": "development",
+      "tags": [
+        "testing",
+        "ai-workflow"
+      ],
+      "assignee": "claude"
+    },
+    "analysis": {
+      "approach": "",
+      "confidence": 0,
+      "estimatedHours": 0,
+      "complexity": 1,
+      "risks": [],
+      "dependencies": [],
+      "feasibilityScore": 0,
+      "resourceRequirements": {}
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-22T09:16:56.895Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:16:56.895Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "FAILED",
+        "timestamp": "2025-07-22T09:16:56.896Z",
+        "action": "FAIL",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:16:56.896Z",
+        "action": "RETRY",
+        "by": "system",
+        "automaticTransition": false
+      }
+    ]
+  },
+  "trigger": "manual",
+  "description": "Manual test snapshot"
+}

@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, type ReactNode } from 'react'
+
 import type { StarterConfig } from '../types'
 
 interface StarterContextValue {

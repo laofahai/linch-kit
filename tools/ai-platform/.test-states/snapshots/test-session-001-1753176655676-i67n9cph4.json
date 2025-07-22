@@ -1,0 +1,341 @@
+{
+  "id": "test-session-001-1753176655676-i67n9cph4",
+  "timestamp": "2025-07-22T09:30:55.676Z",
+  "state": "PAUSED",
+  "context": {
+    "sessionId": "test-session-001",
+    "taskDescription": "Test task implementation",
+    "currentState": "PAUSED",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-22T09:30:24.713Z",
+      "lastUpdated": "2025-07-22T09:30:54.716Z",
+      "automationLevel": "semi_auto",
+      "priority": "high",
+      "category": "development",
+      "tags": [
+        "testing",
+        "ai-workflow"
+      ],
+      "assignee": "claude"
+    },
+    "analysis": {
+      "approach": "",
+      "confidence": 0,
+      "estimatedHours": 0,
+      "complexity": 1,
+      "risks": [],
+      "dependencies": [],
+      "feasibilityScore": 0,
+      "resourceRequirements": {}
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-22T09:30:24.713Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.713Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.713Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.713Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.714Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.714Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.714Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.715Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.715Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.715Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.715Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.716Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.716Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.716Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.716Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.717Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.717Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.717Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.720Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.721Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.721Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.721Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.722Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.722Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.722Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.723Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.723Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.724Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.724Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.725Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.725Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.725Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.725Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.726Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.727Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.728Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.729Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.729Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.729Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.730Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:24.730Z",
+        "action": "PAUSE",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.732Z",
+        "action": "RESUME",
+        "by": "system",
+        "automaticTransition": false
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:54.716Z",
+        "action": "PAUSE",
+        "by": "system",
+        "metadata": {
+          "reason": "State timeout"
+        },
+        "automaticTransition": false
+      }
+    ]
+  },
+  "trigger": "error",
+  "description": "State timeout: ANALYZE"
+}

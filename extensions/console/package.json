@@ -66,9 +66,9 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "test": "bun test",
-    "test:watch": "bun test --watch",
-    "test:coverage": "bun test --coverage",
+    "test": "bun test --preload=./src/test/react-19-fix.ts --preload=./src/test/test-setup.ts",
+    "test:watch": "bun test --watch --preload=./src/test/react-19-fix.ts --preload=./src/test/test-setup.ts",
+    "test:coverage": "bun test --coverage --preload=./src/test/react-19-fix.ts --preload=./src/test/test-setup.ts",
     "clean": "rm -rf dist .turbo node_modules"
   },
   "dependencies": {

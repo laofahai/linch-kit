@@ -1,0 +1,331 @@
+{
+  "sessionId": "test-session-001",
+  "taskDescription": "Test task implementation",
+  "currentState": "ANALYZE",
+  "metadata": {
+    "version": "3.0.0",
+    "startTime": "2025-07-22T09:31:00.828Z",
+    "lastUpdated": "2025-07-22T09:31:00.865Z",
+    "automationLevel": "semi_auto",
+    "priority": "high",
+    "category": "development",
+    "tags": [
+      "testing",
+      "ai-workflow"
+    ],
+    "assignee": "claude"
+  },
+  "snapshots": [],
+  "stateHistory": [
+    {
+      "state": "INIT",
+      "timestamp": "2025-07-22T09:31:00.828Z",
+      "action": "INITIALIZE",
+      "by": "system",
+      "automaticTransition": true
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.828Z",
+      "action": "START_ANALYSIS",
+      "by": "system",
+      "automaticTransition": true
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.828Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.829Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.829Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.829Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.830Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.830Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.831Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.831Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.831Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.832Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.832Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.832Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.834Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.835Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.842Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.842Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.843Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.844Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.845Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.845Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.845Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.846Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.846Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.846Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.847Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.847Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.847Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.848Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.848Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.849Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.849Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.849Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.851Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.851Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.860Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.861Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.861Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.861Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "PAUSED",
+      "timestamp": "2025-07-22T09:31:00.864Z",
+      "action": "PAUSE",
+      "by": "system",
+      "automaticTransition": false
+    },
+    {
+      "state": "ANALYZE",
+      "timestamp": "2025-07-22T09:31:00.865Z",
+      "action": "RESUME",
+      "by": "system",
+      "automaticTransition": false
+    }
+  ],
+  "analysis": {
+    "approach": "",
+    "confidence": 0,
+    "estimatedHours": 0,
+    "complexity": 1,
+    "risks": [],
+    "dependencies": [],
+    "feasibilityScore": 0,
+    "resourceRequirements": {}
+  },
+  "pauseInfo": {
+    "pausedAt": "2025-07-22T09:31:00.828Z",
+    "pausedBy": "system",
+    "reason": "Manual pause",
+    "previousState": "ANALYZE"
+  }
+}

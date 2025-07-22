@@ -143,7 +143,7 @@ describe('JWTAuthService', () => {
       expect(result.tokens?.accessToken).toBeDefined()
 
       // 验证JWT令牌格式和内容
-      const decoded = verify(result.tokens!.accessToken, defaultJWTAuthServiceConfig.jwtSecret)
+      const decoded = verify(result.tokens!.accessToken, 'test-secret-key-for-unit-tests-at-least-32-chars')
       expect(decoded).toBeDefined()
       expect(typeof decoded).toBe('object')
       
@@ -187,7 +187,7 @@ describe('JWTAuthService', () => {
       // 创建一个立即过期的令牌
       const expiredToken = sign(
         { sub: 'test-user-id', jti: 'test-session-id' },
-        defaultJWTAuthServiceConfig.jwtSecret,
+        'test-secret-key-for-unit-tests-at-least-32-chars',
         { expiresIn: '1ms' }
       )
 
@@ -382,6 +382,7 @@ describe('JWTAuthService', () => {
         
         const service = new JWTAuthService({
           ...defaultJWTAuthServiceConfig,
+          jwtSecret: 'test-secret-key-for-unit-tests-at-least-32-chars',
           accessTokenExpiry: config.expiry
         }, isolatedPerfMonitor)
 
@@ -413,6 +414,7 @@ describe('JWTAuthService', () => {
       expect(() => {
         new JWTAuthService({
           ...defaultJWTAuthServiceConfig,
+          jwtSecret: 'test-secret-key-for-unit-tests-at-least-32-chars',
           accessTokenExpiry: 'invalid-format'
         }, isolatedPerfMonitor)
       }).toThrow('Invalid expiry format')

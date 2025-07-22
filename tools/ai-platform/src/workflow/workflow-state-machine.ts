@@ -756,12 +756,32 @@ export class WorkflowStateMachine {
 
     // 执行状态转换
     const previousState = this.context.currentState
-    this.context.currentState = selectedTransition.to
+    
+    // 动态确定目标状态（用于RESUME和RETRY）
+    let targetState = selectedTransition.to
+    if (action === 'RESUME' && this.context.pauseInfo) {
+      targetState = this.context.pauseInfo.previousState
+    } else if (action === 'RETRY' && this.context.failureInfo) {
+      // 找到失败前的状态（从状态历史中获取失败前的最后一个状态）
+      const failureTime = new Date(this.context.failureInfo.failedAt)
+      const preFailureStates = this.context.stateHistory.filter(
+        h => new Date(h.timestamp) < failureTime && h.state !== 'FAILED'
+      )
+      if (preFailureStates.length > 0) {
+        targetState = preFailureStates[preFailureStates.length - 1].state
+      }
+      
+      // 增加恢复尝试次数
+      this.context.failureInfo.recoveryAttempts += 1
+      this.context.failureInfo.lastRecoveryAt = new Date().toISOString()
+    }
+    
+    this.context.currentState = targetState
     this.context.metadata.lastUpdated = new Date().toISOString()
 
     // 记录状态历史
     this.context.stateHistory.push({
-      state: selectedTransition.to,
+      state: targetState,
       timestamp: this.context.metadata.lastUpdated,
       action,
       by: metadata?.by as string || 'system',
@@ -769,7 +789,7 @@ export class WorkflowStateMachine {
       automaticTransition: selectedTransition.automaticTrigger
     })
 
-    logger.info(`State transition: ${previousState} -> ${selectedTransition.to} (${action})`)
+    logger.info(`State transition: ${previousState} -> ${targetState} (${action})`)
 
     // 设置状态超时（如果定义了）
     if (selectedTransition.timeout) {
@@ -777,7 +797,7 @@ export class WorkflowStateMachine {
     }
 
     // 执行状态特定的操作
-    await this.onStateEnter(selectedTransition.to, metadata)
+    await this.onStateEnter(targetState, metadata)
 
     // 持久化状态
     await this.persistence.save(this.context)
@@ -1065,6 +1085,114 @@ export class WorkflowStateMachine {
     this.context.analysis = analysis
     this.context.metadata.lastUpdated = new Date().toISOString()
     logger.info(`Analysis updated: approach=${analysis.approach}, complexity=${analysis.complexity}/5`)
+  }
+
+  /**
+   * 更新规划数据
+   */
+  updatePlanning(planning: {
+    startedAt?: string
+    milestones: Array<{
+      id: string
+      name: string
+      description: string
+      estimatedDuration: number
+      dependencies: string[]
+      status: 'pending' | 'in_progress' | 'completed' | 'blocked'
+    }>
+    resourceAllocation?: {
+      timeSlots: Array<{
+        start: string
+        end: string
+        assignee: string
+        task: string
+      }>
+    }
+    riskMitigation?: Array<{
+      risk: string
+      likelihood: number
+      impact: number
+      mitigation: string
+      contingency?: string
+    }>
+  }): void {
+    this.context.planning = {
+      startedAt: planning.startedAt || new Date().toISOString(),
+      milestones: planning.milestones,
+      resourceAllocation: planning.resourceAllocation || { timeSlots: [] },
+      riskMitigation: planning.riskMitigation || []
+    }
+    this.context.metadata.lastUpdated = new Date().toISOString()
+  }
+
+  /**
+   * 更新测试数据
+   */
+  updateTesting(testing: {
+    testSuites: Array<{
+      name: string
+      type: 'unit' | 'integration' | 'e2e' | 'performance' | 'security'
+      status: 'pending' | 'running' | 'passed' | 'failed'
+      results?: {
+        passed: number
+        failed: number
+        skipped: number
+        coverage?: number
+      }
+    }>
+    qualityMetrics: {
+      codeQuality: number
+      performance: number
+      security: number
+      maintainability: number
+    }
+  }): void {
+    this.context.testing = {
+      startedAt: new Date().toISOString(),
+      testSuites: testing.testSuites,
+      qualityMetrics: testing.qualityMetrics
+    }
+    this.context.metadata.lastUpdated = new Date().toISOString()
+  }
+
+  /**
+   * 更新审查数据
+   */
+  updateReview(review: {
+    reviewers: string[]
+    checklistItems: Array<{
+      category: 'code' | 'documentation' | 'testing' | 'security' | 'performance'
+      item: string
+      status: 'pending' | 'approved' | 'rejected'
+      comment?: string
+      reviewer?: string
+    }>
+    approvalStatus: 'pending' | 'approved' | 'rejected' | 'conditional'
+    finalComments?: string
+  }): void {
+    this.context.review = {
+      startedAt: new Date().toISOString(),
+      reviewers: review.reviewers,
+      checklistItems: review.checklistItems,
+      approvalStatus: review.approvalStatus,
+      finalComments: review.finalComments
+    }
+    this.context.metadata.lastUpdated = new Date().toISOString()
+  }
+
+  /**
+   * 更新失败信息
+   */
+  updateFailureInfo(failureInfo: {
+    failedAt: string
+    failureReason: string
+    errorDetails: any
+    recoveryAttempts: number
+    recoveryStrategy?: 'retry' | 'rollback' | 'manual' | 'skip'
+    lastRecoveryAt?: string
+  }): void {
+    this.context.failureInfo = failureInfo
+    this.context.metadata.lastUpdated = new Date().toISOString()
   }
 
   /**

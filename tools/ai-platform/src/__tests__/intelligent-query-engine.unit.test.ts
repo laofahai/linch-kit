@@ -5,12 +5,17 @@
  */
 
 import { describe, it, expect, beforeEach, mock } from 'bun:test'
-import { IntelligentQueryEngine } from '../.*'
+import { IntelligentQueryEngine } from '../query/intelligent-query-engine.js'
 
 // Mock Neo4j服务
 const mockNeo4jService = {
   connect: mock(() => Promise.resolve()),
   disconnect: mock(() => Promise.resolve()),
+  getStats: mock(() => Promise.resolve({
+    nodeCount: 100,
+    relationshipCount: 200,
+    labelCounts: { Function: 50, Class: 30 }
+  })),
   query: mock(() => Promise.resolve({
     records: [],
     nodes: [],
@@ -44,6 +49,7 @@ mock.module('../core/graph/neo4j-service.js', () => ({
     async connect() { return mockNeo4jService.connect() }
     async disconnect() { return mockNeo4jService.disconnect() }
     async query() { return mockNeo4jService.query() }
+    async getStats() { return mockNeo4jService.getStats() }
     isConnected() { return mockNeo4jService.isConnected() }
   }
 }))
@@ -429,6 +435,215 @@ describe('IntelligentQueryEngine Unit Tests', () => {
       expect(Array.isArray(result.results.relationships)).toBe(true)
       expect(Array.isArray(result.results.suggestions)).toBe(true)
       expect(typeof result.results.explanation).toBe('string')
+    })
+  })
+
+  describe('附加查询意图覆盖', () => {
+    beforeEach(async () => {
+      await queryEngine.connect()
+    })
+
+    it('应该生成接口查询', async () => {
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find interface UserInterface')
+      expect(result.intent).toBeDefined()
+      expect(result.confidence).toBeGreaterThan(0)
+    })
+
+    it('应该生成依赖关系查询', async () => {
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find depends on UserService')
+      expect(result.intent).toBeDefined()
+      expect(result.cypher_query).toBeDefined()
+    })
+
+    it('应该生成使用情况查询', async () => {
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find usage of createLogger')
+      expect(result.intent).toBeDefined()
+      expect(result.cypher_query).toBeDefined()
+    })
+
+    it('应该生成相关代码查询', async () => {
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find related to UserService')
+      expect(result.intent).toBeDefined()
+      expect(result.cypher_query).toBeDefined()
+    })
+
+    it('应该生成路径查询', async () => {
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find path from UserService to createLogger')
+      expect(result.intent).toBeDefined()
+      expect(result.cypher_query).toBeDefined()
+    })
+  })
+
+  describe('获取统计信息', () => {
+    it('应该获取知识图谱统计信息', async () => {
+      await queryEngine.connect()
+      mockNeo4jService.getStats.mockResolvedValueOnce({
+        nodeCount: 100,
+        relationshipCount: 200,
+        labelCounts: { Function: 50, Class: 30 }
+      })
+      
+      const stats = await queryEngine.getStats()
+      expect(stats).toBeDefined()
+      expect(stats.nodeCount).toBe(100)
+    })
+
+    it('未连接时获取统计信息应该抛出错误', async () => {
+      const disconnectedEngine = new IntelligentQueryEngine()
+      
+      await expect(disconnectedEngine.getStats()).rejects.toThrow('查询引擎未连接到知识图谱')
+    })
+  })
+
+  describe('断开连接边界情况', () => {
+    it('已断开连接时再次断开应该正常处理', async () => {
+      await queryEngine.disconnect()
+      await queryEngine.disconnect() // Should not throw
+      
+      expect(queryEngine['neo4jService']).toBeNull()
+    })
+
+    it('未连接状态下断开连接应该正常处理', async () => {
+      const newEngine = new IntelligentQueryEngine()
+      await newEngine.disconnect() // Should not throw
+      
+      expect(newEngine['neo4jService']).toBeNull()
+    })
+  })
+
+  describe('查询生成边界情况', () => {
+    beforeEach(async () => {
+      await queryEngine.connect()
+    })
+
+    it('应该处理空实体的接口查询', async () => {
+      mockHybridAIManager.analyze.mockResolvedValueOnce({
+        success: true,
+        content: 'find_interface',
+        metadata: { provider: 'rules', executionTime: 50 }
+      })
+      
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find interface')
+      expect(result.intent).toBe('find_interface')
+      expect(result.cypher_query).toContain('Interface')
+    })
+
+    it('应该处理空实体的依赖关系查询', async () => {
+      mockHybridAIManager.analyze.mockResolvedValueOnce({
+        success: true,
+        content: 'find_dependencies',
+        metadata: { provider: 'rules', executionTime: 50 }
+      })
+      
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find depends')
+      expect(result.intent).toBe('find_dependencies')
+      expect(result.cypher_query).toContain('DEPENDS_ON')
+    })
+
+    it('应该处理空实体的使用情况查询', async () => {
+      mockHybridAIManager.analyze.mockResolvedValueOnce({
+        success: true,
+        content: 'find_usage',
+        metadata: { provider: 'rules', executionTime: 50 }
+      })
+      
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find usage')
+      expect(result.intent).toBe('find_usage')
+      expect(result.cypher_query).toContain('USES')
+    })
+
+    it('应该处理空实体的相关代码查询', async () => {
+      mockHybridAIManager.analyze.mockResolvedValueOnce({
+        success: true,
+        content: 'find_related',
+        metadata: { provider: 'rules', executionTime: 50 }
+      })
+      
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find related')
+      expect(result.intent).toBe('find_related')
+      expect(result.cypher_query).toContain('[r*1..2]')
+    })
+
+    it('应该处理少于2个实体的路径查询', async () => {
+      mockHybridAIManager.analyze.mockResolvedValueOnce({
+        success: true,
+        content: 'analyze_path',
+        metadata: { provider: 'rules', executionTime: 50 }
+      })
+      
+      mockNeo4jService.query.mockResolvedValueOnce({
+        records: [],
+        nodes: [],
+        relationships: [],
+        metadata: { query_time_ms: 50 }
+      })
+
+      const result = await queryEngine.query('find path from UserService')
+      expect(result.intent).toBe('analyze_path')
+      expect(result.cypher_query).toContain('shortestPath')
     })
   })
 })

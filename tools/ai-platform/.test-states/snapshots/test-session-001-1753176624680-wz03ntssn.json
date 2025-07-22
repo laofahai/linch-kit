@@ -1,0 +1,64 @@
+{
+  "id": "test-session-001-1753176624680-wz03ntssn",
+  "timestamp": "2025-07-22T09:30:24.680Z",
+  "state": "PLAN",
+  "context": {
+    "sessionId": "test-session-001",
+    "taskDescription": "Test task implementation",
+    "currentState": "PLAN",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-22T09:30:24.678Z",
+      "lastUpdated": "2025-07-22T09:30:24.679Z",
+      "automationLevel": "semi_auto",
+      "priority": "high",
+      "category": "development",
+      "tags": [
+        "testing",
+        "ai-workflow"
+      ],
+      "assignee": "claude"
+    },
+    "analysis": {
+      "approach": "test",
+      "confidence": 75,
+      "estimatedHours": 3,
+      "complexity": 2,
+      "risks": [],
+      "dependencies": []
+    },
+    "planning": {
+      "startedAt": "2025-07-22T09:30:24.679Z",
+      "milestones": [],
+      "resourceAllocation": {
+        "timeSlots": []
+      },
+      "riskMitigation": []
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-22T09:30:24.678Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:24.678Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "PLAN",
+        "timestamp": "2025-07-22T09:30:24.679Z",
+        "action": "COMPLETE_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      }
+    ]
+  },
+  "trigger": "automatic",
+  "description": "Backup before restore from test-session-001-1753176624679-1aufmvkmf"
+}

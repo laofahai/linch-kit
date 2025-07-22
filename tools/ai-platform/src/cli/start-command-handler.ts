@@ -140,6 +140,9 @@ export class StartCommandHandler {
         throw new Error(`❌ 违规: 禁止在保护分支 '${projectInfo.branch}' 工作。请切换到功能分支。`)
       }
 
+      // 步骤2.5: 🚨 强制检查包管理器 - 仅允许 bun
+      await this.enforceBunPackageManager()
+
       // 步骤3: 系统组件状态检查
       await this.checkSystemComponentsStatus()
 
@@ -378,6 +381,90 @@ export class StartCommandHandler {
         error: errorMessage,
         executionTime: Date.now() - startTime
       }
+    }
+  }
+
+  /**
+   * 🚨 强制检查包管理器 - 仅允许 bun
+   * LinchKit 项目强制要求使用 bun 作为唯一包管理器
+   */
+  private async enforceBunPackageManager(): Promise<void> {
+    logger.info('🚨 开始包管理器强制检查 - LinchKit要求仅使用bun')
+    
+    try {
+      // 检查当前使用的包管理器
+      const { stdout: bunVersion } = await execAsync('bun --version')
+      logger.info(`✅ 检测到 bun 版本: ${bunVersion.trim()}`)
+      
+      if (this.visualizer) {
+        this.visualizer.updateComponentStatus('Package Manager', 'connected', 
+          `bun v${bunVersion.trim()} - 符合LinchKit要求`)
+      }
+
+      // 检查并警告其他包管理器的存在
+      const otherManagers = ['npm', 'yarn', 'pnpm']
+      const warnings: string[] = []
+
+      for (const manager of otherManagers) {
+        try {
+          await execAsync(`which ${manager}`)
+          warnings.push(`⚠️ 检测到 ${manager}，但LinchKit项目仅允许使用 bun`)
+        } catch {
+          // 没有安装该包管理器，这是好的
+        }
+      }
+
+      if (warnings.length > 0) {
+        logger.warn('包管理器兼容性警告:', warnings.join('\n'))
+        if (this.visualizer) {
+          this.visualizer.logProgress(`⚠️ 发现其他包管理器，请确保仅使用 bun`)
+        }
+      }
+
+      // 检查 lock 文件
+      const fs = await import('fs/promises')
+      const path = await import('path')
+      
+      const lockFiles = [
+        { file: 'package-lock.json', manager: 'npm' },
+        { file: 'yarn.lock', manager: 'yarn' },
+        { file: 'pnpm-lock.yaml', manager: 'pnpm' }
+      ]
+
+      for (const { file, manager } of lockFiles) {
+        try {
+          await fs.access(path.join(process.cwd(), file))
+          throw new Error(
+            `❌ 违规: 检测到 ${file}！LinchKit项目强制要求仅使用 bun。\n` +
+            `请删除 ${file} 并运行 'bun install' 生成 bun.lockb`
+          )
+        } catch (error: unknown) {
+          if (error instanceof Error && error.message.includes('违规')) {
+            throw error
+          }
+          // 文件不存在，这是好的
+        }
+      }
+
+      // 检查 bun.lockb 是否存在
+      try {
+        await fs.access(path.join(process.cwd(), 'bun.lockb'))
+        logger.info('✅ 检测到 bun.lockb - 符合LinchKit包管理器要求')
+      } catch {
+        logger.warn('⚠️ 未检测到 bun.lockb，建议运行 bun install')
+      }
+
+      logger.info('✅ 包管理器强制检查通过 - bun 是唯一允许的包管理器')
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('违规')) {
+        throw error
+      }
+      
+      throw new Error(
+        `❌ 包管理器检查失败: bun 未正确安装或配置。\n` +
+        `LinchKit项目强制要求使用 bun 作为包管理器。\n` +
+        `请安装 bun: curl -fsSL https://bun.sh/install | bash`
+      )
     }
   }
 

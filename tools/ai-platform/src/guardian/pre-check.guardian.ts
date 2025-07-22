@@ -12,8 +12,10 @@
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { existsSync } from 'fs'
+import { createLogger } from '@linch-kit/core'
 
 const execAsync = promisify(exec)
+const logger = createLogger({ name: 'pre-check-guardian' })
 
 import type { GuardianAgent } from './index'
 

@@ -9,8 +9,13 @@
  */
 
 import { logger } from '@linch-kit/core/server'
+import { Registry } from 'prom-client'
+import type { MetricCollector } from '@linch-kit/core/server'
 
 import type { IAuthService } from '../types'
+import { createAuthPerformanceMonitor } from '../monitoring/auth-performance-monitor'
+
+// Import MetricCollector type to create instances with custom registries
 
 import { MockAuthService } from './mock-auth.service'
 import { JWTAuthService, defaultJWTAuthServiceConfig } from './jwt-auth.service'
@@ -27,6 +32,7 @@ export interface AuthServiceConfig {
   type: AuthServiceType
   fallbackToMock?: boolean
   config?: Record<string, unknown>
+  performanceRegistry?: Registry
 }
 
 /**
@@ -178,7 +184,59 @@ export class AuthServiceFactory {
           ...defaultJWTAuthServiceConfig,
           ...this.config.config
         }
-        service = new JWTAuthService(jwtConfig)
+        
+        // Create performance monitor if registry is provided, otherwise let JWT service create default
+        let performanceMonitor: any = undefined
+        
+        if (this.config.performanceRegistry) {
+          // Create a simple metric collector that uses the custom registry
+          const simpleMetricCollector: MetricCollector = {
+            createCounter: (name: string, help: string, labelNames?: string[]) => {
+              const { Counter } = require('prom-client')
+              return new Counter({
+                name,
+                help,
+                labelNames,
+                registers: [this.config.performanceRegistry!]
+              })
+            },
+            createGauge: (name: string, help: string, labelNames?: string[]) => {
+              const { Gauge } = require('prom-client')
+              return new Gauge({
+                name,
+                help,
+                labelNames,
+                registers: [this.config.performanceRegistry!]
+              })
+            },
+            createHistogram: (name: string, help: string, options?: any) => {
+              const { Histogram } = require('prom-client')
+              return new Histogram({
+                name,
+                help,
+                ...options,
+                registers: [this.config.performanceRegistry!]
+              })
+            },
+            createSummary: (name: string, help: string, percentiles?: number[], labels?: string[]) => {
+              const { Summary } = require('prom-client')
+              return new Summary({
+                name,
+                help,
+                percentiles,
+                labelNames: labels,
+                registers: [this.config.performanceRegistry!]
+              })
+            },
+            collectDefaultMetrics: () => {},
+            getMetrics: () => this.config.performanceRegistry!.metrics(),
+            resetMetrics: () => this.config.performanceRegistry!.clear()
+          }
+          
+          performanceMonitor = createAuthPerformanceMonitor(logger, simpleMetricCollector)
+        }
+          
+        service = new JWTAuthService(jwtConfig, performanceMonitor)
         break
       }
       
@@ -217,13 +275,15 @@ export class AuthServiceFactory {
    */
   async updateConfig(config: Partial<AuthServiceConfig>): Promise<void> {
     const newConfig = { ...this.config, ...config }
+    const oldType = this.config.type
+    
+    // 先更新配置，这样 switchService 可以使用新配置
+    this.config = newConfig
     
     // 如果服务类型改变，切换服务
-    if (newConfig.type !== this.config.type) {
+    if (newConfig.type !== oldType) {
       await this.switchService(newConfig.type)
     }
-    
-    this.config = newConfig
   }
 
   /**

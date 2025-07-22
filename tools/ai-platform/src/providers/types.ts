@@ -27,11 +27,35 @@ export interface AIProviderResponse {
   rawResponse?: any
 }
 
+// AI Generation interfaces for adapter layer
+export interface AIGenerationRequest {
+  prompt: string
+  temperature?: number
+  maxTokens?: number
+  schema?: any
+  metadata?: Record<string, any>
+}
+
+export interface AIGenerationResponse {
+  success: boolean
+  data: {
+    content: string
+    metadata?: Record<string, any>
+  }
+  metadata: {
+    provider: string
+    executionTime: number
+    [key: string]: any
+  }
+}
+
 export interface AIProvider {
   getId(): string
   getName(): string
   chat(request: AIProviderRequest): Promise<AIProviderResponse>
   isAvailable(): Promise<boolean>
+  // For adapter compatibility
+  generateResponse?(request: AIGenerationRequest): Promise<AIGenerationResponse>
 }
 
 export interface AIProviderConfig {

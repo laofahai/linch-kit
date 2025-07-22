@@ -1,0 +1,51 @@
+{
+  "id": "test-session-001-1753175855492-9q16svsk0",
+  "timestamp": "2025-07-22T09:17:35.492Z",
+  "state": "ANALYZE",
+  "context": {
+    "sessionId": "test-session-001",
+    "taskDescription": "Test task implementation",
+    "currentState": "ANALYZE",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-22T09:17:35.491Z",
+      "lastUpdated": "2025-07-22T09:17:35.491Z",
+      "automationLevel": "semi_auto",
+      "priority": "high",
+      "category": "development",
+      "tags": [
+        "testing",
+        "ai-workflow"
+      ],
+      "assignee": "claude"
+    },
+    "analysis": {
+      "approach": "",
+      "confidence": 0,
+      "estimatedHours": 0,
+      "complexity": 1,
+      "risks": [],
+      "dependencies": [],
+      "feasibilityScore": 0,
+      "resourceRequirements": {}
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-22T09:17:35.491Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:17:35.491Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      }
+    ]
+  },
+  "trigger": "manual",
+  "description": "Before planning"
+}

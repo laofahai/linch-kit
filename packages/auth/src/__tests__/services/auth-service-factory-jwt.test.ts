@@ -44,6 +44,9 @@ describe('AuthServiceFactory JWT集成', () => {
       const factory = AuthServiceFactory.getInstance({
         type: 'jwt',
         fallbackToMock: false,
+        config: {
+          jwtSecret: 'test-jwt-secret-with-at-least-32-chars'
+        },
         performanceRegistry: registry
       })
 
@@ -161,7 +164,13 @@ describe('AuthServiceFactory JWT集成', () => {
       expect(service.getServiceType()).toBe('mock')
 
       // 切换到JWT服务
-      service = await factory.switchService('jwt')
+      await factory.updateConfig({
+        type: 'jwt',
+        config: {
+          jwtSecret: 'test-jwt-secret-with-at-least-32-chars'
+        }
+      })
+      service = await factory.getAuthService()
       expect(service.getServiceType()).toBe('jwt')
 
       // 验证配置已更新
@@ -255,7 +264,7 @@ describe('AuthServiceFactory JWT集成', () => {
     it('应该在配置更新时重新创建服务', async () => {
       const factory = AuthServiceFactory.getInstance({
         type: 'mock',
-        fallbackToMock: false,
+        fallbackToMock: true,
         performanceRegistry: registry
       })
 

@@ -12,10 +12,11 @@
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { readFileSync } from 'fs'
+import { createLogger } from '@linch-kit/core'
+import { glob } from 'glob'
 
 const execAsync = promisify(exec)
-
-import { glob } from 'glob'
+const logger = createLogger({ name: 'quality-gate-guardian' })
 
 import type { GuardianAgent } from './index'
 

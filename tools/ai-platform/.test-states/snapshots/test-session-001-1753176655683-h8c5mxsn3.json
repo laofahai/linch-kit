@@ -1,0 +1,59 @@
+{
+  "id": "test-session-001-1753176655683-h8c5mxsn3",
+  "timestamp": "2025-07-22T09:30:55.683Z",
+  "state": "PAUSED",
+  "context": {
+    "sessionId": "test-session-001",
+    "taskDescription": "Test task implementation",
+    "currentState": "PAUSED",
+    "metadata": {
+      "version": "3.0.0",
+      "startTime": "2025-07-22T09:30:25.677Z",
+      "lastUpdated": "2025-07-22T09:30:55.679Z",
+      "automationLevel": "semi_auto",
+      "priority": "high",
+      "category": "development",
+      "tags": [
+        "testing",
+        "ai-workflow"
+      ],
+      "assignee": "claude"
+    },
+    "analysis": {
+      "approach": "uncertain",
+      "confidence": 40,
+      "estimatedHours": 2,
+      "complexity": 1,
+      "risks": [],
+      "dependencies": []
+    },
+    "stateHistory": [
+      {
+        "state": "INIT",
+        "timestamp": "2025-07-22T09:30:25.677Z",
+        "action": "INITIALIZE",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "ANALYZE",
+        "timestamp": "2025-07-22T09:30:25.677Z",
+        "action": "START_ANALYSIS",
+        "by": "system",
+        "automaticTransition": true
+      },
+      {
+        "state": "PAUSED",
+        "timestamp": "2025-07-22T09:30:55.679Z",
+        "action": "PAUSE",
+        "by": "system",
+        "metadata": {
+          "reason": "State timeout"
+        },
+        "automaticTransition": false
+      }
+    ]
+  },
+  "trigger": "error",
+  "description": "State timeout: ANALYZE"
+}

@@ -8,6 +8,9 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:watch": "bun test --watch",
     "query": "bun run scripts/session-tools.js",
     "extract": "bun run scripts/graph-data-extractor.js",
     "context": "bun run scripts/context-cli.js"

@@ -17,8 +17,9 @@
       "@linch-kit/core": ["packages/core/src"],
       "@linch-kit/ui": ["packages/ui/src"],
       "@linch-kit/auth": ["packages/auth/src"],
-      "@linch-kit/schema": ["packages/schema/src"],
-      "@linch-kit/trpc": ["packages/trpc/src"],
+      "@linch-kit/platform": ["packages/platform/src"],
+      "@linch-kit/shared-types": ["packages/shared-types/src"],
+      "@linch-kit/starter": ["packages/starter/src"],
       "@linch-kit/ui/shadcn": ["packages/ui/src/components/ui/index.ts"],
       "@linch-kit/ui/shadcn/*": ["packages/ui/src/components/ui/*"]
     }
@@ -36,11 +37,11 @@
   ],
   "references": [
     { "path": "packages/core" },
-    { "path": "packages/schema" },
     { "path": "packages/auth" },
-    { "path": "packages/crud" },
-    { "path": "packages/trpc" },
     { "path": "packages/ui" },
-    { "path": "modules/console" }
+    { "path": "packages/platform" },
+    { "path": "packages/shared-types" },
+    { "path": "packages/starter" },
+    { "path": "extensions/console" }
   ]
 }

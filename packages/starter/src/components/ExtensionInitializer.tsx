@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useStarterContext } from './StarterProvider'
+
 import type { ExtensionIntegration } from '../types'
+
+import { useStarterContext } from './StarterProvider'
 
 export interface ExtensionInitializerProps {
   /** 扩展加载完成回调 */
@@ -21,7 +23,7 @@ export function ExtensionInitializer({
 }: ExtensionInitializerProps) {
   const { config } = useStarterContext()
   const [isLoading, setIsLoading] = useState(true)
-  const [extensions, setExtensions] = useState<ExtensionIntegration[]>([])
+  const [_extensions, setExtensions] = useState<ExtensionIntegration[]>([])
 
   useEffect(() => {
     const initializeExtensions = async () => {

@@ -1,4 +1,5 @@
 import { logger } from '@linch-kit/core/server'
+
 import { StarterIntegrationManager } from '../integration/StarterIntegrationManager'
 import { TemplateGenerator } from '../templates/TemplateGenerator'
 import type { StarterConfig, ExtensionIntegration } from '../types'

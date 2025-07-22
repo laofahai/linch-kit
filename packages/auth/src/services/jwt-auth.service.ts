@@ -486,7 +486,7 @@ export class JWTAuthService implements IAuthService {
       // 检查JWT secret是否可用
       const testPayload = { test: true }
       const testToken = sign(testPayload, this.config.jwtSecret, {
-        expiresIn: '1s',
+        expiresIn: '5s', // Give enough time for verification
         algorithm: this.config.algorithm
       })
 
