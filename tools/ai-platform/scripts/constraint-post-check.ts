@@ -44,7 +44,7 @@ class ConstraintPostCheck {
   }
 
   async execute(): Promise<boolean> {
-    logger.info('🪝 PostToolUse Hook - 质量验证开始')
+    logger.info('🪝 PostToolUse Hook - 强制质量验证开始')
     logger.info(`📄 目标文件: ${this.targetFile}`)
     logger.info(`🔧 操作类型: ${this.operation}`)
 
@@ -53,21 +53,27 @@ class ConstraintPostCheck {
       this.displayResults()
       return false
     }
+    
+    // 🚨 零容忍检查 - 先执行关键检查
+    await this.enforceZeroToleranceChecks()
 
-    // 1. TypeScript 类型检查
-    await this.checkTypeScript()
-    
-    // 2. ESLint 代码风格检查  
-    await this.checkESLint()
-    
-    // 3. 文件特定验证
-    await this.checkFileSpecific()
-    
-    // 4. 测试相关检查
-    await this.checkTestRequirements()
-    
-    // 5. 架构一致性检查
-    await this.checkArchitectureConsistency()
+    // 在零容忍检查通过后，继续正常检查
+    if (this.results.success) {
+      // 1. TypeScript 类型检查
+      await this.checkTypeScript()
+      
+      // 2. ESLint 代码风格检查  
+      await this.checkESLint()
+      
+      // 3. 文件特定验证
+      await this.checkFileSpecific()
+      
+      // 4. 测试相关检查
+      await this.checkTestRequirements()
+      
+      // 5. 架构一致性检查
+      await this.checkArchitectureConsistency()
+    }
 
     this.displayResults()
     return this.results.success
@@ -269,14 +275,97 @@ class ConstraintPostCheck {
     }
   }
 
+  /**
+   * 🚨 零容忍强制检查 - 直接修改原脚本实现真正强制执行
+   */
+  private async enforceZeroToleranceChecks(): Promise<void> {
+    logger.info('🚨 执行零容忍强制检查...')
+    
+    // 1. TypeScript 编译必须成功
+    await this.enforceTypeScriptCompilation()
+    
+    // 2. ESLint 零违规强制检查
+    await this.enforceESLintZeroViolations()
+    
+    // 3. 禁止项检查
+    await this.enforceForbiddenPatterns()
+    
+    // 4. 如果有致命违规，立即停止
+    if (!this.results.success) {
+      logger.error('❌ 零容忍检查失败，操作被强制中断！')
+      this.displayResults()
+      process.exit(2) // exit(2) = 阻塞错误，真正中断Claude操作
+    }
+  }
+
+  private async enforceTypeScriptCompilation(): Promise<void> {
+    if (!this.targetFile.match(/\.(ts|tsx)$/)) return
+    
+    try {
+      await execAsync(`npx tsc --noEmit --strict "${this.targetFile}"`)
+      logger.info('✅ TypeScript 编译强制检查通过')
+    } catch (error) {
+      this.results.success = false
+      this.results.issues.push('🔴 零容忍违规: TypeScript 编译失败')
+      const errorOutput = error.stderr || error.stdout || ''
+      const errors = errorOutput.split('\n').filter(line => line.includes('error TS'))
+      errors.slice(0, 2).forEach(err => {
+        this.results.issues.push(`  └─ ${err.trim()}`)
+      })
+      logger.error('❌ TypeScript 编译强制检查失败')
+    }
+  }
+
+  private async enforceESLintZeroViolations(): Promise<void> {
+    if (!this.targetFile.match(/\.(ts|tsx|js|jsx)$/)) return
+    
+    try {
+      await execAsync(`npx eslint "${this.targetFile}" --max-warnings=0`)
+      logger.info('✅ ESLint 零违规强制检查通过')
+    } catch (error) {
+      this.results.success = false
+      this.results.issues.push('🔴 零容忍违规: ESLint 违规检测')
+      const errorOutput = error.stdout || error.stderr || ''
+      const lines = errorOutput.split('\n').filter(line => 
+        line.includes('error') || line.includes('warning')
+      ).slice(0, 3)
+      lines.forEach(line => {
+        this.results.issues.push(`  └─ ${line.trim()}`)
+      })
+      logger.error('❌ ESLint 零违规强制检查失败')
+    }
+  }
+
+  private async enforceForbiddenPatterns(): Promise<void> {
+    if (!this.fileExists) return
+    
+    const content = readFileSync(this.targetFile, 'utf-8')
+    
+    // 禁止模式检查
+    const forbiddenPatterns = [
+      { pattern: /console\.log/, message: '禁止使用 console.log，必须使用 LinchKit logger' },
+      { pattern: /any(?!\w)/, message: '禁止使用 any 类型，必须提供具体类型' },
+      { pattern: /@ts-ignore/, message: '禁止使用 @ts-ignore，必须正确修复类型错误' },
+      { pattern: /eslint-disable(?!-next-line)/, message: '禁止整体禁用 ESLint，必须修复具体问题' }
+    ]
+    
+    for (const { pattern, message } of forbiddenPatterns) {
+      if (pattern.test(content)) {
+        this.results.success = false
+        this.results.issues.push(`🔴 零容忍违规: ${message}`)
+        logger.error(`❌ 检测到禁止模式: ${message}`)
+      }
+    }
+  }
+
   private displayResults(): void {
-    console.log('\n🎯 PostToolUse 质量验证结果:')
+    console.log('\n🎯 PostToolUse 强制质量验证结果:')
     console.log('─'.repeat(50))
 
     if (this.results.success) {
-      console.log('✅ 质量验证通过')
+      console.log('✅ 强制质量验证通过')
     } else {
-      console.log('❌ 质量验证失败')
+      console.log('❌ 强制质量验证失败 - 操作被阻止')
     }
 
     if (this.results.issues.length > 0) {
@@ -303,9 +392,9 @@ class ConstraintPostCheck {
     console.log('─'.repeat(50))
     
     if (!this.results.success) {
-      console.log('\n🛑 请修复上述问题后重试')
+      console.log('\n🛑 强制质量门禁失败，请立即修复后重试！')
     } else {
-      console.log('\n🎉 文件操作完成，质量检查通过!')
+      console.log('\n🎉 文件操作完成，强制质量检查通过!')
     }
   }
 }
@@ -329,14 +418,14 @@ async function main() {
   if (!targetFile || !operation) {
     logger.error('❌ 错误: 缺少必要参数')
     logger.error('使用方法: bun run constraint:post-check --file="path/to/file" --operation="ToolName"')
-    process.exit(1)
+    process.exit(2) // exit(2) = 阻塞错误，真正中断Claude操作
   }
   
   const postCheck = new ConstraintPostCheck(targetFile, operation)
   const success = await postCheck.execute()
   
   if (!success) {
-    process.exit(1) // 失败时退出码非0，可以中断Claude的操作
+    process.exit(2) // exit(2) = 阻塞错误，真正中断Claude操作 // 失败时退出码非0，可以中断Claude的操作
   }
 }
 

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'bun:test'
 import { render, screen } from '@testing-library/react'
+
 import { AuthProvider } from '../../components/AuthProvider'
 import type { AuthProviderProps } from '../../components/AuthProvider'
 

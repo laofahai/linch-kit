@@ -42,7 +42,7 @@ export class CLIBasedAIProvider {
     }
   }
 
-  async generate(prompt: string): Promise<CLIAIResponse> {
+  async generateResponse(prompt: string, options?: any): Promise<CLIAIResponse> {
     const startTime = Date.now()
     
     try {

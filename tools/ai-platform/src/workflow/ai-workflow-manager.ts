@@ -10,7 +10,7 @@ import { promisify } from 'util'
 
 const execAsync = promisify(exec)
 import { createLogger } from '@linch-kit/core'
-import { HybridAIManager, AnalysisResult } from '../providers/hybrid-ai-manager'
+import { AIProviderManager, AnalysisResult } from '../providers/ai-provider-manager'
 import { WorkflowStateMachine, createWorkflowStateMachine, WorkflowState } from './workflow-state-machine'
 
 const logger = createLogger('ai-workflow-manager')
@@ -78,11 +78,11 @@ export interface AIWorkflowResult {
  * 整合Graph RAG查询和AI分析的完整工作流决策系统
  */
 export class AIWorkflowManager {
-  private aiManager: HybridAIManager
+  private aiManager: AIProviderManager
   private sessionId: string
   private stateMachine: WorkflowStateMachine
 
-  constructor(aiManager: HybridAIManager, initialTaskDescription?: string) {
+  constructor(aiManager: AIProviderManager, initialTaskDescription?: string) {
     this.aiManager = aiManager
     this.sessionId = `workflow-${Date.now()}`
     // 立即初始化状态机，避免 null 引用问题
@@ -608,6 +608,6 @@ export class AIWorkflowManager {
 /**
  * 工厂函数
  */
-export function createAIWorkflowManager(aiManager: HybridAIManager): AIWorkflowManager {
+export function createAIWorkflowManager(aiManager: AIProviderManager): AIWorkflowManager {
   return new AIWorkflowManager(aiManager)
 }

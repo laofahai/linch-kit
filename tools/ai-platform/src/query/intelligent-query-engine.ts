@@ -182,9 +182,9 @@ export class IntelligentQueryEngine {
    */
   private async recognizeIntent(query: string): Promise<QueryIntent> {
     try {
-      // 使用现有的HybridAIManager来处理意图识别
-      const { createHybridAIManager } = await import('../providers/hybrid-ai-manager.js')
-      const aiManager = createHybridAIManager()
+      // 使用AIProviderManager来处理意图识别
+      const { getGlobalAIProviderManager } = await import('../providers/ai-provider-manager.js')
+      const aiManager = getGlobalAIProviderManager()
       
       const result = await aiManager.analyze({
         prompt: `分析以下查询的意图，返回最匹配的意图类型：

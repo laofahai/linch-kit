@@ -14,6 +14,8 @@ import { promisify } from 'util'
 import { existsSync, readFileSync } from 'fs'
 import { dirname, basename, extname, resolve } from 'path'
 import { createLogger } from '@linch-kit/core'
+import { StateAwareHook } from '../hooks/state-aware-hook'
+import { HookWorkflowBridge } from '../hooks/metadata-bridge'
 
 const execAsync = promisify(exec)
 const logger = createLogger('constraint-pre-check')
@@ -41,32 +43,87 @@ class ConstraintPreCheck {
   private patterns: RecommendedPattern[] = []
   private constraints: string[] = []
   private suggestions: string[] = []
+  private stateAwareHook: StateAwareHook
+  private bridge: HookWorkflowBridge
 
   constructor(targetFile: string, operation: string) {
     this.targetFile = targetFile
     this.operation = operation
     this.context = this.analyzeFileContext()
+    this.stateAwareHook = new StateAwareHook()
+    this.bridge = new HookWorkflowBridge()
   }
 
   async execute(): Promise<void> {
-    logger.info('🪝 PreToolUse Hook - 上下文注入开始')
+    logger.info('🪝 PreToolUse Hook - 强制约束检查开始')
     logger.info(`📄 目标文件: ${this.targetFile}`)
     logger.info(`🔧 操作类型: ${this.operation}`)
 
-    // 1. 文件上下文分析
-    this.analyzeContext()
-    
-    // 2. 查询相关模式推荐
-    await this.queryRelevantPatterns()
-    
-    // 3. 检查现有实现
-    await this.checkExistingImplementations()
-    
-    // 4. 提供约束建议
-    this.generateConstraints()
-    
-    // 5. 输出上下文信息
-    this.displayContextInfo()
+    try {
+      // 🚨 零容忍检查 - 分支保护
+      await this.enforceConstraints()
+      // 0. 获取 Workflow 上下文和状态感知建议
+      const workflowContext = await this.bridge.getWorkflowContext()
+      const stateAwareResult = await this.stateAwareHook.execute({
+        toolName: this.operation,
+        filePath: this.targetFile,
+        operation: this.operation
+      })
+
+      // 整合状态感知的建议
+      this.suggestions.push(...stateAwareResult.suggestions)
+      this.constraints.push(...stateAwareResult.constraints)
+
+      // 1. 文件上下文分析
+      this.analyzeContext()
+      
+      // 2. 查询相关模式推荐
+      await this.queryRelevantPatterns()
+      
+      // 3. 检查现有实现
+      await this.checkExistingImplementations()
+      
+      // 4. 提供约束建议
+      this.generateConstraints()
+
+      // 5. 检查是否有阻塞性违规
+      const hasViolations = this.constraints.some(c => c.includes('🔴 违规'))
+      
+      // 5. 创建并注入 Hook 结果到 Workflow
+      const hookResult = {
+        success: !hasViolations,
+        shouldBlock: hasViolations,
+        suggestions: this.suggestions,
+        constraints: this.constraints,
+        reusableComponents: this.patterns.map(p => p.pattern),
+        qualityIssues: hasViolations ? this.constraints.filter(c => c.includes('🔴 违规')) : [],
+        metadata: {
+          fileContext: this.context,
+          workflowState: workflowContext?.state,
+          taskType: workflowContext?.taskType,
+          operation: this.operation
+        },
+        timestamp: Date.now()
+      }
+      
+      // 🚨 强制停止机制
+      if (hasViolations) {
+        logger.error('❌ 检测到零容忍违规，操作被阻止！')
+        this.displayContextInfo()
+        process.exit(2) // exit(2) = 阻塞错误，真正中断Claude操作
+      }
+
+      await this.bridge.injectHookResult(hookResult)
+      
+      // 6. 输出上下文信息
+      this.displayContextInfo()
+    } catch (error) {
+      logger.error(`❌ PreToolUse Hook 执行失败: ${error.message}`)
+      // 即使出错也要显示基础信息
+      this.displayContextInfo()
+      // 🚨 错误也视为阻塞
+      process.exit(2) // exit(2) = 阻塞错误，真正中断Claude操作
+    }
   }
 
   private analyzeFileContext(): FileContext {
@@ -206,6 +263,132 @@ class ConstraintPreCheck {
     this.constraints.push('必须遵循项目的TypeScript配置')
   }
 
+  /**
+   * 🚨 零容忍约束强制执行
+   */
+  private async enforceConstraints(): Promise<void> {
+    logger.info('🚨 执行零容忍约束检查...')
+    
+    // 1. 分支保护检查
+    await this.checkBranchProtection()
+    
+    // 2. TypeScript 严格模式检查
+    await this.checkTypeScriptStrict()
+    
+    // 3. Graph RAG 强制查询
+    await this.enforceGraphRAGQuery()
+    
+    // 4. 包复用强制检查
+    await this.enforcePackageReuse()
+    
+    // 5. Essential Rules 核心约束
+    this.enforceEssentialRules()
+  }
+
+  private async checkBranchProtection(): Promise<void> {
+    try {
+      const { stdout: currentBranch } = await execAsync('git branch --show-current')
+      const branch = currentBranch.trim()
+      
+      const protectedBranches = ['main', 'master', 'develop']
+      if (protectedBranches.some(protectedBranch => branch === protectedBranch)) {
+        this.constraints.push('🔴 违规: 禁止在受保护分支上直接工作')
+        logger.error(`❌ 当前分支 ${branch} 是受保护分支`)
+        return
+      }
+      
+      logger.info(`✅ 分支检查通过: ${branch}`)
+    } catch (error) {
+      this.constraints.push('🔴 违规: Git 分支状态检查失败')
+    }
+  }
+
+  private async checkTypeScriptStrict(): Promise<void> {
+    if (!this.targetFile.match(/\.(ts|tsx)$/)) return
+    
+    try {
+      // 只检查目标文件
+      await execAsync(`npx tsc --noEmit --strict --skipLibCheck "${this.targetFile}"`)
+      logger.info('✅ TypeScript 严格模式检查通过')
+    } catch (error) {
+      const errorOutput = error.stderr || error.stdout || ''
+      if (errorOutput.includes('error TS')) {
+        this.constraints.push('🔴 违规: TypeScript 严格模式编译失败')
+        logger.error('❌ TypeScript 严格模式违规')
+      }
+    }
+  }
+
+  private async enforceGraphRAGQuery(): Promise<void> {
+    const keywords = this.extractPathKeywords()
+    let queryAttempts = 0
+    let querySuccess = false
+    
+    for (const keyword of keywords.slice(0, 2)) {
+      try {
+        queryAttempts++
+        const { stdout: result } = await execAsync(
+          `bun run ai:session query "${keyword}" --debug 2>/dev/null`
+        )
+        
+        if (result.includes('total_found') && !result.includes('"total_found": 0')) {
+          querySuccess = true
+          this.suggestions.push(`✅ Graph RAG 查询成功: "${keyword}"`)
+          break
+        }
+      } catch (error) {
+        // 继续尝试其他关键词
+      }
+    }
+    
+    if (!querySuccess && queryAttempts > 0) {
+      this.suggestions.push('⚠️ Graph RAG 查询无结果，请手动确认无相关实现')
+    }
+    
+    if (queryAttempts === 0) {
+      this.constraints.push('🔴 违规: Graph RAG 查询系统不可用')
+    }
+  }
+
+  private async enforcePackageReuse(): Promise<void> {
+    const keywords = this.extractPathKeywords()
+    
+    try {
+      const { stdout: result } = await execAsync(
+        `bun run ai:deps "${keywords.join(' ')}" 2>/dev/null || echo "检查完成"`
+      )
+      
+      if (result.includes('发现现有包实现')) {
+        this.constraints.push('⚠️ 发现可复用实现，必须优先扩展现有包')
+        this.suggestions.push('🔄 请先评估扩展现有实现的可行性')
+      }
+    } catch (error) {
+      this.suggestions.push('⚠️ 包复用检查失败，请手动确认避免重复实现')
+    }
+  }
+
+  private enforceEssentialRules(): void {
+    // 核心架构约束
+    if (this.context.directory.includes('packages/') && 
+        !this.context.directory.includes('packages/core') &&
+        this.context.filename.includes('index.ts')) {
+      this.constraints.push('⚠️ 包入口文件修改，确保遵循导出规范')
+    }
+    
+    // 测试同步要求
+    if ((this.context.directory.includes('components') || 
+         this.context.directory.includes('services')) &&
+        !this.context.filename.includes('.test.') &&
+        this.operation !== 'Read') {
+      this.suggestions.push('📝 功能代码修改，建议同步更新测试')
+    }
+    
+    // 防御性编程
+    if (this.context.extension === '.ts' || this.context.extension === '.tsx') {
+      this.constraints.push('🛡️ 必须遵循防御性编程：输入验证、错误处理、断言')
+    }
+  }
+
   private extractPathKeywords(): string[] {
     const pathParts = this.context.path.split('/')
     const keywords = []
@@ -277,7 +460,7 @@ async function main() {
   if (!targetFile || !operation) {
     logger.error('❌ 错误: 缺少必要参数')
     logger.error('使用方法: bun run constraint:pre-check --file="path/to/file" --operation="ToolName"')
-    process.exit(1)
+    process.exit(2) // exit(2) = 阻塞错误，真正中断Claude操作
   }
   
   const preCheck = new ConstraintPreCheck(targetFile, operation)

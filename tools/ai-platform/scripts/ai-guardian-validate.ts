@@ -16,7 +16,7 @@ import { existsSync, writeFileSync, mkdirSync } from 'fs'
 const execAsync = promisify(exec)
 import { join } from 'path'
 import { createLogger } from '@linch-kit/core'
-import { createHybridAIManager } from '../src/providers/hybrid-ai-manager'
+import { getGlobalAIProviderManager } from '../src/providers/ai-provider-manager'
 
 const logger = createLogger('ai-guardian-validator')
 
@@ -51,7 +51,7 @@ class AIGuardianValidator {
   constructor() {
     this.violations = []
     this.warnings = []
-    this.aiManager = createHybridAIManager()
+    this.aiManager = getGlobalAIProviderManager()
     this.analysisSource = 'rules' // 默认使用规则引擎
   }
 

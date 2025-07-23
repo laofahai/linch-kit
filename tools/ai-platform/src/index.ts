@@ -34,11 +34,11 @@ export * from './implementation/index'
  */
 export async function createAIPlatform() {
   const { ContextManager } = await import('./context/context-manager.js')
-  const { HybridAIManager } = await import('./providers/hybrid-ai-manager.js')
+  const { getGlobalAIProviderManager } = await import('./providers/ai-provider-manager.js')
   
   return {
     context: new ContextManager(),
-    ai: new HybridAIManager()
+    ai: getGlobalAIProviderManager()
   }
 }
 

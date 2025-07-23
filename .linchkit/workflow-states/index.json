@@ -1,66 +1,66 @@
 {
-  "workflow-1753068021534": {
-    "sessionId": "workflow-1753068021534",
-    "taskDescription": "实现用户认证中间件透明度测试",
-    "currentState": "PAUSED",
+  "workflow-1753259757168": {
+    "sessionId": "workflow-1753259757168",
+    "taskDescription": "测试工作流",
+    "currentState": "FAILED",
     "priority": "medium",
-    "startTime": "2025-07-21T03:20:21.534Z",
-    "lastUpdated": "2025-07-21T03:20:55.036Z"
+    "startTime": "2025-07-23T08:35:57.169Z",
+    "lastUpdated": "2025-07-23T08:36:02.522Z"
   },
-  "start-1753068007405": {
-    "sessionId": "start-1753068007405",
-    "taskDescription": "实现用户认证中间件透明度测试",
-    "currentState": "PAUSED",
+  "workflow-1753260691052": {
+    "sessionId": "workflow-1753260691052",
+    "taskDescription": "通用开发任务",
+    "currentState": "FAILED",
     "priority": "medium",
-    "startTime": "2025-07-21T03:20:21.528Z",
-    "lastUpdated": "2025-07-21T03:21:01.504Z"
+    "startTime": "2025-07-23T08:51:31.052Z",
+    "lastUpdated": "2025-07-23T08:51:36.434Z"
   },
-  "workflow-1753069203318": {
-    "sessionId": "workflow-1753069203318",
-    "taskDescription": "添加简单的用户注册功能",
-    "currentState": "PAUSED",
+  "workflow-1753260824425": {
+    "sessionId": "workflow-1753260824425",
+    "taskDescription": "通用开发任务",
+    "currentState": "FAILED",
     "priority": "medium",
-    "startTime": "2025-07-21T03:40:03.318Z",
-    "lastUpdated": "2025-07-21T03:40:33.321Z"
+    "startTime": "2025-07-23T08:53:44.426Z",
+    "lastUpdated": "2025-07-23T08:53:49.807Z"
   },
-  "workflow-1753069209691": {
-    "sessionId": "workflow-1753069209691",
-    "taskDescription": "修复拼写错误",
-    "currentState": "PAUSED",
+  "workflow-1753261111189": {
+    "sessionId": "workflow-1753261111189",
+    "taskDescription": "测试/start功能",
+    "currentState": "FAILED",
     "priority": "medium",
-    "startTime": "2025-07-21T03:40:09.691Z",
-    "lastUpdated": "2025-07-21T03:40:39.692Z"
+    "startTime": "2025-07-23T08:58:31.190Z",
+    "lastUpdated": "2025-07-23T08:58:36.608Z"
   },
-  "workflow-1753169207763": {
-    "sessionId": "workflow-1753169207763",
-    "taskDescription": "Phase 3集成测试 - 基本功能验证",
-    "currentState": "ANALYZE",
+  "workflow-1753263387778": {
+    "sessionId": "workflow-1753263387778",
+    "taskDescription": "通用开发任务",
+    "currentState": "FAILED",
     "priority": "medium",
-    "startTime": "2025-07-22T07:26:47.763Z",
-    "lastUpdated": "2025-07-22T07:26:51.233Z"
+    "startTime": "2025-07-23T09:36:27.778Z",
+    "lastUpdated": "2025-07-23T09:36:33.118Z"
   },
-  "start-1753169204323": {
-    "sessionId": "start-1753169204323",
-    "taskDescription": "Phase 3集成测试 - 基本功能验证",
-    "currentState": "ANALYZE",
+  "workflow-1753264016788": {
+    "sessionId": "workflow-1753264016788",
+    "taskDescription": "通用开发任务",
+    "currentState": "FAILED",
     "priority": "medium",
-    "startTime": "2025-07-22T07:26:47.758Z",
-    "lastUpdated": "2025-07-22T07:26:53.880Z"
+    "startTime": "2025-07-23T09:46:56.788Z",
+    "lastUpdated": "2025-07-23T09:47:02.158Z"
   },
-  "start-1753169213882": {
-    "sessionId": "start-1753169213882",
-    "taskDescription": "Phase 3集成测试 - quickStart验证",
-    "currentState": "ANALYZE",
+  "workflow-1753264227782": {
+    "sessionId": "workflow-1753264227782",
+    "taskDescription": "测试任务",
+    "currentState": "FAILED",
     "priority": "medium",
-    "startTime": "2025-07-22T07:26:58.125Z",
-    "lastUpdated": "2025-07-22T07:27:05.488Z"
+    "startTime": "2025-07-23T09:50:27.783Z",
+    "lastUpdated": "2025-07-23T09:50:28.322Z"
   },
-  "start-1753169225490": {
-    "sessionId": "start-1753169225490",
-    "taskDescription": "Phase 3集成测试 - 向后兼容性验证",
-    "currentState": "ANALYZE",
-    "priority": "low",
-    "startTime": "2025-07-22T07:27:07.777Z",
-    "lastUpdated": "2025-07-22T07:27:10.298Z"
+  "workflow-1753264430055": {
+    "sessionId": "workflow-1753264430055",
+    "taskDescription": "通用开发任务",
+    "currentState": "FAILED",
+    "priority": "medium",
+    "startTime": "2025-07-23T09:53:50.056Z",
+    "lastUpdated": "2025-07-23T09:53:55.512Z"
   }
 }

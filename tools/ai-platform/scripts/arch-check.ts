@@ -25,6 +25,23 @@ const logger = {
 async function main() {
   const args = process.argv.slice(2)
   
+  // 处理 suggest 命令（用于 /start 命令）
+  if (args[0] === 'suggest') {
+    const contextArg = args.find(arg => arg.startsWith('--context='))
+    const context = contextArg ? contextArg.replace('--context=', '') : '通用开发'
+    
+    logger.info('🏗️ 架构建议:')
+    if (context && context !== '通用开发') {
+      logger.info(`📋 上下文: ${context}`)
+    }
+    logger.info(`- 遵循 LinchKit L0-L3 分层架构`)
+    logger.info(`- 优先使用现有的 @linch-kit 包`)
+    logger.info(`- 确保 TypeScript 类型安全`)
+    logger.info(`- 遵循项目编码规范`)
+    logger.info(`- 使用 Hooks 系统进行质量控制`)
+    return
+  }
+  
   // 解析参数
   const options = {
     targetPackage: undefined,

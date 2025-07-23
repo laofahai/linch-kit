@@ -75,3 +75,12 @@ playwright-report/
 test-results/
 test-results.xml
 validation-report.json
+
+# LinchKit AI Workflow temporary files
+.linchkit/workflow-states/
+.linchkit/test-workflow-states/
+.test-states/
+
+# LinchKit temporary scripts and commands
+start-command.js
+*-command.js

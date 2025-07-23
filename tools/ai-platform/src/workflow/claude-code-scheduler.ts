@@ -7,7 +7,7 @@
  */
 
 import { createLogger } from '@linch-kit/core'
-import { HybridAIManager, AnalysisResult } from '../providers/hybrid-ai-manager'
+import { AIProviderManager, AnalysisResult } from '../providers/ai-provider-manager'
 import { AIWorkflowManager, WorkflowContext, AIWorkflowResult } from './ai-workflow-manager'
 import { IntelligentQueryEngine } from '../query/intelligent-query-engine'
 import { UserFeedbackCollector } from '../feedback/user-feedback-collector'
@@ -103,13 +103,13 @@ export interface TrustedEnvironmentContext {
  * 为Claude Code提供统一的AI工作流调度接口
  */
 export class ClaudeCodeScheduler {
-  private hybridAI: HybridAIManager
+  private hybridAI: AIProviderManager
   private queryEngine: IntelligentQueryEngine
   private workflowManager: AIWorkflowManager
   private feedbackCollector: UserFeedbackCollector
   private trustedContext: TrustedEnvironmentContext | null = null
 
-  constructor(hybridAI: HybridAIManager) {
+  constructor(hybridAI: AIProviderManager) {
     this.hybridAI = hybridAI
     this.queryEngine = new IntelligentQueryEngine()
     this.workflowManager = new AIWorkflowManager(hybridAI)
@@ -573,7 +573,7 @@ export class ClaudeCodeScheduler {
 /**
  * 工厂函数
  */
-export function createClaudeCodeScheduler(hybridAI: HybridAIManager): ClaudeCodeScheduler {
+export function createClaudeCodeScheduler(hybridAI: AIProviderManager): ClaudeCodeScheduler {
   return new ClaudeCodeScheduler(hybridAI)
 }
 
@@ -581,9 +581,9 @@ export function createClaudeCodeScheduler(hybridAI: HybridAIManager): ClaudeCode
  * 便捷函数：创建完整的Claude Code集成
  */
 export async function createClaudeCodeIntegration(geminiApiKey?: string): Promise<ClaudeCodeScheduler> {
-  const { createHybridAIManager } = await import('../providers/hybrid-ai-manager')
+  const { getGlobalAIProviderManager } = await import('../providers/ai-provider-manager')
   
-  const hybridAI = createHybridAIManager()
+  const hybridAI = getGlobalAIProviderManager()
   const scheduler = createClaudeCodeScheduler(hybridAI)
   
   await scheduler.initialize()

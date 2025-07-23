@@ -11,8 +11,8 @@ import { WorkflowStateMachine } from '../workflow/workflow-state-machine'
 import type { WorkflowAction, WorkflowTransition } from '../workflow/workflow-state-machine'
 import { TransparentWorkflowVisualizer } from './transparent-workflow-visualizer'
 import { displayGraphRAGSync, displayWorkflowSummary, displayWarning, displayAIWorkflowStatus } from '../utils/display-helper'
-import { TestWorkflowManager } from '../workflow/test-workflow-manager'
-import type { TestWorkflowContext } from '../workflow/test-workflow-manager'
+// import { TestWorkflowManager } from '../workflow/test-workflow-manager'
+// import type { TestWorkflowContext } from '../workflow/test-workflow-manager'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 
@@ -105,7 +105,7 @@ export interface StartCommandResult {
 export class StartCommandHandler {
   private workflowStateMachine: WorkflowStateMachine | null = null
   private visualizer: TransparentWorkflowVisualizer | null = null
-  private testWorkflowManager: TestWorkflowManager | null = null
+  // private testWorkflowManager: TestWorkflowManager | null = null
 
   constructor() {
     logger.info('StartCommandHandler initialized')

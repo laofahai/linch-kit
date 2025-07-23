@@ -9,7 +9,7 @@
 import { createLogger } from '@linch-kit/core'
 import { ClaudeCodeScheduler, createClaudeCodeIntegration } from './claude-code-scheduler'
 import type { ClaudeCodeRequest, ClaudeCodeResponse } from './claude-code-scheduler'
-import { createHybridAIManager } from '../providers/hybrid-ai-manager'
+import { getGlobalAIProviderManager } from '../providers/ai-provider-manager'
 
 const logger = createLogger('claude-code-api')
 

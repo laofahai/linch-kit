@@ -17,5 +17,309 @@
     },
     "confidence": 85,
     "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T03:24:23.820Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T03:27:36.734Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T03:31:24.854Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T03:35:49.151Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T03:42:32.076Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T03:44:10.910Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T06:16:38.119Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T08:01:58.806Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T08:02:11.162Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T08:51:29.708Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T08:53:43.112Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T09:35:57.461Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T09:36:26.204Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T09:40:48.032Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T09:46:55.447Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-23T09:53:50.250Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
   }
 ]

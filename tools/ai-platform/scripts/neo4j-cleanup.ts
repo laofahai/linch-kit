@@ -16,6 +16,7 @@
 import { createLogger } from '@linch-kit/core/server'
 import neo4j, { Driver, Session } from 'neo4j-driver'
 import { loadNeo4jConfig, validateNeo4jConfig } from '../src/core/config/neo4j-config.js'
+import { NEO4J_CONFIG, THRESHOLDS } from '../src/core/constants'
 
 const logger = createLogger({ name: 'neo4j-cleanup' })
 
@@ -51,7 +52,7 @@ class Neo4jCleanupService {
       neo4j.auth.basic(config.username, config.password),
       {
         database: config.database,
-        maxConnectionPoolSize: 50,
+        maxConnectionPoolSize: NEO4J_CONFIG.MAX_CONNECTION_POOL_SIZE,
       }
     )
 

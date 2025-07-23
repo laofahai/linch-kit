@@ -12,7 +12,7 @@
  * 4. 添加超时控制
  */
 
-import { Neo4jService, loadNeo4jConfig } from '../dist/index.js';
+import { Neo4jService, loadNeo4jConfig } from '../dist/core/index.js';
 import { createLogger } from '@linch-kit/core';
 import dotenv from 'dotenv';
 
@@ -161,7 +161,7 @@ LinchKit AI上下文查询工具 - 快速版
                   ELSE 1
                 END,
                 n.name
-              LIMIT 20
+              LIMIT 15
             `;
             params.terms = queryTerms;
             params.primaryTerm = primaryTerm;
@@ -174,7 +174,7 @@ LinchKit AI上下文查询工具 - 快速版
               OPTIONAL MATCH (n)-[r]-(related)
               RETURN n, r, related
               ORDER BY n.name
-              LIMIT 15
+              LIMIT 12
             `;
             params.target = queryTarget;
           }
@@ -205,7 +205,7 @@ LinchKit AI上下文查询工具 - 快速版
                  OR toLower(n.type) CONTAINS toLower($target)
               RETURN n
               ORDER BY n.name
-              LIMIT 10
+              LIMIT 8
             `;
             params.target = queryTarget;
           }

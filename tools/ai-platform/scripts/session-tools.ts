@@ -82,13 +82,19 @@ function checkTodos() {
   log.info('建议在开发前检查是否有未完成的任务');
 }
 
-async function queryContext(entity, includeRelated = true, debug = false) {
+async function queryContext(entity, includeRelated = true, debug = false, fast = false) {
   log.header('🎯 查询项目上下文');
   
   try {
     let cmd = includeRelated 
       ? `bun tools/ai-platform/scripts/context-cli.ts --find-entity "${entity}" --include-related`
       : `bun tools/ai-platform/scripts/context-cli.ts --find-entity "${entity}"`;
+    
+    // 快速模式：不包含相关实体，减少输出
+    if (fast) {
+      cmd = `bun tools/ai-platform/scripts/context-cli.ts --find-entity "${entity}"`;
+      includeRelated = false;
+    }
     
     // 添加调试模式参数
     if (debug) {
@@ -336,24 +342,21 @@ async function syncGraphData() {
   log.header('🔄 同步图谱数据');
   
   try {
-    // 执行完整版Graph RAG同步 - 不接受任何简化版回退
-    if (!existsSync('tools/ai-platform/scripts/graph-data-extractor.ts')) {
-      log.error('❌ 核心文件graph-data-extractor.ts不存在！');
-      throw new Error('核心功能缺失：graph-data-extractor.ts未找到');
-    }
-
-    log.info('执行完整版Graph RAG数据提取...');
-    await runCommand('bun tools/ai-platform/scripts/graph-data-extractor.ts', '提取并更新图谱数据');
+    log.info('使用统一的graph命令进行数据同步...');
+    await runCommand('bun graph sync', '智能图谱数据同步');
     
-    log.success('✅ 完整版图谱数据同步完成');
+    log.success('✅ 图谱数据同步完成');
     
     // 验证查询功能
     log.info('验证查询功能...');
     await queryContext('User', false);
     
   } catch (error) {
-    log.error('❌ 图谱数据同步失败 - 核心功能必须完整可用');
-    log.error('请修复graph-data-extractor.ts后重试');
+    log.error('❌ 图谱数据同步失败');
+    log.error('💡 使用以下命令诊断问题:');
+    log.error('   bun graph check   # 检查数据状态');
+    log.error('   bun graph clean   # 清理重复数据');
+    log.error('   bun graph reset   # 重置数据库');
     throw error;
   }
 }
@@ -463,7 +466,7 @@ function createFeatureBranch(branchName, taskDescription = '') {
 }
 
 // 主要命令处理
-function handleCommand(command, args) {
+async function handleCommand(command, args) {
   switch (command) {
     case 'init':
     case 'start':
@@ -485,6 +488,18 @@ function handleCommand(command, args) {
       log.success('Session初始化完成！');
       break;
       
+    case 'analyze':
+      // 分析上下文 - 用于 /start 命令
+      const query = args.filter(arg => !arg.startsWith('--')).join(' ').trim();
+      if (!query) {
+        // 如果没有提供具体查询，执行通用项目分析
+        log.info('未提供具体任务，执行通用项目状态分析...');
+        await queryContext('项目结构', false, false);
+      } else {
+        await queryContext(query, false, false);
+      }
+      break;
+
     case 'query':
     case 'entity':
       // 上下文查询
@@ -493,9 +508,10 @@ function handleCommand(command, args) {
         process.exit(1);
       }
       {
-        // 检查是否有 --debug 或 --relations 参数
+        // 检查是否有 --debug, --relations, --fast 参数
         const debugMode = args.includes('--debug');
         const relationsOnly = args.includes('--relations');
+        const fastMode = args.includes('--fast');
         const entity = args.filter(arg => !arg.startsWith('--'))[0];
       
       if (relationsOnly) {
@@ -503,7 +519,7 @@ function handleCommand(command, args) {
         queryRelations(entity);
         return; // 直接返回，避免继续执行
       } else {
-        queryContext(entity, true, debugMode);
+        queryContext(entity, !fastMode, debugMode, fastMode);
       }
       }
       break;
@@ -527,6 +543,23 @@ function handleCommand(command, args) {
         const pattern = args[0];
         const forEntity = args[1] || '';
         queryPattern(pattern, forEntity);
+      }
+      break;
+      
+    case 'compatibility':
+    case 'compat':
+      // 兼容性检查
+      if (args.length < 2) {
+        log.error('请提供文件路径和API名称');
+        log.info('用法: bun run ai:session compatibility <file> <api>');
+        process.exit(1);
+      }
+      {
+        const [filePath, apiName] = args;
+        await runCommand(
+          `bun run ai:compatibility-check --file="${filePath}" --api="${apiName}"`,
+          `检查API兼容性: ${apiName}`
+        );
       }
       break;
       
@@ -593,4 +626,4 @@ ${colors.bold}LinchKit AI Session 工具${colors.reset}
 
 // 主程序
 const [,, command, ...args] = process.argv;
-handleCommand(command, args);
+await handleCommand(command, args);

@@ -140,18 +140,37 @@ async function main() {
   const args = process.argv.slice(2)
   let taskDescription = ''
   
-  // 解析参数
+  // 调试：显示收到的参数
+  logger.info(`🔍 收到参数: ${JSON.stringify(args)}`)
+  
+  // 解析参数 - 更灵活的解析方式
   for (const arg of args) {
     if (arg.startsWith('--task=')) {
       taskDescription = arg.substring(7)
+      // 移除可能的引号
+      if ((taskDescription.startsWith('"') && taskDescription.endsWith('"')) ||
+          (taskDescription.startsWith("'") && taskDescription.endsWith("'"))) {
+        taskDescription = taskDescription.slice(1, -1)
+      }
+    }
+  }
+  
+  // 如果没有找到 --task= 格式，尝试其他格式
+  if (!taskDescription && args.length > 0) {
+    // 检查是否是 --task "description" 格式
+    const taskIndex = args.findIndex(arg => arg === '--task')
+    if (taskIndex !== -1 && args[taskIndex + 1]) {
+      taskDescription = args[taskIndex + 1]
     }
   }
   
   if (!taskDescription) {
-    logger.error('❌ 错误: 请提供任务描述')
-    logger.error('使用方法: bun run ai:init --task="任务描述"')
-    process.exit(1)
+    // 如果没有提供任务描述，使用默认值
+    taskDescription = '通用开发初始化'
+    logger.info('📋 未提供任务描述，使用默认初始化模式')
   }
+  
+  logger.info(`📋 解析的任务描述: "${taskDescription}"`)
   
   const initializer = new AIInitializer(taskDescription)
   const success = await initializer.initialize()

@@ -6,6 +6,7 @@
  */
 
 import { createLogger } from '@linch-kit/core/server'
+import { THRESHOLDS } from '../core/constants'
 
 import type {
   GraphNode,
@@ -139,7 +140,7 @@ export class CorrelationAnalyzer {
     this.logger.info(`开始智能关联分析，节点总数: ${nodes.length}`)
 
     // 检查是否已有过多关系，如果是则使用保守策略
-    const conservativeMode = nodes.length > 20000
+    const conservativeMode = nodes.length > THRESHOLDS.BATCH_SIZE * 7
     if (conservativeMode) {
       this.logger.warn('节点数量过多，启用保守模式，减少关系生成')
     }
@@ -161,14 +162,14 @@ export class CorrelationAnalyzer {
     relationships.push(...this.findImportExportRelations(semanticIndex, relationshipSet))
 
     // 3. 基于类型使用的关联（中等可信度）- 在保守模式下限制
-    if (!conservativeMode || relationshipSet.size < 50000) {
+    if (!conservativeMode || relationshipSet.size < THRESHOLDS.RELATIONSHIP_SET_LIMIT + 20000) {
       relationships.push(...this.findTypeUsageRelations(semanticIndex, relationshipSet))
     } else {
       this.logger.info('跳过类型使用关联分析，避免关系过多')
     }
 
     // 4. 语义关联 - 仅在关系数量较少时执行
-    if (relationshipSet.size < 30000) {
+    if (relationshipSet.size < THRESHOLDS.RELATIONSHIP_SET_LIMIT) {
       relationships.push(...await this.findSemanticRelations(semanticIndex, relationshipSet))
     } else {
       this.logger.info('跳过语义关联分析，避免关系过多')

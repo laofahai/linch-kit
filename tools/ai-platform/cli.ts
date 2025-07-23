@@ -33,7 +33,7 @@ program
   .action(async () => {
     logger.info('🔄 开始提取项目代码...')
     const { spawn } = await import('child_process')
-    spawn('bun', ['run', 'scripts/graph-data-extractor.js'], {
+    spawn('bun', ['graph', 'sync'], {
       stdio: 'inherit',
       cwd: process.cwd()
     })

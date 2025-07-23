@@ -1,0 +1,274 @@
+// LinchKit 权限系统数据库模式扩展
+// 这个文件应该被包含在主 schema.prisma 中
+
+// 角色表
+model Role {
+  id            String   @id @default(cuid())
+  name          String   @db.VarChar(100)
+  description   String?  @db.Text
+  permissions   String[] // JSON array of permission strings
+  
+  // 角色继承
+  parentRoleId  String?
+  parentRole    Role?    @relation("RoleHierarchy", fields: [parentRoleId], references: [id])
+  childRoles    Role[]   @relation("RoleHierarchy")
+  inherits      String[] // Additional inherited role IDs
+  
+  // 系统角色标识
+  isSystemRole  Boolean  @default(false)
+  
+  // 多租户支持
+  tenantId      String?
+  tenant        Tenant?  @relation(fields: [tenantId], references: [id])
+  
+  // 审计字段
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // 关系
+  rolePermissions    RolePermission[]
+  userRoleAssignments UserRoleAssignment[]
+  resourcePermissions ResourcePermission[]
+  
+  @@unique([name, tenantId])
+  @@index([name])
+  @@index([tenantId])
+  @@index([isSystemRole])
+  @@map("roles")
+}
+
+// 权限表
+model Permission {
+  id                String   @id @default(cuid())
+  name              String   @db.VarChar(100)
+  action            String   @db.VarChar(50)
+  subject           String   @db.VarChar(100)
+  
+  // CASL权限条件 - 存储JSON
+  conditions        String?  @db.Text
+  
+  // 字段级权限
+  fields            String[] // 相关字段列表
+  allowedFields     String[] // 允许的字段
+  deniedFields      String[] // 拒绝的字段
+  
+  // 描述信息
+  description       String?  @db.Text
+  isSystemPermission Boolean @default(false)
+  
+  // 审计字段
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // 关系
+  rolePermissions   RolePermission[]
+  
+  @@index([name])
+  @@index([action])
+  @@index([subject])
+  @@index([isSystemPermission])
+  @@map("permissions")
+}
+
+// 角色-权限关联表（支持权限覆盖）
+model RolePermission {
+  id       String @id @default(cuid())
+  roleId   String
+  permissionId String
+  
+  // 权限覆盖
+  overrideConditions   String?  @db.Text // JSON覆盖条件
+  overrideAllowedFields String[] // 覆盖允许的字段
+  overrideDeniedFields  String[] // 覆盖拒绝的字段
+  
+  // 审计字段
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // 关系
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+// 用户-角色分配表（支持作用域和时间限制）
+model UserRoleAssignment {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  
+  // 作用域限制
+  scope     String?  @db.VarChar(100) // 作用域值（如项目ID、部门ID）
+  scopeType String?  @db.VarChar(50)  // 作用域类型（如 'project', 'department'）
+  
+  // 时间限制
+  validFrom DateTime @default(now())
+  validTo   DateTime?
+  
+  // 审计字段
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?  // 分配人ID
+  
+  // 关系
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role    Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  creator User? @relation("RoleAssignmentCreator", fields: [createdBy], references: [id])
+  
+  @@index([userId])
+  @@index([roleId])
+  @@index([scope, scopeType])
+  @@index([validFrom, validTo])
+  @@map("user_role_assignments")
+}
+
+// 资源级权限表
+model ResourcePermission {
+  id           String   @id @default(cuid())
+  resourceType String   @db.VarChar(100) // 资源类型
+  resourceId   String   @db.VarChar(100) // 资源ID
+  
+  // 权限主体（用户或角色）
+  userId       String?
+  roleId       String?
+  
+  // 权限动作
+  actions      String[] // 允许的动作列表
+  
+  // 权限条件
+  conditions   String?  @db.Text // JSON条件
+  
+  // 审计字段
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String?
+  
+  // 关系
+  user    User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role    Role? @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  creator User? @relation("ResourcePermissionCreator", fields: [createdBy], references: [id])
+  
+  @@unique([resourceType, resourceId, userId, roleId])
+  @@index([resourceType, resourceId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("resource_permissions")
+}
+
+// JWT黑名单表
+model JWTBlacklist {
+  id            String   @id @default(cuid())
+  jti           String   @unique @db.VarChar(100) // JWT ID
+  userId        String?
+  tokenHash     String   @db.VarChar(255) // Token哈希
+  
+  // 过期时间
+  expiresAt     DateTime
+  
+  // 撤销信息
+  revokedAt     DateTime @default(now())
+  revokedBy     String?
+  revokedReason String?  @db.Text
+  
+  // 审计字段
+  createdAt     DateTime @default(now())
+  
+  // 关系
+  user          User?    @relation(fields: [userId], references: [id])
+  revokedByUser User?    @relation("JWTBlacklistRevokedBy", fields: [revokedBy], references: [id])
+  
+  @@index([jti])
+  @@index([expiresAt])
+  @@index([userId])
+  @@map("jwt_blacklist")
+}
+
+// 权限缓存表（用于性能优化）
+model PermissionCache {
+  id        String   @id @default(cuid())
+  userId    String
+  cacheKey  String   @db.VarChar(255)
+  cacheData String   @db.Text // JSON数据
+  expiresAt DateTime
+  
+  // 审计字段
+  createdAt DateTime @default(now())
+  
+  // 关系
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, cacheKey])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("permission_cache")
+}
+
+// 上下文权限规则表（用于复杂场景的字段权限）
+model ContextPermissionRule {
+  id           String   @id @default(cuid())
+  resourceType String   @db.VarChar(100)
+  
+  // 上下文条件
+  userId       String?
+  roleId       String?
+  tenantId     String?
+  scope        String?  @db.VarChar(100)
+  
+  // 字段权限
+  allowedFields String[]
+  deniedFields  String[]
+  
+  // 生效条件
+  conditions   String?  @db.Text // JSON条件
+  
+  // 审计字段
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // 关系
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role? @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  @@index([resourceType])
+  @@index([userId])
+  @@index([roleId])
+  @@index([tenantId])
+  @@map("context_permission_rules")
+}
+
+// 扩展用户表以支持权限系统
+model User {
+  // ... 现有用户字段 ...
+  
+  // 权限相关关系
+  roleAssignments         UserRoleAssignment[]
+  createdRoleAssignments  UserRoleAssignment[] @relation("RoleAssignmentCreator")
+  resourcePermissions     ResourcePermission[]
+  createdResourcePermissions ResourcePermission[] @relation("ResourcePermissionCreator")
+  jwtBlacklist            JWTBlacklist[]
+  revokedJWTs             JWTBlacklist[]       @relation("JWTBlacklistRevokedBy")
+  permissionCache         PermissionCache[]
+  contextPermissionRules  ContextPermissionRule[]
+}
+
+// 租户表（多租户支持）
+model Tenant {
+  id          String   @id @default(cuid())
+  name        String   @db.VarChar(100)
+  slug        String   @unique @db.VarChar(50)
+  
+  // 审计字段
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // 关系
+  roles       Role[]
+  contextPermissionRules ContextPermissionRule[]
+  
+  @@map("tenants")
+}

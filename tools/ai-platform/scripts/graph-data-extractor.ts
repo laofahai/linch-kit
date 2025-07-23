@@ -26,14 +26,14 @@ const colors = {
 };
 
 const log = {
-  info: (msg) => logger.info(`${colors.blue}ℹ${colors.reset} ${msg}`),
-  success: (msg) => logger.info(`${colors.green}✓${colors.reset} ${msg}`),
-  warn: (msg) => logger.info(`${colors.yellow}⚠${colors.reset} ${msg}`),
-  error: (msg) => logger.info(`${colors.red}✗${colors.reset} ${msg}`),
-  header: (msg) => logger.info(`\n${colors.bold}${colors.blue}${msg}${colors.reset}\n`)
+  info: (msg: string) => logger.info(`${colors.blue}ℹ${colors.reset} ${msg}`),
+  success: (msg: string) => logger.info(`${colors.green}✓${colors.reset} ${msg}`),
+  warn: (msg: string) => logger.info(`${colors.yellow}⚠${colors.reset} ${msg}`),
+  error: (msg: string) => logger.info(`${colors.red}✗${colors.reset} ${msg}`),
+  header: (msg: string) => logger.info(`\n${colors.bold}${colors.blue}${msg}${colors.reset}\n`)
 };
 
-async function runCommand(cmd, description) {
+async function runCommand(cmd: string, description: string): Promise<string> {
   try {
     log.info(description);
     const { stdout } = await execAsync(cmd);
@@ -156,15 +156,15 @@ async function extractToNeo4j() {
     
     await neo4jService.connect();
     
-    // 智能更新策略：检查是否需要清空数据库
+    // 全量更新策略：先清空数据库避免重复数据
     const stats = await neo4jService.getStats().catch(() => null);
     const hasExistingData = stats && stats.node_count > 0;
     
     if (hasExistingData) {
       log.info(`数据库中已有 ${stats.node_count} 个节点，${stats.relationship_count} 个关系`);
-      log.info('使用增量更新模式...');
-      // 只删除过时的数据，而不是全部清空
-      await neo4jService.query('MATCH (n {updated_at: null}) DETACH DELETE n');
+      log.info('执行全量更新：先清空数据库...');
+      await neo4jService.clearDatabase();
+      log.success('数据库已清空');
     } else {
       log.info('数据库为空，执行全量导入...');
     }

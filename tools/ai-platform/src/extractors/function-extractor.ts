@@ -27,7 +27,8 @@ import {
   ExpressionWithTypeArguments,
 } from 'ts-morph'
 
-import { NodeType, RelationType, type GraphNode, type GraphRelationship, NodeIdGenerator, RelationshipIdGenerator } from '../core/types/index'
+import { NodeType, RelationType, type GraphNode, type GraphRelationship, NodeIdGenerator } from '../core/types/index'
+import { RelationshipIdGenerator } from '../types/index'
 
 import { BaseExtractor } from './base-extractor'
 
@@ -683,7 +684,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       if (fileInfo.packageName) {
         const packageId = NodeIdGenerator.package(fileInfo.packageName)
         const fileToPackageRelationship: GraphRelationship = {
-          id: RelationshipIdGenerator.create(RelationType.CONTAINS, packageId, fileId),
+          id: RelationshipIdGenerator.generate(RelationType.CONTAINS, packageId, fileId),
           type: RelationType.CONTAINS,
           source: packageId,
           target: fileId,
@@ -699,7 +700,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
       // 创建FILE包含实体的关系
       for (const entity of fileInfo.entities) {
         const containsRelationship: GraphRelationship = {
-          id: RelationshipIdGenerator.create(RelationType.CONTAINS, fileId, entity.id),
+          id: RelationshipIdGenerator.generate(RelationType.CONTAINS, fileId, entity.id),
           type: RelationType.CONTAINS,
           source: fileId,
           target: entity.id,
@@ -752,7 +753,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           'function',
           func.filePath
         )
-        const relationshipId = RelationshipIdGenerator.create(RelationType.CALLS, nodeId, targetId)
+        const relationshipId = RelationshipIdGenerator.generate(RelationType.CALLS, nodeId, targetId)
 
         relationships.push({
           id: relationshipId,
@@ -803,7 +804,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           ? NodeIdGenerator.api(parentClass.packageName || 'unknown', parentClass.name, 'class', parentClass.filePath)
           : NodeIdGenerator.api(cls.packageName || 'unknown', cls.extendsClass, 'class')
         
-        const relationshipId = RelationshipIdGenerator.create(
+        const relationshipId = RelationshipIdGenerator.generate(
           RelationType.EXTENDS,
           nodeId,
           parentId
@@ -830,7 +831,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           ? NodeIdGenerator.api(targetInterface.packageName || 'unknown', targetInterface.name, 'interface', targetInterface.filePath)
           : NodeIdGenerator.api(cls.packageName || 'unknown', interfaceName, 'interface')
         
-        const relationshipId = RelationshipIdGenerator.create(
+        const relationshipId = RelationshipIdGenerator.generate(
           RelationType.IMPLEMENTS,
           nodeId,
           interfaceId
@@ -886,7 +887,7 @@ export class FunctionExtractor extends BaseExtractor<CodeAnalysis> {
           ? NodeIdGenerator.api(targetInterface.packageName || 'unknown', targetInterface.name, 'interface', targetInterface.filePath)
           : NodeIdGenerator.api(iface.packageName || 'unknown', parentInterface, 'interface')
         
-        const relationshipId = RelationshipIdGenerator.create(
+        const relationshipId = RelationshipIdGenerator.generate(
           RelationType.EXTENDS,
           nodeId,
           parentId

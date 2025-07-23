@@ -49,5 +49,566 @@
     ],
     "createdAt": "2025-07-22T15:13:10.610Z",
     "status": "draft"
+  },
+  {
+    "id": "evolution-1753241088630",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T03:24:48.631Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753241281844",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T03:28:01.844Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753241506211",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T03:31:46.211Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753241774018",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T03:36:14.019Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753242176334",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T03:42:56.334Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753242275714",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T03:44:35.714Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753251423314",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T06:17:03.314Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753257735743",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T08:02:15.743Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753260704006",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T08:51:44.006Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753260838207",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T08:53:58.207Z",
+    "status": "draft"
+  },
+  {
+    "id": "evolution-1753263400472",
+    "title": "Test Evolution Plan",
+    "description": "Test strategy for modernization",
+    "cycle": "monthly",
+    "targetDate": "2025-08-22",
+    "steps": [
+      {
+        "name": "全面健康评估",
+        "description": "对系统进行全面的健康度评估",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "工具链优化",
+        "description": "分析和优化开发工具链",
+        "estimatedTime": "4小时",
+        "status": "pending"
+      },
+      {
+        "name": "依赖更新规划",
+        "description": "制定依赖更新和升级计划",
+        "estimatedTime": "2小时",
+        "status": "pending"
+      },
+      {
+        "name": "实施改进措施",
+        "description": "执行高优先级的改进措施",
+        "estimatedTime": "1天",
+        "status": "pending"
+      }
+    ],
+    "successMetrics": [
+      "构建成功率保持100%",
+      "测试覆盖率不低于当前水平",
+      "代码质量评分提升",
+      "系统健康评分提升5分以上",
+      "工具链优化完成率 > 90%",
+      "依赖安全漏洞数量为0"
+    ],
+    "rollbackPlan": [
+      "创建完整的系统备份",
+      "记录所有配置变更",
+      "准备回退脚本和流程",
+      "设置监控和告警机制",
+      "制定快速回退决策标准",
+      "验证回退流程的有效性"
+    ],
+    "createdAt": "2025-07-23T09:36:40.472Z",
+    "status": "draft"
   }
 ]

@@ -7,6 +7,7 @@
 
 import neo4j, { Driver, Node, Relationship } from 'neo4j-driver'
 import { createLogger } from '@linch-kit/core/server'
+import { TIMEOUTS, THRESHOLDS, NEO4J_CONFIG, RETRY_CONFIG } from '../constants'
 
 import type {
   IGraphService,
@@ -38,55 +39,83 @@ export class Neo4jService implements IGraphService {
    * 建立 Neo4j 连接
    */
   async connect(): Promise<void> {
-    try {
-      this.logger.info('连接到 Neo4j AuraDB...', {
-        uri: this.config.connectionUri,
-        database: this.config.database,
-        username: this.config.username,
-      })
+    // 添加重试机制
+    let retries = 3
+    while (retries > 0) {
+      try {
+        this.logger.info('连接到 Neo4j AuraDB...', {
+          uri: this.config.connectionUri,
+          database: this.config.database,
+          username: this.config.username,
+          attempt: 4 - retries
+        })
 
-      const driverConfig = {
-        maxTransactionRetryTime: 30000, // 增加到30秒
-        maxConnectionPoolSize: 10, // 减少连接池大小避免AuraDB限制
-        connectionAcquisitionTimeout: 120000, // 增加到2分钟
-        maxConnectionLifetime: 10 * 60 * 1000, // 减少到10分钟，避免长连接超时
-        connectionTimeout: 30000, // 连接超时30秒
-        disableLosslessIntegers: true, // 避免BigInt问题
+        const driverConfig = {
+          maxTransactionRetryTime: TIMEOUTS.TRANSACTION_RETRY,
+          maxConnectionPoolSize: 5, // 减少连接池大小，适配AuraDB
+          connectionAcquisitionTimeout: 60000, // 增加获取连接超时
+          maxConnectionLifetime: 300000, // 5分钟生命周期
+          connectionTimeout: 60000, // 增加连接超时
+          disableLosslessIntegers: true,
+          // AuraDB优化配置
+          resolver: undefined, // 使用默认DNS解析
+        }
+
+        // 只对非secure URL添加加密配置
+        if (!this.config.connectionUri.includes('+s://')) {
+          Object.assign(driverConfig, { encrypted: true })
+        }
+
+        this.driver = neo4j.driver(
+          this.config.connectionUri,
+          neo4j.auth.basic(this.config.username, this.config.password),
+          driverConfig
+        )
+
+        // 验证连接 - 使用简单查询
+        const session = this.driver.session({ 
+          database: this.config.database,
+          defaultAccessMode: neo4j.session.READ
+        })
+        
+        try {
+          await session.run('RETURN 1 as test')
+          this.logger.debug('Neo4j 连接验证成功')
+        } finally {
+          await session.close()
+        }
+
+        // 初始化 Neogma OGM
+        const neogma = initializeNeogma(
+          this.config.connectionUri,
+          this.config.username,
+          this.config.password
+        )
+        this.queryService = new GraphQueryService(neogma)
+
+        // 创建约束和索引
+        await this.setupDatabase()
+
+        this.logger.info('成功连接到 Neo4j AuraDB')
+        return // 连接成功，退出重试循环
+        
+      } catch (error) {
+        retries--
+        this.logger.warn(`Neo4j 连接失败 (剩余重试: ${retries})`, { 
+          error: error instanceof Error ? error.message : 'Unknown error',
+          originalError: error,
+        })
+        
+        if (retries === 0) {
+          this.logger.error('Neo4j 连接失败，重试已用尽')
+          throw new Error(
+            `Neo4j connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          )
+        }
+        
+        // 等待后重试
+        await new Promise(resolve => setTimeout(resolve, 3000))
       }
-
-      // 只对非secure URL添加加密配置
-      if (!this.config.connectionUri.includes('+s://')) {
-        Object.assign(driverConfig, { encrypted: true })
-      }
-
-      this.driver = neo4j.driver(
-        this.config.connectionUri,
-        neo4j.auth.basic(this.config.username, this.config.password),
-        driverConfig
-      )
-
-      // 验证连接
-      await this.driver.verifyConnectivity()
-
-      // 初始化 Neogma OGM
-      const neogma = initializeNeogma(
-        this.config.connectionUri,
-        this.config.username,
-        this.config.password
-      )
-      this.queryService = new GraphQueryService(neogma)
-
-      // 创建约束和索引
-      await this.setupDatabase()
-
-      this.logger.info('成功连接到 Neo4j AuraDB，Neogma OGM 已初始化')
-    } catch (error) {
-      this.logger.error('Neo4j 连接失败', error instanceof Error ? error : undefined, {
-        originalError: error,
-      })
-      throw new Error(
-        `Neo4j connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-      )
     }
   }
 
@@ -181,8 +210,8 @@ export class Neo4jService implements IGraphService {
       throw new Error('Neo4j 连接未建立。请先调用 connect()')
     }
 
-    const maxRetries = 3
-    const baseDelay = 2000 // 2秒
+    const maxRetries = RETRY_CONFIG.MAX_RETRIES
+    const baseDelay = RETRY_CONFIG.RETRY_DELAY_BASE
     
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       const session = this.driver.session({ database: this.config.database })
@@ -194,28 +223,54 @@ export class Neo4jService implements IGraphService {
           relationshipCount: relationships.length,
         })
 
-        // 分批处理以避免内存和连接压力 - 针对AuraDB优化
-        const nodesBatchSize = 2000  // 减少节点批次大小
-        const relsBatchSize = 3000   // 大幅减少关系批次大小
+        // 分批处理 - 平衡性能和AuraDB限制
+        const nodesBatchSize = 1000  // 合理的节点批次大小
+        const relsBatchSize = 500    // 合理的关系批次大小
 
-        // 分批创建节点
+        // 分批创建节点 - 每个事务单独处理
         for (let i = 0; i < nodes.length; i += nodesBatchSize) {
           const nodeBatch = nodes.slice(i, i + nodesBatchSize)
           this.logger.debug(`导入节点批次 ${Math.floor(i / nodesBatchSize) + 1}: ${nodeBatch.length} 个节点`)
           
-          await session.executeWrite(async tx => {
-            await this.batchCreateNodes(tx, nodeBatch)
-          })
+          let batchAttempt = 0
+          const maxBatchRetries = 3
+          
+          while (batchAttempt < maxBatchRetries) {
+            try {
+              await session.executeWrite(async tx => {
+                await this.batchCreateNodes(tx, nodeBatch)
+              })
+              break
+            } catch (error) {
+              batchAttempt++
+              this.logger.warn(`节点批次导入失败 (尝试 ${batchAttempt}/${maxBatchRetries})`, { error })
+              if (batchAttempt >= maxBatchRetries) throw error
+              await new Promise(resolve => setTimeout(resolve, 1000 * batchAttempt))
+            }
+          }
         }
 
-        // 分批创建关系
+        // 分批创建关系 - 每个事务单独处理
         for (let i = 0; i < relationships.length; i += relsBatchSize) {
           const relBatch = relationships.slice(i, i + relsBatchSize)
           this.logger.debug(`导入关系批次 ${Math.floor(i / relsBatchSize) + 1}: ${relBatch.length} 个关系`)
           
-          await session.executeWrite(async tx => {
-            await this.batchCreateRelationships(tx, relBatch)
-          })
+          let batchAttempt = 0
+          const maxBatchRetries = 3
+          
+          while (batchAttempt < maxBatchRetries) {
+            try {
+              await session.executeWrite(async tx => {
+                await this.batchCreateRelationships(tx, relBatch)
+              })
+              break
+            } catch (error) {
+              batchAttempt++
+              this.logger.warn(`关系批次导入失败 (尝试 ${batchAttempt}/${maxBatchRetries})`, { error })
+              if (batchAttempt >= maxBatchRetries) throw error
+              await new Promise(resolve => setTimeout(resolve, 1000 * batchAttempt))
+            }
+          }
         }
 
         const duration = Date.now() - startTime
@@ -246,7 +301,7 @@ export class Neo4jService implements IGraphService {
         }
 
         // 指数退避延迟
-        const delay = baseDelay * Math.pow(2, attempt - 1)
+        const delay = baseDelay * Math.pow(RETRY_CONFIG.RETRY_DELAY_MULTIPLIER, attempt - 1)
         this.logger.info(`等待 ${delay}ms 后重试...`)
         await new Promise(resolve => setTimeout(resolve, delay))
       }
@@ -283,7 +338,7 @@ export class Neo4jService implements IGraphService {
   async clearDatabase(): Promise<void> {
     this.logger.warn('清空 Neo4j 数据库...')
 
-    const maxRetries = 3
+    const maxRetries = RETRY_CONFIG.MAX_RETRIES
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         // 分批删除以避免超时，先删除关系再删除节点
@@ -295,7 +350,7 @@ export class Neo4jService implements IGraphService {
         
         // 然后分批删除节点
         let deletedCount = 0
-        let batchSize = 10000
+        let batchSize = THRESHOLDS.BATCH_SIZE * 3 // 更大的删除批次
         
         while (true) {
           const result = await this.query(
@@ -327,7 +382,7 @@ export class Neo4jService implements IGraphService {
         await this.connect()
         
         // 等待重试
-        await new Promise(resolve => setTimeout(resolve, 2000 * attempt))
+        await new Promise(resolve => setTimeout(resolve, RETRY_CONFIG.RETRY_DELAY_BASE * attempt))
       }
     }
   }
@@ -358,24 +413,18 @@ export class Neo4jService implements IGraphService {
       // 从查询结果中获取节点计数
       const nodeCount =
         nodeCountResult.records.length > 0
-          ? (nodeCountResult.records[0] as { get: (key: string) => { toNumber: () => number } })
-              .get('count')
-              .toNumber()
+          ? Number(nodeCountResult.records[0].get('count'))
           : 0
       const relCount =
         relCountResult.records.length > 0
-          ? (relCountResult.records[0] as { get: (key: string) => { toNumber: () => number } })
-              .get('count')
-              .toNumber()
+          ? Number(relCountResult.records[0].get('count'))
           : 0
 
       // 处理节点类型统计
       const nodeTypes: Record<string, number> = {}
       for (const record of nodeTypeResult.records) {
         const type = (record as { get: (key: string) => unknown }).get('type')
-        const count = (record as { get: (key: string) => { toNumber: () => number } })
-          .get('count')
-          .toNumber()
+        const count = Number(record.get('count'))
         if (type && typeof type === 'string') {
           nodeTypes[type] = count
         }
@@ -385,9 +434,7 @@ export class Neo4jService implements IGraphService {
       const relationshipTypes: Record<string, number> = {}
       for (const record of relTypeResult.records) {
         const type = (record as { get: (key: string) => unknown }).get('type')
-        const count = (record as { get: (key: string) => { toNumber: () => number } })
-          .get('count')
-          .toNumber()
+        const count = Number(record.get('count'))
         if (type && typeof type === 'string') {
           relationshipTypes[type] = count
         }
@@ -447,72 +494,44 @@ export class Neo4jService implements IGraphService {
     tx: import('neo4j-driver').ManagedTransaction,
     nodes: GraphNode[]
   ): Promise<void> {
-    const batchSize = 500
+    // 平衡性能和稳定性
+    const batchSize = 200
 
     for (let i = 0; i < nodes.length; i += batchSize) {
       const batch = nodes.slice(i, i + batchSize).map(node => ({
         id: node.id,
-        type: node.type,
-        name: node.name,
-        // 平坦化 metadata 对象
-        ...this.flattenMetadata(node.metadata || {}),
-        // 平坦化 properties 对象
-        ...this.flattenMetadata(node.properties || {}, 'prop_'),
+        type: node.type || 'Unknown',
+        name: node.name || '',
+        description: node.description || '',
+        // 只保留简单的字符串属性，避免复杂对象
+        ...(typeof node.properties === 'object' && node.properties !== null 
+          ? Object.fromEntries(
+              Object.entries(node.properties).filter(([_, v]) => 
+                typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean'
+              )
+            )
+          : {}),
       }))
 
-      // 尝试使用 APOC 优化，如果失败则使用原生方法
+      // 使用最简单的Cypher查询，避免所有复杂操作
+      const cypher = `
+        UNWIND $nodes as nodeData
+        MERGE (n:GraphNode {id: nodeData.id})
+        SET n += nodeData, n.updated_at = datetime()
+        RETURN count(n) as created
+      `
+
       try {
-        const apocCypher = `
-          CALL apoc.periodic.iterate(
-            'UNWIND $nodes as nodeData RETURN nodeData',
-            'MERGE (n:GraphNode {id: nodeData.id})
-             SET n = nodeData,
-                 n.updated_at = datetime()
-             WITH n, nodeData
-             CALL apoc.create.addLabels(n, [nodeData.type]) YIELD node
-             RETURN count(node)',
-            {batchSize: 100, parallel: true, params: {nodes: $nodes}}
-          ) YIELD batches, total, timeTaken
-          RETURN batches, total, timeTaken
-        `
-
-        await tx.run(apocCypher, { nodes: batch })
-        this.logger.debug(
-          `批次 ${Math.floor(i / batchSize) + 1}: 使用 APOC 创建了 ${batch.length} 个节点`
-        )
-      } catch (apocError) {
-        // APOC 不可用，使用原生 Cypher 按类型分组创建
-        this.logger.debug('APOC 不可用，使用原生 Cypher 按类型分组创建', { error: apocError })
-
-        // 按节点类型分组
-        const nodesByType = new Map<string, Record<string, unknown>[]>()
-        for (const nodeData of batch) {
-          const type = nodeData.type || 'GraphNode'
-          if (!nodesByType.has(type)) {
-            nodesByType.set(type, [])
-          }
-          nodesByType.get(type)!.push(nodeData)
-        }
-
-        // 为每种类型创建节点，直接使用双重标签（无APOC依赖）
-        for (const [type, typeNodes] of nodesByType) {
-          this.logger.debug(`创建 ${type} 类型节点: ${typeNodes.length} 个`)
-
-          // 创建或更新节点，使用简单的标签管理
-          const cypher = `
-            UNWIND $nodes as nodeData
-            MERGE (n:GraphNode {id: nodeData.id})
-            SET n = nodeData, n.updated_at = datetime()
-            RETURN count(n)
-          `
-
-          await tx.run(cypher, { nodes: typeNodes })
-          this.logger.debug(`创建 ${type} 节点完成`)
-        }
-
-        this.logger.debug(
-          `批次 ${Math.floor(i / batchSize) + 1}: 使用原生 Cypher 创建了 ${batch.length} 个节点`
-        )
+        const result = await tx.run(cypher, { nodes: batch })
+        const created = Number(result.records[0]?.get('created') || 0)
+        this.logger.debug(`批次 ${Math.floor(i / batchSize) + 1}: 创建了 ${created} 个节点`)
+      } catch (error) {
+        this.logger.error(`节点批次创建失败`, { 
+          batchIndex: Math.floor(i / batchSize) + 1, 
+          batchSize: batch.length,
+          error 
+        })
+        throw error
       }
     }
 
@@ -526,7 +545,7 @@ export class Neo4jService implements IGraphService {
     tx: import('neo4j-driver').ManagedTransaction,
     relationships: GraphRelationship[]
   ): Promise<void> {
-    const batchSize = 1000 // 大批量处理关系
+    const batchSize = 100 // 平衡性能的关系批次
 
     for (let i = 0; i < relationships.length; i += batchSize) {
       const batch = relationships.slice(i, i + batchSize).map(rel => {

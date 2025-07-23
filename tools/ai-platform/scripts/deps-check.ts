@@ -226,20 +226,20 @@ class DepsChecker {
     if (results.packages.length > 0) {
       logger.info('\n🔍 发现相关核心包:');
       results.packages.forEach(pkg => {
-        logger.info(`  📦 ${pkg.name}`);
-        pkg.matches.forEach(match => {
-          logger.info(`    ${match.type}: ${match.content.substring(0, 100)}...`);
-        });
+        logger.info(`  📦 ${pkg.name} (${pkg.matches.length} 个匹配)`);
+        // 只显示匹配类型，不显示具体代码内容以节省 token
+        const types = [...new Set(pkg.matches.map(m => m.type))];
+        logger.info(`    匹配类型: ${types.join(', ')}`);
       });
     }
     
     if (results.extensions.length > 0) {
       logger.info('\n🔧 发现相关扩展:');
       results.extensions.forEach(ext => {
-        logger.info(`  🧩 ${ext.name}`);
-        ext.matches.forEach(match => {
-          logger.info(`    ${match.type}: ${match.content.substring(0, 100)}...`);
-        });
+        logger.info(`  🧩 ${ext.name} (${ext.matches.length} 个匹配)`);
+        // 只显示匹配类型，不显示具体代码内容以节省 token
+        const types = [...new Set(ext.matches.map(m => m.type))];
+        logger.info(`    匹配类型: ${types.join(', ')}`);
       });
     }
     
@@ -255,15 +255,49 @@ class DepsChecker {
 // CLI 入口
 async function main() {
   const args = process.argv.slice(2);
+  let keywords = [];
   
-  if (args.length === 0) {
-    logger.info('用法: bun run deps:check <关键词1> [关键词2] ...');
-    logger.info('示例: bun run deps:check auth user login');
-    process.exit(1);
+  // 解析参数
+  let i = 0;
+  while (i < args.length) {
+    const arg = args[i];
+    
+    if (arg === 'check') {
+      // 跳过 check 子命令
+      i++;
+      continue;
+    }
+    
+    if (arg.startsWith('--keywords=')) {
+      // 处理 --keywords="word1 word2" 格式
+      const keywordString = arg.substring(11);
+      if (keywordString) {
+        keywords.push(...keywordString.split(/\s+/).filter(k => k.trim()));
+      }
+      i++;
+      continue;
+    }
+    
+    if (arg === '--keywords' && i + 1 < args.length) {
+      // 处理 --keywords "word1 word2" 格式
+      keywords.push(...args[i + 1].split(/\s+/).filter(k => k.trim()));
+      i += 2;
+      continue;
+    }
+    
+    // 直接作为关键词
+    keywords.push(arg);
+    i++;
+  }
+  
+  // 如果没有关键词，使用默认值
+  if (keywords.length === 0) {
+    keywords = ['通用功能'];
+    logger.info('📋 未提供关键词，使用默认分析模式');
   }
   
   const checker = new DepsChecker();
-  await checker.check(args);
+  await checker.check(keywords);
 }
 
 // 支持直接调用和模块导入
