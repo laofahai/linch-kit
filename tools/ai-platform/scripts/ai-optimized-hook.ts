@@ -12,6 +12,13 @@
  * @version 2.0.0
  */
 
+// 加载.env文件中的环境变量
+import { config } from 'dotenv'
+import { join } from 'path'
+
+// 加载项目根目录的.env文件，强制覆盖现有环境变量
+config({ path: join(process.cwd(), '.env'), override: true })
+
 import { createLogger } from '@linch-kit/core'
 import { AIDrivenHookOptimizer } from '../hooks/ai-driven-hook-optimizer'
 import { AI_PROVIDERS } from '../src/core/constants'

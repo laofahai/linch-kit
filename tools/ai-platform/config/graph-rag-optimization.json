@@ -1,0 +1,66 @@
+{
+  "hooks": {
+    "preCheck": {
+      "maxQueries": 2,
+      "queryTimeout": 3000,
+      "parallelQueries": true,
+      "fastMode": true,
+      "resultLimit": 5,
+      "enableIntelligentSuggestions": true
+    },
+    "postCheck": {
+      "enableIncrementalSync": true,
+      "syncTimeout": 10000,
+      "smartFileDetection": true,
+      "maxSyncAttempts": 2,
+      "batchSize": 100
+    }
+  },
+  "performance": {
+    "cacheEnabled": true,
+    "cacheTTL": 300000,
+    "connectionPoolSize": 3,
+    "queryDebounce": 500,
+    "maxConcurrentQueries": 2
+  },
+  "quality": {
+    "enforceQueryLimits": true,
+    "requireSuccessfulQuery": false,
+    "logQueryPerformance": true,
+    "alertSlowQueries": true,
+    "slowQueryThreshold": 5000
+  },
+  "filePatterns": {
+    "syncRequired": [
+      "/components/",
+      "/services/",
+      "/utils/",
+      "/hooks/",
+      "/lib/",
+      "\\.tsx?$"
+    ],
+    "syncSkipped": [
+      "\\.test\\.",
+      "\\.spec\\.",
+      "/dist/",
+      "/node_modules/",
+      "\\.d\\.ts$",
+      "/coverage/",
+      "/.git/"
+    ],
+    "highPrioritySync": [
+      "/packages/",
+      "/src/core/",
+      "/api/",
+      "index.ts",
+      "types.ts"
+    ]
+  },
+  "monitoring": {
+    "enableMetrics": true,
+    "trackQueryLatency": true,
+    "trackSuccessRate": true,
+    "reportInterval": 3600000,
+    "maxLogEntries": 1000
+  }
+}

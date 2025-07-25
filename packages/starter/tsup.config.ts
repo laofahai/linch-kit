@@ -5,7 +5,9 @@ export default defineConfig([
   {
     entry: ['src/index.ts'],
     format: ['cjs', 'esm'],
-    dts: true,
+    dts: {
+      resolve: true,
+    },
     clean: true,
     outDir: 'dist',
     external: ['react', 'react-dom', 'next'],
@@ -14,15 +16,22 @@ export default defineConfig([
   {
     entry: ['src/client.ts'],
     format: ['cjs', 'esm'],
-    dts: true,
+    dts: {
+      resolve: true,
+    },
     outDir: 'dist',
     external: ['react', 'react-dom', 'next'],
+    banner: {
+      js: "'use client';",
+    },
   },
   // Server build
   {
     entry: ['src/server.ts'],
     format: ['cjs', 'esm'],
-    dts: true,
+    dts: {
+      resolve: true,
+    },
     outDir: 'dist',
     external: ['next'],
   },
@@ -30,7 +39,9 @@ export default defineConfig([
   {
     entry: ['src/templates.ts'],
     format: ['cjs', 'esm'],
-    dts: true,
+    dts: {
+      resolve: true,
+    },
     outDir: 'dist',
   },
 ])

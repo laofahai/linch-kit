@@ -61,9 +61,13 @@ export class Neo4jService implements IGraphService {
           resolver: undefined, // 使用默认DNS解析
         }
 
-        // 只对非secure URL添加加密配置
-        if (!this.config.connectionUri.includes('+s://')) {
+        // 根据连接类型设置加密配置
+        if (this.config.connectionUri.includes('+s://')) {
+          // AuraDB cloud 连接需要加密
           Object.assign(driverConfig, { encrypted: true })
+        } else if (this.config.connectionUri.startsWith('bolt://')) {
+          // 本地 Docker 连接不需要加密
+          Object.assign(driverConfig, { encrypted: false })
         }
 
         this.driver = neo4j.driver(

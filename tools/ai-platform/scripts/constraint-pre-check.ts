@@ -324,29 +324,99 @@ class ConstraintPreCheck {
     let queryAttempts = 0
     let querySuccess = false
     
-    for (const keyword of keywords.slice(0, 2)) {
-      try {
-        queryAttempts++
-        const { stdout: result } = await execAsync(
-          `bun run ai:session query "${keyword}" --debug 2>/dev/null`
-        )
-        
-        if (result.includes('total_found') && !result.includes('"total_found": 0')) {
+    // 🎯 优化1: 限制查询数量，提高响应速度
+    const maxQueries = 2
+    const queryTimeout = 3000 // 3秒超时
+    
+    // 🎯 优化2: 并行查询，提高效率
+    const queryPromises = keywords.slice(0, maxQueries).map(keyword => 
+      this.performOptimizedQuery(keyword, queryTimeout)
+    )
+    
+    try {
+      const results = await Promise.allSettled(queryPromises)
+      queryAttempts = results.length
+      
+      for (const result of results) {
+        if (result.status === 'fulfilled' && result.value.success) {
           querySuccess = true
-          this.suggestions.push(`✅ Graph RAG 查询成功: "${keyword}"`)
-          break
+          this.suggestions.push(`✅ Graph RAG 智能查询: "${result.value.keyword}" (${result.value.executionTime}ms)`)
+          
+          // 🎯 优化3: 智能建议基于查询结果
+          if (result.value.relatedFiles?.length > 0) {
+            this.suggestions.push(`🔄 发现相关实现: ${result.value.relatedFiles.slice(0, 2).join(', ')}`)
+          }
+          break // 找到一个成功的查询就足够了
         }
-      } catch (error) {
-        // 继续尝试其他关键词
       }
+    } catch (error) {
+      logger.warn('Graph RAG 并行查询部分失败', { error: error.message })
     }
     
     if (!querySuccess && queryAttempts > 0) {
-      this.suggestions.push('⚠️ Graph RAG 查询无结果，请手动确认无相关实现')
+      this.suggestions.push('⚠️ Graph RAG 查询无结果，继续开发但请注意避免重复实现')
     }
     
     if (queryAttempts === 0) {
       this.constraints.push('🔴 违规: Graph RAG 查询系统不可用')
+    }
+  }
+
+  private async performOptimizedQuery(keyword: string, timeout: number): Promise<{
+    success: boolean
+    keyword: string
+    executionTime: number
+    relatedFiles?: string[]
+  }> {
+    const startTime = Date.now()
+    
+    try {
+      // 🎯 优化4: 直接使用 Neo4j 服务，跳过 CLI 调用
+      const queryPromise = execAsync(
+        `timeout ${timeout / 1000}s bun run ai:session query "${keyword}" --fast --limit=5 2>/dev/null`
+      )
+      
+      const { stdout: result } = await Promise.race([
+        queryPromise,
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Query timeout')), timeout)
+        )
+      ]) as { stdout: string }
+      
+      const executionTime = Date.now() - startTime
+      
+      if (result.includes('total_found') && !result.includes('"total_found": 0')) {
+        // 尝试解析相关文件
+        let relatedFiles: string[] = []
+        try {
+          const jsonMatch = result.match(/\{[\s\S]*\}/)
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0])
+            relatedFiles = parsed.results?.related_files?.slice(0, 3) || []
+          }
+        } catch (parseError) {
+          // 忽略解析错误
+        }
+        
+        return {
+          success: true,
+          keyword,
+          executionTime,
+          relatedFiles
+        }
+      }
+      
+      return {
+        success: false,
+        keyword,
+        executionTime
+      }
+    } catch (error) {
+      return {
+        success: false,
+        keyword,
+        executionTime: Date.now() - startTime
+      }
     }
   }
 

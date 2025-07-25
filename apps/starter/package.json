@@ -24,6 +24,7 @@
     "@linch-kit/configs": "workspace:*",
     "@linch-kit/console": "workspace:*",
     "@linch-kit/core": "workspace:*",
+    "@linch-kit/schema": "workspace:*",
     "@linch-kit/starter": "workspace:*",
     "@linch-kit/ui": "workspace:*",
     "@radix-ui/react-slot": "^1.2.3",

@@ -60,6 +60,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const isAuthenticated = Boolean(user && session)
 
+  // 清除会话
+  const clearSession = () => {
+    setUser(null)
+    setSession(null)
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('auth-session')
+    }
+  }
+
+  // 从会话加载用户信息
+  const loadUserFromSession = useCallback(async (session: Session) => {
+    try {
+      Logger.debug('[Auth] Loading user from session')
+      
+      const response = await fetch('/api/auth/user', {
+        headers: {
+          'Authorization': `Bearer ${session.accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (response.ok) {
+        const userData = await response.json()
+        setUser(userData)
+        Logger.info('[Auth] User loaded successfully:', userData.id)
+      } else {
+        Logger.warn(`[Auth] Failed to load user, status: ${response.status}`)
+        if (response.status === 401) {
+          // Token无效，清除会话
+          clearSession()
+        }
+      }
+    } catch (error) {
+      Logger.error('[Auth] Failed to load user from session:', error instanceof Error ? error : new Error(String(error)))
+    }
+  }, [])
+
   // 初始化认证状态
   useEffect(() => {
     const initAuth = async () => {
@@ -87,12 +124,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
               if (typeof window !== 'undefined') window.localStorage.removeItem('auth-session')
             }
           } catch (error) {
-            Logger.error('[Auth] Failed to parse saved session:', error)
+            Logger.error('[Auth] Failed to parse saved session:', error instanceof Error ? error : new Error(String(error)))
             if (typeof window !== 'undefined') window.localStorage.removeItem('auth-session')
           }
         }
       } catch (error) {
-        Logger.error('[Auth] Failed to initialize authentication:', error)
+        Logger.error('[Auth] Failed to initialize authentication:', error instanceof Error ? error : new Error(String(error)))
       } finally {
         setIsLoading(false)
       }
@@ -103,39 +140,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     })
   }, [loadUserFromSession])
 
-  // 从会话加载用户信息
-  const loadUserFromSession = useCallback(async (session: Session) => {
-    try {
-      Logger.debug('[Auth] Loading user from session')
-      
-      const response = await fetch('/api/auth/user', {
-        headers: {
-          'Authorization': `Bearer ${session.accessToken}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      
-      if (response.ok) {
-        const userData = await response.json()
-        setUser(userData)
-        Logger.info('[Auth] User loaded successfully:', userData.id)
-      } else {
-        Logger.warn('[Auth] Failed to load user, status:', response.status)
-        if (response.status === 401) {
-          // Token无效，清除会话
-          clearSession()
-        }
-      }
-    } catch (error) {
-      Logger.error('[Auth] Failed to load user from session:', error)
-    }
-  }, [])
-
   // 登录
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true)
-      Logger.info('[Auth] Attempting login for:', email.slice(0, 3) + '***')
+      Logger.info(`[Auth] Attempting login for: ${email.slice(0, 3)}***`)
       
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -172,7 +181,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
-      Logger.error('[Auth] Login error:', error)
+      Logger.error('[Auth] Login error:', error instanceof Error ? error : new Error(String(error)))
       return { success: false, error: errorMessage }
     } finally {
       setIsLoading(false)
@@ -195,23 +204,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
             }
           })
         } catch (error) {
-          Logger.warn('[Auth] Failed to call logout API:', error)
+          Logger.warn(`[Auth] Failed to call logout API: ${error instanceof Error ? error.message : String(error)}`)
         }
       }
       
       clearSession()
       Logger.info('[Auth] Logout completed')
     } catch (error) {
-      Logger.error('[Auth] Logout error:', error)
-    }
-  }
-
-  // 清除会话
-  const clearSession = () => {
-    setUser(null)
-    setSession(null)
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem('auth-session')
+      Logger.error('[Auth] Logout error:', error instanceof Error ? error : new Error(String(error)))
     }
   }
 
@@ -256,7 +256,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error)
-      Logger.error('[Auth] Token refresh error:', error)
+      Logger.error('[Auth] Token refresh error:', error instanceof Error ? error : new Error(String(error)))
       clearSession()
       return { success: false, error: errorMessage }
     }

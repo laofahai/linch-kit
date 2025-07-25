@@ -1,0 +1,101 @@
+services:
+  # PostgreSQL 主数据库
+  postgres:
+    image: postgres:16-alpine
+    container_name: linchkit_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: linchkit
+      POSTGRES_PASSWORD: linchkit123
+      POSTGRES_DB: linchkit_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U linchkit -d linchkit_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - linchkit
+
+  # Neo4j Graph 数据库 (AI Graph RAG)
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: linchkit_neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      NEO4J_AUTH: neo4j/linchkit123
+      NEO4J_PLUGINS: '["apoc", "graph-data-science"]'
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*,gds.*"
+      NEO4J_dbms_security_procedures_allowlist: "apoc.*,gds.*"
+      NEO4J_apoc_export_file_enabled: "true"
+      NEO4J_apoc_import_file_enabled: "true"
+      NEO4J_apoc_import_file_use__neo4j__config: "true"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_conf:/conf
+      - neo4j_plugins:/plugins
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "linchkit123", "RETURN 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - linchkit
+
+  # pgAdmin (PostgreSQL 管理界面)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: linchkit_pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@linchkit.local
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - linchkit
+
+  # Redis (缓存和会话存储 - 可选)
+  redis:
+    image: redis:7-alpine
+    container_name: linchkit_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass linchkit123
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "linchkit123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - linchkit
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_conf:
+  neo4j_plugins:
+  pgadmin_data:
+  redis_data:
+
+networks:
+  linchkit:
+    driver: bridge

@@ -130,10 +130,10 @@ exports.Prisma.UserScalarFieldEnum = {
   birthday: 'birthday',
   tenantId: 'tenantId',
   metadata: 'metadata',
-  deletedAt: 'deletedAt',
-  lastLoginAt: 'lastLoginAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt',
+  lastLoginAt: 'lastLoginAt'
 };
 
 exports.Prisma.AuthSessionScalarFieldEnum = {
@@ -151,10 +151,10 @@ exports.Prisma.AuthSessionScalarFieldEnum = {
   deviceInfo: 'deviceInfo',
   permissions: 'permissions',
   scopes: 'scopes',
-  revokedAt: 'revokedAt',
-  revokedBy: 'revokedBy',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  revokedAt: 'revokedAt',
+  revokedBy: 'revokedBy'
 };
 
 exports.Prisma.RoleScalarFieldEnum = {
@@ -190,9 +190,9 @@ exports.Prisma.TenantScalarFieldEnum = {
   maxUsers: 'maxUsers',
   settings: 'settings',
   metadata: 'metadata',
-  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
 };
 
 exports.Prisma.JWTBlacklistScalarFieldEnum = {
@@ -206,6 +206,52 @@ exports.Prisma.JWTBlacklistScalarFieldEnum = {
   revokedReason: 'revokedReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  resource: 'resource',
+  resourceId: 'resourceId',
+  status: 'status',
+  message: 'message',
+  changes: 'changes',
+  context: 'context',
+  userId: 'userId',
+  tenantId: 'tenantId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserActivityScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  tenantId: 'tenantId',
+  type: 'type',
+  action: 'action',
+  resource: 'resource',
+  resourceId: 'resourceId',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserNotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  actionUrl: 'actionUrl',
+  actionLabel: 'actionLabel',
+  isRead: 'isRead',
+  readAt: 'readAt',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  expiresAt: 'expiresAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -241,7 +287,10 @@ exports.Prisma.ModelName = {
   Role: 'Role',
   UserRole: 'UserRole',
   Tenant: 'Tenant',
-  JWTBlacklist: 'JWTBlacklist'
+  JWTBlacklist: 'JWTBlacklist',
+  AuditLog: 'AuditLog',
+  UserActivity: 'UserActivity',
+  UserNotification: 'UserNotification'
 };
 
 /**

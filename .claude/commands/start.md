@@ -41,7 +41,7 @@ description: "LinchKit AI Workflow 完整启动器 - 集成分析和决策引擎
 !`echo "=== 项目健康度 ===" && echo "📊 包管理器: $(which bun && echo "Bun 可用" || echo "Bun 不可用")" && echo "📁 工作目录: $(pwd)" && echo "🌳 分支状态: $(git status --porcelain | wc -l) 个文件待处理"`
 
 ### 可选工具检查 (非阻塞)
-!`echo "=== 开发工具可用性 ===" && (timeout 3 bun run --help >/dev/null 2>&1 && echo "✅ Bun 脚本正常") || echo "⚠️  Bun 脚本可能有问题")`
+!`echo "=== 开发工具可用性 ===" && (timeout 3 bun run --help >/dev/null 2>&1 && echo "✅ Bun 脚本正常" || echo "⚠️  Bun 脚本可能有问题")`
 
 ## 🧠 Step 5: 项目结构分析
 

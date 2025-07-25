@@ -5,6 +5,13 @@
  * 正确处理 stdin JSON 输入的后处理脚本
  */
 
+// 加载.env文件中的环境变量
+import { config } from 'dotenv'
+import { join } from 'path'
+
+// 加载项目根目录的.env文件，强制覆盖现有环境变量
+config({ path: join(process.cwd(), '.env'), override: true })
+
 import { createLogger } from '@linch-kit/core'
 
 const logger = createLogger('claude-post-hook')
@@ -61,9 +68,70 @@ async function main() {
           cwd: process.cwd()
         })
         
-        qualityGateResult.on('close', (finalCode) => {
+        qualityGateResult.on('close', async (finalCode) => {
           if (finalCode === 0) {
             console.log('🎉 [POST-HOOK] 所有检查完成')
+            
+            // 🎯 优化的增量同步（如果有文件修改）
+            if (filePath && (hookData.tool_name === 'Edit' || hookData.tool_name === 'MultiEdit' || hookData.tool_name === 'Write')) {
+              console.log('🔄 [SYNC] 触发Graph RAG智能增量同步...')
+              
+              // 🎯 优化1: 智能判断是否需要同步
+              const shouldSync = await checkIfSyncNeeded(filePath, hookData.tool_name)
+              
+              if (shouldSync) {
+                console.log(`📊 [SYNC] 检测到重要文件修改: ${filePath}`)
+                
+                // 🎯 优化2: 使用优化的同步命令，限制处理时间
+                const syncResult = spawn('bun', [
+                  'run', 'ai:session', 'sync', 
+                  '--incremental',
+                  '--file', filePath,
+                  '--timeout', '10000' // 10秒超时
+                ], {
+                  stdio: 'inherit',
+                  cwd: process.cwd()
+                })
+                
+                syncResult.on('close', (syncCode) => {
+                  if (syncCode === 0) {
+                    console.log('✅ [SYNC] Graph RAG智能增量同步完成')
+                  } else {
+                    console.log('⚠️ [SYNC] Graph RAG增量同步失败，将在/end-session时重新尝试')
+                  }
+                })
+              } else {
+                console.log('ℹ️ [SYNC] 文件修改不影响Graph RAG，跳过同步')
+              }
+            }
+
+            async function checkIfSyncNeeded(filePath: string, operation: string): Promise<boolean> {
+              // 🎯 优化3: 智能判断哪些文件修改需要同步
+              const importantFilePatterns = [
+                /\/components\//,
+                /\/services\//,
+                /\/utils\//,
+                /\/hooks\//,
+                /\/lib\//,
+                /\.tsx?$/
+              ]
+              
+              const skipPatterns = [
+                /\.test\./,
+                /\.spec\./,
+                /\/dist\//,
+                /\/node_modules\//,
+                /\.d\.ts$/
+              ]
+              
+              // 跳过测试文件和构建输出
+              if (skipPatterns.some(pattern => pattern.test(filePath))) {
+                return false
+              }
+              
+              // 只同步重要文件
+              return importantFilePatterns.some(pattern => pattern.test(filePath))
+            }
           } else {
             console.log('❌ [POST-HOOK] 质量门禁失败')
             process.exit(finalCode)

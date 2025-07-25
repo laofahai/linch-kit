@@ -5,6 +5,13 @@
  * 正确处理 stdin JSON 输入的预处理脚本
  */
 
+// 加载.env文件中的环境变量
+import { config } from 'dotenv'
+import { join } from 'path'
+
+// 加载项目根目录的.env文件，强制覆盖现有环境变量
+config({ path: join(process.cwd(), '.env'), override: true })
+
 import { createLogger } from '@linch-kit/core'
 
 const logger = createLogger('claude-pre-hook')

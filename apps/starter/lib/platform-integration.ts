@@ -9,11 +9,15 @@ import { Logger } from '@linch-kit/core/client'
 export type {
   Entity,
   Field,
-  EntitySchema,
-  ValidationRule,
-  FieldType,
-  RelationType
+  ValidationRule,  // ✅ 从 @linch-kit/platform 导入
+  // EntitySchema,  // ❌ 不存在，保持注释
+  // RelationType   // ❌ 不存在，保持注释  
 } from '@linch-kit/platform'
+
+// 从 @linch-kit/schema 导入 FieldType
+export type {
+  FieldType       // ✅ 从 @linch-kit/schema 导入
+} from '@linch-kit/schema'
 
 export {
   PlatformManager,
@@ -115,7 +119,7 @@ export class PlatformIntegration {
       Logger.info('[Platform] Platform integration initialized successfully')
       return { success: true }
     } catch (error) {
-      Logger.error('[Platform] Failed to initialize platform integration:', error)
+      Logger.error('[Platform] Failed to initialize platform integration:', error instanceof Error ? error : new Error(String(error)))
       return { success: false, error: error instanceof Error ? error.message : String(error) }
     }
   }
@@ -296,7 +300,7 @@ export const CRUDUtils = {
    */
   createFilterParams: (filters: Record<string, unknown> = {}) => ({
     where: filters,
-    search: filters._search ?? undefined
+    search: filters['_search'] ?? undefined
   })
 }
 

@@ -15,6 +15,13 @@
  * @version 2.0.0
  */
 
+// 加载.env文件中的环境变量
+import { config } from 'dotenv'
+import { join } from 'path'
+
+// 加载项目根目录的.env文件，强制覆盖现有环境变量
+config({ path: join(process.cwd(), '.env'), override: true })
+
 import { createLogger } from '@linch-kit/core'
 import { existsSync, readFileSync, statSync } from 'fs'
 import { join, extname, dirname, basename } from 'path'
@@ -244,12 +251,19 @@ ${context.fileContent.slice(0, 1000)}${context.fileContent.length > 1000 ? '...[
     try {
       // 动态导入Gemini SDK Provider
       const { GeminiSDKProvider } = await import('../src/providers/gemini-sdk-provider')
+      
+      const apiKey = process.env.GEMINI_API_KEY
+      if (!apiKey) {
+        throw new Error('Gemini API key is required')
+      }
+      
       const provider = new GeminiSDKProvider({
+        apiKey,
         timeout: 10000, // 10秒超时，快速响应
         model: 'gemini-1.5-flash' // 使用快速模型
       })
       
-      const response = await provider.generateResponse(prompt)
+      const response = await provider.generate(prompt)
       return response.content
       
     } catch (error) {
@@ -271,7 +285,7 @@ ${context.fileContent.slice(0, 1000)}${context.fileContent.length > 1000 ? '...[
         timeoutMs: 10000 // 10秒超时
       })
       
-      const response = await provider.generateResponse(prompt)
+      const response = await provider.generate(prompt)
       return response.content
       
     } catch (error) {

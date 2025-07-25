@@ -5,11 +5,11 @@
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
-    "jsx": "react-jsx",
-    "composite": true
+    "jsx": "react-jsx"
   },
   "include": [
-    "src/**/*"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules",

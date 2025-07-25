@@ -9,7 +9,7 @@ function getUserFromToken(token: string) {
   // 简化的用户提取逻辑，在实际应用中应该验证JWT
   try {
     const parts = token.split('.')
-    if (parts.length !== 3) return null
+    if (parts.length !== 3 || !parts[1]) return null
     
     const payload = JSON.parse(globalThis.atob(parts[1]))
     

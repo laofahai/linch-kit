@@ -44,15 +44,10 @@ export async function POST(request: NextRequest) {
     const authService = getAuthService()
     
     try {
-      // 在实际应用中，这里应该验证refresh token
-      // 简化处理：生成新的tokens
-      const newTokens = await authService.generateTokens({
-        id: 'user-123',
-        email: 'user@example.com',
-        roles: ['user']
-      })
+      // 使用正确的公共API方法刷新token
+      const newSession = await authService.refreshToken(refreshToken)
       
-      if (newTokens.success) {
+      if (newSession) {
         logger.info('Token刷新成功', {
           service: 'refresh-api'
         })
@@ -60,18 +55,17 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           tokens: {
-            accessToken: newTokens.accessToken,
-            refreshToken: newTokens.refreshToken
+            accessToken: newSession.accessToken,
+            refreshToken: newSession.refreshToken
           }
         })
       } else {
-        logger.warn('Token刷新失败', {
-          service: 'refresh-api',
-          error: newTokens.error
+        logger.warn('Token刷新失败 - refreshToken无效或已过期', {
+          service: 'refresh-api'
         })
         
         return NextResponse.json(
-          { success: false, error: 'Failed to generate new tokens' },
+          { success: false, error: 'Invalid or expired refresh token' },
           { status: 401 }
         )
       }

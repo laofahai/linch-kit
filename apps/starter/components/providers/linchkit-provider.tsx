@@ -56,7 +56,7 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
           Logger.info('✓ Auth package client initialized')
           loadedPackages.push('auth')
         } catch (authError) {
-          Logger.warn('Auth package initialization failed:', authError)
+          Logger.warn('Auth package initialization failed:', { error: authError })
         }
 
         // 3. UI包初始化
@@ -64,7 +64,7 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
           Logger.info('✓ UI package initialized')
           loadedPackages.push('ui')
         } catch (uiError) {
-          Logger.warn('UI package initialization failed:', uiError)
+          Logger.warn('UI package initialization failed:', { error: uiError })
         }
 
         // 4. Console扩展集成
@@ -72,7 +72,7 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
           Logger.info('✓ Console extension configured')
           loadedPackages.push('console')
         } catch (consoleError) {
-          Logger.warn('Console extension initialization failed:', consoleError)
+          Logger.warn('Console extension initialization failed:', { error: consoleError })
         }
 
         setState({
@@ -81,10 +81,10 @@ export function LinchKitProvider({ children }: LinchKitProviderProps) {
           error: null
         })
 
-        Logger.info(`LinchKit Starter initialized successfully with ${loadedPackages.length} packages:`, loadedPackages)
+        Logger.info(`LinchKit Starter initialized successfully with ${loadedPackages.length} packages:`, { packages: loadedPackages })
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error)
-        Logger.error('Failed to initialize LinchKit:', error)
+        Logger.error('Failed to initialize LinchKit:', error instanceof Error ? error : new Error(String(error)))
         setState({
           initialized: false,
           packagesLoaded: [],
