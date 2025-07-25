@@ -3,9 +3,10 @@
  */
 
 import { createJWTAuthService, createDatabaseAuthService, createPrismaAdapter } from '@linch-kit/auth'
-import { PrismaClient } from '../prisma/generated/client'
 import { logger } from '@linch-kit/core/server'
 import { Registry } from 'prom-client'
+
+import { PrismaClient } from '../prisma/generated/client'
 
 // 全局单例实例
 let authService: ReturnType<typeof createJWTAuthService> | null = null

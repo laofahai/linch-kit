@@ -3,9 +3,10 @@
  */
 
 import { createDatabaseAuthService, createPrismaAdapter } from '@linch-kit/auth'
-import { PrismaClient } from '../../../../prisma/generated/client'
 import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
+
+import { PrismaClient } from '../../../../prisma/generated/client'
 
 // 全局实例（避免重复创建）
 let prisma: PrismaClient | null = null

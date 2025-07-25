@@ -4,6 +4,7 @@
 
 import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
+
 import { getAuthService } from '../../../../lib/auth-service'
 
 export async function POST(request: NextRequest) {

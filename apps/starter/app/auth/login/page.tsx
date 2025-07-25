@@ -220,7 +220,7 @@ function LoginPageContent() {
                   还没有账户？
                   <button
                     type="button"
-                    onClick={() => router.push(`/auth/register?callbackUrl=${encodeURIComponent(callbackUrl)}`)}
+                    onClick={() => { router.push(`/auth/register?callbackUrl=${encodeURIComponent(callbackUrl)}`); }}
                     className="ml-1 text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
                   >
                     立即注册
