@@ -5,7 +5,7 @@ export default defineConfig([
   {
     entry: ['src/client.ts', 'src/extension-client.ts'],
     format: ['cjs', 'esm'],
-    dts: true,
+    dts: false,
     clean: false,
     splitting: false,
     sourcemap: true,
@@ -60,7 +60,7 @@ export default defineConfig([
   {
     entry: ['src/react.ts'],
     format: ['cjs', 'esm'],
-    dts: true,
+    dts: false,
     clean: false,
     splitting: false,
     sourcemap: true,
@@ -82,7 +82,7 @@ export default defineConfig([
   {
     entry: ['src/providers.ts'],
     format: ['cjs', 'esm'],
-    dts: true,
+    dts: false,
     clean: false,
     splitting: false,
     sourcemap: true,
@@ -106,7 +106,7 @@ export default defineConfig([
   {
     entry: ['src/index.ts', 'src/cli.ts', 'src/server.ts'],
     format: ['cjs', 'esm'],
-    dts: true,
+    dts: false,
     clean: false,
     splitting: false,
     sourcemap: true,

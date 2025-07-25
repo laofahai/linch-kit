@@ -72,7 +72,7 @@ const infoCommand: CLICommand = {
 
       return { success: true }
     } catch (error) {
-      Logger.error('Failed to get system info:', error)
+      Logger.error('Failed to get system info: ' + (error instanceof Error ? error.message : String(error)))
       return {
         success: false,
         error: error instanceof Error ? error.message : String(error),
@@ -95,7 +95,7 @@ async function showSystemInfo(detailed?: boolean) {
       const { stdout } = await execAsync('pnpm --version')
       console.log(`pnpm:        ${stdout.trim()}`)
     } catch (error) {
-      Logger.debug('pnpm version check failed:', error instanceof Error ? error : new Error(String(error)))
+      Logger.debug('pnpm version check failed:', { error: error instanceof Error ? error.message : String(error) })
       console.log(`pnpm:        未安装`)
     }
 

@@ -2,24 +2,9 @@
  * Token刷新API端点 - 使用LinchKit Auth服务
  */
 
-import { createJWTAuthService } from '@linch-kit/auth/server'
 import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
-
-// 创建认证服务实例（懒加载避免重复实例化）
-let authService: ReturnType<typeof createJWTAuthService> | null = null
-
-function getAuthService() {
-  authService ??= createJWTAuthService({
-    jwtSecret: process.env['JWT_SECRET'] ?? 'your-super-secret-jwt-key-must-be-at-least-32-characters-long-development-key',
-    accessTokenExpiry: process.env['ACCESS_TOKEN_EXPIRY'] ?? '15m',
-    refreshTokenExpiry: process.env['REFRESH_TOKEN_EXPIRY'] ?? '7d',
-    algorithm: 'HS256',
-    issuer: 'linch-kit-starter',
-    audience: 'linch-kit-starter-app'
-  })
-  return authService
-}
+import { getAuthService } from '../../../../lib/auth-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,8 +25,8 @@ export async function POST(request: NextRequest) {
       tokenPrefix: refreshToken.slice(0, 10) + '...'
     })
     
-    // 使用认证服务验证并刷新token
-    const authService = getAuthService()
+    // 使用共享的认证服务验证并刷新token
+    const authService = await getAuthService()
     
     try {
       // 使用正确的公共API方法刷新token

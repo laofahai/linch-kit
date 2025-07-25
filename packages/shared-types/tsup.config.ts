@@ -10,7 +10,7 @@ export default defineConfig({
     'src/ui.ts'
   ],
   format: ['cjs', 'esm'],
-  dts: true,
+  dts: false, // Use separate DTS build step
   splitting: false,
   sourcemap: true,
   clean: true,

@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest) {
   return authMiddleware(request, {
     protectedPaths: ['/dashboard', '/console', '/profile', '/settings'],
     loginPath: '/auth',
-    publicPaths: ['/', '/auth', '/api/public', '/api/health', '/api/auth/login', '/api/auth/register'],
+    publicPaths: ['/', '/auth', '/api/public', '/api/health', '/api/auth/login', '/api/auth/register', '/api/debug'],
     apiPaths: ['/api']
   })
 }

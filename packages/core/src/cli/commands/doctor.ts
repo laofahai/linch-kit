@@ -172,7 +172,7 @@ async function checkEnvironment(verbose?: boolean): Promise<DiagnosticCategory> 
       })
     }
   } catch (error) {
-    Logger.debug('pnpm version check failed:', error instanceof Error ? error : new Error(String(error)))
+    Logger.debug('pnpm version check failed:', { error: error instanceof Error ? error.message : String(error) })
     issues.push({
       level: 'error',
       message: 'pnpm未安装',
@@ -594,7 +594,7 @@ async function autoFix(
           console.log(`✓ 已修复: ${issue.message}`)
           fixed++
         } catch (error) {
-          Logger.debug('Auto-fix command failed:', error instanceof Error ? error : new Error(String(error)))
+          Logger.debug('Auto-fix command failed:', { error: error instanceof Error ? error.message : String(error) })
           console.log(`✗ 修复失败: ${issue.message}`)
           failed++
         }

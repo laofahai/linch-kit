@@ -5,4 +5,4 @@ coverage = true
 coverage-dir = "coverage"
 coverage-threshold = 80
 environment = "happy-dom"
-concurrency = 4
+concurrency = 1

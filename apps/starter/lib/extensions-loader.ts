@@ -46,11 +46,17 @@ export async function initializeExtensions(force = false) {
       switch (extensionName) {
         case 'console':
           // 动态导入 console extension 的注册函数
+          Logger.info('Console extension is temporarily disabled due to build issues')
+          break
+          
+          // 暂时注释掉直到构建问题解决
+          /*
           try {
             Logger.info(`Starting console extension registration... (Registry debug: ${JSON.stringify(extensionUIRegistry.getDebugInfo())})`)
             
             // 动态导入console extension
-            const { registerConsoleExtension, ConsoleAppWrapper } = await import('@linch-kit/console')
+            const consoleModule = await import('@linch-kit/console') as any
+            const { registerConsoleExtension, ConsoleAppWrapper } = consoleModule
             
             // 检查是否已经注册过，避免重复注册
             const existingRegistration = clientExtensionManager.getRegistration('console')
@@ -87,7 +93,7 @@ export async function initializeExtensions(force = false) {
           } catch (error) {
             Logger.error(`Failed to import console extension:`, error instanceof Error ? error : new Error(String(error)))
           }
-          break
+          */
         // 未来可以添加更多扩展
         default:
           Logger.warn(`Unknown extension: ${extensionName}`)

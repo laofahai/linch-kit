@@ -47,7 +47,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "build:packages": "tsup",
+    "build:packages": "tsup && npx tsc --project tsconfig.dts.json --declaration --emitDeclarationOnly --outDir dist",
     "dev": "tsup --watch",
     "test": "bun test",
     "test:coverage": "bun test --coverage",

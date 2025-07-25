@@ -11,10 +11,6 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": [
-    "src/**/*",
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
+  "include": ["src/**/*"],
   "exclude": ["dist", "node_modules"]
 }

@@ -49,7 +49,9 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "bun run clean && bun run build:js && bun run build:dts",
+    "build:js": "tsup",
+    "build:dts": "tsc --project tsconfig.build.json --emitDeclarationOnly --declaration --declarationMap",
     "build:packages": "bun run build",
     "dev": "tsup --watch",
     "clean": "rm -rf dist",

@@ -26,6 +26,8 @@ import {
   type IAuthPerformanceMonitor as INewAuthPerformanceMonitor
 } from '../monitoring/auth-performance-monitor'
 
+import type { DatabaseAuthService } from './database-auth.service'
+
 /**
  * JWT认证服务配置
  */
@@ -36,6 +38,11 @@ export interface JWTAuthServiceConfig {
   algorithm: 'HS256' | 'HS384' | 'HS512'
   issuer?: string
   audience?: string
+  /**
+   * 数据库认证服务 (可选)
+   * 如果提供，将使用数据库进行用户验证和会话管理
+   */
+  databaseAuthService?: DatabaseAuthService
 }
 
 /**
@@ -52,10 +59,12 @@ export class JWTAuthService implements IAuthService {
   private readonly activeSessions = new Map<string, Session>()
   private readonly refreshTokens = new Map<string, { userId: string; sessionId: string; expiresAt: Date }>()
   private readonly performanceMonitor: INewAuthPerformanceMonitor
+  private readonly databaseAuthService?: DatabaseAuthService
 
   constructor(config: JWTAuthServiceConfig, performanceMonitor?: INewAuthPerformanceMonitor) {
     this.config = config
     this.performanceMonitor = performanceMonitor || createNewAuthPerformanceMonitor(logger)
+    this.databaseAuthService = config.databaseAuthService
     this.validateConfig()
   }
 
@@ -440,8 +449,12 @@ export class JWTAuthService implements IAuthService {
    * 获取用户信息
    */
   async getUser(userId: string): Promise<LinchKitUser | null> {
-    // 在实际实现中，这里应该从数据库或用户存储中获取用户信息
-    // 为了演示，我们返回一个模拟用户
+    // 如果配置了数据库认证服务，使用数据库获取用户
+    if (this.databaseAuthService) {
+      return await this.databaseAuthService.getUserById(userId)
+    }
+
+    // 回退到硬编码用户（仅用于开发测试）
     if (userId === 'test-user-id') {
       return {
         id: userId,
@@ -462,8 +475,24 @@ export class JWTAuthService implements IAuthService {
   async validateCredentials(credentials: Record<string, unknown>): Promise<LinchKitUser | null> {
     const { email, password } = credentials
 
-    // 在实际实现中，这里应该验证用户凭据
-    // 为了演示，我们使用简单的硬编码验证
+    // 类型检查
+    if (typeof email !== 'string' || typeof password !== 'string') {
+      logger.warn('用户凭据类型错误', {
+        service: 'jwt-auth-service',
+        hasEmail: !!email,
+        hasPassword: !!password,
+        emailType: typeof email,
+        passwordType: typeof password
+      })
+      return null
+    }
+
+    // 如果配置了数据库认证服务，使用数据库验证
+    if (this.databaseAuthService) {
+      return await this.databaseAuthService.validateCredentials(email, password)
+    }
+
+    // 回退到硬编码验证（仅用于开发测试）
     if (email === 'test@example.com' && password === 'password123') {
       return {
         id: 'test-user-id',

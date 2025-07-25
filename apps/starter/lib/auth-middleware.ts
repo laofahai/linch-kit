@@ -213,8 +213,12 @@ export async function authMiddleware(
 
     // 添加用户信息到请求头
     const response = NextResponse.next()
-    response.headers.set('X-User-ID', session.userId)
-    response.headers.set('X-Session-ID', session.id)
+    if (session.userId) {
+      response.headers.set('X-User-ID', session.userId)
+    }
+    if (session.id) {
+      response.headers.set('X-Session-ID', session.id)
+    }
 
     return response
   } catch (error) {

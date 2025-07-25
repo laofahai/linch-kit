@@ -8,9 +8,45 @@
 // 加载.env文件中的环境变量
 import { config } from 'dotenv'
 import { join } from 'path'
+import { existsSync } from 'fs'
 
-// 加载项目根目录的.env文件，强制覆盖现有环境变量
-config({ path: join(process.cwd(), '.env'), override: true })
+// 自动查找项目根目录
+function findProjectRoot(startPath: string = process.cwd()): string {
+  let currentPath = startPath
+  
+  while (currentPath !== '/') {
+    // 检查是否是LinchKit项目根目录（有package.json且包含linch-kit名称）
+    const packageJsonPath = join(currentPath, 'package.json')
+    if (existsSync(packageJsonPath)) {
+      try {
+        const pkg = require(packageJsonPath)
+        if (pkg.name === 'linch-kit' || pkg.workspaces) {
+          return currentPath
+        }
+      } catch {}
+    }
+    currentPath = join(currentPath, '..')
+  }
+  
+  // 如果找不到，回退到当前目录
+  return startPath
+}
+
+const projectRoot = findProjectRoot()
+
+// 创建一个执行上下文，而不是改变全局工作目录
+const executeInProjectRoot = (fn: () => any) => {
+  const originalCwd = process.cwd()
+  try {
+    process.chdir(projectRoot)
+    return fn()
+  } finally {
+    process.chdir(originalCwd)
+  }
+}
+
+// 加载项目根目录的.env文件，使用绝对路径
+config({ path: join(projectRoot, '.env'), override: true })
 
 import { createLogger } from '@linch-kit/core'
 

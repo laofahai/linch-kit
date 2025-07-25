@@ -2,24 +2,9 @@
  * JWT令牌验证API端点
  */
 
-import { createJWTAuthService } from '@linch-kit/auth/server'
 import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
-
-// 创建认证服务实例（懒加载避免重复实例化）
-let authService: ReturnType<typeof createJWTAuthService> | null = null
-
-function getAuthService() {
-  authService ??= createJWTAuthService({
-    jwtSecret: process.env['JWT_SECRET'] ?? 'your-super-secret-jwt-key-must-be-at-least-32-characters-long-development-key',
-    accessTokenExpiry: process.env['ACCESS_TOKEN_EXPIRY'] ?? '15m',
-    refreshTokenExpiry: process.env['REFRESH_TOKEN_EXPIRY'] ?? '7d',
-    algorithm: 'HS256',
-    issuer: 'linch-kit-starter',
-    audience: 'linch-kit-starter-app'
-  })
-  return authService
-}
+import { getAuthService } from '../../../../lib/auth-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,8 +24,8 @@ export async function POST(request: NextRequest) {
       hasToken: !!token
     })
 
-    // 使用真实的JWT认证服务验证token
-    const authService = getAuthService()
+    // 使用共享的JWT认证服务验证token
+    const authService = await getAuthService()
     
     try {
       // 验证JWT token并获取session

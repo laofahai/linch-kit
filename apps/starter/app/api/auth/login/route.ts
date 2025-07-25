@@ -1,25 +1,10 @@
 /**
- * 登录API端点 - 使用LinchKit Auth服务
+ * 登录API端点 - 使用LinchKit Auth新架构
  */
 
-import { createJWTAuthService } from '@linch-kit/auth/server'
 import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
-
-// 创建认证服务实例（懒加载避免重复实例化）
-let authService: ReturnType<typeof createJWTAuthService> | null = null
-
-function getAuthService() {
-  authService ??= createJWTAuthService({
-    jwtSecret: process.env['JWT_SECRET'] ?? 'your-super-secret-jwt-key-must-be-at-least-32-characters-long-development-key',
-    accessTokenExpiry: process.env['ACCESS_TOKEN_EXPIRY'] ?? '15m',
-    refreshTokenExpiry: process.env['REFRESH_TOKEN_EXPIRY'] ?? '7d',
-    algorithm: 'HS256',
-    issuer: 'linch-kit-starter',
-    audience: 'linch-kit-starter-app'
-  })
-  return authService
-}
+import { getAuthService } from '../../../../lib/auth-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,8 +16,8 @@ export async function POST(request: NextRequest) {
       hasPassword: !!password
     })
 
-    // 使用真实的JWT认证服务
-    const authService = getAuthService()
+    // 使用共享的认证服务
+    const authService = await getAuthService()
     
     // 构造认证请求
     const authRequest = {
@@ -66,7 +51,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     logger.error('登录API发生错误', error instanceof Error ? error : undefined, {
       service: 'login-api',
-      errorType: error instanceof Error ? error.constructor.name : 'Unknown'
+      errorType: error instanceof Error ? error.constructor.name : 'Unknown',
+      errorMessage: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
     })
     
     return NextResponse.json(
@@ -75,3 +62,4 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+

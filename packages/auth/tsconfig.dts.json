@@ -1,0 +1,54 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "skipLibCheck": true,
+    "emitDeclarationOnly": true,
+    "allowImportingTsExtensions": false,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "isolatedModules": false
+  },
+  "include": [
+    "src/index.ts",
+    "src/client.ts", 
+    "src/server.ts",
+    "src/server/index.ts",
+    "src/edge/index.ts",
+    "src/adapters/nextauth-adapter.ts",
+    "src/permissions/**/*",
+    "src/services/**/*",
+    "src/types/**/*",
+    "src/middleware/**/*",
+    "src/extensions/**/*",
+    "src/components/**/*",
+    "src/trpc/router-factory.ts",
+    "src/monitoring/**/*",
+    "src/security/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.test.tsx", 
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/__tests__/**",
+    "src/edge/edge-key-provider.ts",
+    "src/core/core-jwt-auth.service.ts",
+    "src/adapters/database-permission-adapter.ts",
+    "src/permissions/enhanced-permission-engine-v2.ts",
+    "src/entities/**/*",
+    "src/examples/**/*",
+    "src/infrastructure/**/*",
+    "src/plugin.ts"
+  ]
+}

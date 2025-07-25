@@ -27,6 +27,12 @@ export {
 export * from './services'
 export type { IAuthService } from './types'
 
+// ==================== 数据库认证服务导出 ====================
+export * from './services/database-auth.service'
+
+// ==================== 数据库适配器导出 ====================
+export * from './adapters/prisma-adapter'
+
 // ==================== 中间件导出 ====================
 export * from './middleware'
 
@@ -48,6 +54,9 @@ export { createAuthRouter } from './trpc/router-factory'
 // ==================== 类型定义导出 ====================
 export type * from './types'
 export { UserSchema } from './types'
+
+// ==================== 性能监控导出 ====================
+export { createAuthPerformanceMonitor, type IAuthPerformanceMonitor } from './monitoring/auth-performance-monitor'
 
 // ==================== 版本信息 ====================
 export const VERSION = '0.2.0'

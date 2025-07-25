@@ -321,5 +321,24 @@
     },
     "confidence": 85,
     "sourceFiles": []
+  },
+  {
+    "timestamp": "2025-07-25T02:45:21.181Z",
+    "sessionId": "default",
+    "contextType": "architecture",
+    "entityName": "TestEntity",
+    "understanding": {
+      "description": "TestEntity 实体的当前理解",
+      "properties": {
+        "sourceFiles": [],
+        "fields": [],
+        "methods": []
+      },
+      "relationships": [],
+      "constraints": [],
+      "patterns": []
+    },
+    "confidence": 85,
+    "sourceFiles": []
   }
 ]

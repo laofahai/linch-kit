@@ -9,7 +9,7 @@ export default defineConfig({
     'server/index': 'src/server/index.ts',
   },
   format: ['cjs', 'esm'],
-  dts: true,
+  dts: false, // DTS generation handled separately by tsc
   sourcemap: true,
   clean: true,
   treeshake: true,

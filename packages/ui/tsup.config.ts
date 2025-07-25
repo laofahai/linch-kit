@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: ['src/client.ts', 'src/server.ts', 'src/shared.ts', 'src/styles/index.ts'],
   format: ['cjs', 'esm'],
-  dts: true,
+  dts: false, // 暂时禁用DTS，使用rollup-plugin-dts替代
   splitting: true, // 启用代码分割，现代库最佳实践
   sourcemap: true,
   clean: true,

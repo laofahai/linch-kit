@@ -28,6 +28,12 @@ export { useSession, signIn, signOut, getSession } from 'next-auth/react'
  */
 export { createLinchKitAuthConfig } from './adapters/nextauth-adapter'
 
+// ==================== 数据库适配器导出 ====================
+/**
+ * 数据库适配器 - 支持多种数据库实现
+ */
+export * from './adapters/prisma-adapter'
+
 // ==================== 权限引擎导出 ====================
 /**
  * 权限引擎 - 基于CASL的权限控制

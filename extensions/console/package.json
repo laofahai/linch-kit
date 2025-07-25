@@ -60,7 +60,9 @@
     "DESIGN.md"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "bun run build:js && bun run build:dts",
+    "build:js": "tsup",
+    "build:dts": "tsc --project tsconfig.build.json --declaration --emitDeclarationOnly --outDir dist",
     "build:watch": "tsup --watch",
     "dev": "tsup --watch",
     "type-check": "tsc --noEmit",

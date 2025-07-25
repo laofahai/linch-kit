@@ -8,7 +8,7 @@ import { resolve, dirname } from 'path'
 import { mkdir, writeFile } from 'fs/promises'
 
 import { glob } from 'glob'
-import { createGenerator, PrismaGenerator } from '@linch-kit/schema'
+import { createGenerator, PrismaGenerator, type EntityDefinition, type FieldDefinition } from '@linch-kit/schema'
 
 import { type CLIManager, type CLICommand } from '../index'
 
@@ -119,7 +119,7 @@ export async function generatePrismaSchema(options: {
     console.log('🔧 正在创建Prisma生成器...')
     const outputDir = options.output || './apps/starter/prisma'
     const generator = createGenerator({
-      entities,
+      entities: entities as EntityDefinition<Record<string, FieldDefinition>>[],
       outputDir,
       config: {
         database: {

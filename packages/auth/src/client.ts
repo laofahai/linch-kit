@@ -42,7 +42,7 @@ import {
   ISessionManager,
   IAuditLogger,
   IAuthService,
-} from './types/index.ts'
+} from './types/index'
 
 export type {
   LinchKitUser,
@@ -91,7 +91,7 @@ export {
   AuditLogSchema,
   PasswordPolicyConfigSchema,
   AuthConfigSchema,
-} from './types/index.ts'
+} from './types/index'
 
 // ==================== 客户端工具函数 ====================
 /**

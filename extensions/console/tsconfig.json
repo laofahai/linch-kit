@@ -5,12 +5,16 @@
     "rootDir": "./src",
     "declarationDir": "./dist",
     "baseUrl": "./src",
-    "incremental": false,
-    "composite": true,
     "paths": {
       "@/*": ["./*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["dist", "node_modules"]
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "dist", 
+    "node_modules"
+  ]
 }
