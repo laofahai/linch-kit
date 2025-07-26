@@ -25,6 +25,7 @@ export * from './platform-router-factory'
 
 // 创建tRPC客户端工具
 export * from './client-factory'
+export * from './client'
 
 // tRPC中间件
 export * from './middleware'

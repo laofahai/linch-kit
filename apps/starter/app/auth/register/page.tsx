@@ -142,7 +142,7 @@ function RegisterPageContent() {
         setSuccess('注册成功！3秒后自动跳转到登录页面...')
         
         // 3秒后跳转到登录页面
-        setTimeout(() => {
+        window.setTimeout(() => {
           router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`)
         }, 3000)
       } else {

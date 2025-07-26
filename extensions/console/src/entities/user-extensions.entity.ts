@@ -58,7 +58,7 @@ function createConsoleUserExtensions() {
       .build(),
 
     preferences: defineField
-      .json<UserPreferences>()
+      .json()
       .default({})
       .description('console.entities.user.fields.preferences')
       .build(),

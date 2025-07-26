@@ -223,7 +223,7 @@ export function AuthSecurityAlerts({ className }: AuthSecurityAlertsProps) {
       case 'high':
         return <Badge variant="destructive">高</Badge>
       case 'medium':
-        return <Badge variant="warning">中</Badge>
+        return <Badge variant="secondary">中</Badge>
       case 'low':
         return <Badge variant="secondary">低</Badge>
       default:
@@ -236,9 +236,9 @@ export function AuthSecurityAlerts({ className }: AuthSecurityAlertsProps) {
       case 'active':
         return <Badge variant="destructive">活跃</Badge>
       case 'investigating':
-        return <Badge variant="warning">调查中</Badge>
+        return <Badge variant="secondary">调查中</Badge>
       case 'resolved':
-        return <Badge variant="success">已解决</Badge>
+        return <Badge variant="default">已解决</Badge>
       case 'false_positive':
         return <Badge variant="secondary">误报</Badge>
       default:

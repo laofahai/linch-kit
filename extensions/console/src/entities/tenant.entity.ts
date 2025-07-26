@@ -89,12 +89,12 @@ export const TenantEntity = defineEntity('Tenant', {
 
   // 扩展字段
   settings: defineField
-    .json<TenantSettings>()
+    .json()
     .default({})
     .description('console.entities.tenant.fields.settings'),
 
   metadata: defineField
-    .json<TenantMetadata>()
+    .json()
     .default({})
     .description('console.entities.tenant.fields.metadata'),
 

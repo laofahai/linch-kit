@@ -32,7 +32,7 @@ import {
   XCircle,
   Clock,
   Eye,
-  Refresh,
+  RefreshCw,
   Download
 } from 'lucide-react'
 
@@ -559,7 +559,7 @@ export function AuthDemoScenarios({ className }: AuthDemoScenariosProps) {
         
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={clearResults}>
-            <Refresh className="h-4 w-4 mr-2" />
+            <RefreshCw className="h-4 w-4 mr-2" />
             重置
           </Button>
           
@@ -710,7 +710,7 @@ export function AuthDemoScenarios({ className }: AuthDemoScenariosProps) {
                           </TableCell>
                           <TableCell>
                             {result.success ? (
-                              <Badge variant="success" className="text-xs">
+                              <Badge variant="default" className="text-xs">
                                 成功
                               </Badge>
                             ) : (

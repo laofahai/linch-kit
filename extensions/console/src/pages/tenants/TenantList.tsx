@@ -12,10 +12,12 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Button,
-  Input,
   Badge,
 } from '@linch-kit/ui/server'
+import {
+  Button,
+  Input,
+} from '@linch-kit/ui/client'
 import {
   Select,
   SelectContent,

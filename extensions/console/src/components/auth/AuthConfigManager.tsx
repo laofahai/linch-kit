@@ -343,7 +343,7 @@ export function AuthConfigManager({ className }: AuthConfigManagerProps) {
               </Badge>
             )}
             {config.isSecret && (
-              <Badge variant="warning" className="text-xs">
+              <Badge variant="secondary" className="text-xs">
                 敏感
               </Badge>
             )}
@@ -370,7 +370,7 @@ export function AuthConfigManager({ className }: AuthConfigManagerProps) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           {hasChanges && (
-            <Badge variant="warning" className="text-xs">
+            <Badge variant="secondary" className="text-xs">
               有未保存的更改
             </Badge>
           )}

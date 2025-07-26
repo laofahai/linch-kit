@@ -37,26 +37,14 @@ export const AuthSessionEntity = defineEntity('AuthSession', {
   lastAccessAt: defineField.date().default('now'),
   
   // 设备信息
-  deviceInfo: defineField.json<{
-    userAgent?: string
-    ipAddress?: string
-    deviceId?: string
-    platform?: string
-    browser?: string
-    location?: string
-  }>().optional(),
+  deviceInfo: defineField.json().optional(),
   
   // 权限信息
   permissions: defineField.array(defineField.string()).default([]),
   scopes: defineField.array(defineField.string()).default([]),
   
   // 安全信息
-  securityFlags: defineField.json<{
-    isSuspicious?: boolean
-    isFromTrustedDevice?: boolean
-    mfaVerified?: boolean
-    riskLevel?: 'low' | 'medium' | 'high'
-  }>().optional(),
+  securityFlags: defineField.json().optional(),
   
   // 审计信息
   createdAt: defineField.date().default('now'),
@@ -89,7 +77,7 @@ export const AuthMetricsEntity = defineEntity('AuthMetrics', {
   
   // 指标数据
   value: defineField.number().required(),
-  tags: defineField.json<Record<string, string>>().optional(),
+  tags: defineField.json().optional(),
   
   // 时间信息
   timestamp: defineField.date().default('now'),
@@ -99,13 +87,7 @@ export const AuthMetricsEntity = defineEntity('AuthMetrics', {
   sessionId: defineField.string().optional(),
   
   // 元数据
-  metadata: defineField.json<{
-    userAgent?: string
-    ipAddress?: string
-    duration?: number
-    errorCode?: string
-    errorMessage?: string
-  }>().optional(),
+  metadata: defineField.json().optional(),
   
   // 聚合字段
   hourlyBucket: defineField.string().optional(), // 格式: YYYY-MM-DD-HH
@@ -121,7 +103,7 @@ export const AuthConfigEntity = defineEntity('AuthConfig', {
   // 基础信息
   id: defineField.string().required(),
   configKey: defineField.string().required().unique(),
-  configValue: defineField.json<unknown>().required(),
+  configValue: defineField.json().required(),
   
   // 分类信息
   category: defineField.enum([

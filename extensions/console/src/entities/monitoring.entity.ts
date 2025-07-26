@@ -44,7 +44,7 @@ export const SystemMetricEntity = defineEntity('SystemMetric', {
 
   // 指标数据
   data: defineField
-    .json<MetricData>()
+    .json()
     .required()
     .description('console.entities.systemMetric.fields.data'),
 
@@ -113,7 +113,7 @@ export const AuditLogEntity = defineEntity('AuditLog', {
 
   // 上下文
   context: defineField
-    .json<LogContext>()
+    .json()
     .default({})
     .description('console.entities.auditLog.fields.context'),
 

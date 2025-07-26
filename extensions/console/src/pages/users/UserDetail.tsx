@@ -9,25 +9,27 @@
 import React, { useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Button,
-  Badge,
   Tabs,
   TabsContent,
   TabsList,
-  TabsValue,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
+  TabsTrigger,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+} from '@linch-kit/ui/client'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
 } from '@linch-kit/ui/server'
 import {
   Users,
@@ -276,12 +278,12 @@ export function UserDetail() {
       {/* 详细信息标签页 */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsValue value="overview">概览</TabsValue>
-          <TabsValue value="profile">个人资料</TabsValue>
-          <TabsValue value="permissions">权限管理</TabsValue>
-          <TabsValue value="activities">活动记录</TabsValue>
-          <TabsValue value="sessions">登录会话</TabsValue>
-          <TabsValue value="settings">设置</TabsValue>
+          <TabsTrigger value="overview">概览</TabsTrigger>
+          <TabsTrigger value="profile">个人资料</TabsTrigger>
+          <TabsTrigger value="permissions">权限管理</TabsTrigger>
+          <TabsTrigger value="activities">活动记录</TabsTrigger>
+          <TabsTrigger value="sessions">登录会话</TabsTrigger>
+          <TabsTrigger value="settings">设置</TabsTrigger>
         </TabsList>
 
         {/* 概览标签 */}

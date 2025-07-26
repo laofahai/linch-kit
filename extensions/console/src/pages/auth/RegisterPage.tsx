@@ -8,9 +8,8 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@linch-kit/ui/client'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@linch-kit/ui/server'
-import { Input } from '@linch-kit/ui/server'
-import { Label } from '@linch-kit/ui/server'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Label } from '@linch-kit/ui/server'
+import { Input } from '@linch-kit/ui/client'
 
 export function RegisterPage() {
   const router = useRouter()

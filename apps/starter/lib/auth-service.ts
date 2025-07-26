@@ -45,7 +45,7 @@ export async function getAuthService() {
       })
 
       // 动态导入性能监控器（避免构建时导入问题）
-      const { createAuthPerformanceMonitor } = await import('@linch-kit/auth/server')
+      const { createAuthPerformanceMonitor } = await import('@linch-kit/auth')
       const { LinchKitMetricCollector } = await import('@linch-kit/core/server')
       
       const metricCollector = new LinchKitMetricCollector(dedicatedRegistry)
@@ -89,10 +89,8 @@ export async function getAuthService() {
  * 获取 Prisma 客户端实例
  */
 export function getPrismaClient() {
-  if (!prisma) {
-    // 如果没有通过认证服务初始化，直接创建
-    prisma = new PrismaClient()
-  }
+  // 如果没有通过认证服务初始化，直接创建
+  prisma ??= new PrismaClient()
   return prisma
 }
 

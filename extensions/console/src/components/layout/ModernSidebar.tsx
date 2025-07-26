@@ -10,11 +10,6 @@ import React, { ReactNode, useState, useEffect } from 'react'
 import { cn } from '@linch-kit/ui/shared'
 import {
   Button,
-  Card,
-  CardContent,
-  Separator,
-  Avatar,
-  AvatarFallback,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -22,6 +17,13 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+} from '@linch-kit/ui/client'
+import {
+  Card,
+  CardContent,
+  Separator,
+  Avatar,
+  AvatarFallback,
   Badge,
 } from '@linch-kit/ui/server'
 import {

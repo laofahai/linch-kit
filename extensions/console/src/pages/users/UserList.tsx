@@ -8,12 +8,14 @@
 
 import React, { useState } from 'react'
 import {
+  Button,
+  Input,
+} from '@linch-kit/ui/client'
+import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  Button,
-  Input,
   Badge,
   Avatar,
   AvatarFallback,

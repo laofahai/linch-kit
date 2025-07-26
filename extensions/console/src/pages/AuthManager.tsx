@@ -66,8 +66,8 @@ export function AuthManager({ className }: AuthManagerProps) {
 
   const getHealthBadgeVariant = (health: string) => {
     switch (health) {
-      case 'healthy': return 'success'
-      case 'warning': return 'warning'
+      case 'healthy': return 'default'
+      case 'warning': return 'secondary'
       case 'critical': return 'destructive'
       default: return 'secondary'
     }

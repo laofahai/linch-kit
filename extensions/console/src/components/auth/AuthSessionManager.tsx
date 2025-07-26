@@ -6,26 +6,14 @@
 
 import { useState, useEffect } from 'react'
 import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Button,
-  Badge,
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   Input,
   Select,
   SelectContent,
@@ -36,7 +24,19 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
-} from '@linch-kit/ui'
+} from '@linch-kit/ui/client'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  Badge,
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from '@linch-kit/ui/server'
 import { 
   User, 
   Clock, 
@@ -183,7 +183,7 @@ export function AuthSessionManager({ className }: AuthSessionManagerProps) {
           : session
       ))
       
-      setRevokeDialog({ open: false, session: null })
+      _setRevokeDialog({ open: false, session: null })
     } catch (error) {
       console.error('Failed to revoke session:', error)
     }
@@ -192,9 +192,9 @@ export function AuthSessionManager({ className }: AuthSessionManagerProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge variant="success">活跃</Badge>
+        return <Badge variant="secondary">活跃</Badge>
       case 'expired':
-        return <Badge variant="warning">已过期</Badge>
+        return <Badge variant="secondary">已过期</Badge>
       case 'revoked':
         return <Badge variant="destructive">已撤销</Badge>
       case 'inactive':
@@ -207,9 +207,9 @@ export function AuthSessionManager({ className }: AuthSessionManagerProps) {
   const getRiskBadge = (riskLevel?: string) => {
     switch (riskLevel) {
       case 'low':
-        return <Badge variant="success" className="text-xs">低风险</Badge>
+        return <Badge variant="secondary" className="text-xs">低风险</Badge>
       case 'medium':
-        return <Badge variant="warning" className="text-xs">中风险</Badge>
+        return <Badge variant="secondary" className="text-xs">中风险</Badge>
       case 'high':
         return <Badge variant="destructive" className="text-xs">高风险</Badge>
       default:
@@ -367,30 +367,31 @@ export function AuthSessionManager({ className }: AuthSessionManagerProps) {
                       </Button>
                       
                       {session.status === 'active' && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
+                        <Dialog>
+                          <DialogTrigger asChild>
                             <Button variant="ghost" size="sm">
                               <LogOut className="h-4 w-4" />
                             </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>撤销会话</AlertDialogTitle>
-                              <AlertDialogDescription>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>撤销会话</DialogTitle>
+                              <DialogDescription>
                                 确定要撤销用户 {session.userEmail} 的会话吗？
                                 用户将被强制退出登录。
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>取消</AlertDialogCancel>
-                              <AlertDialogAction
+                              </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                              <Button variant="outline">取消</Button>
+                              <Button
                                 onClick={() => handleRevokeSession(session.id)}
+                                variant="destructive"
                               >
                                 确认撤销
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                       )}
                     </div>
                   </TableCell>

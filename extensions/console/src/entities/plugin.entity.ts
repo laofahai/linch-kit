@@ -63,14 +63,14 @@ export const PluginEntity = defineEntity('Plugin', {
 
   configSchema: defineField.json().optional().description('配置Schema(JSON Schema格式)'),
 
-  defaultConfig: defineField.json<PluginConfig>().default({}).description('默认配置'),
+  defaultConfig: defineField.json().default({}).description('默认配置'),
 
   // 兼容性信息
   minLinchKitVersion: defineField.string().optional().max(20).description('最低LinchKit版本要求'),
 
   maxLinchKitVersion: defineField.string().optional().max(20).description('最高LinchKit版本支持'),
 
-  dependencies: defineField.json<PluginDependency[]>().default([]).description('依赖的其他插件'),
+  dependencies: defineField.json().default([]).description('依赖的其他插件'),
 
   // 状态管理
   status: defineField
@@ -169,7 +169,7 @@ export const TenantPluginEntity = defineEntity('TenantPlugin', {
     .description('插件状态'),
 
   // 配置
-  config: defineField.json<PluginConfig>().default({}).description('插件配置'),
+  config: defineField.json().default({}).description('插件配置'),
 
   // 自动更新设置
   autoUpdate: defineField.boolean().default(false).description('是否自动更新'),

@@ -17,13 +17,15 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  Button,
-  Input,
-  Label,
-  Textarea,
   Alert,
   AlertDescription,
+  Label,
 } from '@linch-kit/ui/server'
+import {
+  Button,
+  Input,
+  Textarea,
+} from '@linch-kit/ui/client'
 import {
   Select,
   SelectContent,
@@ -161,9 +163,10 @@ export function TenantCreate() {
       })
 
       // 跳转到租户详情页
-      router.push(`/admin/tenants/${tenant.id}`)
-    } catch (error: Record<string, unknown>) {
-      setSubmitError(error.message || '创建租户失败')
+      router.push(`/admin/tenants/${(tenant as any)?.id || 'new'`)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : '创建租户失败'
+      setSubmitError(errorMessage)
     }
   }
 
@@ -201,8 +204,11 @@ export function TenantCreate() {
                   id="name"
                   placeholder="输入租户名称"
                   {...register('name')}
-                  error={errors.name?.message}
+                  className={errors.name ? 'border-red-500' : ''}
                 />
+                {errors.name && (
+                  <p className="text-sm text-red-500">{errors.name.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -211,8 +217,11 @@ export function TenantCreate() {
                   id="slug"
                   placeholder="url-identifier"
                   {...register('slug')}
-                  error={errors.slug?.message}
+                  className={errors.slug ? 'border-red-500' : ''}
                 />
+                {errors.slug && (
+                  <p className="text-sm text-red-500">{errors.slug.message}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   将用于租户的URL：https://app.example.com/{watch('slug')}
                 </p>
@@ -225,8 +234,11 @@ export function TenantCreate() {
                 id="domain"
                 placeholder="custom.example.com"
                 {...register('domain')}
-                error={errors.domain?.message}
+                className={errors.domain ? 'border-red-500' : ''}
               />
+              {errors.domain && (
+                <p className="text-sm text-red-500">{errors.domain.message}</p>
+              )}
               <p className="text-xs text-muted-foreground">可选，设置租户的自定义域名</p>
             </div>
 
@@ -236,8 +248,11 @@ export function TenantCreate() {
                 id="businessLicense"
                 placeholder="输入营业执照号码"
                 {...register('businessLicense')}
-                error={errors.businessLicense?.message}
+                className={errors.businessLicense ? 'border-red-500' : ''}
               />
+              {errors.businessLicense && (
+                <p className="text-sm text-red-500">{errors.businessLicense.message}</p>
+              )}
               <p className="text-xs text-muted-foreground">可选，企业租户的营业执照注册号码</p>
             </div>
 
@@ -248,8 +263,11 @@ export function TenantCreate() {
                 placeholder="租户描述..."
                 rows={3}
                 {...register('description')}
-                error={errors.description?.message}
+                className={errors.description ? 'border-red-500' : ''}
               />
+              {errors.description && (
+                <p className="text-sm text-red-500">{errors.description.message}</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -317,8 +335,11 @@ export function TenantCreate() {
                   min="1"
                   max="10000"
                   {...register('maxUsers', { valueAsNumber: true })}
-                  error={errors.maxUsers?.message}
+                  className={errors.maxUsers ? 'border-red-500' : ''}
                 />
+                {errors.maxUsers && (
+                  <p className="text-sm text-red-500">{errors.maxUsers.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -329,8 +350,11 @@ export function TenantCreate() {
                   min="100"
                   max="1000000"
                   {...register('maxStorage', { valueAsNumber: true })}
-                  error={errors.maxStorage?.message}
+                  className={errors.maxStorage ? 'border-red-500' : ''}
                 />
+                {errors.maxStorage && (
+                  <p className="text-sm text-red-500">{errors.maxStorage.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -341,8 +365,11 @@ export function TenantCreate() {
                   min="1000"
                   max="10000000"
                   {...register('maxApiCalls', { valueAsNumber: true })}
-                  error={errors.maxApiCalls?.message}
+                  className={errors.maxApiCalls ? 'border-red-500' : ''}
                 />
+                {errors.maxApiCalls && (
+                  <p className="text-sm text-red-500">{errors.maxApiCalls.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -353,8 +380,11 @@ export function TenantCreate() {
                   min="1"
                   max="100"
                   {...register('maxPlugins', { valueAsNumber: true })}
-                  error={errors.maxPlugins?.message}
+                  className={errors.maxPlugins ? 'border-red-500' : ''}
                 />
+                {errors.maxPlugins && (
+                  <p className="text-sm text-red-500">{errors.maxPlugins.message}</p>
+                )}
               </div>
             </div>
           </CardContent>
