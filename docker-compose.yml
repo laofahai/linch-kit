@@ -1,101 +1,111 @@
+version: '3.8'
+
 services:
-  # PostgreSQL 主数据库
+  # PostgreSQL 数据库 - 主应用数据
   postgres:
-    image: postgres:16-alpine
-    container_name: linchkit_postgres
-    restart: unless-stopped
+    image: postgres:15-alpine
+    container_name: linchkit-postgres
+    environment:
+      POSTGRES_DB: linchkit_dev
+      POSTGRES_USER: linchkit
+      POSTGRES_PASSWORD: linchkit_dev_password
+      POSTGRES_HOST_AUTH_METHOD: md5
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: linchkit
-      POSTGRES_PASSWORD: linchkit123
-      POSTGRES_DB: linchkit_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts/postgres-init:/docker-entrypoint-initdb.d
+      - ./sql/init:/docker-entrypoint-initdb.d
+    networks:
+      - linchkit-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U linchkit -d linchkit_dev"]
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - linchkit
 
-  # Neo4j Graph 数据库 (AI Graph RAG)
+  # Neo4j 图数据库 - AI 知识图谱
   neo4j:
     image: neo4j:5.15-community
-    container_name: linchkit_neo4j
-    restart: unless-stopped
-    ports:
-      - "7474:7474"  # HTTP
-      - "7687:7687"  # Bolt
+    container_name: linchkit-neo4j
     environment:
-      NEO4J_AUTH: neo4j/linchkit123
+      NEO4J_AUTH: neo4j/linchkit_neo4j_password
       NEO4J_PLUGINS: '["apoc", "graph-data-science"]'
-      NEO4J_dbms_security_procedures_unrestricted: "apoc.*,gds.*"
-      NEO4J_dbms_security_procedures_allowlist: "apoc.*,gds.*"
       NEO4J_apoc_export_file_enabled: "true"
       NEO4J_apoc_import_file_enabled: "true"
       NEO4J_apoc_import_file_use__neo4j__config: "true"
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      # 开发环境优化配置
+      NEO4J_dbms_memory_heap_initial__size: "512m"
+      NEO4J_dbms_memory_heap_max__size: "1G"
+      NEO4J_dbms_memory_pagecache_size: "512m"
+      # 启用多数据库支持
+      NEO4J_dbms_default__database: "linchkit"
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs
-      - neo4j_conf:/conf
+      - neo4j_import:/var/lib/neo4j/import
       - neo4j_plugins:/plugins
+    networks:
+      - linchkit-network
     healthcheck:
-      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "linchkit123", "RETURN 1"]
-      interval: 30s
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "linchkit_neo4j_password", "RETURN 1"]
+      interval: 10s
       timeout: 10s
       retries: 5
-    networks:
-      - linchkit
 
-  # pgAdmin (PostgreSQL 管理界面)
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: linchkit_pgadmin
-    restart: unless-stopped
-    ports:
-      - "5050:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@linchkit.local
-      PGADMIN_DEFAULT_PASSWORD: admin123
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - linchkit
-
-  # Redis (缓存和会话存储 - 可选)
+  # Redis 缓存服务
   redis:
     image: redis:7-alpine
-    container_name: linchkit_redis
-    restart: unless-stopped
+    container_name: linchkit-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     ports:
       - "6379:6379"
-    command: redis-server --appendonly yes --requirepass linchkit123
     volumes:
       - redis_data:/data
+    networks:
+      - linchkit-network
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "linchkit123", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # pgAdmin 数据库管理工具 (可选)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: linchkit-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@linchkit.dev
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     networks:
-      - linchkit
+      - linchkit-network
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:
+    driver: local
   neo4j_data:
+    driver: local
   neo4j_logs:
-  neo4j_conf:
+    driver: local
+  neo4j_import:
+    driver: local
   neo4j_plugins:
-  pgadmin_data:
+    driver: local
   redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
 
 networks:
-  linchkit:
+  linchkit-network:
     driver: bridge

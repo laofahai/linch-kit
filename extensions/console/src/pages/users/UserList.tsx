@@ -173,7 +173,7 @@ export function UserList() {
   const columns = [
     {
       key: 'user',
-      label: '用户信息',
+      title: '用户信息',
       render: (user: Record<string, unknown>) => (
         <div className="flex items-center space-x-3">
           <Avatar>
@@ -204,7 +204,7 @@ export function UserList() {
     },
     {
       key: 'tenant',
-      label: '所属租户',
+      title: '所属租户',
       render: (user: Record<string, unknown>) => (
         <div className="flex items-center space-x-2">
           <Building2 className="h-4 w-4 text-muted-foreground" />
@@ -214,7 +214,7 @@ export function UserList() {
     },
     {
       key: 'role',
-      label: '角色',
+      title: '角色',
       render: (user: Record<string, unknown>) => (
         <Badge variant={getRoleColor(String(user.role))}>
           {t(`console.entities.user.roles.${user.role}`)}
@@ -223,7 +223,7 @@ export function UserList() {
     },
     {
       key: 'status',
-      label: '状态',
+      title: '状态',
       render: (user: Record<string, unknown>) => (
         <Badge variant={getStatusColor(String(user.status))}>
           {t(`console.entities.user.status.${user.status}`)}
@@ -232,7 +232,7 @@ export function UserList() {
     },
     {
       key: 'lastLoginAt',
-      label: '最后登录',
+      title: '最后登录',
       render: (user: Record<string, unknown>) => (
         <div className="flex items-center space-x-2">
           <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -246,7 +246,7 @@ export function UserList() {
     },
     {
       key: 'actions',
-      label: '操作',
+      title: '操作',
       render: (user: Record<string, unknown>) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

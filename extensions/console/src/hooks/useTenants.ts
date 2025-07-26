@@ -30,7 +30,7 @@ const trpc = {
 import { toast } from 'sonner'
 
 import { useConsoleTranslation } from '../i18n'
-import type { TenantInput, TenantUpdate, TenantQuotas } from '../entities'
+import type { Tenant, TenantInput, TenantUpdate, TenantQuotas } from '../entities'
 
 // 查询键
 export const tenantKeys = {

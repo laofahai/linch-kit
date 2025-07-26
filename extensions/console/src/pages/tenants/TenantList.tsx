@@ -165,7 +165,7 @@ export function TenantList() {
   const columns = [
     {
       key: 'name',
-      label: t('console.entities.tenant.fields.name'),
+      title: t('console.entities.tenant.fields.name'),
       render: (tenant: Record<string, unknown>) => (
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -185,7 +185,7 @@ export function TenantList() {
     },
     {
       key: 'status',
-      label: t('console.entities.tenant.fields.status'),
+      title: t('console.entities.tenant.fields.status'),
       render: (tenant: Record<string, unknown>) => (
         <Badge variant={getStatusColor(tenant.status)}>
           {t(`console.entities.tenant.status.${tenant.status}`)}
@@ -194,7 +194,7 @@ export function TenantList() {
     },
     {
       key: 'plan',
-      label: t('console.entities.tenant.fields.plan'),
+      title: t('console.entities.tenant.fields.plan'),
       render: (tenant: Record<string, unknown>) => (
         <Badge variant={getPlanColor(tenant.plan)}>
           {t(`console.entities.tenant.plan.${tenant.plan}`)}
@@ -203,7 +203,7 @@ export function TenantList() {
     },
     {
       key: 'users',
-      label: '用户数',
+      title: '用户数',
       render: (tenant: Record<string, unknown>) => (
         <div className="flex items-center space-x-2">
           <Users className="h-4 w-4 text-muted-foreground" />
@@ -214,7 +214,7 @@ export function TenantList() {
     },
     {
       key: 'createdAt',
-      label: t('console.entities.tenant.fields.createdAt'),
+      title: t('console.entities.tenant.fields.createdAt'),
       render: (tenant: Record<string, unknown>) => (
         <div className="flex items-center space-x-2">
           <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -224,7 +224,7 @@ export function TenantList() {
     },
     {
       key: 'actions',
-      label: '操作',
+      title: '操作',
       render: (tenant: Record<string, unknown>) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -314,7 +314,7 @@ export function TenantList() {
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard title="总租户数" value={stats.total || 0} icon={Building2} color="blue" />
         <StatCard title="活跃租户" value={stats.active || 0} icon={Users} color="green" />
-        <StatCard title="暂停租户" value={stats.suspended || 0} icon={Pause} color="orange" />
+        <StatCard title="暂停租户" value={stats.suspended || 0} icon={Pause} color="yellow" />
         <StatCard title="企业版租户" value={stats.enterprise || 0} icon={Crown} color="purple" />
       </div>
 
