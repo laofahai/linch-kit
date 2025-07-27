@@ -54,7 +54,7 @@ export function useMarketplacePlugins(filters?: {
   page?: number
   pageSize?: number
 }) {
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useQuery({
     queryKey: pluginKeys.marketplaceList(filters),
@@ -67,7 +67,7 @@ export function useMarketplacePlugins(filters?: {
  * 获取插件详情
  */
 export function usePlugin(id: string) {
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useQuery({
     queryKey: pluginKeys.detail(id),
@@ -81,7 +81,7 @@ export function usePlugin(id: string) {
  * 获取租户已安装插件
  */
 export function useInstalledPlugins(tenantId: string) {
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useQuery({
     queryKey: pluginKeys.installedList(tenantId),
@@ -108,10 +108,10 @@ export function usePluginStats() {
  */
 export function useCreatePlugin() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: (input: PluginInput) => trpc.console.plugin.create.mutate(),
+    mutationFn: (_input: PluginInput) => trpc.console.plugin.create.mutate(),
     onSuccess: _data => {
       queryClient.invalidateQueries({ queryKey: pluginKeys.marketplace() })
       queryClient.invalidateQueries({ queryKey: pluginKeys.stats() })
@@ -126,10 +126,10 @@ export function useCreatePlugin() {
  */
 export function usePublishPlugin() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: (id: string) => trpc.console.plugin.publish.mutate(),
+    mutationFn: (_id: string) => trpc.console.plugin.publish.mutate(),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: pluginKeys.marketplace() })
       queryClient.invalidateQueries({ queryKey: pluginKeys.detail(variables) })
@@ -145,14 +145,14 @@ export function usePublishPlugin() {
  */
 export function useInstallPlugin() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
     mutationFn: ({
-      tenantId,
-      pluginId,
-      version,
-      config,
+      tenantId: _tenantId,
+      pluginId: _pluginId,
+      version: _version,
+      config: _config,
     }: {
       tenantId: string
       pluginId: string
@@ -178,10 +178,10 @@ export function useInstallPlugin() {
  */
 export function useUninstallPlugin() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: ({ tenantId, pluginId }: { tenantId: string; pluginId: string }) =>
+    mutationFn: ({ tenantId: _tenantId, pluginId: _pluginId }: { tenantId: string; pluginId: string }) =>
       trpc.console.plugin.uninstall.mutate(),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
@@ -198,10 +198,10 @@ export function useUninstallPlugin() {
  */
 export function useActivatePlugin() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: ({ tenantId, pluginId }: { tenantId: string; pluginId: string }) =>
+    mutationFn: ({ tenantId: _tenantId, pluginId: _pluginId }: { tenantId: string; pluginId: string }) =>
       trpc.console.plugin.activate.mutate(),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
@@ -218,10 +218,10 @@ export function useActivatePlugin() {
  */
 export function useDeactivatePlugin() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: ({ tenantId, pluginId }: { tenantId: string; pluginId: string }) =>
+    mutationFn: ({ tenantId: _tenantId, pluginId: _pluginId }: { tenantId: string; pluginId: string }) =>
       trpc.console.plugin.deactivate.mutate(),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
@@ -238,13 +238,13 @@ export function useDeactivatePlugin() {
  */
 export function useConfigurePlugin() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
     mutationFn: ({
-      tenantId,
-      pluginId,
-      config,
+      tenantId: _tenantId,
+      pluginId: _pluginId,
+      config: _config,
     }: {
       tenantId: string
       pluginId: string

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun run hooks:pre",
+            "command": "bun $CLAUDE_PROJECT_DIR/tools/ai-platform/hooks/claude-code-pre-hook.ts",
             "description": "🚨 零容忍约束检查 - 违规即阻止操作",
             "timeout": 30
           }
@@ -19,7 +19,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun run hooks:post",
+            "command": "bun $CLAUDE_PROJECT_DIR/tools/ai-platform/hooks/claude-code-post-hook.ts",
             "description": "🚨 零容忍质量门禁 - 违规即阻止继续",
             "timeout": 30
           }

@@ -30,7 +30,7 @@ const trpc = {
 import { toast } from 'sonner'
 
 import { useConsoleTranslation } from '../i18n'
-import type { Tenant, TenantInput, TenantUpdate, TenantQuotas } from '../entities'
+import type { TenantInput, TenantUpdate, TenantQuotas } from '../entities'
 
 // 查询键
 export const tenantKeys = {
@@ -52,7 +52,7 @@ export function useTenants(filters?: {
   page?: number
   pageSize?: number
 }) {
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useQuery({
     queryKey: tenantKeys.list(filters),
@@ -65,7 +65,7 @@ export function useTenants(filters?: {
  * 获取租户详情
  */
 export function useTenant(id: string) {
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useQuery({
     queryKey: tenantKeys.detail(id),
@@ -79,7 +79,7 @@ export function useTenant(id: string) {
  * 获取租户配额
  */
 export function useTenantQuotas(tenantId: string) {
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useQuery({
     queryKey: tenantKeys.quotas(tenantId),
@@ -106,10 +106,10 @@ export function useTenantStats() {
  */
 export function useCreateTenant() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: (input: TenantInput) => trpc.console.tenant.create.mutate(),
+    mutationFn: (_input: TenantInput) => trpc.console.tenant.create.mutate(),
     onSuccess: _data => {
       // 更新相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
@@ -125,10 +125,10 @@ export function useCreateTenant() {
  */
 export function useUpdateTenant() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: ({ id, input }: { id: string; input: TenantUpdate }) =>
+    mutationFn: ({ id: _id, input: _input }: { id: string; input: TenantUpdate }) =>
       trpc.console.tenant.update.mutate(),
     onSuccess: (data, variables) => {
       // 更新相关查询
@@ -145,10 +145,10 @@ export function useUpdateTenant() {
  */
 export function useDeleteTenant() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: (id: string) => trpc.console.tenant.delete.mutate(),
+    mutationFn: (_id: string) => trpc.console.tenant.delete.mutate(),
     onSuccess: (data, variables) => {
       // 更新相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
@@ -165,10 +165,10 @@ export function useDeleteTenant() {
  */
 export function useSuspendTenant() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
+    mutationFn: ({ id: _id, reason: _reason }: { id: string; reason?: string }) =>
       trpc.console.tenant.suspend.mutate(),
     onSuccess: (data, variables) => {
       // 更新相关查询
@@ -186,10 +186,10 @@ export function useSuspendTenant() {
  */
 export function useActivateTenant() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: (id: string) => trpc.console.tenant.activate.mutate(),
+    mutationFn: (_id: string) => trpc.console.tenant.activate.mutate(),
     onSuccess: (data, variables) => {
       // 更新相关查询
       queryClient.invalidateQueries({ queryKey: tenantKeys.lists() })
@@ -206,10 +206,10 @@ export function useActivateTenant() {
  */
 export function useUpdateTenantQuotas() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
-    mutationFn: ({ tenantId, quotas }: { tenantId: string; quotas: Partial<TenantQuotas> }) =>
+    mutationFn: ({ tenantId: _tenantId, quotas: _quotas }: { tenantId: string; quotas: Partial<TenantQuotas> }) =>
       trpc.console.tenant.updateQuotas.mutate(),
     onSuccess: (data, variables) => {
       // 更新相关查询
@@ -226,13 +226,13 @@ export function useUpdateTenantQuotas() {
  */
 export function useBatchTenantOperation() {
   const queryClient = useQueryClient()
-  const t = useConsoleTranslation()
+  const _t = useConsoleTranslation()
 
   return useMutation({
     mutationFn: ({
       operation,
-      tenantIds,
-      data,
+      tenantIds: _tenantIds,
+      data: _data,
     }: {
       operation: 'suspend' | 'activate' | 'delete'
       tenantIds: string[]

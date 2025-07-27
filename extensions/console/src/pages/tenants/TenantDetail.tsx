@@ -21,7 +21,6 @@ import {
   Tabs,
   TabsContent,
   TabsList,
-  TabsTrigger,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -50,6 +49,7 @@ import { format } from 'date-fns'
 // import { DataTable } from '../../components/shared/DataTable'
 import { StatCard } from '../../components/shared/StatCard'
 import { useTenant, useTenantQuotas, useTenantOperations } from '../../hooks/useTenants'
+import type { Tenant } from '../../entities/tenant.entity'
 import { useConsoleTranslation } from '../../i18n'
 import { useConsolePermission } from '../../providers/ConsoleProvider'
 
@@ -131,7 +131,7 @@ export function TenantDetail() {
   // 处理暂停/激活
   const handleSuspend = async () => {
     try {
-      if ((tenant as any)?.status === 'active') {
+      if ((tenant as Tenant)?.status === 'active') {
         await suspendTenant.mutateAsync({ id: tenantId, reason: '' })
       } else {
         await activateTenant.mutateAsync(tenantId)
@@ -152,19 +152,19 @@ export function TenantDetail() {
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-3xl font-bold tracking-tight">{(tenant as any)?.name || '租户详情'}</h1>
-              <Badge variant={getStatusColor((tenant as any)?.status || 'unknown')}>
-                {t(`console.entities.tenant.status.${(tenant as any)?.status || 'unknown'}`)}
+              <h1 className="text-3xl font-bold tracking-tight">{(tenant as Tenant)?.name || '租户详情'}</h1>
+              <Badge variant={getStatusColor((tenant as Tenant)?.status || 'unknown')}>
+                {t(`console.entities.tenant.status.${(tenant as Tenant)?.status || 'unknown'}`)}
               </Badge>
             </div>
-            <p className="text-muted-foreground">{(tenant as any)?.domain || (tenant as any)?.slug || '无域名'}</p>
+            <p className="text-muted-foreground">{(tenant as Tenant)?.domain || (tenant as Tenant)?.slug || '无域名'}</p>
             <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
-                <span>创建于 {format(new Date((tenant as any)?.createdAt || new Date()), 'yyyy年MM月dd日')}</span>
+                <span>创建于 {format(new Date((tenant as Tenant)?.createdAt || new Date()), 'yyyy年MM月dd日')}</span>
               </div>
               <div className="flex items-center space-x-1">
-                <Badge variant="outline">{t(`console.entities.tenant.plan.${(tenant as any)?.plan || 'basic'}`)}</Badge>
+                <Badge variant="outline">{t(`console.entities.tenant.plan.${(tenant as Tenant)?.plan || 'basic'}`)}</Badge>
               </div>
             </div>
           </div>
@@ -189,7 +189,7 @@ export function TenantDetail() {
           )}
           {canSuspend && (
             <Button variant="outline" size="sm" onClick={() => setSuspendDialog(true)}>
-              {(tenant as any)?.status === 'active' ? (
+              {(tenant as Tenant)?.status === 'active' ? (
                 <>
                   <Pause className="h-4 w-4 mr-2" />
                   暂停
@@ -202,7 +202,7 @@ export function TenantDetail() {
               )}
             </Button>
           )}
-          {canDelete && (tenant as any)?.status !== 'active' && (
+          {canDelete && (tenant as Tenant)?.status !== 'active' && (
             <Button variant="destructive" size="sm" onClick={() => setDeleteDialog(true)}>
               <Trash2 className="h-4 w-4 mr-2" />
               删除
@@ -220,17 +220,17 @@ export function TenantDetail() {
           icon={<Users />}
           color="blue"
         />
-        <StatCard title="插件数量" value={(tenant as any)?.pluginCount || 0} icon={<Puzzle />} color="green" />
+        <StatCard title="插件数量" value={(tenant as Tenant)?.pluginCount || 0} icon={<Puzzle />} color="green" />
         <StatCard
           title="存储使用"
-          value={`${(tenant as any)?.storageUsed || 0}MB`}
+          value={`${(tenant as Tenant)?.storageUsed || 0}MB`}
           icon={<Database />}
           color="orange"
         />
         <StatCard
           title="API调用"
-          value={(tenant as any)?.apiCalls || 0}
-          change={(tenant as any)?.apiGrowth || 0}
+          value={(tenant as Tenant)?.apiCalls || 0}
+          change={(tenant as Tenant)?.apiGrowth || 0}
           icon={<RefreshCw />}
           color="purple"
         />
@@ -259,39 +259,39 @@ export function TenantDetail() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">租户名称</label>
-                    <div className="mt-1">{(tenant as any)?.name || '未设置'}</div>
+                    <div className="mt-1">{(tenant as Tenant)?.name || '未设置'}</div>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">URL标识</label>
-                    <div className="mt-1">{(tenant as any)?.slug || '未设置'}</div>
+                    <div className="mt-1">{(tenant as Tenant)?.slug || '未设置'}</div>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">自定义域名</label>
-                    <div className="mt-1">{(tenant as any)?.domain || '未设置'}</div>
+                    <div className="mt-1">{(tenant as Tenant)?.domain || '未设置'}</div>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">订阅计划</label>
                     <div className="mt-1">
                       <Badge variant="outline">
-                        {t(`console.entities.tenant.plan.${(tenant as any)?.plan || 'basic'}`)}
+                        {t(`console.entities.tenant.plan.${(tenant as Tenant)?.plan || 'basic'}`)}
                       </Badge>
                     </div>
                   </div>
                 </div>
 
-                {(tenant as any)?.businessLicense && (
+                {(tenant as Tenant)?.businessLicense && (
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">
                       营业执照号码
                     </label>
-                    <div className="mt-1">{(tenant as any)?.businessLicense}</div>
+                    <div className="mt-1">{(tenant as Tenant)?.businessLicense}</div>
                   </div>
                 )}
 
-                {(tenant as any)?.description && (
+                {(tenant as Tenant)?.description && (
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">描述</label>
-                    <div className="mt-1">{(tenant as any)?.description}</div>
+                    <div className="mt-1">{(tenant as Tenant)?.description}</div>
                   </div>
                 )}
               </CardContent>
@@ -405,7 +405,7 @@ export function TenantDetail() {
           <DialogHeader>
             <DialogTitle>确认删除</DialogTitle>
             <DialogDescription>
-              确定要删除租户 "{(tenant as any)?.name || '未知租户'}" 吗？此操作无法撤销，将删除所有相关数据。
+              确定要删除租户 "{(tenant as Tenant)?.name || '未知租户'}" 吗？此操作无法撤销，将删除所有相关数据。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

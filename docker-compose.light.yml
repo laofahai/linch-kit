@@ -1,0 +1,75 @@
+services:
+  # PostgreSQL 数据库 - 轻量化配置
+  postgres:
+    image: postgres:15-alpine
+    container_name: linchkit-postgres
+    environment:
+      POSTGRES_DB: linchkit_dev
+      POSTGRES_USER: linchkit
+      POSTGRES_PASSWORD: linchkit_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - linchkit-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U linchkit -d linchkit_dev"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Redis 缓存服务 - 轻量化配置  
+  redis:
+    image: redis:7-alpine
+    container_name: linchkit-redis
+    command: redis-server --appendonly yes --maxmemory 128mb
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - linchkit-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Neo4j 图数据库 - 简化配置
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: linchkit-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/linchkit_neo4j_password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      # 简化内存配置
+      NEO4J_dbms_memory_heap_initial__size: "256m"
+      NEO4J_dbms_memory_heap_max__size: "512m"
+      NEO4J_dbms_memory_pagecache_size: "256m"
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - linchkit-network
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "linchkit_neo4j_password", "RETURN 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 120s
+
+volumes:
+  postgres_data:
+    driver: local
+  neo4j_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  linchkit-network:
+    driver: bridge

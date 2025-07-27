@@ -10,19 +10,28 @@ import { config } from 'dotenv'
 import { join } from 'path'
 import { existsSync } from 'fs'
 
-// 自动查找项目根目录（不改变工作目录）
-function findProjectRoot(startPath: string = process.cwd()): string {
-  let currentPath = startPath
+// 获取项目根目录，优先使用 Claude Code 提供的环境变量
+function getProjectRoot(): string {
+  // 优先使用 Claude Code 提供的项目目录环境变量
+  if (process.env.CLAUDE_PROJECT_DIR) {
+    return process.env.CLAUDE_PROJECT_DIR
+  }
+  
+  // 备用：使用自定义环境变量
+  if (process.env.LINCHKIT_ROOT) {
+    return process.env.LINCHKIT_ROOT
+  }
+  
+  // 最后备用：查找包含 package.json 和 .claude 的目录
+  let currentPath = process.cwd()
   
   while (currentPath !== '/' && currentPath !== '.') {
-    // 多重检查确保是LinchKit项目根目录
     const packageJsonPath = join(currentPath, 'package.json')
     const claudeConfigPath = join(currentPath, '.claude')
     
     if (existsSync(packageJsonPath) && existsSync(claudeConfigPath)) {
       try {
         const pkg = require(packageJsonPath)
-        // 检查项目特征：名称、workspaces配置、或特定依赖
         if (pkg.name === 'linch-kit' || 
             pkg.workspaces || 
             (pkg.dependencies && pkg.dependencies['@linch-kit/core'])) {
@@ -34,15 +43,14 @@ function findProjectRoot(startPath: string = process.cwd()): string {
     }
     
     const parentPath = join(currentPath, '..')
-    if (parentPath === currentPath) break // 防止无限循环
+    if (parentPath === currentPath) break
     currentPath = parentPath
   }
   
-  // 如果找不到，使用环境变量或当前目录
-  return process.env.LINCHKIT_ROOT || startPath
+  return process.cwd()
 }
 
-const projectRoot = findProjectRoot()
+const projectRoot = getProjectRoot()
 
 // 创建一个执行上下文，而不是改变全局工作目录
 const executeInProjectRoot = (fn: () => any) => {

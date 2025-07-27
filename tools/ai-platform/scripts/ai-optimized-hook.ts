@@ -16,8 +16,26 @@
 import { config } from 'dotenv'
 import { join } from 'path'
 
+// 获取项目根目录，优先使用 Claude Code 提供的环境变量
+function getProjectRoot(): string {
+  // 优先使用 Claude Code 提供的项目目录环境变量
+  if (process.env.CLAUDE_PROJECT_DIR) {
+    return process.env.CLAUDE_PROJECT_DIR
+  }
+  
+  // 备用：使用自定义环境变量
+  if (process.env.LINCHKIT_ROOT) {
+    return process.env.LINCHKIT_ROOT
+  }
+  
+  // 最后备用：使用当前工作目录
+  return process.cwd()
+}
+
+const projectRoot = getProjectRoot()
+
 // 加载项目根目录的.env文件，强制覆盖现有环境变量
-config({ path: join(process.cwd(), '.env'), override: true })
+config({ path: join(projectRoot, '.env'), override: true })
 
 import { createLogger } from '@linch-kit/core'
 import { AIDrivenHookOptimizer } from '../hooks/ai-driven-hook-optimizer'

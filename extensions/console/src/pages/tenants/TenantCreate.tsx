@@ -163,7 +163,7 @@ export function TenantCreate() {
       })
 
       // 跳转到租户详情页
-      router.push(`/admin/tenants/${(tenant as any)?.id || 'new'`)
+      router.push(`/admin/tenants/${(tenant as { id?: string })?.id || 'new'}`)
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : '创建租户失败'
       setSubmitError(errorMessage)
