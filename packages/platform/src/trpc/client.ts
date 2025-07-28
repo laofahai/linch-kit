@@ -3,6 +3,8 @@
  * @module platform/trpc/client
  */
 
+import { createTRPCClientFactory } from './client-factory'
+
 export { TRPCClientFactory, createTRPCClientFactory } from './client-factory'
 export type { TRPCClientConfig, TRPCClientOptions } from './client-factory'
 

@@ -36,6 +36,7 @@ export * from './client/schema-table'
 
 // 布局组件
 export * from './client/dashboard-layout'
+export type { DashboardLayoutShellProps, DashboardUser, NavigationItem } from './client/dashboard-layout'
 
 // Extension 管理组件
 export * from './client/extension-manager'

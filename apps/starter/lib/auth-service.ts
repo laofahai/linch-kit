@@ -110,5 +110,5 @@ export async function cleanup() {
 }
 
 // 进程退出时清理资源
-process.on('SIGTERM', cleanup)
-process.on('SIGINT', cleanup)
+process.on('SIGTERM', () => { cleanup().catch(console.error) })
+process.on('SIGINT', () => { cleanup().catch(console.error) })

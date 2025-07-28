@@ -148,7 +148,7 @@ function LoginPageContent() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={(e) => { handleLogin(e).catch(console.error) }} className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     邮箱

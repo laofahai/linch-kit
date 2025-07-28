@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
       })
 
       return NextResponse.json(
-        { success: false, error: result.error || '注册失败' },
+        { success: false, error: result.error ?? '注册失败' },
         { status: 400 }
       )
     }
@@ -117,8 +117,10 @@ export async function POST(request: NextRequest) {
 }
 
 // 优雅关闭时清理资源 
-process.on('SIGTERM', async () => {
-  if (prisma) {
-    await prisma.$disconnect()
-  }
+process.on('SIGTERM', () => {
+  (async () => {
+    if (prisma) {
+      await prisma.$disconnect()
+    }
+  })().catch(error => logger.error('SIGTERM cleanup failed', error))
 })
