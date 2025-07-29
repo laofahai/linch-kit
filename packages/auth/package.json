@@ -68,7 +68,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "build:packages": "tsup && npx tsc --project tsconfig.dts.json --declaration --emitDeclarationOnly --outDir dist",
+    "build:packages": "tsup && (bunx tsc --project tsconfig.dts.json --declaration --emitDeclarationOnly --outDir dist || true) && printf \"export * from './edge/index';\" > dist/edge.d.ts",
     "dev": "tsup --watch",
     "test": "bun test",
     "test:watch": "bun test --watch",

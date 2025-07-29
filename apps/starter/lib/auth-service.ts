@@ -6,7 +6,7 @@ import { createJWTAuthService, createDatabaseAuthService, createPrismaAdapter } 
 import { logger } from '@linch-kit/core/server'
 import { Registry } from 'prom-client'
 
-import { PrismaClient } from '../prisma/generated/client'
+import { PrismaClient } from '@prisma/client'
 
 // 全局单例实例
 let authService: ReturnType<typeof createJWTAuthService> | null = null
@@ -16,7 +16,7 @@ let dedicatedRegistry: Registry | null = null
 /**
  * 获取认证服务实例（单例模式）
  */
-export async function getAuthService() {
+export function getAuthService() {
   if (!authService) {
     try {
       logger.info('初始化认证服务', {
@@ -44,14 +44,7 @@ export async function getAuthService() {
         enableSessionTracking: true
       })
 
-      // 动态导入性能监控器（避免构建时导入问题）
-      const { createAuthPerformanceMonitor } = await import('@linch-kit/auth')
-      const { LinchKitMetricCollector } = await import('@linch-kit/core/server')
-      
-      const metricCollector = new LinchKitMetricCollector(dedicatedRegistry)
-      const performanceMonitor = createAuthPerformanceMonitor(logger, metricCollector)
-      
-      // 创建 JWT 认证服务，集成数据库服务和专用监控器
+      // 创建 JWT 认证服务，集成数据库服务
       authService = createJWTAuthService({
         jwtSecret: process.env['JWT_SECRET'] ?? 'your-super-secret-jwt-key-must-be-at-least-32-characters-long-development-key',
         accessTokenExpiry: process.env['ACCESS_TOKEN_EXPIRY'] ?? '15m',
@@ -60,7 +53,7 @@ export async function getAuthService() {
         issuer: 'linchkit-starter',
         audience: 'linchkit-starter-app',
         databaseAuthService // 集成数据库认证服务
-      }, performanceMonitor) // 传入专用的性能监控器
+      })
       
       logger.info('认证服务初始化完成', {
         service: 'auth-service-singleton',
@@ -110,5 +103,5 @@ export async function cleanup() {
 }
 
 // 进程退出时清理资源
-process.on('SIGTERM', () => { cleanup().catch(console.error) })
-process.on('SIGINT', () => { cleanup().catch(console.error) })
+process.on('SIGTERM', () => { cleanup().catch(() => {}) })
+process.on('SIGINT', () => { cleanup().catch(() => {}) })

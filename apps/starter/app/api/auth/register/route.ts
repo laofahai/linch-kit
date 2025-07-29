@@ -1,52 +1,17 @@
 /**
- * 用户注册API端点 - 使用LinchKit Auth新架构
+ * 用户注册API端点 - 使用完整的@linch-kit/auth服务实现
+ * 提供用户注册功能，支持邮箱和密码认证，包含完整的JWT和数据库集成
  */
 
-import { createDatabaseAuthService, createPrismaAdapter } from '@linch-kit/auth'
-import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
-
-import { PrismaClient } from '../../../../prisma/generated/client'
-
-// 全局实例（避免重复创建）
-let prisma: PrismaClient | null = null
-let databaseAuthService: ReturnType<typeof createDatabaseAuthService> | null = null
-
-function getDatabaseAuthService() {
-  if (!databaseAuthService) {
-    // 创建 Prisma 客户端
-    prisma = new PrismaClient()
-    
-    // 创建 Prisma 适配器
-    const prismaAdapter = createPrismaAdapter(prisma)
-    
-    // 创建数据库认证服务
-    databaseAuthService = createDatabaseAuthService({
-      databaseAdapter: prismaAdapter,
-      saltRounds: 12,
-      enableSessionTracking: true
-    })
-
-    logger.info('数据库认证服务初始化完成', {
-      service: 'database-auth-service-factory',
-      hasSessionTracking: true
-    })
-  }
-  return databaseAuthService
-}
+import { logger } from '@linch-kit/core/server'
+import { getAuthService } from '../../../../lib/auth-service'
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password, name } = await request.json()
 
-    logger.info('用户注册请求', {
-      service: 'register-api',
-      email: email?.toString().slice(0, 3) + '***',
-      hasPassword: !!password,
-      hasName: !!name
-    })
-
-    // 基本验证
+    // 基础验证
     if (!email || !password) {
       return NextResponse.json(
         { success: false, error: '邮箱和密码不能为空' },
@@ -58,69 +23,116 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { success: false, error: '邮箱格式不正确' },
+        { success: false, error: '请输入有效的邮箱地址' },
         { status: 400 }
       )
     }
 
     // 密码强度验证
-    if (password.length < 6) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { success: false, error: '密码长度至少6位' },
+        { success: false, error: '密码长度至少为8位' },
         { status: 400 }
       )
     }
 
-    // 使用新架构的数据库认证服务进行注册
-    const authService = getDatabaseAuthService()
-    const result = await authService.register(email, password, name)
+    // 密码复杂度验证
+    const hasUpperCase = /[A-Z]/.test(password)
+    const hasLowerCase = /[a-z]/.test(password)
+    const hasNumbers = /\d/.test(password)
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
 
-    if (result.success && result.user) {
-      logger.info('用户注册成功', {
-        service: 'register-api',
-        userId: result.user.id,
-        email: email.slice(0, 3) + '***'
-      })
-
-      return NextResponse.json({
-        success: true,
-        user: {
-          id: result.user.id,
-          email: result.user.email,
-          name: result.user.name
+    if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: '密码必须包含大小写字母、数字和特殊字符' 
         },
-        message: '注册成功'
+        { status: 400 }
+      )
+    }
+
+    // 获取认证服务
+    const authService = getAuthService()
+
+    // 注册新用户
+    const registerResult = await authService.register({
+      email,
+      password,
+      name: name || email.split('@')[0],
+      metadata: { 
+        source: 'starter-app',
+        registrationIp: request.headers.get('x-forwarded-for') || 'unknown',
+        userAgent: request.headers.get('user-agent') || 'unknown'
+      }
+    })
+
+    if (registerResult.success) {
+      const { user, tokens } = registerResult
+
+      logger.info('用户注册成功', {
+        service: 'auth-api',
+        userId: user.id,
+        email: user.email,
+        name: user.name
       })
+
+      // 设置认证cookie
+      const response = NextResponse.json({
+        success: true,
+        message: '注册成功',
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          status: user.status,
+          createdAt: user.createdAt
+        },
+        accessToken: tokens.accessToken,
+        expiresIn: 15 * 60 // 15分钟
+      })
+
+      // 设置HTTP-only cookie
+      response.cookies.set('auth-token', tokens.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 15 * 60, // 15分钟
+        path: '/'
+      })
+
+      // 设置refresh token cookie
+      response.cookies.set('refresh-token', tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60, // 7天
+        path: '/'
+      })
+
+      return response
     } else {
       logger.warn('用户注册失败', {
-        service: 'register-api',
-        email: email.slice(0, 3) + '***',
-        error: result.error
+        service: 'auth-api',
+        email,
+        error: registerResult.error
       })
 
       return NextResponse.json(
-        { success: false, error: result.error ?? '注册失败' },
+        { success: false, error: registerResult.error },
         { status: 400 }
       )
     }
   } catch (error) {
-    logger.error('注册API发生错误', error instanceof Error ? error : undefined, {
-      service: 'register-api',
-      errorType: error instanceof Error ? error.constructor.name : 'Unknown'
+    logger.error('用户注册失败', error instanceof Error ? error : undefined, {
+      service: 'auth-api',
+      errorType: error instanceof Error ? error.constructor.name : 'Unknown',
+      errorMessage: error instanceof Error ? error.message : String(error)
     })
-    
+
     return NextResponse.json(
-      { success: false, error: '注册服务不可用，请稍后再试' },
+      { success: false, error: '注册过程中发生错误，请稍后重试' },
       { status: 500 }
     )
   }
 }
-
-// 优雅关闭时清理资源 
-process.on('SIGTERM', () => {
-  (async () => {
-    if (prisma) {
-      await prisma.$disconnect()
-    }
-  })().catch(error => logger.error('SIGTERM cleanup failed', error))
-})

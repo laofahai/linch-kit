@@ -47,33 +47,18 @@ import {
   RefreshCw,
   Eye
 } from 'lucide-react'
-
-// Auth entities are available but not used directly in this component
+import { consoleAuthApiClient } from '../../api/auth-api'
 
 interface AuthSession {
   id: string
   userId: string
-  userEmail: string
-  userAvatar?: string
-  userRole: string
-  sessionId: string
+  isActive: boolean
+  createdAt: string
+  expiresAt: string
+  deviceInfo?: string
+  userEmail?: string
+  userName?: string
   status: 'active' | 'expired' | 'revoked' | 'inactive'
-  issuedAt: Date
-  expiresAt: Date
-  lastAccessAt: Date
-  deviceInfo?: {
-    userAgent?: string
-    ipAddress?: string
-    platform?: string
-    browser?: string
-    location?: string
-  }
-  securityFlags?: {
-    isSuspicious?: boolean
-    isFromTrustedDevice?: boolean
-    mfaVerified?: boolean
-    riskLevel?: 'low' | 'medium' | 'high'
-  }
 }
 
 interface AuthSessionManagerProps {
@@ -103,79 +88,38 @@ export function AuthSessionManager({ className }: AuthSessionManagerProps) {
   const loadSessions = async () => {
     setLoading(true)
     try {
-      // 模拟API调用
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // 使用真实的API调用获取会话数据
+      const response = await consoleAuthApiClient.getSessions({
+        status: statusFilter === 'all' ? undefined : statusFilter,
+        search: searchTerm || undefined
+      })
       
-      const mockSessions: AuthSession[] = [
-        {
-          id: '1',
-          userId: 'user1',
-          userEmail: 'admin@example.com',
-          userRole: 'admin',
-          sessionId: 'sess_123abc',
-          status: 'active',
-          issuedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000),
-          lastAccessAt: new Date(Date.now() - 5 * 60 * 1000),
-          deviceInfo: {
-            userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-            ipAddress: '192.168.1.100',
-            platform: 'macOS',
-            browser: 'Chrome',
-            location: 'Beijing, China'
-          },
-          securityFlags: {
-            isSuspicious: false,
-            isFromTrustedDevice: true,
-            mfaVerified: true,
-            riskLevel: 'low'
-          }
-        },
-        {
-          id: '2',
-          userId: 'user2',
-          userEmail: 'john@example.com',
-          userRole: 'user',
-          sessionId: 'sess_456def',
-          status: 'active',
-          issuedAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
-          expiresAt: new Date(Date.now() + 23 * 60 * 60 * 1000),
-          lastAccessAt: new Date(Date.now() - 15 * 60 * 1000),
-          deviceInfo: {
-            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            ipAddress: '10.0.0.50',
-            platform: 'Windows',
-            browser: 'Firefox',
-            location: 'Shanghai, China'
-          },
-          securityFlags: {
-            isSuspicious: true,
-            isFromTrustedDevice: false,
-            mfaVerified: false,
-            riskLevel: 'high'
-          }
-        }
-      ]
+      const formattedSessions: AuthSession[] = response.sessions.map(session => ({
+        ...session,
+        status: session.isActive ? 'active' : 'inactive'
+      }))
       
-      setSessions(mockSessions)
+      setSessions(formattedSessions)
     } catch (error) {
       console.error('Failed to load sessions:', error)
+      // 如果API调用失败，显示空数组而不是模拟数据
+      setSessions([])
     } finally {
       setLoading(false)
     }
   }
 
   const filteredSessions = sessions.filter(session => {
-    const matchesSearch = session.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         session.sessionId.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = session.userEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         session.deviceInfo?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = statusFilter === 'all' || session.status === statusFilter
     return matchesSearch && matchesStatus
   })
 
   const handleRevokeSession = async (sessionId: string) => {
     try {
-      // 模拟API调用
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // 使用真实的API调用撤销会话
+      await consoleAuthApiClient.revokeSession(sessionId)
       
       setSessions(prev => prev.map(session => 
         session.id === sessionId 
@@ -217,7 +161,8 @@ export function AuthSessionManager({ className }: AuthSessionManagerProps) {
     }
   }
 
-  const formatTimeAgo = (date: Date) => {
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString)
     const now = new Date()
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
     
@@ -238,7 +183,7 @@ export function AuthSessionManager({ className }: AuthSessionManagerProps) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="搜索用户邮箱或会话ID..."
+            placeholder="搜索用户邮箱或设备信息..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -272,8 +217,8 @@ export function AuthSessionManager({ className }: AuthSessionManagerProps) {
               <TableHead>用户</TableHead>
               <TableHead>会话状态</TableHead>
               <TableHead>设备信息</TableHead>
-              <TableHead>最后活动</TableHead>
-              <TableHead>风险评级</TableHead>
+              <TableHead>创建时间</TableHead>
+              <TableHead>过期时间</TableHead>
               <TableHead>操作</TableHead>
             </TableRow>
           </TableHeader>

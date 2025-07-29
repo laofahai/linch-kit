@@ -222,5 +222,119 @@
     "priority": "medium",
     "startTime": "2025-07-26T08:00:44.031Z",
     "lastUpdated": "2025-07-26T08:00:44.032Z"
+  },
+  "workflow-1753687814606": {
+    "sessionId": "workflow-1753687814606",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-28T07:30:14.607Z",
+    "lastUpdated": "2025-07-28T07:30:14.607Z"
+  },
+  "workflow-1753688285144": {
+    "sessionId": "workflow-1753688285144",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-28T07:38:05.144Z",
+    "lastUpdated": "2025-07-28T07:38:05.146Z"
+  },
+  "workflow-1753761174912": {
+    "sessionId": "workflow-1753761174912",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T03:52:54.913Z",
+    "lastUpdated": "2025-07-29T03:52:54.914Z"
+  },
+  "workflow-1753770396579": {
+    "sessionId": "workflow-1753770396579",
+    "taskDescription": "修复CLI类型安全问题",
+    "currentState": "COMPLETED",
+    "priority": "high",
+    "startTime": "2025-07-29T06:26:36.579Z",
+    "lastUpdated": "2025-07-29T06:30:11.000Z",
+    "sessionSummary": "Session V005 - CLI类型安全问题修复完成，移除所有any类型使用，扩展CLIManager接口，验证通过"
+  },
+  "workflow-1753771229187": {
+    "sessionId": "workflow-1753771229187",
+    "taskDescription": "Starter应用认证集成验证",
+    "currentState": "INIT",
+    "priority": "high",
+    "startTime": "2025-07-29T06:33:49.187Z",
+    "lastUpdated": "2025-07-29T06:33:49.187Z",
+    "sessionPrompt": "Session V006 - 验证starter应用与@linch-kit/auth的完整集成，实现用户注册登录功能端到端正常工作"
+  },
+  "workflow-1753771335466": {
+    "sessionId": "workflow-1753771335466",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T06:42:15.466Z",
+    "lastUpdated": "2025-07-29T06:42:15.467Z"
+  },
+  "workflow-1753771372310": {
+    "sessionId": "workflow-1753771372310",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T06:42:52.310Z",
+    "lastUpdated": "2025-07-29T06:42:52.311Z"
+  },
+  "workflow-1753771378977": {
+    "sessionId": "workflow-1753771378977",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T06:42:58.977Z",
+    "lastUpdated": "2025-07-29T06:42:58.978Z"
+  },
+  "workflow-1753772734776": {
+    "sessionId": "workflow-1753772734776",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T07:05:34.777Z",
+    "lastUpdated": "2025-07-29T07:05:34.777Z"
+  },
+  "workflow-1753775145840": {
+    "sessionId": "workflow-1753775145840",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T07:45:45.840Z",
+    "lastUpdated": "2025-07-29T07:45:45.842Z"
+  },
+  "workflow-1753775152380": {
+    "sessionId": "workflow-1753775152380",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T07:45:52.380Z",
+    "lastUpdated": "2025-07-29T07:45:52.382Z"
+  },
+  "workflow-1753775799758": {
+    "sessionId": "workflow-1753775799758",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T07:56:39.758Z",
+    "lastUpdated": "2025-07-29T07:56:39.760Z"
+  },
+  "workflow-1753776969551": {
+    "sessionId": "workflow-1753776969551",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T08:16:09.552Z",
+    "lastUpdated": "2025-07-29T08:16:09.553Z"
+  },
+  "workflow-1753778590564": {
+    "sessionId": "workflow-1753778590564",
+    "taskDescription": "通用开发任务",
+    "currentState": "ANALYZE",
+    "priority": "medium",
+    "startTime": "2025-07-29T08:43:10.564Z",
+    "lastUpdated": "2025-07-29T08:43:10.566Z"
   }
 }

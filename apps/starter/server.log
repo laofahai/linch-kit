@@ -1,0 +1,65 @@
+$ next dev
+   ▲ Next.js 15.3.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.110.76:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3.1s
+ ✓ Compiled /middleware in 189ms (154 modules)
+ ○ Compiling /api/auth/login ...
+ ✓ Compiled /api/auth/login in 1031ms (695 modules)
+ POST /api/auth/login 200 in 1196ms
+[Error: Cannot find module '/home/laofahai/workspace/linch-kit/apps/starter/.next/server/vendor-chunks/lib/worker.js'] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+ ⨯ uncaughtException: [Error: Cannot find module '/home/laofahai/workspace/linch-kit/apps/starter/.next/server/vendor-chunks/lib/worker.js'] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+ ⨯ uncaughtException:  [Error: Cannot find module '/home/laofahai/workspace/linch-kit/apps/starter/.next/server/vendor-chunks/lib/worker.js'] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+[Error: the worker thread exited]
+ ⨯ uncaughtException: [Error: the worker thread exited]
+ ⨯ uncaughtException:  [Error: the worker thread exited]
+ ○ Compiling /api/auth/register ...
+ ✓ Compiled /api/auth/register in 557ms (695 modules)
+ POST /api/auth/register 200 in 663ms
+[Error: Cannot find module '/home/laofahai/workspace/linch-kit/apps/starter/.next/server/vendor-chunks/lib/worker.js'] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+ ⨯ uncaughtException: [Error: Cannot find module '/home/laofahai/workspace/linch-kit/apps/starter/.next/server/vendor-chunks/lib/worker.js'] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+ ⨯ uncaughtException:  [Error: Cannot find module '/home/laofahai/workspace/linch-kit/apps/starter/.next/server/vendor-chunks/lib/worker.js'] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+[Error: the worker thread exited]
+ ⨯ uncaughtException: [Error: the worker thread exited]
+ ⨯ uncaughtException:  [Error: the worker thread exited]
+ ✓ Compiled /api/auth/login in 82ms (420 modules)
+ POST /api/auth/login 200 in 187ms
+[Error: Cannot find module '/home/laofahai/workspace/linch-kit/apps/starter/.next/server/vendor-chunks/lib/worker.js'] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+ ⨯ uncaughtException: [Error: Cannot find module '/home/laofahai/workspace/linch-kit/apps/starter/.next/server/vendor-chunks/lib/worker.js'] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+ ⨯ uncaughtException:  [Error: Cannot find module '/home/laofahai/workspace/linch-kit/apps/starter/.next/server/vendor-chunks/lib/worker.js'] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+[Error: the worker thread exited]
+ ⨯ uncaughtException: [Error: the worker thread exited]
+ ⨯ uncaughtException:  [Error: the worker thread exited]
+ ✓ Compiled in 79ms (420 modules)
+ ✓ Compiled in 68ms (418 modules)
+[?25h

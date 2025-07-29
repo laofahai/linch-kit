@@ -1,81 +1,78 @@
 /**
- * 用户信息API端点 - 使用LinchKit Auth服务
+ * 获取当前用户信息的API端点 - 使用完整的@linch-kit/auth服务实现
+ * 通过JWT验证获取真实的用户信息
  */
 
 import { logger } from '@linch-kit/core/server'
 import { NextRequest, NextResponse } from 'next/server'
+import { getAuthService } from '../../../../lib/auth-service'
 
-function getUserFromToken(token: string) {
-  // 简化的用户提取逻辑，在实际应用中应该验证JWT
+export async function GET(request: NextRequest) {
   try {
-    const parts = token.split('.')
-    if (parts.length !== 3 || !parts[1]) return null
-    
-    const payload = JSON.parse(globalThis.atob(parts[1]))
-    
-    // 检查token是否过期
-    const now = Math.floor(Date.now() / 1000)
-    if (payload.exp && payload.exp < now) {
-      return null
-    }
-    
-    // 返回模拟用户数据
-    return {
-      id: payload.sub ?? 'user-123',
-      email: payload.email ?? 'user@example.com',
-      name: payload.name ?? 'Test User',
-      avatar: payload.avatar ?? null
-    }
-  } catch {
-    return null
-  }
-}
+    // 从请求头获取Authorization token
+    const authHeader = request.headers.get('authorization')
+    const token = authHeader?.replace('Bearer ', '')
 
-export function GET(request: NextRequest) {
-  try {
-    // 从Authorization头获取token
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader?.startsWith('Bearer ')) {
-      logger.warn('用户信息请求缺少Authorization头', {
-        service: 'user-api',
-        hasAuth: !!authHeader
-      })
+    if (!token) {
       return NextResponse.json(
-        { success: false, error: 'Authorization header required' },
+        { success: false, error: '未提供认证令牌' },
         { status: 401 }
       )
     }
-    
-    const token = authHeader.substring(7)
-    
-    // 获取用户信息
-    const user = getUserFromToken(token)
-    if (!user) {
-      logger.warn('无效的访问令牌', {
-        service: 'user-api',
-        tokenPrefix: token.slice(0, 10) + '...'
-      })
+
+    // 获取认证服务
+    const authService = getAuthService()
+
+    // 使用完整的认证服务验证token
+    const verifyResult = await authService.verifyToken(token)
+
+    if (!verifyResult.success) {
       return NextResponse.json(
-        { success: false, error: 'Invalid or expired token' },
+        { success: false, error: verifyResult.error },
         { status: 401 }
       )
     }
-    
-    logger.info('用户信息请求成功', {
+
+    // 从数据库获取完整的用户信息
+    const userResult = await authService.getUserById(verifyResult.userId)
+
+    if (!userResult.success) {
+      return NextResponse.json(
+        { success: false, error: '用户不存在' },
+        { status: 404 }
+      )
+    }
+
+    const user = userResult.user
+
+    logger.info('用户信息获取成功', {
       service: 'user-api',
       userId: user.id,
-      email: user.email?.slice(0, 3) + '***'
+      email: user.email
     })
-    
-    return NextResponse.json(user)
+
+    return NextResponse.json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        status: user.status,
+        createdAt: user.createdAt,
+        lastLoginAt: user.lastLoginAt,
+        updatedAt: user.updatedAt,
+        metadata: user.metadata
+      }
+    })
   } catch (error) {
     logger.error('用户信息API发生错误', error instanceof Error ? error : undefined, {
       service: 'user-api',
-      errorType: error instanceof Error ? error.constructor.name : 'Unknown'
+      errorType: error instanceof Error ? error.constructor.name : 'Unknown',
+      errorMessage: error instanceof Error ? error.message : String(error)
     })
     
     return NextResponse.json(
-      { success: false, error: '用户信息服务不可用' },
+      { success: false, error: '获取用户信息失败' },
       { status: 500 }
     )
   }

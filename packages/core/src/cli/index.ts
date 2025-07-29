@@ -184,6 +184,12 @@ export interface CLIManager {
    * @param name 命令名称
    */
   removeCommand(name: string): boolean
+
+  /**
+   * 解析命令行参数
+   * @param argv 命令行参数
+   */
+  parse(argv?: string[]): Promise<void>
 }
 
 /**

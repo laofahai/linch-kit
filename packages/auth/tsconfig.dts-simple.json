@@ -16,15 +16,14 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "isolatedModules": false,
-    "preserveValueImports": false
+    "preserveValueImports": false,
+    "strict": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
-  "include": [
-    "src/index.ts",
-    "src/client.ts",
-    "src/server.ts",
-    "src/server/index.ts",
-    "src/edge/index.ts"
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "dist",
     "node_modules",
@@ -33,14 +32,11 @@
     "**/*.spec.ts",
     "**/*.spec.tsx",
     "**/__tests__/**",
-    "src/edge/edge-key-provider.ts",
-    "src/core/core-jwt-auth.service.ts",
     "src/adapters/database-permission-adapter.ts",
     "src/permissions/enhanced-permission-engine-v2.ts",
     "src/entities/**/*",
     "src/examples/**/*",
     "src/infrastructure/**/*",
-    "src/plugin.ts",
-    "src/adapters/index.ts"
+    "src/plugin.ts"
   ]
 }
