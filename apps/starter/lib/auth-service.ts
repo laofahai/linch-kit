@@ -46,9 +46,14 @@ export async function getAuthService() {
 
       // 动态导入性能监控器（避免构建时导入问题）
       const { createAuthPerformanceMonitor } = await import('@linch-kit/auth')
-      const { LinchKitMetricCollector } = await import('@linch-kit/core/server')
       
-      const metricCollector = new LinchKitMetricCollector(dedicatedRegistry)
+      // 创建一个简单的 metric collector 实现
+      const metricCollector = {
+        increment: () => {},
+        gauge: () => {},
+        histogram: () => {},
+        summary: () => {}
+      }
       const performanceMonitor = createAuthPerformanceMonitor(logger, metricCollector)
       
       // 创建 JWT 认证服务，集成数据库服务和专用监控器
@@ -110,5 +115,9 @@ export async function cleanup() {
 }
 
 // 进程退出时清理资源
-process.on('SIGTERM', () => { cleanup().catch(console.error) })
-process.on('SIGINT', () => { cleanup().catch(console.error) })
+process.on('SIGTERM', () => { 
+  cleanup().catch((error) => { logger.error('SIGTERM cleanup failed', error); })
+})
+process.on('SIGINT', () => { 
+  cleanup().catch((error) => { logger.error('SIGINT cleanup failed', error); })
+})

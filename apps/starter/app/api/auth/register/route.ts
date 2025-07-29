@@ -122,5 +122,5 @@ process.on('SIGTERM', () => {
     if (prisma) {
       await prisma.$disconnect()
     }
-  })().catch(error => logger.error('SIGTERM cleanup failed', error))
+  })().catch(error => { logger.error('SIGTERM cleanup failed', error); })
 })

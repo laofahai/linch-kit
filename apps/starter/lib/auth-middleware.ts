@@ -93,6 +93,7 @@ function validateJWTToken(token: string): Promise<Session | null> {
         // 返回模拟会话
         resolve({
           id: 'mock-session-id',
+          email: 'test@example.com',
           userId: 'test-user-123',
           accessToken: token,
           refreshToken: 'mock-refresh-token',
@@ -132,6 +133,7 @@ function validateJWTToken(token: string): Promise<Session | null> {
       // 返回模拟会话
       resolve({
         id: payload.jti ?? 'session-id',
+        email: payload.email ?? 'user@example.com',
         userId: payload.sub ?? 'user-id',
         accessToken: token,
         refreshToken: 'refresh-token',

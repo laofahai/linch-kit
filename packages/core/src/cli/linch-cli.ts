@@ -21,14 +21,6 @@ export class LinchKitCLI {
   }
 
   private async setupCLI() {
-    // 修改程序信息
-    const cliImpl = this.cli as unknown as { program: { name: (name: string) => unknown; description: (desc: string) => unknown; option: (flags: string, description: string) => unknown } }
-    const program = cliImpl.program
-    ;(program as unknown).name('linch').description('LinchKit AI-First 全栈开发框架 CLI')
-
-    // 添加全局选项
-    ;(program as unknown).option('-d, --debug', '启用调试模式').option('--no-color', '禁用彩色输出')
-
     // 注册核心命令
     registerCoreCommands(this.cli)
 

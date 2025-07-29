@@ -176,7 +176,7 @@ function RegisterPageContent() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={(e) => { handleRegister(e).catch(console.error) }} className="space-y-4">
+              <form onSubmit={(e) => { handleRegister(e).catch((error) => { Logger.error('Register error:', error) }) }} className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="name" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     姓名

@@ -21,6 +21,7 @@
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
+    "@linch-kit/auth": "workspace:*",
     "@linch-kit/configs": "workspace:*",
     "@linch-kit/console": "workspace:*",
     "@linch-kit/core": "workspace:*",

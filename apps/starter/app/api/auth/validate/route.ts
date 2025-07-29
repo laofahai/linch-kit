@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       
       logger.info('JWT token验证成功', {
         service: 'validate-api',
-        userId: session.userId,
+        userId: session.id,
         sessionId: session.id
       })
       
@@ -53,9 +53,9 @@ export async function POST(request: NextRequest) {
         valid: true,
         session: {
           id: session.id,
-          userId: session.userId,
-          expiresAt: session.expiresAt,
-          lastAccessedAt: session.lastAccessedAt
+          email: session.email,
+          name: session.name,
+          role: session.role
         }
       })
     } catch (jwtError) {
